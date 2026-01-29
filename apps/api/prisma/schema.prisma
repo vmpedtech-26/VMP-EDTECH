@@ -1,0 +1,223 @@
+// VMP Servicios - Database Schema
+// Plataforma de capacitación con certificaciones profesionales
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============= ENUMS =============
+
+enum UserRole {
+  SUPER_ADMIN
+  INSTRUCTOR
+  ALUMNO
+}
+
+enum TipoModulo {
+  TEORIA
+  QUIZ
+  PRACTICA
+}
+
+enum EstadoInscripcion {
+  NO_INICIADO
+  EN_PROGRESO
+  COMPLETADO
+  APROBADO
+  REPROBADO
+}
+
+// ============= MODELOS =============
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  nombre       String
+  apellido     String
+  dni          String   @unique
+  telefono     String?
+  rol          UserRole @default(ALUMNO)
+  empresaId    String?  @map("empresa_id")
+  avatar       String?
+  activo       Boolean  @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  inscripciones Inscripcion[]
+  examenes      Examen[]
+  credenciales  Credencial[]
+  evidencias    Evidencia[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  nombre    String
+  cuit      String   @unique
+  direccion String?
+  telefono  String?
+  email     String
+  activa    Boolean  @default(true)
+  
+  usuarios User[]
+  cursos   Curso[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("companies")
+}
+
+model Curso {
+  id             String  @id @default(uuid())
+  nombre         String
+  descripcion    String
+  codigo         String  @unique
+  duracionHoras  Int     @map("duracion_horas")
+  vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
+  empresaId      String? @map("empresa_id")
+  activo         Boolean @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  modulos       Modulo[]
+  examenes      Examen[]
+  inscripciones Inscripcion[]
+  credenciales  Credencial[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cursos")
+}
+
+model Modulo {
+  id            String      @id @default(uuid())
+  cursoId       String      @map("curso_id")
+  titulo        String
+  orden         Int
+  tipo          TipoModulo
+  contenidoHtml String?     @map("contenido_html") @db.Text
+  videoUrl      String?     @map("video_url")
+  
+  // Live class support
+  liveClassUrl  String?     @map("live_class_url") // Google Meet or Teams URL
+  liveClassDate DateTime?   @map("live_class_date") // Fecha programada
+  liveClassPlatform String? @map("live_class_platform") // "google_meet" o "teams"
+  
+  curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  preguntas        Pregunta[]
+  tareasPracticas  TareaPractica[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("modulos")
+}
+
+model Pregunta {
+  id                 String @id @default(uuid())
+  moduloId           String @map("modulo_id")
+  pregunta           String
+  opciones           Json // Array de strings
+  respuestaCorrecta  Int    @map("respuesta_correcta") // Index de la opción correcta
+  explicacion        String?
+  
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("preguntas")
+}
+
+model TareaPractica {
+  id           String  @id @default(uuid())
+  moduloId     String  @map("modulo_id")
+  descripcion  String
+  requiereFoto Boolean @default(false) @map("requiere_foto")
+  
+  modulo     Modulo      @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  evidencias Evidencia[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("tareas_practicas")
+}
+
+model Inscripcion {
+  id        String             @id @default(uuid())
+  alumnoId  String             @map("alumno_id")
+  cursoId   String             @map("curso_id")
+  progreso  Int                @default(0) // 0-100
+  estado    EstadoInscripcion  @default(NO_INICIADO)
+  inicioDate DateTime?         @map("inicio_date")
+  finDate    DateTime?         @map("fin_date")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([alumnoId, cursoId])
+  @@map("inscripciones")
+}
+
+model Examen {
+  id           String   @id @default(uuid())
+  alumnoId     String   @map("alumno_id")
+  cursoId      String   @map("curso_id")
+  respuestas   Json // { preguntaId: respuestaIndex }
+  calificacion Float?
+  aprobado     Boolean?
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  realizadoAt DateTime @default(now()) @map("realizado_at")
+
+  @@map("examenes")
+}
+
+model Evidencia {
+  id         String @id @default(uuid())
+  tareaId    String @map("tarea_id")
+  alumnoId   String @map("alumno_id")
+  fotoUrl    String @map("foto_url")
+  comentario String?
+  
+  tarea  TareaPractica @relation(fields: [tareaId], references: [id])
+  alumno User          @relation(fields: [alumnoId], references: [id])
+  
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  @@map("evidencias")
+}
+
+model Credencial {
+  id               String    @id @default(uuid())
+  numero           String    @unique // VMP-2026-XXXXX
+  alumnoId         String    @map("alumno_id")
+  cursoId          String    @map("curso_id")
+  pdfUrl           String    @map("pdf_url")
+  qrCodeUrl        String    @map("qr_code_url")
+  fechaEmision     DateTime  @default(now()) @map("fecha_emision")
+  fechaVencimiento DateTime? @map("fecha_vencimiento")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("credenciales")
+}
