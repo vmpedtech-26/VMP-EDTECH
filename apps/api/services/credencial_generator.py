@@ -30,7 +30,7 @@ def generate_qr_code(data: str) -> BytesIO:
     
     return buffer
 
-def create_credencial_pdf(credencial_data: dict) -> bytes:
+async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) -> bytes:
     """
     Create Credencial PDF in ID card format (85.60 x 53.98 mm)
     
@@ -43,6 +43,8 @@ def create_credencial_pdf(credencial_data: dict) -> bytes:
     - fecha_emision: str (DD/MM/YYYY)
     - fecha_vencimiento: str or None (DD/MM/YYYY)
     - qr_url: str
+    
+    foto_path: Optional path to student photo (if approved)
     """
     
     buffer = BytesIO()
@@ -65,6 +67,15 @@ def create_credencial_pdf(credencial_data: dict) -> bytes:
     c.drawString(5*mm, 48*mm, "VMP SERVICIOS")
     c.setFont("Helvetica", 6)
     c.drawString(5*mm, 45*mm, "Credencial Profesional")
+    
+    # Student photo (if available) - top right
+    if foto_path and os.path.exists(foto_path):
+        try:
+            # Draw photo in top-right corner (20mm x 25mm)
+            c.drawImage(foto_path, 60*mm, 28*mm, 20*mm, 25*mm, mask='auto')
+        except Exception as e:
+            print(f"Error loading photo: {e}")
+            # Continue without photo if there's an error
     
     # Nombre del alumno
     c.setFont("Helvetica-Bold", 12)

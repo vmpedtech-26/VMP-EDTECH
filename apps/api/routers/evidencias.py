@@ -4,7 +4,9 @@ from datetime import datetime
 from schemas.evidencias import (
     EvidenciaResponse,
     UploadEvidenciaResponse,
-    ListEvidenciasResponse
+    ListEvidenciasResponse,
+    EvaluarEvidenciaRequest,
+    EstadoEvidencia
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
@@ -123,7 +125,7 @@ async def obtener_evidencias_tarea(
 
 @router.delete("/{id}")
 async def eliminar_evidencia(id: str, current_user=Depends(get_current_user)):
-    """Eliminar una evidencia (solo propia)"""
+    """Eliminar una evidencia (solo propia y si está pendiente)"""
     
     # Buscar evidencia
     evidencia = await prisma.evidencia.find_unique(where={"id": id})
@@ -138,6 +140,13 @@ async def eliminar_evidencia(id: str, current_user=Depends(get_current_user)):
             detail="No tienes permiso para eliminar esta evidencia"
         )
     
+    # Solo permitir eliminar si está pendiente o rechazada
+    if evidencia.estado == "APROBADA":
+        raise HTTPException(
+            status_code=400,
+            detail="No puedes eliminar una evidencia que ya ha sido aprobada"
+        )
+    
     # Eliminar archivo físico
     delete_evidence_photo(evidencia.fotoUrl)
     
@@ -145,3 +154,84 @@ async def eliminar_evidencia(id: str, current_user=Depends(get_current_user)):
     await prisma.evidencia.delete(where={"id": id})
     
     return {"success": True, "message": "Evidencia eliminada exitosamente"}
+
+
+# ============= ENDPOINTS INSTRUCTOR =============
+
+@router.get("/revision", response_model=ListEvidenciasResponse)
+async def listar_evidencias_pendientes(current_user=Depends(get_current_user)):
+    """Listar evidencias que requieren revisión (Solo para INSTRUCTORES)"""
+    
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
+    
+    # Filtro opcional: Solo mostrar alumnos de la misma empresa que el instructor
+    where_clause = {"estado": "PENDIENTE"}
+    if current_user.rol == "INSTRUCTOR" and current_user.empresaId:
+        where_clause["alumno"] = {"empresaId": current_user.empresaId}
+        
+    evidencias = await prisma.evidencia.find_many(
+        where=where_clause,
+        include={"alumno": True, "tarea": {"include": {"modulo": {"include": {"curso": True}}}}},
+        order={"uploadedAt": "asc"}
+    )
+    
+    evidencias_response = [
+        EvidenciaResponse(
+            id=e.id,
+            tareaId=e.tareaId,
+            alumnoId=e.alumnoId,
+            fotoUrl=e.fotoUrl,
+            comentario=e.comentario,
+            estado=e.estado,
+            feedback=e.feedback,
+            evaluadorId=e.evaluadorId,
+            uploadedAt=e.uploadedAt.isoformat()
+        )
+        for e in evidencias
+    ]
+    
+    return ListEvidenciasResponse(
+        evidencias=evidencias_response,
+        total=len(evidencias_response)
+    )
+
+
+@router.put("/{id}/evaluar", response_model=EvidenciaResponse)
+async def evaluar_evidencia(
+    id: str,
+    data: EvaluarEvidenciaRequest,
+    current_user=Depends(get_current_user)
+):
+    """Aprobar o rechazar una evidencia (Solo para INSTRUCTORES)"""
+    
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
+    
+    # Buscar evidencia
+    evidencia = await prisma.evidencia.find_unique(where={"id": id})
+    
+    if not evidencia:
+        raise HTTPException(status_code=404, detail="Evidencia no encontrada")
+    
+    # Actualizar estado
+    updated = await prisma.evidencia.update(
+        where={"id": id},
+        data={
+            "estado": data.estado,
+            "feedback": data.feedback,
+            "evaluadorId": current_user.id
+        }
+    )
+    
+    return EvidenciaResponse(
+        id=updated.id,
+        tareaId=updated.tareaId,
+        alumnoId=updated.alumnoId,
+        fotoUrl=updated.fotoUrl,
+        comentario=updated.comentario,
+        estado=updated.estado,
+        feedback=updated.feedback,
+        evaluadorId=updated.evaluadorId,
+        uploadedAt=updated.uploadedAt.isoformat()
+    )

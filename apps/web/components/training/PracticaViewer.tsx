@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Camera, Upload, CheckCircle2, FileText, Loader2, Info } from 'lucide-react';
-import { TareaPractica } from '@/types/training';
+import { Camera, Upload, CheckCircle2, FileText, Loader2, Info, Clock, AlertCircle } from 'lucide-react';
+import { TareaPractica, Evidencia } from '@/types/training';
 import { evidenciasApi } from '@/lib/api/evidencias';
 
 interface PracticaViewerProps {
@@ -15,7 +15,33 @@ interface PracticaViewerProps {
 export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
     const [submitting, setSubmitting] = useState(false);
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
-    const [uploaded, setUploaded] = useState<Record<string, string>>({}); // Almacena URL de la foto
+    const [evidencias, setEvidencias] = useState<Record<string, Evidencia>>({});
+    const [isLoading, setIsLoading] = useState(true);
+
+    React.useEffect(() => {
+        const fetchInitialEvidencias = async () => {
+            try {
+                // Fetch evidences for each task
+                const results = await Promise.all(
+                    tareas.map(t => evidenciasApi.obtenerEvidencias(t.id))
+                );
+
+                const newEvidencias: Record<string, Evidencia> = {};
+                tareas.forEach((t, i) => {
+                    if (results[i] && results[i].length > 0) {
+                        newEvidencias[t.id] = results[i][0]; // Take most recent
+                    }
+                });
+                setEvidencias(newEvidencias);
+            } catch (error) {
+                console.error('Error fetching initial evidences:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchInitialEvidencias();
+    }, [tareas]);
 
     const handleFileChange = async (tareaId: string, event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -25,7 +51,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
         try {
             const res = await evidenciasApi.uploadEvidencia(file, tareaId);
             if (res.success) {
-                setUploaded({ ...uploaded, [tareaId]: res.evidencia.fotoUrl });
+                setEvidencias({ ...evidencias, [tareaId]: res.evidencia });
             }
         } catch (error) {
             console.error('Error uploading evidence:', error);
@@ -35,7 +61,8 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
         }
     };
 
-    const isAllUploaded = tareas.every(t => uploaded[t.id]);
+    const isAllApproved = tareas.every(t => evidencias[t.id]?.estado === 'APROBADA');
+    const isAllUploaded = tareas.every(t => evidencias[t.id]);
 
     const handleSubmit = async () => {
         setSubmitting(true);
@@ -77,14 +104,45 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                 </p>
                             </div>
 
-                            <div className="shrink-0">
-                                {uploaded[tarea.id] ? (
-                                    <div className="flex flex-col items-center">
-                                        <div className="bg-success/10 rounded-lg p-2 mb-2">
-                                            <CheckCircle2 className="h-10 w-10 text-success" />
-                                        </div>
-                                        <span className="text-xs font-bold text-success">Evidencia subida</span>
-                                    </div>
+                            <div className="shrink-0 flex flex-col items-center gap-2">
+                                {evidencias[tarea.id] ? (
+                                    <>
+                                        {evidencias[tarea.id].estado === 'PENDIENTE' && (
+                                            <div className="flex flex-col items-center">
+                                                <div className="bg-warning/10 rounded-xl p-3 mb-2 animate-pulse">
+                                                    <Clock className="h-8 w-8 text-warning" />
+                                                </div>
+                                                <span className="text-[10px] font-bold text-warning uppercase">En revisión</span>
+                                            </div>
+                                        )}
+                                        {evidencias[tarea.id].estado === 'APROBADA' && (
+                                            <div className="flex flex-col items-center">
+                                                <div className="bg-success/10 rounded-xl p-3 mb-2">
+                                                    <CheckCircle2 className="h-8 w-8 text-success" />
+                                                </div>
+                                                <span className="text-[10px] font-bold text-success uppercase">Aprobada</span>
+                                            </div>
+                                        )}
+                                        {evidencias[tarea.id].estado === 'RECHAZADA' && (
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    id={`file-${tarea.id}`}
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleFileChange(tarea.id, e)}
+                                                    disabled={uploading[tarea.id]}
+                                                />
+                                                <label
+                                                    htmlFor={`file-${tarea.id}`}
+                                                    className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-red-200 rounded-2xl bg-red-50/30 hover:bg-red-50 transition-all text-red-400 cursor-pointer"
+                                                >
+                                                    <Upload className="h-6 w-6 mb-2" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider">Reintento</span>
+                                                </label>
+                                            </div>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className="relative">
                                         <input
@@ -104,7 +162,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                             ) : (
                                                 <Camera className="h-8 w-8 mb-2" />
                                             )}
-                                            <span className="text-xs font-bold uppercase tracking-wider">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider">
                                                 {uploading[tarea.id] ? 'Subiendo...' : 'Subir Foto'}
                                             </span>
                                         </label>
@@ -112,6 +170,28 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                 )}
                             </div>
                         </div>
+                        {evidencias[tarea.id]?.estado === 'RECHAZADA' && (
+                            <div className="px-6 pb-6 mt-2">
+                                <div className="p-4 bg-red-50 rounded-2xl text-red-800 text-sm border border-red-100 flex gap-3">
+                                    <AlertCircle className="h-5 w-5 shrink-0" />
+                                    <div>
+                                        <p className="font-bold">Tarea Rechazada</p>
+                                        <p className="opacity-90">{evidencias[tarea.id].feedback || 'Por favor, sube la evidencia nuevamente con mejor calidad o siguiendo las instrucciones.'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {evidencias[tarea.id]?.estado === 'APROBADA' && evidencias[tarea.id]?.feedback && (
+                            <div className="px-6 pb-6 mt-2">
+                                <div className="p-4 bg-green-50 rounded-2xl text-green-800 text-sm border border-green-100 flex gap-3">
+                                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                                    <div>
+                                        <p className="font-bold">Feedback del Instructor</p>
+                                        <p className="opacity-90">{evidencias[tarea.id].feedback}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </Card>
                 ))}
             </div>
@@ -119,11 +199,14 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             <div className="flex justify-end pt-8">
                 <Button
                     size="lg"
-                    disabled={!isAllUploaded || submitting}
+                    disabled={!isAllApproved || submitting}
                     onClick={handleSubmit}
                     className="min-w-[250px] shadow-xl shadow-primary/20"
                 >
-                    {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Finalizar Módulo Práctico'}
+                    {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> :
+                        !isAllUploaded ? 'Sube todas las evidencias' :
+                            !isAllApproved ? 'Esperando aprobación...' :
+                                'Finalizar Módulo Práctico'}
                 </Button>
             </div>
         </div>

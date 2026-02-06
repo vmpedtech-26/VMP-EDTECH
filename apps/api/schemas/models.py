@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
+from core.security_utils import sanitize_data
 
 # ============= AUTH SCHEMAS =============
 
@@ -14,6 +15,12 @@ class UserRegister(BaseModel):
     dni: str
     telefono: str | None = None
     empresaId: str | None = None
+
+    @validator('nombre', 'apellido', 'dni', 'telefono', pre=True)
+    def sanitize_text(cls, v):
+        if isinstance(v, str):
+            return sanitize_data(v)
+        return v
 
 class TokenResponse(BaseModel):
     access_token: str

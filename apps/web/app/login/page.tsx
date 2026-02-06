@@ -23,6 +23,11 @@ export default function LoginPage() {
 
         try {
             const response = await api.post('/auth/login', formData);
+
+            // Set cookie for Next.js middleware
+            document.cookie = `vmp_token=${response.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+
+            // Also save to localStorage for the auth context
             login(response.access_token, response.user);
         } catch (error: any) {
             console.error('Login error:', error);
@@ -87,7 +92,7 @@ export default function LoginPage() {
                                 <span className="text-gray-700">Recordarme</span>
                             </label>
                             <Link
-                                href="/recuperar-password"
+                                href="/forgot-password"
                                 className="text-primary hover:underline"
                             >
                                 ¿Olvidaste tu contraseña?

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Credencial VMP</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 32px 24px;
+        }
+
+        .achievement-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .achievement-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 16px 0;
+        }
+
+        .footer {
+            background: #f9fafb;
+            padding: 24px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 ¡Felicitaciones!</h1>
+        </div>
+
+        <div class="content">
+            <p>Hola <strong>{{ user.nombre }} {{ user.apellido }}</strong>,</p>
+
+            <div class="achievement-box">
+                <div class="achievement-icon">🏆</div>
+                <h2 style="margin: 0; color: #92400e;">Has completado exitosamente</h2>
+                <p style="font-size: 20px; font-weight: 700; color: #78350f; margin: 8px 0;">
+                    {{ credencial.curso_nombre }}
+                </p>
+            </div>
+
+            <p>Tu credencial oficial VMP ha sido generada y está adjunta a este email en formato PDF.</p>
+
+            <div
+                style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <p style="margin: 0;"><strong>Número de Credencial:</strong> {{ credencial.numero }}</p>
+                <p style="margin: 8px 0 0 0;"><strong>Fecha de Emisión:</strong> {{ credencial.fecha_emision }}</p>
+                {% if credencial.fecha_vencimiento %}
+                <p style="margin: 8px 0 0 0;"><strong>Válida hasta:</strong> {{ credencial.fecha_vencimiento }}</p>
+                {% endif %}
+            </div>
+
+            <h3>¿Qué puedes hacer con tu credencial?</h3>
+            <ul style="line-height: 1.8;">
+                <li>✅ Presentarla como comprobante de capacitación</li>
+                <li>🔍 Validarla públicamente mediante el código QR</li>
+                <li>📄 Imprimirla para uso físico</li>
+                <li>💼 Agregarla a tu perfil profesional</li>
+            </ul>
+
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="{{ frontend_url }}/dashboard/credenciales" class="cta-button">
+                    Ver Mis Credenciales
+                </a>
+            </div>
+
+            <p style="margin-top: 24px;">¡Gracias por confiar en VMP Servicios para tu capacitación profesional!</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>VMP Servicios</strong> - Capacitación Profesional</p>
+            <p style="margin: 8px 0; font-size: 12px;">
+                Esta credencial es oficial y puede ser validada en nuestro sitio web.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

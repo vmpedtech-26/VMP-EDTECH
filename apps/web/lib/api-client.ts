@@ -1,9 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
 
-    let url = `${API_URL}${path}`;
+    let url = `${API_URL}/api${path}`;
     if (options.params) {
         const query = new URLSearchParams();
         Object.entries(options.params).forEach(([key, value]) => {

@@ -34,4 +34,22 @@ export const evidenciasApi = {
     async eliminarEvidencia(id: string): Promise<{ success: boolean; message: string }> {
         return api.delete(`/evidencias/${id}`);
     },
+
+    /**
+     * Listar evidencias pendientes de revisión (Instructor)
+     */
+    async listarRevisiones(): Promise<Evidencia[]> {
+        const response = await api.get('/evidencias/revision');
+        return response.evidencias;
+    },
+
+    /**
+     * Evaluar evidencia (Instructor)
+     */
+    async evaluarEvidencia(
+        id: string,
+        data: { estado: 'APROBADA' | 'RECHAZADA'; feedback?: string }
+    ): Promise<Evidencia> {
+        return api.put(`/evidencias/${id}/evaluar`, data);
+    },
 };

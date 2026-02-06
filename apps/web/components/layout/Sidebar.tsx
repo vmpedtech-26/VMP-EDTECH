@@ -10,15 +10,28 @@ import {
     Settings,
     LogOut,
     Menu,
-    X
+    X,
+    ChevronDown,
+    ChevronRight,
+    ClipboardCheck,
+    UserCog,
+    Sliders
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
 
 interface SidebarProps {
     userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR';
 }
 
-const menuItems = {
+interface MenuItem {
+    icon: any;
+    label: string;
+    href?: string;
+    submenu?: MenuItem[];
+}
+
+const menuItems: Record<string, MenuItem[]> = {
     ALUMNO: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
         { icon: BookOpen, label: 'Mis Cursos', href: '/dashboard/cursos' },
@@ -35,17 +48,84 @@ const menuItems = {
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
     ],
     INSTRUCTOR: [
-        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-        { icon: Users, label: 'Mis Alumnos', href: '/dashboard/instructor/alumnos' },
-        { icon: BookOpen, label: 'Gestión de Cursos', href: '/dashboard/instructor/cursos' },
-        { icon: Award, label: 'Credenciales Emitidas', href: '/dashboard/instructor/credenciales' },
-        { icon: LayoutDashboard, label: 'Revisión de Tareas', href: '/dashboard/instructor/tareas' },
-        { icon: Settings, label: 'Mi Empresa', href: '/dashboard/instructor/config' },
+        { icon: LayoutDashboard, label: 'Inicio', href: '/dashboard/instructor' },
+        {
+            icon: BookOpen,
+            label: 'Capacitaciones',
+            submenu: [
+                { icon: ClipboardCheck, label: 'Evaluaciones', href: '/dashboard/instructor/evaluaciones' },
+                { icon: Users, label: 'Participantes', href: '/dashboard/instructor/participantes' },
+                { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },
+            ]
+        },
     ],
 };
 
+function NavItem({ item, pathname, onNavigate, level = 0 }: {
+    item: MenuItem;
+    pathname: string;
+    onNavigate: () => void;
+    level?: number;
+}) {
+    const [isOpen, setIsOpen] = useState(true);
+    const Icon = item.icon;
+    const hasSubmenu = item.submenu && item.submenu.length > 0;
+    const isActive = item.href === pathname;
+
+    if (hasSubmenu) {
+        return (
+            <div>
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${level === 0 ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                >
+                    <div className="flex items-center space-x-3">
+                        <Icon className="h-5 w-5" />
+                        <span className="font-medium">{item.label}</span>
+                    </div>
+                    {isOpen ? (
+                        <ChevronDown className="h-4 w-4" />
+                    ) : (
+                        <ChevronRight className="h-4 w-4" />
+                    )}
+                </button>
+                {isOpen && (
+                    <div className="ml-4 mt-1 space-y-1">
+                        {item.submenu!.map((subItem) => (
+                            <NavItem
+                                key={subItem.href || subItem.label}
+                                item={subItem}
+                                pathname={pathname}
+                                onNavigate={onNavigate}
+                                level={level + 1}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    return (
+        <Link
+            href={item.href!}
+            onClick={onNavigate}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${level > 0 ? 'pl-8' : ''
+                } ${isActive
+                    ? 'bg-primary text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+        >
+            <Icon className="h-5 w-5" />
+            <span className="font-medium">{item.label}</span>
+        </Link>
+    );
+}
+
 export function Sidebar({ userRole }: SidebarProps) {
     const pathname = usePathname();
+    const { logout } = useAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const items = menuItems[userRole];
 
@@ -84,30 +164,22 @@ export function Sidebar({ userRole }: SidebarProps) {
 
                     {/* Navigation */}
                     <nav className="flex-1 p-4 space-y-2">
-                        {items.map((item) => {
-                            const Icon = item.icon;
-                            const isActive = pathname === item.href;
-
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-primary text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
-                                >
-                                    <Icon className="h-5 w-5" />
-                                    <span className="font-medium">{item.label}</span>
-                                </Link>
-                            );
-                        })}
+                        {items.map((item) => (
+                            <NavItem
+                                key={item.href || item.label}
+                                item={item}
+                                pathname={pathname}
+                                onNavigate={() => setMobileMenuOpen(false)}
+                            />
+                        ))}
                     </nav>
 
                     {/* Logout */}
                     <div className="p-4 border-t border-gray-200">
-                        <button className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors">
+                        <button
+                            onClick={logout}
+                            className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
                             <LogOut className="h-5 w-5" />
                             <span className="font-medium">Cerrar Sesión</span>
                         </button>
