@@ -55,6 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         localStorage.removeItem('vmp_token');
         localStorage.removeItem('vmp_user');
+        // Delete cookie
+        document.cookie = 'vmp_token=; path=/; max-age=0';
         setUser(null);
         router.push('/login');
     };

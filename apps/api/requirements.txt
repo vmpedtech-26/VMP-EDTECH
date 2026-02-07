@@ -16,6 +16,11 @@ slowapi==0.1.9
 bleach==6.1.0
 psutil>=5.9.0
 sentry-sdk[fastapi]
+<<<<<<< HEAD
 aiosmtplib==3.0.1
 jinja2==3.1.2
 requests==2.32.3
+=======
+
+
+>>>>>>> a54e506c7ce1c364cc1ebbc34f34a8e997dfeb6b

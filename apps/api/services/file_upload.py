@@ -5,16 +5,16 @@ from fastapi import UploadFile, HTTPException
 from typing import Optional
 
 # Configuración
-UPLOAD_DIR = Path("uploads/evidencias")
+UPLOAD_DIR = Path("uploads/credenciales")
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 # Crear directorio si no existe
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-async def save_evidence_photo(file: UploadFile) -> str:
+async def save_credencial_photo(file: UploadFile) -> str:
     """
-    Guardar foto de evidencia y retornar URL
+    Guardar foto de credencial y retornar URL
     
     Args:
         file: Archivo subido desde FastAPI
@@ -52,12 +52,12 @@ async def save_evidence_photo(file: UploadFile) -> str:
     
     # Retornar URL (ajustar según tu configuración de static files)
     # Por ahora retornamos path relativo
-    return f"/uploads/evidencias/{unique_filename}"
+    return f"/uploads/credenciales/{unique_filename}"
 
 
-def delete_evidence_photo(file_url: str) -> bool:
+def delete_credencial_photo(file_url: str) -> bool:
     """
-    Eliminar foto de evidencia del sistema de archivos
+    Eliminar foto de credencial del sistema de archivos
     
     Args:
         file_url: URL de la foto a eliminar

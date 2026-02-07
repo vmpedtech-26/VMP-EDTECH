@@ -26,6 +26,12 @@ enum TipoModulo {
   PRACTICA
 }
 
+enum EstadoEvidencia {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+}
+
 enum EstadoInscripcion {
   NO_INICIADO
   EN_PROGRESO
@@ -53,11 +59,14 @@ model User {
   inscripciones Inscripcion[]
   examenes      Examen[]
   credenciales  Credencial[]
-  evidencias    Evidencia[]
+  fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
+  fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([rol])
+  @@index([empresaId])
   @@map("users")
 }
 
@@ -117,7 +126,6 @@ model Modulo {
   
   curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   preguntas        Pregunta[]
-  tareasPracticas  TareaPractica[]
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -140,19 +148,7 @@ model Pregunta {
   @@map("preguntas")
 }
 
-model TareaPractica {
-  id           String  @id @default(uuid())
-  moduloId     String  @map("modulo_id")
-  descripcion  String
-  requiereFoto Boolean @default(false) @map("requiere_foto")
-  
-  modulo     Modulo      @relation(fields: [moduloId], references: [id], onDelete: Cascade)
-  evidencias Evidencia[]
-  
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("tareas_practicas")
-}
+// TareaPractica eliminado - ya no se usa
 
 model Inscripcion {
   id        String             @id @default(uuid())
@@ -170,6 +166,9 @@ model Inscripcion {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([alumnoId, cursoId])
+  @@index([estado])
+  @@index([alumnoId])
+  @@index([cursoId])
   @@map("inscripciones")
 }
 
@@ -186,22 +185,27 @@ model Examen {
   
   realizadoAt DateTime @default(now()) @map("realizado_at")
 
+  @@index([alumnoId])
+  @@index([cursoId])
   @@map("examenes")
 }
 
-model Evidencia {
-  id         String @id @default(uuid())
-  tareaId    String @map("tarea_id")
-  alumnoId   String @map("alumno_id")
-  fotoUrl    String @map("foto_url")
-  comentario String?
-  
-  tarea  TareaPractica @relation(fields: [tareaId], references: [id])
-  alumno User          @relation(fields: [alumnoId], references: [id])
-  
-  uploadedAt DateTime @default(now()) @map("uploaded_at")
+model FotoCredencial {
+  id          String          @id @default(uuid())
+  alumnoId    String          @unique @map("alumno_id") // Solo una foto por alumno
+  fotoUrl     String          @map("foto_url")
+  comentario  String?         // Comentario del instructor al subir
+  estado      EstadoEvidencia @default(PENDIENTE)
+  feedback    String?         // Feedback si se rechaza
+  evaluadorId String?         @map("evaluador_id") // Instructor que subió/aprobó
 
-  @@map("evidencias")
+  alumno    User  @relation("AlumnoFoto", fields: [alumnoId], references: [id], onDelete: Cascade)
+  evaluador User? @relation("EvaluadorFoto", fields: [evaluadorId], references: [id])
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("fotos_credencial")
 }
 
 model Credencial {
@@ -219,5 +223,61 @@ model Credencial {
   
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@index([numero])
   @@map("credenciales")
+}
+
+// ============= COTIZACIONES (LEADS) =============
+
+model Cotizacion {
+  id               Int      @id @default(autoincrement())
+  
+  // Datos de contacto
+  empresa          String
+  cuit             String?
+  nombre           String
+  email            String
+  telefono         String
+  comentarios      String?  @db.Text
+  
+  // Datos del cotizador
+  quantity         Int      // Cantidad de conductores
+  course           String   // defensivo, carga_pesada, 4x4, completo
+  modality         String   // online, presencial, mixto
+  totalPrice       Float    @map("total_price")
+  pricePerStudent  Float    @map("price_per_student")
+  discount         Int      // Porcentaje de descuento aplicado
+  
+  // Consentimientos
+  acceptMarketing  Boolean  @default(false) @map("accept_marketing")
+  acceptTerms      Boolean  @default(false) @map("accept_terms")
+  
+  // Estado del lead
+  status           String   @default("pending") // pending, contacted, converted, rejected
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+  @@map("cotizaciones")
+}
+
+// ============= PASSWORD RESET =============
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
 }

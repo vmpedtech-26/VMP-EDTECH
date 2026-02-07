@@ -121,7 +121,25 @@ export interface Evidencia {
     alumnoId: string;
     fotoUrl: string;
     comentario?: string;
+    estado: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
+    feedback?: string;
+    evaluadorId?: string;
     uploadedAt: string;
+    alumno?: {
+        nombre: string;
+        apellido: string;
+        dni: string;
+        email: string;
+    };
+    tarea?: {
+        descripcion: string;
+        modulo: {
+            titulo: string;
+            curso: {
+                nombre: string;
+            };
+        };
+    };
 }
 
 export interface UploadEvidenciaResponse {

@@ -5,8 +5,11 @@ from schemas.cursos import (
     CursoDetail, 
     ModuloDetail, 
     ModuloSummary,
+    ModuloDetailAdmin,
     CreateCursoRequest,
-    UpdateCursoRequest
+    UpdateCursoRequest,
+    CreateModuloRequest,
+    UpdateModuloRequest
 )
 from auth.dependencies import get_current_user
 from core.database import prisma

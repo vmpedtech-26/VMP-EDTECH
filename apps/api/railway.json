@@ -5,8 +5,13 @@
         "buildCommand": "pip install -r requirements.txt && prisma generate"
     },
     "deploy": {
+<<<<<<< HEAD
         "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
         "healthcheckPath": "/health",
+=======
+        "startCommand": "/bin/sh -c \"prisma generate && uvicorn main:app --host 0.0.0.0 --port $PORT\"",
+        "healthcheckPath": "/",
+>>>>>>> a54e506c7ce1c364cc1ebbc34f34a8e997dfeb6b
         "healthcheckTimeout": 100,
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10

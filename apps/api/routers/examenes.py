@@ -18,121 +18,100 @@ from services.credencial_generator import (
 
 router = APIRouter()
 
-@router.post("/generar-credencial", response_model=CredencialResponse)
-async def generar_credencial(
-    data: GenerateCredencialRequest,
-    current_user = Depends(get_current_user)
+    
+@router.post("/generar-credencial/{inscripcionId}")
+async def generate_credencial(
+    inscripcionId: str,
+    current_user=Depends(get_current_user)
 ):
-    """
-    Generar credencial profesional al completar un curso
-    Solo admins pueden generar credenciales para otros usuarios
-    Alumnos solo pueden generar para sí mismos si tienen inscripción aprobada
-    """
+    """Generate credential PDF for completed course"""
     
-    # Verificar permisos
-    if current_user.rol == "ALUMNO" and current_user.id != data.alumnoId:
-        raise HTTPException(
-            status_code=403,
-            detail="Not enough permissions"
-        )
-    
-    # Verificar que el alumno existe
-    alumno = await prisma.user.find_unique(where={"id": data.alumnoId})
-    if not alumno:
-        raise HTTPException(status_code=404, detail="Student not found")
-    
-    # Verificar que el curso existe
-    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
-    if not curso:
-        raise HTTPException(status_code=404, detail="Course not found")
-    
-    # Verificar que el curso fue completado y aprobado
-    inscripcion = await prisma.inscripcion.find_first(
-        where={
-            "alumnoId": data.alumnoId,
-            "cursoId": data.cursoId,
-            "estado": "APROBADO"
+    # Get inscripcion with related data
+    inscripcion = await prisma.inscripcion.find_unique(
+        where={"id": inscripcionId},
+        include={
+            "alumno": True,
+            "curso": True
         }
     )
     
     if not inscripcion:
-        raise HTTPException(
-            status_code=400,
-            detail="Course not completed or not approved"
-        )
+        raise HTTPException(status_code=404, detail="Inscripción no encontrada")
     
-    # Verificar si ya existe una credencial para este curso
-    existing_credencial = await prisma.credencial.find_first(
+    # Verify user has permission
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        if current_user.id != inscripcion.alumnoId:
+            raise HTTPException(status_code=403, detail="No autorizado")
+    
+    # Check if course is completed
+    if not inscripcion.completado:
+        raise HTTPException(status_code=400, detail="El curso no está completado")
+    
+    # Check if credential already exists
+    existing = await prisma.credencial.find_first(
         where={
-            "alumnoId": data.alumnoId,
-            "cursoId": data.cursoId
+            "alumnoId": inscripcion.alumnoId,
+            "cursoId": inscripcion.cursoId
         }
     )
     
-    if existing_credencial:
-        raise HTTPException(
-            status_code=400,
-            detail="Credential already exists for this course"
-        )
+    if existing:
+        return {"message": "Credencial ya existe", "pdfUrl": existing.pdfUrl}
     
-    # Generar número único
-    year = datetime.now().year
-    # Contar credenciales del año actual para sequential
-    count = await prisma.credencial.count(
-        where={"numero": {"startswith": f"VMP-{year}-"}}
+    # Get approved photo for student
+    foto_credencial = await prisma.fotocredencial.find_unique(
+        where={
+            "alumnoId": inscripcion.alumnoId,
+            "estado": "APROBADA"
+        }
     )
+    
+    # Prepare foto path if exists
+    foto_path = None
+    if foto_credencial:
+        # Convert URL to file path
+        # Assuming fotoUrl is like "/uploads/credenciales/filename.jpg"
+        foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
+    
+    # Generate credential number
+    year = datetime.now().year
+    count = await prisma.credencial.count()
     numero_credencial = generate_credencial_number(year, count + 1)
     
-    # Calcular fecha de vencimiento
-    fecha_emision = datetime.now()
-    fecha_vencimiento = None
-    if curso.vigenciaMeses:
-        fecha_vencimiento = fecha_emision + relativedelta(months=curso.vigenciaMeses)
-    
-    # URL de verificación pública
-    qr_url = f"https://vmpservicios.com/verify/{numero_credencial}"
-    
-    # Generar PDF
+    # Prepare PDF data
     pdf_data = {
         "numero_credencial": numero_credencial,
-        "alumno_nombre": f"{alumno.nombre} {alumno.apellido}".upper(),
-        "dni": alumno.dni,
-        "curso_nombre": curso.nombre,
-        "curso_codigo": curso.codigo,
-        "fecha_emision": fecha_emision.strftime("%d/%m/%Y"),
-        "fecha_vencimiento": fecha_vencimiento.strftime("%d/%m/%Y") if fecha_vencimiento else None,
-        "qr_url": qr_url
+        "alumno_nombre": f"{inscripcion.alumno.nombre} {inscripcion.alumno.apellido}",
+        "dni": inscripcion.alumno.dni,
+        "curso_nombre": inscripcion.curso.nombre,
+        "curso_codigo": inscripcion.curso.id[:8].upper(),
+        "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
+        "fecha_vencimiento": None,  # Could add expiration logic
+        "qr_url": f"{settings.FRONTEND_URL}/verificar/{numero_credencial}"
     }
     
-    pdf_bytes = create_credencial_pdf(pdf_data)
+    # Generate PDF with photo
+    pdf_bytes = await create_credencial_pdf(pdf_data, foto_path)
+    filename = f"{numero_credencial}.pdf"
+    pdf_url = await save_credencial_pdf(pdf_bytes, filename)
     
-    # Guardar PDF
-    pdf_filename = f"{numero_credencial}.pdf"
-    pdf_url = await save_credencial_pdf(pdf_bytes, pdf_filename)
-    
-    # Crear registro en base de datos
+    # Create credential record
     credencial = await prisma.credencial.create(
         data={
-            "numero": numero_credencial,
-            "alumnoId": data.alumnoId,
-            "cursoId": data.cursoId,
+            "alumnoId": inscripcion.alumnoId,
+            "cursoId": inscripcion.cursoId,
+            "codigoVerifica": numero_credencial,
             "pdfUrl": pdf_url,
-            "qrCodeUrl": qr_url,
-            "fechaEmision": fecha_emision,
-            "fechaVencimiento": fecha_vencimiento
-        },
-        include={"curso": True}
+            "fechaEmision": datetime.now(),
+            "fechaVenc": datetime.now() + timedelta(days=365*2)  # 2 years validity
+        }
     )
     
-    return CredencialResponse(
-        id=credencial.id,
-        numero=credencial.numero,
-        pdfUrl=credencial.pdfUrl,
-        qrCodeUrl=credencial.qrCodeUrl,
-        fechaEmision=credencial.fechaEmision.isoformat(),
-        fechaVencimiento=credencial.fechaVencimiento.isoformat() if credencial.fechaVencimiento else None,
-        curso=credencial.curso
-    )
+    return {
+        "message": "Credencial generada exitosamente",
+        "credencial": credencial,
+        "pdfUrl": pdf_url
+    }
 
 @router.get("/mis-credenciales", response_model=list[CredencialResponse])
 async def get_my_credenciales(current_user = Depends(get_current_user)):

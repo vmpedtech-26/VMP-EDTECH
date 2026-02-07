@@ -7,7 +7,8 @@ import {
     Award,
     TrendingUp,
     Building2,
-    ArrowRight
+    ArrowRight,
+    Calculator
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -90,6 +91,40 @@ export default function SuperDashboardPage() {
                                 </div>
                             </Card>
                         </Link>
+
+                        <Link href="/dashboard/super/alumnos">
+                            <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                                            <Users className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-gray-900">Gestionar Alumnos</h4>
+                                            <p className="text-xs text-gray-500">Ver y administrar estudiantes</p>
+                                        </div>
+                                    </div>
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
+                                </div>
+                            </Card>
+                        </Link>
+
+                        <Link href="/dashboard/super/cotizaciones">
+                            <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-600 group-hover:bg-yellow-600 group-hover:text-white transition-all">
+                                            <Calculator className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-gray-900">Ver Cotizaciones</h4>
+                                            <p className="text-xs text-gray-500">Leads desde landing page</p>
+                                        </div>
+                                    </div>
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
+                                </div>
+                            </Card>
+                        </Link>
                     </div>
 
                     <Card className="p-6 border-none shadow-sm ring-1 ring-emerald-100 bg-emerald-50/30">
@@ -128,7 +163,7 @@ export default function SuperDashboardPage() {
                             </div>
                         ))}
                         <div className="p-4">
-                            <Button variant="link" size="sm" className="w-full text-gray-400 hover:text-primary transition-colors">
+                            <Button variant="ghost" size="sm" className="w-full text-gray-400 hover:text-primary transition-colors">
                                 Ver todo el historial
                             </Button>
                         </div>

@@ -60,7 +60,8 @@ async def calcular_progreso_curso(alumno_id: str, curso_id: str) -> int:
                     evidencia = await prisma.evidencia.find_first(
                         where={
                             "tareaId": tarea.id,
-                            "alumnoId": alumno_id
+                            "alumnoId": alumno_id,
+                            "estado": "APROBADA"
                         }
                     )
                     if not evidencia:
@@ -138,10 +139,11 @@ async def obtener_proxima_actividad(alumno_id: str, curso_id: str) -> Optional[s
                     evidencia = await prisma.evidencia.find_first(
                         where={
                             "tareaId": tarea.id,
-                            "alumnoId": alumno_id
+                            "alumnoId": alumno_id,
+                            "estado": "APROBADA"
                         }
                     )
                     if not evidencia:
-                        return f"Práctica: {modulo.titulo}"
+                        return f"Práctica (Pendiente Aprobación): {modulo.titulo}"
     
     return None
