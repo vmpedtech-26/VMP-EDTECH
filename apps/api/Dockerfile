@@ -28,8 +28,4 @@ RUN prisma generate
 EXPOSE 8000
 
 # Run the application
-<<<<<<< HEAD
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-=======
 CMD ["sh", "-c", "prisma generate && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
->>>>>>> a54e506c7ce1c364cc1ebbc34f34a8e997dfeb6b

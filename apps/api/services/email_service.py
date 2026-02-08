@@ -57,25 +57,18 @@ class EmailService:
             html_part = MIMEText(html_content, "html")
             message.attach(html_part)
             
-<<<<<<< HEAD
             # Determine TLS settings based on port
             use_tls = self.smtp_port == 465
-            start_tls = self.smtp_port == 587
-            
-=======
->>>>>>> a54e506c7ce1c364cc1ebbc34f34a8e997dfeb6b
+            start_tls = self.smtp_port != 465
+
             await aiosmtplib.send(
                 message,
                 hostname=self.smtp_host,
                 port=self.smtp_port,
                 username=self.smtp_user,
                 password=self.smtp_password,
-<<<<<<< HEAD
                 use_tls=use_tls,
                 start_tls=start_tls,
-=======
-                start_tls=True,
->>>>>>> a54e506c7ce1c364cc1ebbc34f34a8e997dfeb6b
             )
             
             logger.info(f"Email sent successfully to {to_email}")
