@@ -1,7 +1,7 @@
 # VMP Servicios
 
-**Versión:** 1.0.0  
-**Última actualización:** 02/02/2026
+**Versión:** 1.0.1  
+**Última actualización:** 10/02/2026
 
 Plataforma integral de capacitación profesional con sistema de certificación digital, landing page con cotizador integrado, y panel administrativo completo.
 
