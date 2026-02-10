@@ -17,8 +17,8 @@ if [ ! -d ".git" ]; then
     git branch -M main
 fi
 
-# 3. Configurar Remote (Usando el repo mencionado en scripts previos)
-REMOTE_URL="https://github.com/MNEerty99/VMP---EDTECH.git"
+# 3. Configurar Remote
+REMOTE_URL="https://github.com/vmpedtech-26/VMP-EDTECH.git"
 echo "🔗 Configurando remote: $REMOTE_URL"
 git remote remove origin 2>/dev/null
 git remote add origin "$REMOTE_URL"
