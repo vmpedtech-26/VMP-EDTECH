@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Cotización</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 32px 24px;
+        }
+        .badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .info-grid {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .info-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .price-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 24px 0;
+        }
+        .price-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        .price-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        .footer {
+            background: #f9fafb;
+            padding: 24px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Nueva Cotización Recibida</h1>
+        </div>
+        
+        <div class="content">
+            <div class="badge">Pendiente de Contacto</div>
+            
+            <h2 style="margin-top: 0;">{{ cotizacion.empresa }}</h2>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Contacto</div>
+                    <div class="info-value">{{ cotizacion.nombre }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ cotizacion.email }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Teléfono</div>
+                    <div class="info-value">{{ cotizacion.telefono }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Conductores</div>
+                    <div class="info-value">{{ cotizacion.quantity }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Curso</div>
+                    <div class="info-value">
+                        {% if cotizacion.course == 'defensivo' %}Manejo Defensivo
+                        {% elif cotizacion.course == 'carga_pesada' %}Carga Pesada
+                        {% elif cotizacion.course == '4x4' %}4x4 Profesional
+                        {% else %}Paquete Completo{% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Modalidad</div>
+                    <div class="info-value">
+                        {% if cotizacion.modality == 'online' %}100% Online
+                        {% elif cotizacion.modality == 'presencial' %}Presencial
+                        {% else %}Mixto{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="price-box">
+                <div class="price-label">Valor Total de la Cotización</div>
+                <div class="price-value">${{ "{:,.0f}".format(cotizacion.totalPrice) }}</div>
+                <div style="font-size: 14px; margin-top: 8px; opacity: 0.9;">
+                    ${{ "{:,.0f}".format(cotizacion.pricePerStudent) }} por conductor
+                </div>
+            </div>
+            
+            {% if cotizacion.comentarios %}
+            <div class="info-item">
+                <div class="info-label">Comentarios</div>
+                <div class="info-value">{{ cotizacion.comentarios }}</div>
+            </div>
+            {% endif %}
+            
+            <div style="text-align: center; margin-top: 32px;">
+                <a href="{{ admin_url }}/dashboard/super/cotizaciones" class="cta-button">
+                    Ver en Panel Admin
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>VMP Servicios</strong> - Capacitación Profesional</p>
+            <p style="margin: 8px 0;">Este es un email automático. No responder.</p>
+        </div>
+    </div>
+</body>
+</html>

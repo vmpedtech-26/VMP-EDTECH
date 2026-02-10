@@ -1,0 +1,283 @@
+// VMP Servicios - Database Schema
+// Plataforma de capacitación con certificaciones profesionales
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============= ENUMS =============
+
+enum UserRole {
+  SUPER_ADMIN
+  INSTRUCTOR
+  ALUMNO
+}
+
+enum TipoModulo {
+  TEORIA
+  QUIZ
+  PRACTICA
+}
+
+enum EstadoEvidencia {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+}
+
+enum EstadoInscripcion {
+  NO_INICIADO
+  EN_PROGRESO
+  COMPLETADO
+  APROBADO
+  REPROBADO
+}
+
+// ============= MODELOS =============
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  nombre       String
+  apellido     String
+  dni          String   @unique
+  telefono     String?
+  rol          UserRole @default(ALUMNO)
+  empresaId    String?  @map("empresa_id")
+  avatar       String?
+  activo       Boolean  @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  inscripciones Inscripcion[]
+  examenes      Examen[]
+  credenciales  Credencial[]
+  fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
+  fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([rol])
+  @@index([empresaId])
+  @@map("users")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  nombre    String
+  cuit      String   @unique
+  direccion String?
+  telefono  String?
+  email     String
+  activa    Boolean  @default(true)
+  
+  usuarios User[]
+  cursos   Curso[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("companies")
+}
+
+model Curso {
+  id             String  @id @default(uuid())
+  nombre         String
+  descripcion    String
+  codigo         String  @unique
+  duracionHoras  Int     @map("duracion_horas")
+  vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
+  empresaId      String? @map("empresa_id")
+  activo         Boolean @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  modulos       Modulo[]
+  examenes      Examen[]
+  inscripciones Inscripcion[]
+  credenciales  Credencial[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cursos")
+}
+
+model Modulo {
+  id            String      @id @default(uuid())
+  cursoId       String      @map("curso_id")
+  titulo        String
+  orden         Int
+  tipo          TipoModulo
+  contenidoHtml String?     @map("contenido_html") @db.Text
+  videoUrl      String?     @map("video_url")
+  
+  // Live class support
+  liveClassUrl  String?     @map("live_class_url") // Google Meet or Teams URL
+  liveClassDate DateTime?   @map("live_class_date") // Fecha programada
+  liveClassPlatform String? @map("live_class_platform") // "google_meet" o "teams"
+  
+  curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  preguntas        Pregunta[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("modulos")
+}
+
+model Pregunta {
+  id                 String @id @default(uuid())
+  moduloId           String @map("modulo_id")
+  pregunta           String
+  opciones           Json // Array de strings
+  respuestaCorrecta  Int    @map("respuesta_correcta") // Index de la opción correcta
+  explicacion        String?
+  
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("preguntas")
+}
+
+// TareaPractica eliminado - ya no se usa
+
+model Inscripcion {
+  id        String             @id @default(uuid())
+  alumnoId  String             @map("alumno_id")
+  cursoId   String             @map("curso_id")
+  progreso  Int                @default(0) // 0-100
+  estado    EstadoInscripcion  @default(NO_INICIADO)
+  inicioDate DateTime?         @map("inicio_date")
+  finDate    DateTime?         @map("fin_date")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([alumnoId, cursoId])
+  @@index([estado])
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("inscripciones")
+}
+
+model Examen {
+  id           String   @id @default(uuid())
+  alumnoId     String   @map("alumno_id")
+  cursoId      String   @map("curso_id")
+  respuestas   Json // { preguntaId: respuestaIndex }
+  calificacion Float?
+  aprobado     Boolean?
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  realizadoAt DateTime @default(now()) @map("realizado_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("examenes")
+}
+
+model FotoCredencial {
+  id          String          @id @default(uuid())
+  alumnoId    String          @unique @map("alumno_id") // Solo una foto por alumno
+  fotoUrl     String          @map("foto_url")
+  comentario  String?         // Comentario del instructor al subir
+  estado      EstadoEvidencia @default(PENDIENTE)
+  feedback    String?         // Feedback si se rechaza
+  evaluadorId String?         @map("evaluador_id") // Instructor que subió/aprobó
+
+  alumno    User  @relation("AlumnoFoto", fields: [alumnoId], references: [id], onDelete: Cascade)
+  evaluador User? @relation("EvaluadorFoto", fields: [evaluadorId], references: [id])
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("fotos_credencial")
+}
+
+model Credencial {
+  id               String    @id @default(uuid())
+  numero           String    @unique // VMP-2026-XXXXX
+  alumnoId         String    @map("alumno_id")
+  cursoId          String    @map("curso_id")
+  pdfUrl           String    @map("pdf_url")
+  qrCodeUrl        String    @map("qr_code_url")
+  fechaEmision     DateTime  @default(now()) @map("fecha_emision")
+  fechaVencimiento DateTime? @map("fecha_vencimiento")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@index([numero])
+  @@map("credenciales")
+}
+
+// ============= COTIZACIONES (LEADS) =============
+
+model Cotizacion {
+  id               Int      @id @default(autoincrement())
+  
+  // Datos de contacto
+  empresa          String
+  cuit             String?
+  nombre           String
+  email            String
+  telefono         String
+  comentarios      String?  @db.Text
+  
+  // Datos del cotizador
+  quantity         Int      // Cantidad de conductores
+  course           String   // defensivo, carga_pesada, 4x4, completo
+  modality         String   // online, presencial, mixto
+  totalPrice       Float    @map("total_price")
+  pricePerStudent  Float    @map("price_per_student")
+  discount         Int      // Porcentaje de descuento aplicado
+  
+  // Consentimientos
+  acceptMarketing  Boolean  @default(false) @map("accept_marketing")
+  acceptTerms      Boolean  @default(false) @map("accept_terms")
+  
+  // Estado del lead
+  status           String   @default("pending") // pending, contacted, converted, rejected
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+  @@map("cotizaciones")
+}
+
+// ============= PASSWORD RESET =============
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
+}

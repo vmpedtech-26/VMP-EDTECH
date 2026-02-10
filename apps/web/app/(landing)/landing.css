@@ -1,0 +1,161 @@
+/* VMP Landing Page Custom Styles */
+
+:root {
+  /* Colores Primarios */
+  --azul-petroleo: #0A192F;
+  --amarillo-vial: #FFD700;
+
+  /* Colores Secundarios */
+  --gris-asfalto: #2D3748;
+  --blanco: #FFFFFF;
+  --gris-claro: #F7FAFC;
+
+  /* Colores de Acento */
+  --verde-aprobado: #48BB78;
+  --rojo-alerta: #F56565;
+  --naranja-advertencia: #ED8936;
+}
+
+/* Tipografía */
+.font-heading {
+  font-family: var(--font-roboto-condensed), sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Utilidades personalizadas */
+.text-azul-petroleo {
+  color: var(--azul-petroleo);
+}
+
+.text-amarillo-vial {
+  color: var(--amarillo-vial);
+}
+
+.bg-azul-petroleo {
+  background-color: var(--azul-petroleo);
+}
+
+.bg-amarillo-vial {
+  background-color: var(--amarillo-vial);
+}
+
+.bg-gris-claro {
+  background-color: var(--gris-claro);
+}
+
+/* Botones personalizados */
+.btn-primary {
+  background-color: var(--amarillo-vial);
+  color: var(--azul-petroleo);
+  font-weight: 700;
+  padding: 1.125rem 2.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--amarillo-vial);
+  border: 2px solid var(--amarillo-vial);
+  font-weight: 700;
+  padding: 1.125rem 2.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--amarillo-vial);
+  color: var(--azul-petroleo);
+}
+
+/* Efectos de sombra */
+.shadow-vmp {
+  box-shadow: 0 4px 12px rgba(10, 25, 47, 0.08);
+}
+
+.shadow-vmp-lg {
+  box-shadow: 0 8px 24px rgba(10, 25, 47, 0.15);
+}
+
+/* Animaciones suaves */
+.transition-vmp {
+  transition: all 0.3s ease;
+}
+
+/* Hero gradient overlay */
+.hero-overlay {
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(10, 25, 47, 0.7) 100%);
+}
+
+/* Cards con hover effect */
+.card-vmp {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card-vmp:hover {
+  box-shadow: 0 8px 24px rgba(10, 25, 47, 0.12);
+  border-color: var(--amarillo-vial);
+  transform: translateY(-4px);
+}
+
+/* Estilos para contenido de blog (prose) */
+.prose h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--azul-petroleo);
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-roboto-condensed), sans-serif;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--azul-petroleo);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-roboto-condensed), sans-serif;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  color: #4A5568;
+}
+
+.prose ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+  color: #4A5568;
+}
+
+.prose strong {
+  color: var(--azul-petroleo);
+  font-weight: 700;
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--amarillo-vial);
+  background-color: var(--gris-claro);
+  padding: 1.5rem;
+  font-style: italic;
+  margin: 2rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
