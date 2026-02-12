@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from typing import List
 import os
 
+
 class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
@@ -20,25 +21,31 @@ class Settings(BaseSettings):
     def BACKEND_CORS_ORIGINS(self) -> List[str]:
         """
         Configuración de CORS según el entorno.
-        En desarrollo: permite localhost
-        En producción: solo dominios específicos
+        Soporta variable de entorno dinámica (CORS_ORIGINS="url1,url2")
         """
+        # 1. Soporte para variable de entorno dinámica (CORS_ORIGINS="url1,url2")
+        cors_origins_env = os.getenv("CORS_ORIGINS", "")
+        if cors_origins_env:
+            return [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+
+        # 2. Configuración por defecto basada en entorno
         if self.ENVIRONMENT == "production":
-            # Lista blanca de dominios permitidos en producción
             return [
+                "https://vmp-edtech-next-final.vercel.app",
+                "https://vmp-edtech-web.vercel.app",
+                "https://vmp-edtech.com",
+                "https://www.vmp-edtech.com",
+                "https://api.vmp-edtech.com",
                 "https://vmpservicios.com",
                 "https://www.vmpservicios.com",
-                "https://app.vmpservicios.com",
-                # Agregar dominios de producción aquí
             ]
-        else:
-            # Desarrollo: permite localhost en varios puertos
-            return [
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://127.0.0.1:3000",
-                "http://127.0.0.1:3001",
-            ]
+        
+        return [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+        ]
     
     # Storage
     STORAGE_PATH: str = "./storage"
@@ -57,5 +64,6 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
