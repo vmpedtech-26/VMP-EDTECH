@@ -17,16 +17,21 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"
     ENVIRONMENT: str = "development"
     
+    CORS_ORIGINS: str = ""
+
     @property
     def BACKEND_CORS_ORIGINS(self) -> List[str]:
         """
         Configuración de CORS según el entorno.
         Soporta variable de entorno dinámica (CORS_ORIGINS="url1,url2")
         """
-        # 1. Soporte para variable de entorno dinámica (CORS_ORIGINS="url1,url2")
+        # 1. Soporte para variable de entorno dinámica
         cors_origins_env = os.getenv("CORS_ORIGINS", "")
         if cors_origins_env:
             return [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+
+        if self.CORS_ORIGINS:
+            return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
         # 2. Configuración por defecto basada en entorno
         if self.ENVIRONMENT == "production":
@@ -38,6 +43,7 @@ class Settings(BaseSettings):
                 "https://api.vmp-edtech.com",
                 "https://vmpservicios.com",
                 "https://www.vmpservicios.com",
+                "https://vmp-servicios-production.up.railway.app",
             ]
         
         return [

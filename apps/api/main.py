@@ -60,7 +60,7 @@ app.add_middleware(
 
 
 
-from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed
+from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -74,6 +74,7 @@ app.include_router(cotizaciones.router, prefix="/api/cotizaciones", tags=["cotiz
 app.include_router(public.router, prefix="/api/public", tags=["public"])
 app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
 app.include_router(seed.router, prefix="/api/seed", tags=["seed"])
+app.include_router(admin_ops.router, prefix="/api/admin", tags=["admin"])
 
 
 

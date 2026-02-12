@@ -46,6 +46,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Users, label: 'Alumnos', href: '/dashboard/super/alumnos' },
         { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
         { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
+        { icon: Sliders, label: 'Centro de Control', href: '/dashboard/super/control' },
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
     ],
     INSTRUCTOR: [
