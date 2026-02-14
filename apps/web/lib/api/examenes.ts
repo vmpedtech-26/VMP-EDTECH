@@ -19,21 +19,24 @@ export const examenesApi = {
 
     /**
      * Obtener todas las credenciales del usuario actual
+     * (Usa el nuevo router de credenciales)
      */
     async misCredenciales(): Promise<Credencial[]> {
-        return api.get('/examenes/mis-credenciales');
+        return api.get('/credenciales/mis-credenciales');
     },
 
     /**
-     * Generar una credencial (normalmente automático, pero para manual admin o reintentos)
+     * Generar una credencial manualmente
+     * (Usa el nuevo router de credenciales)
      */
     async generarCredencial(
         alumnoId: string,
         cursoId: string
-    ): Promise<Credencial> {
-        return api.post('/examenes/generar-credencial', {
+    ): Promise<any> {
+        return api.post('/credenciales/generar', {
             alumnoId,
             cursoId,
         });
     },
 };
+

@@ -9,7 +9,6 @@ from schemas.inscripciones import (
     CompletarModuloRequest,
     CompletarModuloResponse
 )
-from schemas.models import GenerateCredencialRequest
 from auth.dependencies import get_current_user
 from core.database import prisma
 from services.progreso_calculator import (
@@ -17,6 +16,7 @@ from services.progreso_calculator import (
     verificar_curso_completado,
     obtener_proxima_actividad
 )
+from services.credential_service import generate_credential_for_student
 
 router = APIRouter()
 
@@ -204,31 +204,17 @@ async def completar_modulo(
             }
         )
         
-        # Generar Credencial automáticamente
-        # Verificar si ya existe
-        existing_credencial = await prisma.credencial.find_first(
-            where={
-                "alumnoId": current_user.id,
-                "cursoId": cursoId
-            }
-        )
-        
-        if not existing_credencial:
-            # Importar función de generación
-            from routers.examenes import generar_credencial
-            
-            try:
-                # Generar credencial
-                credencial_request = GenerateCredencialRequest(
-                    alumnoId=current_user.id,
-                    cursoId=cursoId
-                )
-                credencial = await generar_credencial(credencial_request, current_user)
+        # Generar Credencial automáticamente usando el servicio centralizado
+        try:
+            result = await generate_credential_for_student(
+                alumno_id=current_user.id,
+                curso_id=cursoId,
+            )
+            if not result.get("already_existed"):
                 credencial_generada = True
-                credencial_numero = credencial.numero
-            except Exception as e:
-                # Log error but don't fail the completion
-                print(f"Error generando credencial: {e}")
+                credencial_numero = result["credencial"].numero
+        except Exception as e:
+            print(f"[CREDENCIAL AUTO-GEN] Error al completar módulo: {e}")
     
     return CompletarModuloResponse(
         success=True,
@@ -238,3 +224,4 @@ async def completar_modulo(
         credencialNumero=credencial_numero,
         message="Módulo completado exitosamente" if not curso_completado else "¡Felicitaciones! Has completado el curso"
     )
+

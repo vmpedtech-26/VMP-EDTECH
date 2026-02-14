@@ -57,6 +57,7 @@ const menuItems: Record<string, MenuItem[]> = {
             submenu: [
                 { icon: ClipboardCheck, label: 'Evaluaciones', href: '/dashboard/instructor/evaluaciones' },
                 { icon: Users, label: 'Participantes', href: '/dashboard/instructor/participantes' },
+                { icon: Award, label: 'Credenciales', href: '/dashboard/instructor/credenciales' },
                 { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },
             ]
         },
