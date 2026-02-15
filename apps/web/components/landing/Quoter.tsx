@@ -323,7 +323,7 @@ export default function Quoter() {
                                         </AnimatePresence>
                                         <div className="flex items-center text-[#48BB78]">
                                             <CheckCircle className="h-5 w-5 mr-2" />
-                                            <span className="font-semibold">Certificación ANSV incluida</span>
+                                            <span className="font-semibold">Certificación incluida</span>
                                         </div>
                                     </div>
                                 </motion.div>

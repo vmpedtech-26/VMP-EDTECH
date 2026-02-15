@@ -5,7 +5,7 @@ import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata = {
     title: 'Catálogo de Cursos | VMP Servicios',
-    description: 'Explora nuestra amplia oferta de cursos de capacitación profesional certificados por la ANSV.',
+    description: 'Explora nuestra amplia oferta de cursos de capacitación vial profesional con validez nacional.',
 };
 
 export default function CursosPage() {
@@ -32,8 +32,8 @@ export default function CursosPage() {
                         Ofrecemos planes especiales para empresas, con seguimiento detallado de alumnos y facturación corporativa.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="/#cotizar" className="btn-primary">
-                            Cotizar para mi Empresa
+                        <a href="/#contacto" className="btn-primary">
+                            Consultar para mi Empresa
                         </a>
                         <a href="/#contacto" className="btn-secondary">
                             Contactar a Ventas

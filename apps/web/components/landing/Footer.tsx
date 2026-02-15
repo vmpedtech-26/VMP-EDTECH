@@ -22,7 +22,7 @@ export default function Footer() {
                         <p className="text-slate-300 text-sm leading-relaxed mb-4">
                             Capacitación Vial Profesional
                             <br />
-                            Certificaciones ANSV Argentina
+                            Certificaciones Argentina
                         </p>
                         <div className="flex space-x-3">
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
@@ -45,8 +45,8 @@ export default function Footer() {
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">CURSOS</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/cursos/manejo-defensivo" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Manejo Defensivo
+                                <Link href="/cursos/conduccion-preventiva" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    Conducción Preventiva
                                 </Link>
                             </li>
                             <li>
@@ -55,8 +55,8 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/4x4-profesional" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    4x4 Profesional
+                                <Link href="/cursos/conduccion-2-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    Conducción 2 Tracción
                                 </Link>
                             </li>
                             <li>
@@ -132,7 +132,7 @@ export default function Footer() {
                             © 2025 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 20-12345678-9
                         </p>
                         <p className="text-xs">
-                            Instructor Certificado ANSV - Matrícula 12345/2025
+                            Instructor Certificado - Matrícula 12345/2025
                         </p>
                     </div>
                 </div>

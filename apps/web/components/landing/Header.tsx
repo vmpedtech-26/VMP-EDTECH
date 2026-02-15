@@ -9,14 +9,11 @@ export default function Header() {
 
     return (
         <>
-            {/* Top Banner - ANSV Notice */}
+            {/* Top Banner */}
             <div className="bg-gradient-to-r from-primary to-secondary text-white py-3 px-4 text-center text-sm">
                 <span className="font-medium">
-                    🎓 NUEVA DISPOSICIÓN ANSV 54/2025 VIGENTE | Renovación obligatoria cada 24 meses
+                    🎓 Capacitación Vial Profesional | Certificaciones con validez nacional
                 </span>
-                <Link href="/blog/nueva-disposicion-ansv-2025" className="ml-2 underline hover:text-primary-100">
-                    Más Info →
-                </Link>
             </div>
 
             {/* Main Header */}
@@ -60,10 +57,10 @@ export default function Header() {
                                 Área Alumnos
                             </Link>
                             <Link
-                                href="/#cotizar"
+                                href="/#contacto"
                                 className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300"
                             >
-                                Cotizar
+                                Contacto
                             </Link>
                         </div>
 
@@ -99,10 +96,10 @@ export default function Header() {
                                     Área Alumnos
                                 </Link>
                                 <Link
-                                    href="/#cotizar"
+                                    href="/#contacto"
                                     className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-center hover:scale-105 transition-all"
                                 >
-                                    Cotizar
+                                    Contacto
                                 </Link>
                             </div>
                         </div>

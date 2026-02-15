@@ -14,15 +14,15 @@ export default function FAQ() {
     const faqs: FAQItem[] = [
         {
             question: "¿Los certificados tienen validez legal en Argentina?",
-            answer: "Sí, todos nuestros certificados están emitidos bajo las Disposiciones ANSV 380/2012, 555/2013 y 54/2025, lo que garantiza su validez legal en todo el territorio argentino. Nuestros instructores están certificados por ANSV y la plataforma cumple con todos los requisitos normativos."
+            answer: "Sí, todos nuestros certificados tienen validez legal en todo el territorio argentino. Nuestros instructores están certificados profesionalmente y la plataforma cumple con todos los requisitos normativos vigentes."
         },
         {
             question: "¿Cuánto dura la vigencia de la certificación?",
-            answer: "La vigencia depende del curso: Manejo Defensivo tiene 12 meses de vigencia, Carga Pesada 24 meses, y 4x4 Profesional 36 meses. Según la nueva Disposición 54/2025, es obligatoria la renovación al vencimiento."
+            answer: "La vigencia depende del curso: Conducción Preventiva tiene 12 meses de vigencia, Carga Pesada 24 meses, y Conducción 2 Tracción 36 meses. Es obligatoria la renovación al vencimiento para mantener la certificación activa."
         },
         {
             question: "¿Puedo hacer el curso completamente online?",
-            answer: "Sí, ofrecemos modalidad 100% online para Manejo Defensivo y Carga Pesada. El curso de 4x4 Profesional requiere práctica presencial obligatoria. También disponemos de modalidad mixta que combina teoría online con práctica presencial."
+            answer: "Sí, ofrecemos modalidad 100% online para Conducción Preventiva y Carga Pesada. El curso de Conducción 2 Tracción requiere práctica presencial obligatoria. También disponemos de modalidad mixta que combina teoría online con práctica presencial."
         },
         {
             question: "¿Ofrecen capacitación in-company?",
@@ -42,7 +42,7 @@ export default function FAQ() {
         },
         {
             question: "¿Qué requisitos previos necesito?",
-            answer: "Para Manejo Defensivo solo necesitas licencia de conducir vigente. Para Carga Pesada se requiere licencia profesional. Para 4x4 Profesional se recomienda experiencia previa en conducción off-road, aunque no es obligatorio."
+            answer: "Para Conducción Preventiva solo necesitas licencia de conducir vigente. Para Carga Pesada se requiere licencia profesional. Para Conducción 2 Tracción se recomienda experiencia previa en conducción off-road, aunque no es obligatorio."
         },
         {
             question: "¿Cuánto tiempo tarda la emisión del certificado?",

@@ -34,13 +34,13 @@ export default function CourseCatalog() {
             validity: '24 meses',
             minScore: '75%',
             priceFrom: 45000,
-            description: 'Capacitación especializada para conductores de vehículos de carga pesada según normativas ANSV.',
+            description: 'Capacitación especializada para conductores de vehículos de carga pesada según normativas vigentes.',
             isPopular: true
         },
         {
-            id: 'defensivo',
+            id: 'preventivo',
             icon: Shield,
-            title: 'Manejo Defensivo',
+            title: 'Conducción Preventiva',
             category: 'Preventivo',
             duration: '8 horas',
             modality: '100% Online',
@@ -50,9 +50,9 @@ export default function CourseCatalog() {
             description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.'
         },
         {
-            id: '4x4',
+            id: '2-traccion',
             icon: Mountain,
-            title: '4x4 Profesional',
+            title: 'Conducción 2 Tracción',
             category: 'Especializado',
             duration: '16 horas',
             modality: 'Presencial',
@@ -65,9 +65,9 @@ export default function CourseCatalog() {
 
     const tabs = [
         { id: 'all', label: 'Todos' },
-        { id: 'defensivo', label: 'Manejo Defensivo' },
+        { id: 'preventivo', label: 'Conducción Preventiva' },
         { id: 'carga', label: 'Carga Pesada' },
-        { id: '4x4', label: '4x4' }
+        { id: '2-traccion', label: 'Conducción 2 Tracción' }
     ];
 
     const filteredCourses = activeTab === 'all'
@@ -112,7 +112,7 @@ export default function CourseCatalog() {
                         Nuestros Cursos de Capacitación
                     </h2>
                     <p className="text-xl text-slate-800 max-w-3xl mx-auto">
-                        Programas diseñados según normativas ANSV vigentes
+                        Programas diseñados con los más altos estándares de calidad
                     </p>
                 </motion.div>
 
@@ -194,7 +194,7 @@ export default function CourseCatalog() {
                                     <div className="bg-gradient-to-br from-primary to-secondary p-6 relative">
                                         <div className="absolute top-4 right-4">
                                             <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
-                                                ANSV
+                                                VMP
                                             </span>
                                         </div>
                                         <motion.div
@@ -270,10 +270,10 @@ export default function CourseCatalog() {
                     transition={{ duration: 0.6 }}
                 >
                     <Link
-                        href="/#cotizar"
+                        href="/#contacto"
                         className="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center group"
                     >
-                        Cotizar Curso para tu Empresa
+                        Consultar por tu Empresa
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>

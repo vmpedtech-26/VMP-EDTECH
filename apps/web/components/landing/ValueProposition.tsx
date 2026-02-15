@@ -4,9 +4,9 @@ export default function ValueProposition() {
     const values = [
         {
             icon: Building2,
-            title: "Certificación ANSV Oficial",
-            description: "Cumplimos rigurosamente con todas las normativas ANSV, garantizando que tu certificación tenga validez legal en todo el territorio argentino.",
-            details: "Disposiciones 380/555/54"
+            title: "Certificación Profesional Oficial",
+            description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez legal y reconocimiento empresarial en todo el territorio argentino.",
+            details: "Validez Nacional"
         },
         {
             icon: Smartphone,
@@ -17,7 +17,7 @@ export default function ValueProposition() {
         {
             icon: GraduationCap,
             title: "Instructores Certificados",
-            description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación ANSV vigente.",
+            description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
             details: "+15 años experiencia"
         }
     ];
@@ -69,7 +69,7 @@ export default function ValueProposition() {
                 {/* Bottom CTA */}
                 <div className="text-center mt-12">
                     <p className="text-lg text-slate-800 italic">
-                        "Cumplimos rigurosamente con todas las normativas ANSV, garantizando que tu certificación tenga validez legal en todo el territorio argentino."
+                        "Cumplimos con los más altos estándares de calidad, garantizando que tu certificación tenga validez legal y reconocimiento profesional en todo el territorio argentino."
                     </p>
                 </div>
             </div>

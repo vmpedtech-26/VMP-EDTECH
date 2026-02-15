@@ -56,9 +56,9 @@ const STATUS_CONFIG = {
 };
 
 const COURSE_LABELS: Record<string, string> = {
-    defensivo: 'Manejo Defensivo',
+    defensivo: 'Conducción Preventiva',
     carga_pesada: 'Carga Pesada',
-    '4x4': '4x4 Profesional',
+    '4x4': 'Conducción 2 Tracción',
     completo: 'Paquete Completo'
 };
 

@@ -3,7 +3,7 @@ import ValueProposition from '@/components/landing/ValueProposition';
 import { Benefits } from '@/components/landing/Benefits';
 import CourseCatalog from '@/components/landing/CourseCatalog';
 import { CredentialSection } from '@/components/landing/CredentialSection';
-import Quoter from '@/components/landing/Quoter';
+
 import { Testimonials } from '@/components/landing/Testimonials';
 import FAQ from '@/components/landing/FAQ';
 import FinalCTA from '@/components/landing/FinalCTA';
@@ -20,7 +20,7 @@ export default function LandingPage() {
             <Benefits />
             <CourseCatalog />
             <CredentialSection />
-            <Quoter />
+
             <Testimonials />
             <FAQ />
             <FinalCTA />

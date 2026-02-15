@@ -105,7 +105,7 @@ export default function HeroSection() {
                             className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full px-5 py-2.5 mb-6 backdrop-blur-sm"
                         >
                             <Sparkles className="h-5 w-5 text-primary" />
-                            <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Certificación ANSV Oficial</span>
+                            <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Certificación Profesional Verificable</span>
                         </motion.div>
 
                         {/* Headline */}
@@ -123,7 +123,7 @@ export default function HeroSection() {
                             variants={itemVariants}
                             className="text-xl md:text-2xl text-slate-800 mb-8 leading-relaxed"
                         >
-                            Formamos conductores profesionales bajo las normativas más exigentes.
+                            Formamos conductores profesionales con los más altos estándares de calidad.
                             Certificaciones con validez legal y reconocimiento empresarial en toda Argentina.
                         </motion.p>
 
@@ -143,7 +143,7 @@ export default function HeroSection() {
                                 href="/#cursos"
                                 className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-semibold text-lg hover:bg-slate-50 transition-all duration-300 inline-flex items-center justify-center"
                             >
-                                Cotizar Curso Empresarial
+                                Ver Cursos Disponibles
                             </Link>
                         </motion.div>
 
@@ -154,7 +154,7 @@ export default function HeroSection() {
                         >
                             {[
                                 { icon: CheckCircle, title: '+500 Conductores', subtitle: 'Certificados', color: 'text-success' },
-                                { icon: Award, title: 'Certificación', subtitle: 'ANSV Oficial', color: 'text-primary' },
+                                { icon: Award, title: 'Certificación', subtitle: 'Nacional', color: 'text-primary' },
                                 { icon: Smartphone, title: '100% Online', subtitle: 'o Presencial', color: 'text-secondary' },
                                 { icon: Users, title: 'Validación QR', subtitle: 'Instantánea', color: 'text-accent-cyan' }
                             ].map((badge, index) => {
@@ -198,7 +198,7 @@ export default function HeroSection() {
                                         <p className="text-slate-800 text-lg">Certificación Profesional</p>
                                         <div className="mt-6 inline-flex items-center space-x-2 bg-success/10 border border-success/30 rounded-full px-4 py-2">
                                             <CheckCircle className="h-5 w-5 text-success" />
-                                            <span className="text-sm font-semibold text-success">Validado ANSV</span>
+                                            <span className="text-sm font-semibold text-success">Verificado</span>
                                         </div>
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@ export default function HeroSection() {
                                     ease: "easeInOut"
                                 }}
                             >
-                                ✓ Aprobado ANSV
+                                ✓ Certificación Verificable
                             </motion.div>
                             <motion.div
                                 className="absolute -bottom-4 -left-4 bg-gradient-to-r from-accent-amber to-warning text-slate-900 px-6 py-3 rounded-xl shadow-xl font-bold"

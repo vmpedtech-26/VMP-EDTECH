@@ -9,7 +9,7 @@ import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 
 export const metadata = {
     title: 'Blog de Seguridad Vial | VMP Servicios',
-    description: 'Información de alto valor sobre seguridad vial, normativas ANSV y consejos para conductores profesionales en Argentina y Latam.',
+    description: 'Información de alto valor sobre seguridad vial, normativas vigentes y consejos para conductores profesionales en Argentina y Latam.',
 };
 
 export default function BlogPage() {
@@ -93,7 +93,7 @@ export default function BlogPage() {
                 <section className="mt-20 bg-primary/10 rounded-2xl p-8 md:p-12 text-center">
                     <h2 className="text-3xl font-bold text-slate-900 mb-4">Mantené tu flota informada</h2>
                     <p className="text-lg text-slate-800 mb-8 max-w-2xl mx-auto">
-                        Recibí las actualizaciones de la ANSV y consejos de seguridad vial directamente en tu email corporativo.
+                        Recibí las novedades de seguridad vial y consejos para tu flota directamente en tu email corporativo.
                     </p>
                     <form className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
                         <input
