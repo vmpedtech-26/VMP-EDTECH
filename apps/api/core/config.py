@@ -53,8 +53,8 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3001",
         ]
     
-    # Storage
-    STORAGE_PATH: str = "./storage"
+    # Storage — Railway Volume mount path (/data/storage in production)
+    STORAGE_PATH: str = "/data/storage"
     
     # Email
     SMTP_HOST: str = ""
