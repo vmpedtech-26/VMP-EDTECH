@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Users,
     BookOpen,
@@ -8,18 +8,83 @@ import {
     TrendingUp,
     Building2,
     ArrowRight,
-    Calculator
+    Calculator,
+    Loader2,
+    FileText,
+    GraduationCap,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/Skeleton';
 import Link from 'next/link';
+import { api } from '@/lib/api-client';
+
+interface OverviewMetrics {
+    totals: {
+        users: number;
+        companies: number;
+        courses: number;
+        enrollments: number;
+        credentials: number;
+        quotes: number;
+    };
+    quotes: {
+        pending: number;
+        contacted: number;
+        converted: number;
+        rejected: number;
+        conversion_rate: number;
+    };
+    enrollments: {
+        active: number;
+        completed: number;
+        completion_rate: number;
+    };
+}
 
 export default function SuperDashboardPage() {
+    const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchMetrics = useCallback(async () => {
+        try {
+            const data = await api.get('/metrics/overview');
+            setMetrics(data);
+        } catch (error) {
+            console.error('Error fetching metrics:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchMetrics();
+    }, [fetchMetrics]);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <Skeleton className="h-10 w-80" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-3xl" />)}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <Skeleton className="lg:col-span-2 h-64 rounded-3xl" />
+                    <Skeleton className="h-64 rounded-3xl" />
+                </div>
+            </div>
+        );
+    }
+
+    const t = metrics?.totals;
+    const q = metrics?.quotes;
+    const e = metrics?.enrollments;
+
     const stats = [
-        { label: 'Empresas Activas', value: '12', icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Cursos Globales', value: '8', icon: BookOpen, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Alumnos Totales', value: '1,240', icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
-        { label: 'Credenciales Emitidas', value: '856', icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        { label: 'Empresas Activas', value: t?.companies ?? 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Cursos Globales', value: t?.courses ?? 0, icon: BookOpen, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'Alumnos Totales', value: t?.users ?? 0, icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
+        { label: 'Credenciales Emitidas', value: t?.credentials ?? 0, icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     ];
 
     return (
@@ -38,19 +103,55 @@ export default function SuperDashboardPage() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-bold text-slate-600 uppercase tracking-widest">{stat.label}</p>
-                                    <p className="text-3xl font-bold text-slate-900 mt-1">{stat.value}</p>
+                                    <p className="text-3xl font-bold text-slate-900 mt-1">{stat.value.toLocaleString('es-AR')}</p>
                                 </div>
                                 <div className={`${stat.bg} ${stat.color} p-4 rounded-2xl`}>
                                     <Icon className="h-6 w-6" />
                                 </div>
                             </div>
-                            <div className="mt-4 flex items-center text-xs font-bold text-success">
-                                <TrendingUp className="h-3 w-3 mr-1" />
-                                <span>+12% este mes</span>
-                            </div>
                         </Card>
                     );
                 })}
+            </div>
+
+            {/* Secondary stats row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="p-5 border-none shadow-sm ring-1 ring-gray-100" hover={false}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-yellow-50">
+                            <Calculator className="h-5 w-5 text-yellow-600" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cotizaciones</p>
+                            <p className="text-xl font-bold text-slate-900">{t?.quotes ?? 0}</p>
+                            <p className="text-xs text-slate-500">{q?.pending ?? 0} pendientes</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-5 border-none shadow-sm ring-1 ring-gray-100" hover={false}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-cyan-50">
+                            <GraduationCap className="h-5 w-5 text-cyan-600" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Inscripciones</p>
+                            <p className="text-xl font-bold text-slate-900">{t?.enrollments ?? 0}</p>
+                            <p className="text-xs text-slate-500">{e?.active ?? 0} activas · {e?.completed ?? 0} completadas</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-5 border-none shadow-sm ring-1 ring-gray-100" hover={false}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-green-50">
+                            <TrendingUp className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tasa Conversión</p>
+                            <p className="text-xl font-bold text-slate-900">{q?.conversion_rate ?? 0}%</p>
+                            <p className="text-xs text-slate-500">{q?.converted ?? 0} convertidas de {t?.quotes ?? 0}</p>
+                        </div>
+                    </div>
+                </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -138,33 +239,34 @@ export default function SuperDashboardPage() {
                                     <p className="text-xs text-emerald-700">Verificar autenticidad de credenciales emitidas</p>
                                 </div>
                             </div>
-                            <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-100">
-                                Ir al validador
+                            <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-100" asChild>
+                                <Link href="/dashboard/super/credenciales">Ir a credenciales</Link>
                             </Button>
                         </div>
                     </Card>
                 </div>
 
-                {/* System Activity */}
+                {/* Quota breakdown */}
                 <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-slate-900">Actividad Reciente</h2>
+                    <h2 className="text-xl font-bold text-slate-900">Cotizaciones</h2>
                     <Card className="border-none shadow-sm ring-1 ring-gray-100 divide-y divide-gray-50">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="p-4 flex items-start gap-3">
-                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                    <Users className="h-4 w-4 text-slate-600" />
+                        {[
+                            { label: 'Pendientes', value: q?.pending ?? 0, color: 'text-amber-600', dot: 'bg-amber-500' },
+                            { label: 'Contactadas', value: q?.contacted ?? 0, color: 'text-blue-600', dot: 'bg-blue-500' },
+                            { label: 'Convertidas', value: q?.converted ?? 0, color: 'text-emerald-600', dot: 'bg-emerald-500' },
+                            { label: 'Rechazadas', value: q?.rejected ?? 0, color: 'text-red-600', dot: 'bg-red-500' },
+                        ].map((item) => (
+                            <div key={item.label} className="p-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
+                                    <span className="text-sm font-medium text-slate-700">{item.label}</span>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-slate-900">
-                                        <span className="font-bold">Juan Pérez</span> se inscribió al curso <span className="font-bold text-primary">Seguridad Vial</span>
-                                    </p>
-                                    <p className="text-[10px] text-slate-600 font-bold uppercase mt-1">Hace {i * 10} minutos</p>
-                                </div>
+                                <span className={`text-lg font-bold ${item.color}`}>{item.value}</span>
                             </div>
                         ))}
                         <div className="p-4">
-                            <Button variant="ghost" size="sm" className="w-full text-slate-600 hover:text-primary transition-colors">
-                                Ver todo el historial
+                            <Button variant="ghost" size="sm" className="w-full text-slate-600 hover:text-primary transition-colors" asChild>
+                                <Link href="/dashboard/super/cotizaciones">Ver todas las cotizaciones</Link>
                             </Button>
                         </div>
                     </Card>

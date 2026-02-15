@@ -1,5 +1,7 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from core.config import settings
 from middleware.security import (
     SecurityHeadersMiddleware,
@@ -35,6 +37,10 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     await connect_db()
+    # Ensure storage directories exist
+    os.makedirs(os.path.join(settings.STORAGE_PATH, "credenciales"), exist_ok=True)
+    os.makedirs(os.path.join(settings.STORAGE_PATH, "uploads"), exist_ok=True)
+    os.makedirs(os.path.join(settings.STORAGE_PATH, "evidencias"), exist_ok=True)
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -77,6 +83,9 @@ app.include_router(public.router, prefix="/api/public", tags=["public"])
 app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
 app.include_router(seed.router, prefix="/api/seed", tags=["seed"])
 app.include_router(admin_ops.router, prefix="/api/admin", tags=["admin"])
+
+# Serve static files (credential PDFs, uploaded photos, etc.)
+app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storage")
 
 
 

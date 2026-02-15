@@ -186,3 +186,68 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al obtener estadísticas de cursos"
         )
+
+
+@router.get("/instructor")
+async def get_instructor_metrics(current_user: UserResponse = Depends(get_current_user)):
+    """
+    Obtener métricas para el panel de instructor.
+    Filtra por empresa del instructor.
+    """
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos de instructor"
+        )
+    
+    try:
+        empresa_id = current_user.empresaId
+        
+        # Evidencias pendientes de revisión (de su empresa)
+        where_pendientes = {"estado": "PENDIENTE"}
+        if empresa_id:
+            where_pendientes["alumno"] = {"empresaId": empresa_id}
+        pending_evidencias = await prisma.evidencia.count(where=where_pendientes)
+        
+        # Alumnos activos de su empresa
+        where_alumnos = {"rol": "ALUMNO"}
+        if empresa_id:
+            where_alumnos["empresaId"] = empresa_id
+        active_alumnos = await prisma.user.count(where=where_alumnos)
+        
+        # Cursos de la empresa
+        if empresa_id:
+            cursos_count = await prisma.curso.count(
+                where={"empresaId": empresa_id}
+            )
+        else:
+            cursos_count = await prisma.curso.count()
+        
+        # Credenciales emitidas (de alumnos de su empresa)
+        if empresa_id:
+            credenciales_count = await prisma.credencial.count(
+                where={"alumno": {"empresaId": empresa_id}}
+            )
+        else:
+            credenciales_count = await prisma.credencial.count()
+        
+        # Inscripciones activas de la empresa
+        where_inscripciones = {"estado": "ACTIVO"}
+        if empresa_id:
+            where_inscripciones["alumno"] = {"empresaId": empresa_id}
+        inscripciones_activas = await prisma.inscripcion.count(where=where_inscripciones)
+        
+        return {
+            "pending_evidencias": pending_evidencias,
+            "active_alumnos": active_alumnos,
+            "cursos_count": cursos_count,
+            "credenciales_count": credenciales_count,
+            "inscripciones_activas": inscripciones_activas
+        }
+    except Exception as e:
+        print(f"Error getting instructor metrics: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al obtener métricas de instructor"
+        )
+
