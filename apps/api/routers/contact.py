@@ -25,8 +25,8 @@ class ContactFormRequest(BaseModel):
 
 COURSE_LABELS = {
     "conduccion_preventiva": "Conducción Preventiva",
-    "carga_pesada": "Carga Pesada",
-    "conduccion_2_traccion": "Conducción 2 Tracción",
+    "carga_pesada": "Conducción Flota Liviana / Pesada",
+    "conduccion_2_traccion": "Conducción Doble Tracción",
     "varios": "Varios cursos",
 }
 

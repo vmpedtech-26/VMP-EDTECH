@@ -18,11 +18,11 @@ export default function FAQ() {
         },
         {
             question: "¿Cuánto dura la vigencia de la certificación?",
-            answer: "La vigencia depende del curso: Conducción Preventiva tiene 12 meses de vigencia, Carga Pesada 24 meses, y Conducción 2 Tracción 36 meses. Es obligatoria la renovación al vencimiento para mantener la certificación activa."
+            answer: "La vigencia depende del curso: Conducción Preventiva tiene 12 meses de vigencia, Conducción Flota Liviana / Pesada 24 meses, y Conducción Doble Tracción 36 meses. Es obligatoria la renovación al vencimiento para mantener la certificación activa."
         },
         {
             question: "¿Puedo hacer el curso completamente online?",
-            answer: "Sí, ofrecemos modalidad 100% online para Conducción Preventiva y Carga Pesada. El curso de Conducción 2 Tracción requiere práctica presencial obligatoria. También disponemos de modalidad mixta que combina teoría online con práctica presencial."
+            answer: "Sí, ofrecemos modalidad 100% online para Conducción Preventiva y Conducción Flota Liviana / Pesada. El curso de Conducción Doble Tracción requiere práctica presencial obligatoria. También disponemos de modalidad mixta que combina teoría online con práctica presencial."
         },
         {
             question: "¿Ofrecen capacitación in-company?",
@@ -42,7 +42,7 @@ export default function FAQ() {
         },
         {
             question: "¿Qué requisitos previos necesito?",
-            answer: "Para Conducción Preventiva solo necesitas licencia de conducir vigente. Para Carga Pesada se requiere licencia profesional. Para Conducción 2 Tracción se recomienda experiencia previa en conducción off-road, aunque no es obligatorio."
+            answer: "Para Conducción Preventiva solo necesitas licencia de conducir vigente. Para Conducción Flota Liviana / Pesada se requiere licencia profesional. Para Conducción Doble Tracción se recomienda experiencia previa en conducción off-road, aunque no es obligatorio."
         },
         {
             question: "¿Cuánto tiempo tarda la emisión del certificado?",

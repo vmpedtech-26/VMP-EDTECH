@@ -261,8 +261,8 @@ export default function ContactSection() {
                                         >
                                             <option value="">Seleccionar curso...</option>
                                             <option value="conduccion_preventiva">Conducción Preventiva</option>
-                                            <option value="carga_pesada">Carga Pesada</option>
-                                            <option value="conduccion_2_traccion">Conducción 2 Tracción</option>
+                                            <option value="carga_pesada">Conducción Flota Liviana / Pesada</option>
+                                            <option value="conduccion_2_traccion">Conducción Doble Tracción</option>
                                             <option value="varios">Varios cursos</option>
                                         </select>
                                     </div>

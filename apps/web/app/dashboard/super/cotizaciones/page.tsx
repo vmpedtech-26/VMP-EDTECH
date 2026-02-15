@@ -57,8 +57,8 @@ const STATUS_CONFIG = {
 
 const COURSE_LABELS: Record<string, string> = {
     defensivo: 'Conducción Preventiva',
-    carga_pesada: 'Carga Pesada',
-    '4x4': 'Conducción 2 Tracción',
+    carga_pesada: 'Conducción Flota Liviana / Pesada',
+    '4x4': 'Conducción Doble Tracción',
     completo: 'Paquete Completo'
 };
 

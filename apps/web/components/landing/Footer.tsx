@@ -51,12 +51,12 @@ export default function Footer() {
                             </li>
                             <li>
                                 <Link href="/cursos/carga-pesada" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Carga Pesada
+                                    Conducción Flota Liviana / Pesada
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/cursos/conduccion-2-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Conducción 2 Tracción
+                                    Conducción Doble Tracción
                                 </Link>
                             </li>
                             <li>

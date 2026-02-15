@@ -28,14 +28,14 @@ export default function CourseCatalog() {
         {
             id: 'carga-pesada',
             icon: Truck,
-            title: 'Carga Pesada',
+            title: 'Conducción Flota Liviana / Pesada',
             category: 'Transporte',
             duration: '12 horas',
             modality: 'Online/Presencial',
             validity: '24 meses',
             minScore: '75%',
             priceFrom: 45000,
-            description: 'Capacitación especializada para conductores de vehículos de carga pesada según normativas vigentes.',
+            description: 'Capacitación especializada para conductores de flotas livianas y pesadas según normativas vigentes.',
             image: '/images/courses/carga-pesada.png',
             isPopular: true
         },
@@ -55,7 +55,7 @@ export default function CourseCatalog() {
         {
             id: '2-traccion',
             icon: Mountain,
-            title: 'Conducción 2 Tracción',
+            title: 'Conducción Doble Tracción',
             category: 'Especializado',
             duration: '16 horas',
             modality: 'Presencial',
@@ -70,8 +70,8 @@ export default function CourseCatalog() {
     const tabs = [
         { id: 'all', label: 'Todos' },
         { id: 'preventivo', label: 'Conducción Preventiva' },
-        { id: 'carga', label: 'Carga Pesada' },
-        { id: '2-traccion', label: 'Conducción 2 Tracción' }
+        { id: 'carga', label: 'Conducción Flota Liviana / Pesada' },
+        { id: '2-traccion', label: 'Conducción Doble Tracción' }
     ];
 
     const filteredCourses = activeTab === 'all'

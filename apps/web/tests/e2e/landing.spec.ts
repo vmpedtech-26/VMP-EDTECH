@@ -21,8 +21,8 @@ test.describe('Landing Page', () => {
 
         // Verificar cursos renombrados
         await expect(page.locator('text=Conducción Preventiva').first()).toBeVisible();
-        await expect(page.locator('text=Carga Pesada').first()).toBeVisible();
-        await expect(page.locator('text=Conducción 2 Tracción').first()).toBeVisible();
+        await expect(page.locator('text=Conducción Flota Liviana / Pesada').first()).toBeVisible();
+        await expect(page.locator('text=Conducción Doble Tracción').first()).toBeVisible();
     });
 
     test('should display contact form section', async ({ page }) => {
