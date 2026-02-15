@@ -17,6 +17,7 @@ interface Course {
     minScore: string;
     priceFrom: number;
     description: string;
+    image: string;
     isPopular?: boolean;
 }
 
@@ -35,6 +36,7 @@ export default function CourseCatalog() {
             minScore: '75%',
             priceFrom: 45000,
             description: 'Capacitación especializada para conductores de vehículos de carga pesada según normativas vigentes.',
+            image: '/images/courses/carga-pesada.png',
             isPopular: true
         },
         {
@@ -47,7 +49,8 @@ export default function CourseCatalog() {
             validity: '12 meses',
             minScore: '70%',
             priceFrom: 32000,
-            description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.'
+            description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
+            image: '/images/courses/conduccion-preventiva.png'
         },
         {
             id: '2-traccion',
@@ -59,7 +62,8 @@ export default function CourseCatalog() {
             validity: '36 meses',
             minScore: '80%',
             priceFrom: 68000,
-            description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.'
+            description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
+            image: '/images/courses/conduccion-2-traccion.png'
         }
     ];
 
@@ -190,25 +194,34 @@ export default function CourseCatalog() {
                                         </motion.div>
                                     )}
 
-                                    {/* Header with Icon */}
-                                    <div className="bg-gradient-to-br from-primary to-secondary p-6 relative">
+                                    {/* Header with Image */}
+                                    <div className="relative h-48 overflow-hidden">
+                                        <Image
+                                            src={course.image}
+                                            alt={course.title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent" />
                                         <div className="absolute top-4 right-4">
                                             <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
                                                 VMP
                                             </span>
                                         </div>
-                                        <motion.div
-                                            whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                                            transition={{ duration: 0.5 }}
-                                        >
-                                            <Icon className="h-16 w-16 text-white mb-4" />
-                                        </motion.div>
-                                        <h3 className="font-heading font-bold text-2xl text-white mb-2">
-                                            {course.title}
-                                        </h3>
-                                        <p className="text-white/80 text-sm">
-                                            {course.category}
-                                        </p>
+                                        <div className="absolute bottom-4 left-6">
+                                            <motion.div
+                                                whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                                                transition={{ duration: 0.5 }}
+                                            >
+                                                <Icon className="h-10 w-10 text-white mb-2" />
+                                            </motion.div>
+                                            <h3 className="font-heading font-bold text-2xl text-white mb-1">
+                                                {course.title}
+                                            </h3>
+                                            <p className="text-white/80 text-sm">
+                                                {course.category}
+                                            </p>
+                                        </div>
                                     </div>
 
                                     {/* Content */}

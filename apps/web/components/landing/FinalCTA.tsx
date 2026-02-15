@@ -9,15 +9,15 @@ export default function FinalCTA() {
                     Comenzá a Capacitar tu Flota Hoy Mismo
                 </h2>
                 <p className="text-xl text-[#1A202C] opacity-85 mb-8">
-                    Obtené un presupuesto personalizado en menos de 1 minuto
+                    Contactanos y te armamos un plan a medida para tu flota
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                     <Link
-                        href="/#cotizar"
+                        href="/#contacto"
                         className="inline-flex items-center justify-center px-8 py-4 bg-[#0A192F] text-white rounded-lg font-bold text-lg hover:scale-105 hover:shadow-2xl transition-all group"
                     >
-                        Cotizar Ahora
+                        Consultar Ahora
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link

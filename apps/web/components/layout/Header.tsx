@@ -55,7 +55,7 @@ export function Header() {
                             Capacitación
                         </Link>
                         <Button size="sm" asChild>
-                            <Link href="#contacto">Cotizar</Link>
+                            <Link href="#contacto">Contacto</Link>
                         </Button>
                     </div>
 
@@ -113,7 +113,7 @@ export function Header() {
                             Capacitación
                         </Link>
                         <Button size="sm" className="w-full" asChild>
-                            <Link href="#contacto">Cotizar Curso</Link>
+                            <Link href="#contacto">Contacto</Link>
                         </Button>
                     </div>
                 </div>
