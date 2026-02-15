@@ -40,6 +40,7 @@ export default function InstructorDashboard() {
     const [liveLink, setLiveLink] = useState('');
     const [savedLink, setSavedLink] = useState<string | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [linkSaving, setLinkSaving] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -53,18 +54,38 @@ export default function InstructorDashboard() {
             }
         };
 
+        const fetchMeetLink = async () => {
+            try {
+                const data = await api.get('/users/me/meet-link');
+                if (data.link) {
+                    setSavedLink(data.link);
+                }
+            } catch (error) {
+                console.error('Error fetching meet link:', error);
+            }
+        };
+
         fetchStats();
+        fetchMeetLink();
     }, []);
 
-    const handleSaveLink = () => {
+    const handleSaveLink = async () => {
         if (!liveLink.trim()) return;
         let url = liveLink.trim();
         // Auto-prepend https if user forgot
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             url = 'https://' + url;
         }
-        setSavedLink(url);
-        setLiveLink('');
+        setLinkSaving(true);
+        try {
+            await api.put('/users/me/meet-link', { link: url });
+            setSavedLink(url);
+            setLiveLink('');
+        } catch (error) {
+            console.error('Error saving meet link:', error);
+        } finally {
+            setLinkSaving(false);
+        }
     };
 
     const copyToClipboard = (text: string) => {
@@ -225,10 +246,10 @@ export default function InstructorDashboard() {
                                         </div>
                                         <Button
                                             onClick={handleSaveLink}
-                                            disabled={!liveLink.trim()}
+                                            disabled={!liveLink.trim() || linkSaving}
                                             className="gap-1.5 bg-accent-cyan hover:bg-accent-cyan/90 text-white"
                                         >
-                                            Guardar
+                                            {linkSaving ? 'Guardando...' : 'Guardar'}
                                         </Button>
                                     </div>
                                 </div>

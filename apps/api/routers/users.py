@@ -138,3 +138,39 @@ async def eliminar_usuario(id: str, current_user=Depends(get_current_user)):
         
     await prisma.user.delete(where={"id": id})
     return {"message": "Usuario eliminado exitosamente"}
+
+
+# ============ Meet/Teams Link ============
+
+from pydantic import BaseModel
+
+class MeetLinkRequest(BaseModel):
+    link: str
+
+
+@router.get("/me/meet-link")
+async def get_meet_link(current_user=Depends(get_current_user)):
+    """Get the saved meeting link for the current instructor"""
+    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
+        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
+
+    user = await prisma.user.find_unique(where={"id": current_user.id})
+    return {"link": user.meetLink if user else None}
+
+
+@router.put("/me/meet-link")
+async def save_meet_link(data: MeetLinkRequest, current_user=Depends(get_current_user)):
+    """Save a meeting link (Google Meet / Microsoft Teams) for the current instructor"""
+    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
+        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
+
+    link = data.link.strip()
+    if link and not link.startswith(("http://", "https://")):
+        link = "https://" + link
+
+    await prisma.user.update(
+        where={"id": current_user.id},
+        data={"meetLink": link or None}
+    )
+
+    return {"status": "ok", "link": link}

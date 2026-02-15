@@ -53,6 +53,7 @@ model User {
   rol          UserRole @default(ALUMNO)
   empresaId    String?  @map("empresa_id")
   avatar       String?
+  meetLink     String?  @map("meet_link")
   activo       Boolean  @default(true)
   
   empresa       Company?      @relation(fields: [empresaId], references: [id])
