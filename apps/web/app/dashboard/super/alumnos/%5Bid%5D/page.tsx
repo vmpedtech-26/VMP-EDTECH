@@ -43,7 +43,7 @@ export default function EditarAlumnoPage() {
             router.push('/dashboard/super/alumnos');
         } catch (error: any) {
             console.error('Error updating user:', error);
-            alert(error.response?.data?.detail || 'Error al actualizar el alumno');
+            alert(error.message || 'Error al actualizar el alumno');
         } finally {
             setIsSaving(false);
         }

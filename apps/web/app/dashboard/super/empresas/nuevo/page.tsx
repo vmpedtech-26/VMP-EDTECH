@@ -19,7 +19,7 @@ export default function NuevaEmpresaPage() {
             router.push('/dashboard/super/empresas');
         } catch (error: any) {
             console.error('Error creating empresa:', error);
-            alert(error.response?.data?.detail || 'Error al registrar la empresa');
+            alert(error.message || 'Error al registrar la empresa');
         } finally {
             setIsLoading(false);
         }
