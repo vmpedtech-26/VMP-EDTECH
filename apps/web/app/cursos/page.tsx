@@ -4,8 +4,13 @@ import CourseCatalog from '@/components/landing/CourseCatalog';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata = {
-    title: 'Catálogo de Cursos | VMP Servicios',
-    description: 'Explora nuestra amplia oferta de cursos de capacitación vial profesional con validez nacional.',
+    title: 'Catálogo de Cursos',
+    description: 'Explora nuestra oferta de cursos: Conducción Preventiva, Flota Liviana / Pesada y Doble Tracción. Modalidad online y presencial.',
+    openGraph: {
+        title: 'Catálogo de Cursos | VMP - EDTECH',
+        description: 'Cursos certificados de conducción profesional. Modalidad online y presencial.',
+        images: ['/images/og-image.png'],
+    },
 };
 
 export default function CursosPage() {

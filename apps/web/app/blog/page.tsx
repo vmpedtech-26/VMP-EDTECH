@@ -8,8 +8,13 @@ import { blogPosts } from '@/lib/blog-data';
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 
 export const metadata = {
-    title: 'Blog de Seguridad Vial | VMP Servicios',
+    title: 'Blog de Seguridad Vial',
     description: 'Información de alto valor sobre seguridad vial, normativas vigentes y consejos para conductores profesionales en Argentina y Latam.',
+    openGraph: {
+        title: 'Blog de Seguridad Vial | VMP - EDTECH',
+        description: 'Artículos sobre seguridad vial, normativas y capacitación profesional de conductores.',
+        images: ['/images/og-image.png'],
+    },
 };
 
 export default function BlogPage() {
