@@ -1,5 +1,6 @@
 import { Inter, Roboto_Condensed } from 'next/font/google';
 import './landing.css';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -22,6 +23,7 @@ export default function LandingLayout({
     return (
         <div className={`${inter.variable} ${robotoCondensed.variable} font-sans`}>
             {children}
+            <WhatsAppButton />
         </div>
     );
 }
