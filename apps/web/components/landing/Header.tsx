@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, GraduationCap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -21,10 +22,14 @@ export default function Header() {
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-2 group">
-                            <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <GraduationCap className="h-6 w-6 text-white" />
-                            </div>
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <Image
+                                src="/images/vmp-isotipo.png"
+                                alt="VMP"
+                                width={44}
+                                height={44}
+                                className="group-hover:scale-110 transition-transform duration-300"
+                            />
                             <div className="font-heading font-bold text-2xl">
                                 <span className="text-slate-900">VMP</span>
                                 <span className="text-primary mx-1">-</span>

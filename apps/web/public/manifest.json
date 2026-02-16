@@ -4,8 +4,8 @@
     "description": "Capacitación Profesional para Conductores - Certificaciones verificables con QR",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0A192F",
-    "theme_color": "#0A192F",
+    "background_color": "#F0FDFA",
+    "theme_color": "#3AAFA9",
     "orientation": "portrait-primary",
     "icons": [
         {
