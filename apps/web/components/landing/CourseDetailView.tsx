@@ -3,15 +3,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Clock, Award, Monitor, CheckCircle, Users, ArrowRight, BookOpen, Target, FileCheck } from 'lucide-react';
+import { Clock, Award, Monitor, CheckCircle, Users, ArrowRight, BookOpen, Target, FileCheck, Shield, Truck, Mountain } from 'lucide-react';
 import type { CourseDetail } from '@/lib/course-data';
+
+const courseIcons: Record<string, any> = {
+    'conduccion-preventiva': Shield,
+    'flota-liviana-pesada': Truck,
+    'doble-traccion': Mountain,
+};
 
 interface CourseDetailPageProps {
     course: CourseDetail;
 }
 
 export default function CourseDetailView({ course }: CourseDetailPageProps) {
-    const Icon = course.icon;
+    const Icon = courseIcons[course.slug] || Shield;
 
     return (
         <>

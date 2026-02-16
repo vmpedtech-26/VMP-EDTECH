@@ -1,11 +1,11 @@
-import { Truck, Shield, Mountain } from 'lucide-react';
+
 
 export interface CourseDetail {
     slug: string;
     title: string;
     shortTitle: string;
     category: string;
-    icon: any;
+
     image: string;
     duration: string;
     modality: string;
@@ -27,7 +27,7 @@ export const courseData: Record<string, CourseDetail> = {
         title: 'Conducción Preventiva',
         shortTitle: 'Preventiva',
         category: 'Preventivo',
-        icon: Shield,
+
         image: '/images/courses/conduccion-preventiva.png',
         duration: '8 horas',
         modality: '100% Online',
@@ -86,7 +86,7 @@ export const courseData: Record<string, CourseDetail> = {
         title: 'Conducción Flota Liviana / Pesada',
         shortTitle: 'Flota Liviana / Pesada',
         category: 'Transporte',
-        icon: Truck,
+
         image: '/images/courses/carga-pesada.png',
         duration: '12 horas',
         modality: 'Online/Presencial',
@@ -155,7 +155,7 @@ export const courseData: Record<string, CourseDetail> = {
         title: 'Conducción Doble Tracción',
         shortTitle: 'Doble Tracción',
         category: 'Especializado',
-        icon: Mountain,
+
         image: '/images/courses/conduccion-2-traccion.png',
         duration: '16 horas',
         modality: 'Presencial',
