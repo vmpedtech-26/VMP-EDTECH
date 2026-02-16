@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Facebook, Instagram, Linkedin, Youtube, Mail, Phone, MapPin, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
+import { Facebook, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -9,10 +10,13 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}
                     <div>
-                        <div className="flex items-center space-x-2 mb-4">
-                            <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-xl">
-                                <GraduationCap className="h-5 w-5 text-white" />
-                            </div>
+                        <div className="flex items-center space-x-3 mb-4">
+                            <Image
+                                src="/images/vmp-isotipo.png"
+                                alt="VMP"
+                                width={36}
+                                height={36}
+                            />
                             <div className="font-heading font-bold text-xl">
                                 <span className="text-white">VMP</span>
                                 <span className="text-primary mx-1">-</span>

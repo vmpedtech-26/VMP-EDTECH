@@ -15,9 +15,9 @@ import {
     ChevronRight,
     ClipboardCheck,
     UserCog,
-    Sliders,
-    GraduationCap
+    Sliders
 } from 'lucide-react';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
@@ -150,10 +150,14 @@ export function Sidebar({ userRole }: SidebarProps) {
                 <div className="flex flex-col h-full">
                     {/* Logo */}
                     <div className="p-6 border-b border-slate-200">
-                        <Link href="/" className="flex items-center space-x-2 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                <GraduationCap className="h-6 w-6 text-white" />
-                            </div>
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <Image
+                                src="/images/vmp-isotipo.png"
+                                alt="VMP"
+                                width={40}
+                                height={40}
+                                className="group-hover:scale-110 transition-transform duration-300"
+                            />
                             <div>
                                 <div className="text-lg font-heading font-bold text-slate-900">VMP - <span className="gradient-text">EDTECH</span></div>
                                 <div className="text-xs text-slate-800">
