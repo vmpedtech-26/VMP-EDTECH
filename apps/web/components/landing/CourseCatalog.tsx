@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface Course {
     id: string;
+    slug: string;
     icon: any;
     title: string;
     category: string;
@@ -27,6 +28,7 @@ export default function CourseCatalog() {
     const courses: Course[] = [
         {
             id: 'carga-pesada',
+            slug: 'flota-liviana-pesada',
             icon: Truck,
             title: 'Conducción Flota Liviana / Pesada',
             category: 'Transporte',
@@ -41,6 +43,7 @@ export default function CourseCatalog() {
         },
         {
             id: 'preventivo',
+            slug: 'conduccion-preventiva',
             icon: Shield,
             title: 'Conducción Preventiva',
             category: 'Preventivo',
@@ -54,6 +57,7 @@ export default function CourseCatalog() {
         },
         {
             id: '2-traccion',
+            slug: 'doble-traccion',
             icon: Mountain,
             title: 'Conducción Doble Tracción',
             category: 'Especializado',
@@ -262,7 +266,7 @@ export default function CourseCatalog() {
 
                                         {/* CTA */}
                                         <Link
-                                            href={`/cursos/${course.id}`}
+                                            href={`/cursos/${course.slug}`}
                                             className="block w-full text-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
                                         >
                                             Ver Detalles

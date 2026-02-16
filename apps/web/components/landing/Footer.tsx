@@ -50,12 +50,12 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/carga-pesada" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos/flota-liviana-pesada" className="text-slate-300 hover:text-primary text-sm transition-colors">
                                     Conducción Flota Liviana / Pesada
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/conduccion-2-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos/doble-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
                                     Conducción Doble Tracción
                                 </Link>
                             </li>
