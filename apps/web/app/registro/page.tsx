@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -49,10 +50,14 @@ export default function RegisterPage() {
         <div className="min-h-screen flex items-center justify-center bg-background-light px-4 py-12">
             <div className="w-full max-w-lg">
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-2xl">V</span>
-                    </div>
+                <Link href="/" className="flex items-center justify-center space-x-3 mb-8">
+                    <Image
+                        src="/images/vmp-isotipo.png"
+                        alt="VMP"
+                        width={48}
+                        height={48}
+                        className="rounded-lg"
+                    />
                     <span className="text-2xl font-bold text-slate-900">VMP - EDTECH</span>
                 </Link>
 
