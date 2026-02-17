@@ -3,7 +3,7 @@ import { CreditCard, QrCode, Shield, Calendar, User, Building } from 'lucide-rea
 
 export function CredentialSection() {
     return (
-        <section id="credencial" className="py-20 bg-gradient-to-b from-background-light to-white overflow-hidden">
+        <section id="validar" className="py-20 bg-gradient-to-b from-background-light to-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Visual de la credencial */}

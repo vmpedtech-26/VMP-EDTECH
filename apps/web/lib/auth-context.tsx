@@ -62,10 +62,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         localStorage.removeItem('vmp_token');
         localStorage.removeItem('vmp_user');
-        // Delete cookie
+
+        // Comprehensive cookie clearing
         document.cookie = 'vmp_token=; path=/; max-age=0';
+        document.cookie = 'vmp_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
         setUser(null);
+
+        // Try router first, fallback to window.location for hard reset
         router.push('/login');
+        setTimeout(() => {
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }, 100);
     };
 
     return (

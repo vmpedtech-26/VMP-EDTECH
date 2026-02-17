@@ -56,7 +56,9 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
     # Background gradient effect (simplified as solid color)
-    c.setFillColorRGB(0.12, 0.25, 0.69)  # Primary blue
+    # Background - Brand Teal (#3AAFA9)
+    # RGB(58, 175, 169) -> (0.227, 0.686, 0.662)
+    c.setFillColorRGB(0.227, 0.686, 0.662)
     c.rect(0, 0, width, height, fill=1, stroke=0)
     
     # White text
@@ -64,7 +66,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # Logo area (top-left)
     c.setFont("Helvetica-Bold", 8)
-    c.drawString(5*mm, 48*mm, "VMP SERVICIOS")
+    c.drawString(5*mm, 48*mm, "VMP - EDTECH")
     c.setFont("Helvetica", 6)
     c.drawString(5*mm, 45*mm, "Credencial Profesional")
     

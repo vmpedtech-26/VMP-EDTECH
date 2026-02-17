@@ -11,7 +11,7 @@ const testimonials = [
         company: 'Constructora del Sur',
         image: null,
         quote:
-            'VMP transformó nuestra forma de capacitar. Las credenciales digitales son profesionales y nuestros clientes confían más en nuestro personal certificado.',
+            'VMP - EDTECH transformó nuestra forma de capacitar. Las credenciales digitales son profesionales y nuestros clientes confían más en nuestro personal certificado.',
         rating: 5,
     },
     {
@@ -46,7 +46,7 @@ export function Testimonials() {
                         Lo que Dicen Nuestros Clientes
                     </h2>
                     <p className="text-xl text-slate-800">
-                        Empresas que confiaron en VMP y transformaron su capacitación
+                        Empresas que confiaron en VMP - EDTECH y transformaron su capacitación
                     </p>
                 </div>
 

@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
+import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
 
 interface ResetPasswordPageProps {
     params: {
@@ -46,22 +47,10 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/reset-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: params.token,
-                    new_password: newPassword,
-                }),
+            await api.post('/auth/reset-password', {
+                token: params.token,
+                new_password: newPassword,
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.detail || 'Error al restablecer la contraseña');
-            }
 
             setIsSuccess(true);
 
@@ -86,29 +75,29 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
     const passwordStrength = getPasswordStrength();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🎓 VMP - EDTECH
+                    <h1 className="text-4xl font-bold text-primary mb-2">
+                        VMP - EDTECH
                     </h1>
-                    <p className="text-slate-800">Capacitación Profesional</p>
+                    <p className="text-slate-800 font-medium">Capacitación Profesional</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
                     {!isSuccess ? (
                         <>
                             {/* Header */}
                             <div className="text-center mb-6">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4">
-                                    <Lock className="w-8 h-8 text-orange-500" />
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                                    <Lock className="w-8 h-8 text-primary" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-slate-900 mb-2">
                                     Restablecer Contraseña
                                 </h2>
-                                <p className="text-slate-800 text-sm">
+                                <p className="text-slate-600 text-sm">
                                     Ingresa tu nueva contraseña. Asegúrate de que sea segura y fácil de recordar.
                                 </p>
                             </div>
@@ -129,7 +118,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="Mínimo 6 caracteres"
-                                            className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                            className="w-full pl-11 pr-11 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-slate-900"
                                             disabled={isLoading}
                                         />
                                         <button
@@ -177,7 +166,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="Repite tu contraseña"
-                                            className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                            className="w-full pl-11 pr-11 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-slate-900"
                                             disabled={isLoading}
                                         />
                                         <button
@@ -219,11 +208,11 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.98]"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                             Restableciendo...
                                         </span>
                                     ) : (
@@ -267,7 +256,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
 
                                 <Link
                                     href="/login"
-                                    className="inline-block w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                                    className="inline-block w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-all shadow-md active:scale-[0.98]"
                                 >
                                     Ir al Inicio de Sesión
                                 </Link>
@@ -277,10 +266,10 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-sm text-slate-700 mt-6">
+                <p className="text-center text-sm text-slate-500 mt-6">
                     ¿Necesitas ayuda? Contacta a{' '}
-                    <a href="mailto:soporte@vmpservicios.com" className="text-orange-500 hover:underline">
-                        soporte@vmpservicios.com
+                    <a href="mailto:soporte@vmp-edtech.com.ar" className="text-primary hover:underline font-semibold">
+                        soporte@vmp-edtech.com.ar
                     </a>
                 </p>
             </div>

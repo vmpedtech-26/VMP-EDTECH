@@ -13,7 +13,7 @@ export function Footer() {
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <span className="text-xl font-bold text-white">
-                                VMP Servicios
+                                VMP - EDTECH
                             </span>
                         </div>
                         <p className="text-sm text-slate-600">
@@ -124,7 +124,7 @@ export function Footer() {
                 {/* Copyright */}
                 <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-slate-600">
                     <p>
-                        © {new Date().getFullYear()} VMP Servicios. Todos los derechos
+                        © {new Date().getFullYear()} VMP - EDTECH. Todos los derechos
                         reservados.
                     </p>
                 </div>

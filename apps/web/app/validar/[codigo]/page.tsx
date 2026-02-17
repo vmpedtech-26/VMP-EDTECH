@@ -64,9 +64,9 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
+                    <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
                     <p className="text-slate-800">Validando credencial...</p>
                 </div>
             </div>
@@ -75,7 +75,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
                 <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
                         <XCircle className="w-8 h-8 text-red-500" />
@@ -84,7 +84,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     <p className="text-slate-800 mb-6">{error}</p>
                     <button
                         onClick={validateCredential}
-                        className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                        className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
                     >
                         Reintentar
                     </button>
@@ -96,11 +96,11 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
     if (!result) return null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
+                    <h1 className="text-4xl font-bold text-primary mb-2">
                         🎓 VMP - EDTECH
                     </h1>
                     <p className="text-slate-800">Validación de Credencial</p>
@@ -150,13 +150,13 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             {/* Número de Credencial */}
                             <div className="text-center pb-6 border-b border-slate-200">
                                 <p className="text-sm text-slate-700 uppercase font-semibold mb-2">Número de Credencial</p>
-                                <p className="text-3xl font-bold text-orange-500">{result.credential.numero}</p>
+                                <p className="text-3xl font-bold text-primary">{result.credential.numero}</p>
                             </div>
 
                             {/* Información del Alumno */}
                             <div className="bg-slate-50 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <User className="w-5 h-5 text-orange-500" />
+                                    <User className="w-5 h-5 text-primary" />
                                     <h3 className="font-bold text-slate-900">Información del Titular</h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -174,9 +174,9 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             </div>
 
                             {/* Información del Curso */}
-                            <div className="bg-orange-50 rounded-lg p-6">
+                            <div className="bg-primary/5 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Award className="w-5 h-5 text-orange-500" />
+                                    <Award className="w-5 h-5 text-primary" />
                                     <h3 className="font-bold text-slate-900">Curso Completado</h3>
                                 </div>
                                 <div className="space-y-3">
@@ -250,8 +250,8 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             </div>
 
                             {/* Footer de verificación */}
-                            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white text-center">
-                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP Servicios</p>
+                            <div className="bg-gradient-to-r from-primary to-primary-dark rounded-lg p-6 text-white text-center">
+                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP - EDTECH</p>
                                 <p className="text-xs opacity-90">
                                     Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
                                 </p>
@@ -267,7 +267,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     </p>
                     <Link
                         href="/"
-                        className="inline-block bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-colors shadow-md"
+                        className="inline-block bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-colors shadow-md"
                     >
                         Volver al Inicio
                     </Link>
@@ -275,11 +275,11 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
                 {/* Info adicional */}
                 <div className="mt-6 text-center text-xs text-slate-700">
-                    <p>VMP Servicios - Capacitación Profesional</p>
+                    <p>VMP - EDTECH - Capacitación Profesional</p>
                     <p className="mt-1">
                         Contacto:{' '}
-                        <a href="mailto:info@vmpservicios.com" className="text-orange-500 hover:underline">
-                            info@vmpservicios.com
+                        <a href="mailto:soporte@vmp-edtech.com.ar" className="text-primary hover:underline">
+                            soporte@vmp-edtech.com.ar
                         </a>
                     </p>
                 </div>

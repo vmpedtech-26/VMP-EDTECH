@@ -13,8 +13,9 @@ import {
     BarChart3
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
+import { api } from '@/lib/api-client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
 
 interface OverviewMetrics {
     totals: {
@@ -64,35 +65,16 @@ export default function MetricsPage() {
             setIsLoading(true);
             setError(null);
 
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No autenticado');
-            }
-
             // Fetch overview metrics
-            const overviewResponse = await fetch(`${API_URL}/api/metrics/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!overviewResponse.ok) {
-                throw new Error('Error al cargar métricas');
-            }
-
-            const overviewData = await overviewResponse.json();
+            const overviewData = await api.get('/metrics/overview');
             setOverview(overviewData);
 
             // Fetch course metrics
-            const coursesResponse = await fetch(`${API_URL}/api/metrics/courses`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (coursesResponse.ok) {
-                const coursesData = await coursesResponse.json();
+            try {
+                const coursesData = await api.get('/metrics/courses');
                 setCourses(coursesData.courses);
+            } catch (courseErr) {
+                console.warn('Could not fetch course metrics:', courseErr);
             }
 
         } catch (err: any) {

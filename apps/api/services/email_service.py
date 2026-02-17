@@ -1,5 +1,5 @@
 """
-Email Service for VMP Servicios
+Email Service for VMP - EDTECH
 Handles all email sending with HTML templates
 """
 
@@ -20,8 +20,8 @@ class EmailService:
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_user = os.getenv("SMTP_USER", "apikey")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.email_from = os.getenv("EMAIL_FROM", "noreply@vmpservicios.com")
-        self.email_ventas = os.getenv("EMAIL_VENTAS", "ventas@vmpservicios.com")
+        self.email_from = os.getenv("EMAIL_FROM", "noreply@vmp-edtech.com")
+        self.email_ventas = os.getenv("EMAIL_VENTAS", "ventas@vmp-edtech.com")
         
         # Setup Jinja2 for templates
         template_dir = Path(__file__).parent.parent / "templates"
@@ -95,7 +95,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_cotizacion_cliente.html")
         html_content = template.render(cotizacion=cotizacion)
         
-        subject = "Recibimos tu solicitud de cotización - VMP Servicios"
+        subject = "Recibimos tu solicitud de cotización - VMP - EDTECH"
         
         return await self.send_email(
             to_email=cotizacion['email'],
@@ -110,7 +110,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_bienvenida.html")
         html_content = template.render(user=user, temp_password=temp_password)
         
-        subject = "Bienvenido a VMP Servicios - Acceso a tu cuenta"
+        subject = "Bienvenido a VMP - EDTECH - Acceso a tu cuenta"
         
         return await self.send_email(
             to_email=user['email'],
@@ -125,7 +125,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_credencial.html")
         html_content = template.render(user=user, credencial=credencial)
         
-        subject = f"Tu Credencial VMP - {credencial['curso_nombre']}"
+        subject = f"Tu Credencial VMP - EDTECH - {credencial['curso_nombre']}"
         
         # TODO: Add PDF attachment support
         return await self.send_email(
@@ -141,7 +141,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_reset_password.html")
         html_content = template.render(reset_url=reset_url, reset_token=reset_token)
         
-        subject = "Restablecer tu contraseña - VMP Servicios"
+        subject = "Restablecer tu contraseña - VMP - EDTECH"
         
         return await self.send_email(
             to_email=email,
@@ -175,7 +175,7 @@ class EmailService:
             admin_url=admin_url
         )
         
-        subject = f"Bienvenido a VMP Servicios - Credenciales de Acceso para {empresa_data['nombre']}"
+        subject = f"Bienvenido a VMP - EDTECH - Credenciales de Acceso para {empresa_data['nombre']}"
         
         return await self.send_email(
             to_email=empresa_data['email'],

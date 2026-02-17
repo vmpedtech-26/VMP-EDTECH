@@ -140,5 +140,6 @@ async def enviar_quiz(
         respuestasCorrectas=respuestas_correctas,
         totalPreguntas=total_preguntas,
         feedback=feedback_list,
-        message=message
+        message=message,
+        credencialInfo=credencial_info
     )

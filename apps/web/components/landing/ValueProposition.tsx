@@ -1,4 +1,4 @@
-import { Building2, Smartphone, GraduationCap } from 'lucide-react';
+import { Building2, Smartphone, Award } from 'lucide-react';
 
 export default function ValueProposition() {
     const values = [
@@ -15,7 +15,7 @@ export default function ValueProposition() {
             details: "Online/Offline + QR"
         },
         {
-            icon: GraduationCap,
+            icon: Award,
             title: "Instructores Certificados",
             description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
             details: "+15 años experiencia"

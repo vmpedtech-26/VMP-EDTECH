@@ -208,8 +208,8 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             className="bg-slate-50 rounded-2xl p-8 border border-slate-100"
                         >
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                                    <Users className="h-5 w-5 text-amber-600" />
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <Users className="h-5 w-5 text-primary" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900">Requisitos</h3>
                             </div>
