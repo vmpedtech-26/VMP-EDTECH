@@ -1,0 +1,23 @@
+{
+  "CORS_ORIGINS": "https://vmp-edtech-next-final.vercel.app,https://vmp-edtech-web.vercel.app,https://vmp-edtech.com,https://www.vmp-edtech.com,http://localhost:3000",
+  "DATABASE_URL": "postgresql://postgres:bngWhFAsXfcaZxWHVzLCDIbleiGMxAvK@nozomi.proxy.rlwy.net:29586/railway",
+  "ENVIRONMENT": "",
+  "JWT_SECRET": "vmp_edtech_2026_premium_secret",
+  "RAILWAY_BUILD_COMMAND": "pip install -r requirements.txt && pip install \"bcrypt<4.0.0\" && prisma generate",
+  "RAILWAY_ENVIRONMENT": "production",
+  "RAILWAY_ENVIRONMENT_ID": "264c6647-1ead-4c78-9c77-89f5ac44a330",
+  "RAILWAY_ENVIRONMENT_NAME": "production",
+  "RAILWAY_PRIVATE_DOMAIN": "vmp-servicios.railway.internal",
+  "RAILWAY_PROJECT_ID": "9eab19ec-e680-4c7f-95e5-4a794abc9572",
+  "RAILWAY_PROJECT_NAME": "amusing-gentleness",
+  "RAILWAY_PUBLIC_DOMAIN": "api.vmp-edtech.com",
+  "RAILWAY_SERVICE_AMIABLE_INSIGHT_URL": "amiable-insight-production-82aa.up.railway.app",
+  "RAILWAY_SERVICE_FUNCTION_BUN_URL": "function-bun-production-b9df.up.railway.app",
+  "RAILWAY_SERVICE_ID": "143f49f3-7fb2-43bd-8469-5c1bfe4d3ce6",
+  "RAILWAY_SERVICE_NAME": "vmp-servicios",
+  "RAILWAY_SERVICE_VMP_SERVICIOS_URL": "api.vmp-edtech.com",
+  "RAILWAY_STATIC_URL": "api.vmp-edtech.com",
+  "RAILWAY_VOLUME_ID": "62815557-b012-4f8d-bf3d-74ffba5ddd54",
+  "RAILWAY_VOLUME_MOUNT_PATH": "/data/storage",
+  "RAILWAY_VOLUME_NAME": "vmp-servicios-volume"
+}
