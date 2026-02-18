@@ -45,6 +45,35 @@ async def listar_usuarios(
     return result
 
 
+@router.get("/{id}", response_model=UserWithEmpresaResponse)
+async def obtener_usuario(id: str, current_user=Depends(get_current_user)):
+    """Obtener detalle de un usuario"""
+    
+    # Un usuario siempre puede ver su propio perfil
+    if current_user.id != id:
+        # Si no es él mismo, verificar permisos
+        if current_user.rol == "INSTRUCTOR":
+            # Instructor solo puede ver alumnos de su empresa
+            target_user = await prisma.user.find_unique(where={"id": id})
+            if not target_user or target_user.empresaId != current_user.empresaId:
+                raise HTTPException(status_code=403, detail="No tienes permisos para ver este usuario")
+        elif current_user.rol != "SUPER_ADMIN":
+            raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    usuario = await prisma.user.find_unique(
+        where={"id": id},
+        include={"empresa": True}
+    )
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+    user_dict = usuario.__dict__
+    user_dict["empresa_nombre"] = usuario.empresa.nombre if usuario.empresa else None
+    
+    return user_dict
+
+
 @router.post("/", response_model=UserAdminResponse)
 async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
@@ -84,22 +113,35 @@ async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_curren
 
 @router.put("/{id}", response_model=UserAdminResponse)
 async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depends(get_current_user)):
-    """Actualizar datos de un usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
+    """Actualizar datos de un usuario"""
     
     existing = await prisma.user.find_unique(where={"id": id})
     if not existing:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
         
+    # Un usuario siempre puede actualizar su propio perfil (con limitaciones)
+    is_self = current_user.id == id
+    
     # Restricciones de rol
-    if current_user.rol == "INSTRUCTOR":
-        if existing.empresaId != current_user.empresaId:
-            raise HTTPException(status_code=403, detail="No tienes permisos sobre este usuario")
-        # No puede cambiar el rol ni la empresa
+    if not is_self:
+        if current_user.rol == "INSTRUCTOR":
+            if existing.empresaId != current_user.empresaId:
+                raise HTTPException(status_code=403, detail="No tienes permisos sobre este usuario")
+            # No puede cambiar el rol ni la empresa
+            if data.rol and data.rol != existing.rol:
+                raise HTTPException(status_code=403, detail="No puedes cambiar el rol")
+        elif current_user.rol != "SUPER_ADMIN":
+            raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    # Si es self (y no admin), restringir cambios de rol/empresa/activo
+    if is_self and current_user.rol != "SUPER_ADMIN":
         if data.rol and data.rol != existing.rol:
-            raise HTTPException(status_code=403, detail="No puedes cambiar el rol")
-    elif current_user.rol != "SUPER_ADMIN":
-        raise HTTPException(status_code=403, detail="No tienes permisos")
-        
+            raise HTTPException(status_code=403, detail="No puedes cambiar tu propio rol")
+        if data.empresaId and data.empresaId != existing.empresaId:
+            raise HTTPException(status_code=403, detail="No puedes cambiar tu empresa")
+        if data.activo is not None and data.activo != existing.activo:
+             raise HTTPException(status_code=403, detail="No puedes cambiar tu estado de activación")
+
     update_data = {k: v for k, v in data.dict().items() if v is not None}
     
     if "password" in update_data:
