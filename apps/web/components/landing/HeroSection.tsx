@@ -196,44 +196,29 @@ export default function HeroSection() {
                                     className="object-cover"
                                     priority
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
-                                <div className="absolute bottom-6 left-6 right-6 text-white">
-                                    <h3 className="text-2xl font-bold mb-1">VMP - EDTECH</h3>
-                                    <p className="text-white/90">Capacitación Profesional</p>
-                                    <div className="mt-3 inline-flex items-center space-x-2 bg-success/90 backdrop-blur-sm rounded-full px-4 py-2">
-                                        <CheckCircle className="h-5 w-5 text-white" />
-                                        <span className="text-sm font-semibold text-white">Verificado</span>
+                                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none" />
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 text-white">
+                                        <CheckCircle className="h-4 w-4" />
+                                        <span className="text-sm font-medium">Capacitación Verificada</span>
                                     </div>
                                 </div>
                             </motion.div>
 
-                            {/* Floating badges with pulse animation */}
+                            {/* Simplified floating badge */}
                             <motion.div
-                                className="absolute -top-4 -right-4 bg-gradient-to-r from-success to-success-light text-white px-6 py-3 rounded-xl shadow-xl font-bold"
-                                animate={{
-                                    scale: [1, 1.05, 1],
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut"
-                                }}
+                                className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-2xl border border-slate-100 flex items-center space-x-4"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 1, duration: 0.5 }}
                             >
-                                ✓ Certificación Verificable
-                            </motion.div>
-                            <motion.div
-                                className="absolute -bottom-4 -left-4 bg-gradient-to-r from-accent-amber to-warning text-slate-900 px-6 py-3 rounded-xl shadow-xl font-bold"
-                                animate={{
-                                    scale: [1, 1.05, 1],
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                    delay: 1
-                                }}
-                            >
-                                15 años experiencia
+                                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                                    <Award className="h-6 w-6 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-slate-900 leading-none">15+</p>
+                                    <p className="text-sm text-slate-500 font-medium tracking-tight">Años de Trayectoria</p>
+                                </div>
                             </motion.div>
                         </div>
                     </motion.div>
