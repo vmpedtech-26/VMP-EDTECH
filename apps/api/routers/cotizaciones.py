@@ -322,9 +322,7 @@ async def convert_cotizacion_to_client(
     """
     import secrets
     import string
-    from passlib.context import CryptContext
-    
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    from auth.jwt import hash_password
     
     try:
         # 1. Obtener y validar cotización
@@ -425,7 +423,7 @@ async def convert_cotizacion_to_client(
             alumno = await db.user.create(
                 data={
                     "email": alumno_email,
-                    "passwordHash": pwd_context.hash(password_temporal),
+                    "passwordHash": hash_password(password_temporal),
                     "nombre": alumno_nombre,
                     "apellido": alumno_apellido,
                     "dni": alumno_dni,

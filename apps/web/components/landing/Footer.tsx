@@ -109,20 +109,21 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start space-x-3">
                                 <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:info@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    info@vmp-edtech.com
+                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="tel:+5491112345678" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    +54 9 11 1234-5678
+                                <a href="tel:+5492995370173" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    +54 299 537-0173
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                 <span className="text-slate-300 text-sm">
-                                    Buenos Aires, Argentina
+                                    Juan B Justo 385 1° Piso, <br />
+                                    Neuquén Capital
                                 </span>
                             </li>
                         </ul>
