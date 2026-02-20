@@ -115,7 +115,7 @@ export default function HeroSection() {
                         >
                             <span className="text-slate-900">Capacitación Vial</span>
                             <br />
-                            <span className="gradient-text">Profesional</span>
+                            <span className="gradient-text drop-shadow-sm">Profesional</span>
                         </motion.h1>
 
                         {/* Subheadline */}

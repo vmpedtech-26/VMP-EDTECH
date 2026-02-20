@@ -78,19 +78,19 @@ export function Benefits() {
                     <div className="grid sm:grid-cols-3 gap-8 text-center">
                         <div>
                             <div className="text-4xl sm:text-5xl font-bold mb-2">95%</div>
-                            <div className="text-primary-light opacity-90">
+                            <div className="text-white/90 font-medium tracking-wide">
                                 Satisfacción de Empresas
                             </div>
                         </div>
                         <div>
                             <div className="text-4xl sm:text-5xl font-bold mb-2">-40%</div>
-                            <div className="text-primary-light opacity-90">
+                            <div className="text-white/90 font-medium tracking-wide">
                                 Reducción de Incidentes
                             </div>
                         </div>
                         <div>
                             <div className="text-4xl sm:text-5xl font-bold mb-2">24/7</div>
-                            <div className="text-primary-light opacity-90">
+                            <div className="text-white/90 font-medium tracking-wide">
                                 Acceso a Plataforma
                             </div>
                         </div>
