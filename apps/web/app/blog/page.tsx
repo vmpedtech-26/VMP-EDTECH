@@ -5,7 +5,7 @@ import Header from '@/components/landing/Header';
 import Footer from '@/components/landing/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { blogPosts } from '@/lib/blog-data';
-import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Tag, Award } from 'lucide-react';
 
 export const metadata = {
     title: 'Blog de Seguridad Vial',
@@ -30,9 +30,20 @@ export default function BlogPage() {
                             Conocimiento que Salva Vidas
                         </span>
                         <h1 className="text-4xl md:text-5xl font-bold mb-6">Blog de Seguridad Vial y Logística</h1>
-                        <p className="text-xl text-gray-300">
+                        <p className="text-xl text-gray-300 mb-8">
                             Noticias, normativas y guías técnicas para el transporte profesional en Argentina y Latinoamérica.
                         </p>
+
+                        {/* Autoridad del Blog */}
+                        <div className="inline-flex items-center space-x-4 bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-xl">
+                            <div className="w-10 h-10 bg-[#FFD700] rounded-lg flex items-center justify-center">
+                                <Award className="h-6 w-6 text-[#0A192F]" />
+                            </div>
+                            <div>
+                                <p className="text-lg font-bold text-white leading-none">15+ Años</p>
+                                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">de Trayectoria en Capacitación</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

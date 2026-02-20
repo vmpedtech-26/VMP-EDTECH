@@ -205,21 +205,6 @@ export default function HeroSection() {
                                 </div>
                             </motion.div>
 
-                            {/* Simplified floating badge */}
-                            <motion.div
-                                className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-2xl border border-slate-100 flex items-center space-x-4"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 1, duration: 0.5 }}
-                            >
-                                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                                    <Award className="h-6 w-6 text-primary" />
-                                </div>
-                                <div>
-                                    <p className="text-2xl font-bold text-slate-900 leading-none">15+</p>
-                                    <p className="text-sm text-slate-500 font-medium tracking-tight">Años de Trayectoria</p>
-                                </div>
-                            </motion.div>
                         </div>
                     </motion.div>
                 </div>
