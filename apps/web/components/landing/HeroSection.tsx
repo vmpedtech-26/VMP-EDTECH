@@ -136,7 +136,7 @@ export default function HeroSection() {
                                 href="/login"
                                 className="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center justify-center group"
                             >
-                                Acceso Capacitación
+                                Aula
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link

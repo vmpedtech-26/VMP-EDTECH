@@ -59,7 +59,7 @@ export default function Header() {
                                 href="/login"
                                 className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300"
                             >
-                                Área Alumnos
+                                Aula
                             </Link>
                             <Link
                                 href="/#contacto"
@@ -98,7 +98,7 @@ export default function Header() {
                                     href="/login"
                                     className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold text-center hover:bg-primary-50 transition-all"
                                 >
-                                    Área Alumnos
+                                    Aula
                                 </Link>
                                 <Link
                                     href="/#contacto"
