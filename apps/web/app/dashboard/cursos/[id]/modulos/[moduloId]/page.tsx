@@ -113,6 +113,7 @@ export default function ModuloDetailPage() {
                         titulo={modulo.titulo}
                         contenidoHtml={modulo.contenidoHtml}
                         videoUrl={modulo.videoUrl}
+                        liveClassUrl={modulo.liveClassUrl}
                         onComplete={() => handleComplete()}
                     />
                 )}

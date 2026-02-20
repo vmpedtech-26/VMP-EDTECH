@@ -8,6 +8,7 @@ from datetime import datetime
 from auth.dependencies import get_current_user
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
+from services.batch_service import generate_batch_pdf_for_course
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -170,6 +171,28 @@ async def listar_credenciales(
         )
         for c in credenciales
     ]
+
+
+@router.get("/batch-pdf")
+async def descargar_lote_pdf(
+    cursoId: str = Query(...),
+    current_user=Depends(get_current_user)
+):
+    """
+    Genera un solo PDF con todas las credenciales de un curso.
+    Solo INSTRUCTOR y SUPER_ADMIN.
+    """
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(status_code=403, detail="No autorizado")
+        
+    try:
+        pdf_url = await generate_batch_pdf_for_course(cursoId, current_user.id)
+        return {"pdfUrl": pdf_url}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"[BATCH PDF] Error: {e}")
+        raise HTTPException(status_code=500, detail="Error al generar el lote de PDF")
 
 
 @router.delete("/{credencial_id}")

@@ -1,18 +1,54 @@
 'use client';
 
 import React from 'react';
-import { Play } from 'lucide-react';
+import { Play, Video, ExternalLink } from 'lucide-react';
 
 interface TheoriaViewerProps {
     titulo: string;
     contenidoHtml?: string;
     videoUrl?: string;
+    liveClassUrl?: string;
     onComplete: () => void;
 }
 
-export function TheoriaViewer({ titulo, contenidoHtml, videoUrl, onComplete }: TheoriaViewerProps) {
+export function TheoriaViewer({ titulo, contenidoHtml, videoUrl, liveClassUrl, onComplete }: TheoriaViewerProps) {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {liveClassUrl && (
+                <div className="bg-gradient-to-r from-[#0A192F] to-[#112240] rounded-2xl p-8 border border-white/10 shadow-xl overflow-hidden relative group">
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-colors" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                        <div className="w-20 h-20 bg-white/5 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10 shrink-0">
+                            <div className="relative">
+                                <Video className="h-10 w-10 text-primary" />
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 text-center md:text-left">
+                            <h2 className="text-2xl font-bold text-white mb-2">Clase en Vivo Iniciada</h2>
+                            <p className="text-gray-400 max-w-md">
+                                Un instructor está esperando en la sala virtual. Unite para participar de la capacitación interactiva.
+                            </p>
+                        </div>
+
+                        <a
+                            href={liveClassUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full md:w-auto px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                        >
+                            Unirse a la Clase
+                            <ExternalLink className="h-5 w-5" />
+                        </a>
+                    </div>
+                </div>
+            )}
             {videoUrl && (
                 <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg">
                     {/* Simple video embed placeholder - in real app use ReactPlayer or similar */}

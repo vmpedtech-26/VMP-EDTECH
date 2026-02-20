@@ -42,6 +42,13 @@ export const credencialesApi = {
     },
 
     /**
+     * Descargar lote de credenciales en un solo PDF
+     */
+    async descargarLote(cursoId: string): Promise<{ pdfUrl: string }> {
+        return api.get('/credenciales/batch-pdf', { params: { cursoId } });
+    },
+
+    /**
      * Eliminar credencial (SUPER_ADMIN)
      */
     async eliminar(credencialId: string) {

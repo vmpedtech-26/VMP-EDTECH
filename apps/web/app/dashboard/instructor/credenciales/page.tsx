@@ -32,9 +32,12 @@ interface Curso {
 export default function InstructorCredencialesPage() {
     const { user } = useAuth();
     const [credenciales, setCredenciales] = useState<CredencialListItem[]>([]);
+    const [cursos, setCursos] = useState<Curso[]>([]);
+    const [selectedFilterCurso, setSelectedFilterCurso] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isDownloadingBatch, setIsDownloadingBatch] = useState(false);
 
     const fetchCredenciales = useCallback(async () => {
         try {
@@ -48,7 +51,16 @@ export default function InstructorCredencialesPage() {
     }, []);
 
     useEffect(() => {
-        fetchCredenciales();
+        const loadInitialData = async () => {
+            try {
+                const cursosData = await cursosApi.listarCursos();
+                setCursos(cursosData);
+                await fetchCredenciales();
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+            }
+        };
+        loadInitialData();
     }, [fetchCredenciales]);
 
     const vigentesCount = credenciales.filter(c => {
@@ -58,14 +70,32 @@ export default function InstructorCredencialesPage() {
 
     const filteredCredenciales = credenciales.filter(c => {
         const term = searchTerm.toLowerCase();
-        return (
+        const matchesSearch = (
             c.alumnoNombre.toLowerCase().includes(term) ||
             c.alumnoApellido.toLowerCase().includes(term) ||
             c.alumnoDni.includes(term) ||
             c.cursoNombre.toLowerCase().includes(term) ||
             c.numero.toLowerCase().includes(term)
         );
+
+        const matchesCurso = !selectedFilterCurso || c.cursoNombre === cursos.find(cur => cur.id === selectedFilterCurso)?.nombre;
+
+        return matchesSearch && matchesCurso;
     });
+
+    const handleDownloadBatch = async () => {
+        if (!selectedFilterCurso) return;
+        setIsDownloadingBatch(true);
+        try {
+            const res = await credencialesApi.descargarLote(selectedFilterCurso);
+            window.open(res.pdfUrl, '_blank');
+        } catch (error) {
+            console.error('Error downloading batch:', error);
+            alert('Error al generar el lote de credenciales');
+        } finally {
+            setIsDownloadingBatch(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -130,16 +160,49 @@ export default function InstructorCredencialesPage() {
                 </Card>
             </div>
 
-            {/* Search */}
-            <div className="relative max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <input
-                    type="text"
-                    placeholder="Buscar por alumno, DNI, curso o número..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
+            {/* Search and Filter */}
+            <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por alumno, DNI, curso o número..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                </div>
+
+                <div className="flex gap-4 w-full md:w-auto">
+                    <div className="min-w-[200px] flex-1">
+                        <select
+                            value={selectedFilterCurso}
+                            onChange={(e) => setSelectedFilterCurso(e.target.value)}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                        >
+                            <option value="">Todos los cursos</option>
+                            {cursos.map(c => (
+                                <option key={c.id} value={c.id}>{c.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {selectedFilterCurso && (
+                        <Button
+                            variant="outline"
+                            className="gap-2 border-primary text-primary hover:bg-primary/5"
+                            onClick={handleDownloadBatch}
+                            disabled={isDownloadingBatch}
+                        >
+                            {isDownloadingBatch ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Download className="h-4 w-4" />
+                            )}
+                            Descargar Lote
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {/* Table */}
@@ -182,8 +245,8 @@ export default function InstructorCredencialesPage() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${isVigente
-                                                        ? 'bg-green-50 text-green-700 border border-green-200'
-                                                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                    ? 'bg-green-50 text-green-700 border border-green-200'
+                                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                                                     }`}>
                                                     <span className={`h-1.5 w-1.5 rounded-full ${isVigente ? 'bg-green-500' : 'bg-amber-500'}`} />
                                                     {isVigente ? 'Vigente' : 'Vencida'}
@@ -401,8 +464,8 @@ function GenerarCredencialModal({
                             {/* Result */}
                             {result && (
                                 <div className={`p-4 rounded-2xl flex items-center gap-3 ${result.success
-                                        ? 'bg-green-50 text-green-800 border border-green-200'
-                                        : 'bg-red-50 text-red-800 border border-red-200'
+                                    ? 'bg-green-50 text-green-800 border border-green-200'
+                                    : 'bg-red-50 text-red-800 border border-red-200'
                                     }`}>
                                     {result.success ? (
                                         <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
