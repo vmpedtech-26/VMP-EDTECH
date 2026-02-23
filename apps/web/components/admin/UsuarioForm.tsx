@@ -67,9 +67,9 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
             toast.success(initialData ? 'Usuario actualizado' : 'Usuario creado', {
                 description: `El usuario ${formData.nombre} ${formData.apellido} ha sido guardado correctamente.`
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Error al guardar', {
-                description: 'No se pudo guardar la información del usuario.'
+                description: error.message || 'No se pudo guardar la información del usuario.'
             });
         }
     };

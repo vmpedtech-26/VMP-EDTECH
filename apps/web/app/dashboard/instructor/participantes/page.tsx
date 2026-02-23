@@ -107,8 +107,9 @@ export default function ParticipantesPage() {
             });
             await fetchAlumnos();
             alert('Foto aprobada exitosamente');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error aprobando foto:', error);
+            alert(error.message || 'Error al aprobar la foto');
         }
     };
 
@@ -123,8 +124,9 @@ export default function ParticipantesPage() {
             });
             await fetchAlumnos();
             alert('Foto rechazada');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error rechazando foto:', error);
+            alert(error.message || 'Error al rechazar la foto');
         }
     };
 

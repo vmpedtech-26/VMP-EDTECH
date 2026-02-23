@@ -16,6 +16,17 @@ from core.database import prisma
 
 router = APIRouter()
 
+@router.get("/verificar-codigo")
+async def verificar_codigo(codigo: str, current_user=Depends(get_current_user)):
+    """Verificar si un código de curso está disponible"""
+    
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    existing = await prisma.curso.find_unique(where={"codigo": codigo})
+    return {"disponible": existing is None}
+
+
 @router.get("/", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """

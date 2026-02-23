@@ -265,7 +265,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             ¿Listo para capacitarte en {course.shortTitle}?
                         </h2>
                         <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
-                            Contactanos para obtener más información, precios corporativos y fechas de inicio.
+                            Contactanos para obtener más información, presupuestos corporativos y fechas de inicio.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link

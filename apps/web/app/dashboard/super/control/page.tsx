@@ -102,7 +102,7 @@ export default function ControlCenterPage() {
     const handleDownloadBackup = async (filename: string) => {
         try {
             const token = localStorage.getItem('vmp_token');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
             window.open(`${API_URL}/api/admin/backups/download/${filename}?token=${token}`, '_blank');
         } catch (error) {
             toast.error('Error al iniciar la descarga');

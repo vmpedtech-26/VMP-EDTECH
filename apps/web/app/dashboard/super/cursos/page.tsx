@@ -48,9 +48,9 @@ export default function SuperCursosPage() {
         try {
             await cursosApi.eliminarCurso(id);
             fetchCursos();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting curso:', error);
-            alert('Error al eliminar curso');
+            alert(error.message || 'Error al eliminar curso');
         }
     };
 

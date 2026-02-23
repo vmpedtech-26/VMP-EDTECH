@@ -92,18 +92,10 @@ export function Hero() {
                             </div>
 
                             {/* Stats */}
-                            <div className="grid grid-cols-3 gap-4 mt-6">
+                            <div className="flex justify-center mt-6">
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">500+</div>
-                                    <div className="text-sm text-slate-800">Alumnos</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">98%</div>
-                                    <div className="text-sm text-slate-800">Aprobación</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">50+</div>
-                                    <div className="text-sm text-slate-800">Empresas</div>
+                                    <div className="text-2xl font-bold text-primary">Más de 15 años</div>
+                                    <div className="text-sm text-slate-800">de trayectoria</div>
                                 </div>
                             </div>
                         </div>

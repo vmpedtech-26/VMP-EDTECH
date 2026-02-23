@@ -89,9 +89,9 @@ export default function InstructorCredencialesPage() {
         try {
             const res = await credencialesApi.descargarLote(selectedFilterCurso);
             window.open(res.pdfUrl, '_blank');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error downloading batch:', error);
-            alert('Error al generar el lote de credenciales');
+            alert(error.message || 'Error al generar el lote de credenciales');
         } finally {
             setIsDownloadingBatch(false);
         }

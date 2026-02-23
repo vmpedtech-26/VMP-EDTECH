@@ -38,7 +38,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
-            "connect-src 'self' http://localhost:8001 http://localhost:3000 http://127.0.0.1:8001 http://127.0.0.1:3000 https://vmp-edtech.com https://www.vmp-edtech.com https://api.vmp-edtech.com https:;"
+            "connect-src 'self' http://localhost:8000 http://localhost:3000 http://127.0.0.1:8000 http://127.0.0.1:3000 https://vmp-edtech.com https://www.vmp-edtech.com https://api.vmp-edtech.com https:;"
         )
 
         return response

@@ -132,9 +132,9 @@ export default function CotizacionesPage() {
 
             setShowStatusModal(false);
             setStatusToUpdate(null);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error updating status:', err);
-            alert('Error al actualizar el estado. Intenta nuevamente.');
+            alert(err.message || 'Error al actualizar el estado. Intenta nuevamente.');
         } finally {
             setIsUpdatingStatus(false);
         }

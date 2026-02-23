@@ -15,9 +15,9 @@ export default function NuevoCursoPage() {
         try {
             await cursosApi.crearCurso(data);
             router.push('/dashboard/super/cursos');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating curso:', error);
-            alert('Error al crear el curso. Verifica que el código no esté duplicado.');
+            alert(error.message || 'Error al crear el curso. Por favor, intente nuevamente.');
         } finally {
             setIsLoading(false);
         }

@@ -71,9 +71,9 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
             ));
 
             alert('Evidencia subida exitosamente');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error subiendo evidencia:', error);
-            alert('Error al subir la evidencia');
+            alert(error.message || 'Error al subir la evidencia');
         } finally {
             setUploadingTareaId(null);
         }
@@ -91,9 +91,9 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
         try {
             await inscripcionesApi.completarModulo(cursoId, modulo.id);
             onCompletar();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert(error.message || 'Error al completar el módulo');
         } finally {
             setLoading(false);
         }

@@ -47,9 +47,9 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
                 videoUrl: ''
             });
             onUpdate();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding modulo:', error);
-            alert('Error al agregar módulo');
+            alert(error.message || 'Error al agregar módulo');
         } finally {
             setIsLoading(false);
         }
@@ -60,9 +60,9 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
         try {
             await cursosApi.eliminarModulo(cursoId, moduloId);
             onUpdate();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting modulo:', error);
-            alert('Error al eliminar módulo');
+            alert(error.message || 'Error al eliminar módulo');
         }
     };
 
@@ -152,8 +152,8 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
                                 <div className="flex items-center gap-3">
                                     <h4 className="font-bold text-slate-900">{modulo.titulo}</h4>
                                     <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${modulo.tipo === 'TEORIA' ? 'bg-blue-50 text-blue-600' :
-                                            modulo.tipo === 'QUIZ' ? 'bg-purple-50 text-purple-600' :
-                                                'bg-orange-50 text-orange-600'
+                                        modulo.tipo === 'QUIZ' ? 'bg-purple-50 text-purple-600' :
+                                            'bg-orange-50 text-orange-600'
                                         }`}>
                                         {modulo.tipo}
                                     </span>

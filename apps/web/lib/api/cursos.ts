@@ -10,6 +10,13 @@ export const cursosApi = {
     },
 
     /**
+     * Verificar si un código está disponible
+     */
+    async verificarCodigo(codigo: string): Promise<{ disponible: boolean }> {
+        return api.get('/cursos/verificar-codigo', { params: { codigo } });
+    },
+
+    /**
      * Obtener detalle de un curso con sus módulos
      */
     async obtenerCurso(id: string): Promise<CursoDetail> {

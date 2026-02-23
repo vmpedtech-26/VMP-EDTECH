@@ -37,9 +37,9 @@ export default function ExplorarCursosPage() {
         try {
             await inscripcionesApi.inscribirse(cursoId);
             router.push(`/dashboard/cursos/${cursoId}`);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error enrolling in course:', error);
-            alert('Hubo un error al inscribirse. Intente nuevamente.');
+            alert(error.message || 'Hubo un error al inscribirse. Intente nuevamente.');
         } finally {
             setEnrollingId(null);
         }

@@ -150,13 +150,10 @@ export default function HeroSection() {
                         {/* Trust Badges */}
                         <motion.div
                             variants={itemVariants}
-                            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+                            className="flex flex-wrap gap-6"
                         >
                             {[
-                                { icon: CheckCircle, title: '+500 Conductores', subtitle: 'Certificados', color: 'text-success' },
-                                { icon: Award, title: 'Certificación', subtitle: 'Nacional', color: 'text-primary' },
-                                { icon: Smartphone, title: '100% Online', subtitle: 'o Presencial', color: 'text-secondary' },
-                                { icon: Users, title: 'Validación QR', subtitle: 'Instantánea', color: 'text-accent-cyan' }
+                                { icon: Award, title: 'Más de 15 años', subtitle: 'de trayectoria', color: 'text-primary' }
                             ].map((badge, index) => {
                                 const Icon = badge.icon;
                                 return (

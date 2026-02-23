@@ -36,9 +36,9 @@ export default function EditarCursoPage() {
             await cursosApi.actualizarCurso(id as string, data);
             await fetchCurso();
             alert('Curso actualizado correctamente');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating curso:', error);
-            alert('Error al actualizar el curso');
+            alert(error.message || 'Error al actualizar el curso');
         } finally {
             setIsSaving(false);
         }

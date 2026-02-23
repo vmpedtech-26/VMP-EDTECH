@@ -16,11 +16,13 @@ interface Course {
     modality: string;
     validity: string;
     minScore: string;
-    priceFrom: number;
+
     description: string;
     image: string;
-    isPopular?: boolean;
 }
+
+
+
 
 export default function CourseCatalog() {
     const [activeTab, setActiveTab] = useState('all');
@@ -36,11 +38,11 @@ export default function CourseCatalog() {
             modality: 'Online/Presencial',
             validity: '24 meses',
             minScore: '75%',
-            priceFrom: 45000,
+
             description: 'Capacitación especializada para conductores de flotas livianas y pesadas según normativas vigentes.',
-            image: '/images/courses/carga-pesada.png',
-            isPopular: true
+            image: '/images/courses/carga-pesada.png'
         },
+
         {
             id: 'preventivo',
             slug: 'conduccion-preventiva',
@@ -51,7 +53,7 @@ export default function CourseCatalog() {
             modality: '100% Online',
             validity: '12 meses',
             minScore: '70%',
-            priceFrom: 32000,
+
             description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
             image: '/images/courses/conduccion-preventiva.png'
         },
@@ -65,7 +67,7 @@ export default function CourseCatalog() {
             modality: 'Presencial',
             validity: '36 meses',
             minScore: '80%',
-            priceFrom: 68000,
+
             description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
             image: '/images/courses/conduccion-2-traccion.png'
         }
@@ -175,28 +177,7 @@ export default function CourseCatalog() {
                                         perspective: 1000
                                     }}
                                 >
-                                    {/* Most Popular Badge */}
-                                    {course.isPopular && (
-                                        <motion.div
-                                            className="absolute -top-2 -right-2 z-10"
-                                            initial={{ scale: 0, rotate: -45 }}
-                                            animate={{ scale: 1, rotate: 0 }}
-                                            transition={{
-                                                type: "spring",
-                                                stiffness: 260,
-                                                damping: 20,
-                                                delay: 0.5 + index * 0.15
-                                            }}
-                                        >
-                                            <Image
-                                                src="/images/most-popular-badge.png"
-                                                alt="Más Popular"
-                                                width={80}
-                                                height={80}
-                                                className="drop-shadow-lg"
-                                            />
-                                        </motion.div>
-                                    )}
+
 
                                     {/* Header with Image */}
                                     <div className="relative h-48 overflow-hidden">
@@ -207,7 +188,7 @@ export default function CourseCatalog() {
                                             className="object-cover"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent" />
-                                        <div className="absolute top-4 right-4">
+                                        <div className="absolute top-4 left-4">
                                             <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
                                                 VMP
                                             </span>
@@ -256,13 +237,7 @@ export default function CourseCatalog() {
                                             </div>
                                         </div>
 
-                                        {/* Price */}
-                                        <div className="mb-6">
-                                            <p className="text-sm text-slate-800 mb-1">Desde</p>
-                                            <p className="font-heading font-bold text-3xl gradient-text">
-                                                ${course.priceFrom.toLocaleString('es-AR')}
-                                            </p>
-                                        </div>
+
 
                                         {/* CTA */}
                                         <Link

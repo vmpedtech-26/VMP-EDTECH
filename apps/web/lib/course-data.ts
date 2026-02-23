@@ -11,7 +11,7 @@ export interface CourseDetail {
     modality: string;
     validity: string;
     minScore: string;
-    priceFrom: number;
+
     description: string;
     longDescription: string;
     benefits: string[];
@@ -33,7 +33,7 @@ export const courseData: Record<string, CourseDetail> = {
         modality: '100% Online',
         validity: '12 meses',
         minScore: '70%',
-        priceFrom: 32000,
+
         description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
         longDescription: 'Curso integral diseñado para formar conductores capaces de anticipar y prevenir situaciones de riesgo en la vía pública. Combina fundamentos teóricos de seguridad vial con técnicas prácticas de conducción defensiva, preparando al conductor para tomar decisiones seguras en todo tipo de escenarios.',
         benefits: [
@@ -92,7 +92,7 @@ export const courseData: Record<string, CourseDetail> = {
         modality: 'Online/Presencial',
         validity: '24 meses',
         minScore: '75%',
-        priceFrom: 45000,
+
         description: 'Capacitación especializada para conductores de flotas livianas y pesadas según normativas vigentes.',
         longDescription: 'Programa de capacitación diseñado específicamente para conductores de vehículos de flota liviana y pesada. Abarca desde la inspección pre-operacional del vehículo hasta técnicas avanzadas de maniobra con carga, pasando por normativas de tránsito pesado y gestión de documentación de transporte.',
         benefits: [
@@ -161,7 +161,7 @@ export const courseData: Record<string, CourseDetail> = {
         modality: 'Presencial',
         validity: '36 meses',
         minScore: '80%',
-        priceFrom: 68000,
+
         description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
         longDescription: 'Curso especializado de alta exigencia enfocado en la conducción de vehículos 4x4 y doble tracción en terrenos no convencionales. Incluye práctica intensiva en campo con diferentes tipos de terreno: barro, arena, pendientes pronunciadas, vadeo de ríos y recuperación de vehículos. Ideal para operaciones en minería, petróleo, agroindustria y zonas rurales.',
         benefits: [

@@ -1,6 +1,6 @@
 // API configuration and utilities
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export interface CotizacionData {
     empresa: string;
@@ -18,6 +18,16 @@ export interface CotizacionData {
     acceptMarketing: boolean;
     acceptTerms: boolean;
 }
+
+export interface ContactFormData {
+    nombre: string;
+    email: string;
+    empresa: string;
+    telefono?: string;
+    mensaje: string;
+    curso_interes?: string;
+}
+
 
 export interface CotizacionResponse {
     id: number;
@@ -242,6 +252,43 @@ export async function convertCotizacionToClient(
         );
     }
 }
+
+/**
+ * Submit contact form
+ */
+export async function submitContactForm(data: ContactFormData): Promise<any> {
+    try {
+        const response = await fetch(`${API_URL}/api/contact`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new ApiError(
+                response.status,
+                errorData.detail || `Error ${response.status}: ${response.statusText}`,
+                errorData
+            );
+        }
+
+        return await response.json();
+    } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
+
+        throw new ApiError(
+            0,
+            'Error de conexión al enviar el formulario de contacto.',
+            error
+        );
+    }
+}
+
 
 export { ApiError };
 

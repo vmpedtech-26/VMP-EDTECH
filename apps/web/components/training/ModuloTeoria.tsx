@@ -20,9 +20,9 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
         try {
             await inscripcionesApi.completarModulo(cursoId, modulo.id);
             onCompletar();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert(error.message || 'Error al completar el módulo');
         } finally {
             setLoading(false);
         }

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Send } from 'lucide-react';
+import { submitContactForm } from '@/lib/api';
+
 
 export function ContactForm() {
     const [formData, setFormData] = useState({
@@ -22,10 +24,8 @@ export function ContactForm() {
         setSubmitStatus('idle');
 
         try {
-            // TODO: Integrar con API backend
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await submitContactForm(formData);
 
-            console.log('Form data:', formData);
             setSubmitStatus('success');
             setFormData({
                 nombre: '',
@@ -35,11 +35,13 @@ export function ContactForm() {
                 mensaje: '',
             });
         } catch (error) {
+            console.error('Submit error:', error);
             setSubmitStatus('error');
         } finally {
             setIsSubmitting(false);
         }
     };
+
 
     return (
         <section id="contacto" className="py-20 bg-white">

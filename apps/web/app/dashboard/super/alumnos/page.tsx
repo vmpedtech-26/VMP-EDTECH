@@ -49,8 +49,8 @@ export default function AlumnosPage() {
         try {
             await usersApi.eliminarUsuario(id);
             fetchUsuarios();
-        } catch (error) {
-            alert('Error al eliminar el usuario');
+        } catch (error: any) {
+            alert(error.message || 'Error al eliminar el usuario');
         }
     };
 

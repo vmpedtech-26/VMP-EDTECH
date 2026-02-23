@@ -32,10 +32,11 @@ class EmailService:
         to_email: str,
         subject: str,
         html_content: str,
-        from_email: Optional[str] = None
+        from_email: Optional[str] = None,
+        attachments: Optional[list[str]] = None
     ) -> bool:
         """
-        Send an email using SMTP
+        Send an email using SMTP with optional attachments
         """
         # Development mode: if no SMTP password, just log the email
         if not self.smtp_password:
@@ -44,18 +45,36 @@ class EmailService:
             logger.info(f"To: {to_email}")
             logger.info(f"From: {from_email or self.email_from}")
             logger.info(f"Subject: {subject}")
+            logger.info(f"Attachments: {attachments}")
             logger.info(f"Content preview: {html_content[:200]}...")
             logger.info("=" * 80)
             return True
         
         try:
-            message = MIMEMultipart("alternative")
+            from email.mime.application import MIMEApplication
+            
+            message = MIMEMultipart("mixed")
             message["From"] = from_email or self.email_from
             message["To"] = to_email
             message["Subject"] = subject
             
+            # Alternative part for HTML
+            alt_part = MIMEMultipart("alternative")
             html_part = MIMEText(html_content, "html")
-            message.attach(html_part)
+            alt_part.attach(html_part)
+            message.attach(alt_part)
+            
+            # Add attachments
+            if attachments:
+                for file_path in attachments:
+                    if not os.path.exists(file_path):
+                        logger.warning(f"Attachment not found: {file_path}")
+                        continue
+                        
+                    with open(file_path, "rb") as f:
+                        part = MIMEApplication(f.read(), Name=os.path.basename(file_path))
+                        part['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+                        message.attach(part)
             
             await aiosmtplib.send(
                 message,
@@ -127,12 +146,13 @@ class EmailService:
         
         subject = f"Tu Credencial VMP - EDTECH - {credencial['curso_nombre']}"
         
-        # TODO: Add PDF attachment support
         return await self.send_email(
             to_email=user['email'],
             subject=subject,
-            html_content=html_content
+            html_content=html_content,
+            attachments=[pdf_path] if pdf_path else None
         )
+
     
     async def send_reset_password(self, email: str, reset_token: str, reset_url: str) -> bool:
         """

@@ -48,9 +48,9 @@ export default function ModuloConfigPage() {
                 tareasPracticas: modulo.tareasPracticas
             });
             alert('Cambios guardados correctamente');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving modulo:', error);
-            alert('Error al guardar los cambios');
+            alert(error.message || 'Error al guardar los cambios');
         } finally {
             setIsSaving(false);
         }

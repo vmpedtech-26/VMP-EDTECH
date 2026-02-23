@@ -51,9 +51,9 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             const result = await examenesApi.enviarQuiz(cursoId, modulo.id, respuestas);
             setFeedback(result);
             setSubmitted(true);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al enviar quiz:', error);
-            alert('Error al enviar el quiz');
+            alert(error.message || 'Error al enviar el quiz');
         } finally {
             setLoading(false);
         }
@@ -78,9 +78,9 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                 feedback.aprobado
             );
             onCompletar();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert(error.message || 'Error al completar el módulo');
         } finally {
             setLoading(false);
         }

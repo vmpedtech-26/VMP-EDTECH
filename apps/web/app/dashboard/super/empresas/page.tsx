@@ -48,8 +48,8 @@ export default function EmpresasPage() {
         try {
             await empresasApi.eliminarEmpresa(id);
             fetchEmpresas();
-        } catch (error) {
-            alert('Error al eliminar la empresa');
+        } catch (error: any) {
+            alert(error.message || 'Error al eliminar la empresa');
         }
     };
 
