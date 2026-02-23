@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth-context';
+import { Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api-client';
 
 export default function LoginPage() {
@@ -14,6 +15,7 @@ export default function LoginPage() {
         email: '',
         password: '',
     });
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -80,16 +82,31 @@ export default function LoginPage() {
                             }
                         />
 
-                        <Input
-                            type="password"
-                            label="Contraseña"
-                            placeholder="••••••••"
-                            required
-                            value={formData.password}
-                            onChange={(e) =>
-                                setFormData({ ...formData, password: e.target.value })
-                            }
-                        />
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                label="Contraseña"
+                                placeholder="••••••••"
+                                required
+                                value={formData.password}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, password: e.target.value })
+                                }
+                                className="pr-12"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-[38px] text-slate-400 hover:text-slate-600 transition-colors"
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-5 w-5" />
+                                ) : (
+                                    <Eye className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
 
                         <div className="flex items-center justify-between text-sm">
                             <label className="flex items-center space-x-2">
