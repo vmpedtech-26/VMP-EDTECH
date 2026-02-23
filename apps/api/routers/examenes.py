@@ -90,6 +90,7 @@ async def enviar_quiz(
         data={
             "alumnoId": current_user.id,
             "cursoId": data.cursoId,
+            "moduloId": data.moduloId,
             "respuestas": data.respuestas,
             "calificacion": calificacion,
             "aprobado": aprobado
@@ -126,6 +127,24 @@ async def enviar_quiz(
                 data={
                     "estado": "APROBADO",
                     "finDate": datetime.now()
+                }
+            )
+
+            # REGISTRAR MÓDULO COMO COMPLETADO PERSISTENTE
+            await prisma.modulocompletado.upsert(
+                where={
+                    "alumnoId_moduloId": {
+                        "alumnoId": current_user.id,
+                        "moduloId": data.moduloId
+                    }
+                },
+                data={
+                    "create": {
+                        "alumnoId": current_user.id,
+                        "moduloId": data.moduloId,
+                        "cursoId": data.cursoId
+                    },
+                    "update": {}
                 }
             )
         except Exception as e:

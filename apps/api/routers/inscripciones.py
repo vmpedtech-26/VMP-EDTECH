@@ -179,6 +179,24 @@ async def completar_modulo(
             }
         )
     
+    # REGISTRAR MÓDULO COMO COMPLETADO PERSISTENTE
+    await prisma.modulocompletado.upsert(
+        where={
+            "alumnoId_moduloId": {
+                "alumnoId": current_user.id,
+                "moduloId": moduloId
+            }
+        },
+        data={
+            "create": {
+                "alumnoId": current_user.id,
+                "moduloId": moduloId,
+                "cursoId": cursoId
+            },
+            "update": {}
+        }
+    )
+    
     # Calcular nuevo progreso
     nuevo_progreso = await calcular_progreso_curso(current_user.id, cursoId)
     

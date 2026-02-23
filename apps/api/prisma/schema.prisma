@@ -177,6 +177,7 @@ model Examen {
   id           String   @id @default(uuid())
   alumnoId     String   @map("alumno_id")
   cursoId      String   @map("curso_id")
+  moduloId     String?  @map("modulo_id")
   respuestas   Json // { preguntaId: respuestaIndex }
   calificacion Float?
   aprobado     Boolean?
@@ -188,7 +189,20 @@ model Examen {
 
   @@index([alumnoId])
   @@index([cursoId])
+  @@index([moduloId])
   @@map("examenes")
+}
+
+model ModuloCompletado {
+  id        String   @id @default(uuid())
+  alumnoId  String   @map("alumno_id")
+  moduloId  String   @map("modulo_id")
+  cursoId   String   @map("curso_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([alumnoId, moduloId])
+  @@index([alumnoId, cursoId])
+  @@map("modulos_completados")
 }
 
 model FotoCredencial {
