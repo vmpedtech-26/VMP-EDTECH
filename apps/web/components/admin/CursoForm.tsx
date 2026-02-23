@@ -86,7 +86,13 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
             alert('El código ya está en uso. Por favor, elige otro.');
             return;
         }
-        await onSubmit(formData);
+
+        const dataToSubmit = {
+            ...formData,
+            empresaId: formData.empresaId || null
+        };
+
+        await onSubmit(dataToSubmit);
     };
 
     return (

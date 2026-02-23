@@ -34,7 +34,7 @@ async function request(path: string, options: RequestInit & { params?: Record<st
             headers,
         });
     } catch (e: any) {
-        console.error('Network error:', e);
+        console.error('Network error requesting:', url, options.method || 'GET', e);
         throw new Error('Error de conexión con el servidor. Verifique su conexión o la URL del API.');
     }
 

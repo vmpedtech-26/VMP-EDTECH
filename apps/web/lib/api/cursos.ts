@@ -6,14 +6,14 @@ export const cursosApi = {
      * Listar todos los cursos activos
      */
     async listarCursos(): Promise<Curso[]> {
-        return api.get('/cursos');
+        return api.get('/cursos/');
     },
 
     /**
      * Verificar si un código está disponible
      */
     async verificarCodigo(codigo: string): Promise<{ disponible: boolean }> {
-        return api.get('/cursos/verificar-codigo', { params: { codigo } });
+        return api.get('/cursos/verificar-codigo/', { params: { codigo } });
     },
 
     /**
@@ -27,7 +27,7 @@ export const cursosApi = {
      * Crear un nuevo curso (Solo SUPER_ADMIN)
      */
     async crearCurso(data: Partial<Curso>): Promise<Curso> {
-        return api.post('/cursos', data);
+        return api.post('/cursos/', data);
     },
 
     /**
