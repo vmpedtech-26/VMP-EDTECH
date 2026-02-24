@@ -182,7 +182,7 @@ class EmailService:
                 - curso: Course name
                 - credenciales: List of dicts with 'email' and 'password' for each student
         """
-        admin_url = os.getenv("ADMIN_URL", "http://localhost:3000")
+        admin_url = settings.ADMIN_URL
         
         template = self.jinja_env.get_template("email_empresa_bienvenida.html")
         html_content = template.render(

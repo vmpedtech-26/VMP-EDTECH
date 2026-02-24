@@ -87,7 +87,7 @@ async def generate_credential_for_student(
         fecha_vencimiento = datetime.now() + relativedelta(years=2)  # Default: 2 años
     
     # Construir URL de verificación pública
-    frontend_url = os.getenv("ADMIN_URL", settings.FRONTEND_URL)
+    frontend_url = settings.ADMIN_URL
     qr_url = f"{frontend_url}/validar/{numero_credencial}"
     
     # Preparar datos del PDF

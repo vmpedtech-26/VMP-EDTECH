@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Request
 from schemas.models import UserLogin, UserRegister, TokenResponse, UserResponse
 from auth.jwt import hash_password, verify_password, create_access_token
 from core.database import prisma
+from core.config import settings
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
 
@@ -155,7 +156,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
             from services.email_service import email_service
             
             # Construir URL de reset
-            frontend_url = os.getenv("ADMIN_URL", "http://localhost:3000")
+            frontend_url = settings.ADMIN_URL
             reset_url = f"{frontend_url}/reset-password/{reset_token}"
             
             await email_service.send_reset_password(
