@@ -1,4 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+let API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+// Asegurar HTTPS si estamos en un entorno seguro
+if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_URL.startsWith('http://')) {
+    API_URL = API_URL.replace('http://', 'https://');
+}
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
