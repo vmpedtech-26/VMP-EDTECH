@@ -42,11 +42,22 @@ export default function ModuloDetailPage() {
                 quizData?.aprobado
             );
 
-            // If it was a quiz and it failed, we don't necessarily redirect away
+            // Si es un quiz y no aprobó, no avanzamos
             if (quizData && !quizData.aprobado) return;
 
-            // Redirect back to course page
-            router.push(`/dashboard/cursos/${id}`);
+            // Obtener el curso para saber cuál es el siguiente módulo
+            const curso = await cursosApi.obtenerCurso(id as string);
+            const modulos = curso.modulos || [];
+            const currentIndex = modulos.findIndex(m => m.id === moduloId);
+            const nextModulo = modulos[currentIndex + 1];
+
+            if (nextModulo) {
+                // Auto-advance al siguiente módulo
+                router.push(`/dashboard/cursos/${id}/modulos/${nextModulo.id}`);
+            } else {
+                // Si es el último, volver a la página del curso (o mostrar éxito)
+                router.push(`/dashboard/cursos/${id}?completed=true`);
+            }
         } catch (error) {
             console.error('Error completing modulo:', error);
             alert('Error al guardar progreso');

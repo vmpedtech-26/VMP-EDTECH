@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from typing import List, Dict, Any
 from schemas.cursos import (
     CursoListItem, 
     CursoDetail, 
@@ -13,6 +13,7 @@ from schemas.cursos import (
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
+from constants.templates import EVALUATION_TEMPLATES
 
 router = APIRouter()
 
@@ -25,6 +26,18 @@ async def verificar_codigo(codigo: str, current_user=Depends(get_current_user)):
     
     existing = await prisma.curso.find_unique(where={"codigo": codigo})
     return {"disponible": existing is None}
+
+
+@router.get("/templates")
+async def listar_plantillas(current_user=Depends(get_current_user)):
+    """Listar plantillas de evaluación disponibles (Solo SUPER_ADMIN)"""
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    return [
+        {"id": k, "titulo": v["titulo"], "preguntas": len(v["preguntas"])}
+        for k, v in EVALUATION_TEMPLATES.items()
+    ]
 
 
 @router.get("/", response_model=List[CursoListItem])
@@ -54,7 +67,6 @@ async def listar_cursos(current_user=Depends(get_current_user)):
 @router.post("/", response_model=CursoListItem)
 async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo curso (Solo SUPER_ADMIN)"""
-    from constants.templates import EVALUATION_TEMPLATES
     
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos para crear cursos")

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -12,19 +12,23 @@ import {
     CheckCircle2,
     PlayCircle,
     FileText,
-    HelpCircle
+    HelpCircle,
+    Award
 } from 'lucide-react';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { CursoDetail, Inscripcion } from '@/types/training';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CursoDetailPage() {
     const { id } = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [curso, setCurso] = useState<CursoDetail | null>(null);
     const [inscripcion, setInscripcion] = useState<Inscripcion | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showCelebration, setShowCelebration] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,6 +39,13 @@ export default function CursoDetailPage() {
                 ]);
                 setCurso(cursoData);
                 setInscripcion(inscripcionData);
+
+                // Activar celebración si viene de completar el último módulo
+                if (searchParams.get('completed') === 'true') {
+                    setShowCelebration(true);
+                    // Limpiar la URL sin refrescar
+                    window.history.replaceState({}, '', `/dashboard/cursos/${id}`);
+                }
             } catch (error) {
                 console.error('Error fetching course detail:', error);
             } finally {
@@ -43,7 +54,7 @@ export default function CursoDetailPage() {
         };
 
         if (id) fetchData();
-    }, [id]);
+    }, [id, searchParams]);
 
     if (isLoading) {
         return (
@@ -165,6 +176,33 @@ export default function CursoDetailPage() {
 
                 {/* Sidebar Info */}
                 <div className="space-y-6">
+                    {/* Tarjeta de Certificado si está completado */}
+                    {isEnrolled && inscripcion.progreso === 100 && (
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg border-0"
+                        >
+                            <div className="flex items-center space-x-3 mb-4">
+                                <div className="p-2 bg-white/20 rounded-lg">
+                                    <Award className="h-6 w-6 text-white" />
+                                </div>
+                                <h3 className="text-xl font-bold">¡Felicitaciones!</h3>
+                            </div>
+                            <p className="text-white/90 text-sm mb-6">
+                                Completaste con éxito todas las instancias de esta capacitación profesional.
+                            </p>
+                            <Button
+                                className="w-full bg-white text-emerald-600 hover:bg-emerald-50 font-bold py-6 text-lg"
+                                asChild
+                            >
+                                <Link href={`/dashboard/certificados?curso=${curso.id}`}>
+                                    Descargar Credencial
+                                </Link>
+                            </Button>
+                        </motion.div>
+                    )}
+
                     <Card>
                         <h3 className="text-lg font-bold text-slate-900 mb-4">Sobre esta capacitación</h3>
                         <div className="space-y-4">
@@ -222,6 +260,51 @@ export default function CursoDetailPage() {
                     )}
                 </div>
             </div>
+
+            {/* Overlay de Celebración */}
+            <AnimatePresence>
+                {showCelebration && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                        onClick={() => setShowCelebration(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.5, y: 100 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.5, y: 100 }}
+                            className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl overflow-hidden relative"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            {/* Partículas visuales */}
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-secondary to-primary" />
+
+                            <div className="mb-6 relative">
+                                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+                                <Award className="h-20 w-20 text-primary mx-auto relative animate-bounce" />
+                            </div>
+
+                            <h2 className="text-3xl font-extrabold text-slate-900 mb-2">
+                                ¡Curso Completado!
+                            </h2>
+                            <p className="text-slate-700 mb-8">
+                                Felicitaciones por completar satisfactoriamente <strong>{curso.nombre}</strong>. Tu esfuerzo ha dado frutos.
+                            </p>
+
+                            <div className="space-y-3">
+                                <Button
+                                    className="w-full py-6 text-lg font-bold shadow-lg shadow-primary/20"
+                                    onClick={() => setShowCelebration(false)}
+                                >
+                                    ¡Genial!
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

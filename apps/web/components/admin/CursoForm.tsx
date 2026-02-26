@@ -29,6 +29,19 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
     });
     const [isCheckingCode, setIsCheckingCode] = useState(false);
     const [isCodeAvailable, setIsCodeAvailable] = useState<boolean | null>(null);
+    const [templates, setTemplates] = useState<{ id: string, titulo: string, preguntas: number }[]>([]);
+
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            try {
+                const data = await cursosApi.obtenerPlantillas();
+                setTemplates(data);
+            } catch (error) {
+                console.error('Error fetching templates:', error);
+            }
+        };
+        fetchTemplates();
+    }, []);
 
     // Generar código automáticamente basado en el nombre
     useEffect(() => {
@@ -256,9 +269,11 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 onChange={(e) => setFormData(prev => ({ ...prev, evaluationTemplateId: e.target.value }))}
                             >
                                 <option value="">No crear evaluación automáticamente</option>
-                                <option value="MANEJO_DEFENSIVO_LIVIANO">Manejo Defensivo Livianos (3 preguntas)</option>
-                                <option value="MANEJO_DEFENSIVO_PESADO">Manejo Defensivo Pesados (2 preguntas)</option>
-                                <option value="PRIMEROS_AUXILIOS">Primeros Auxilios y RCP (2 preguntas)</option>
+                                {templates.map(template => (
+                                    <option key={template.id} value={template.id}>
+                                        {template.titulo} ({template.preguntas} preguntas)
+                                    </option>
+                                ))}
                             </select>
                             <p className="text-xs text-slate-500 italic">
                                 Al seleccionar una plantilla, se creará automáticamente un módulo de examen al final del curso.

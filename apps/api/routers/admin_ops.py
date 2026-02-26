@@ -10,6 +10,7 @@ from core.database import prisma
 
 router = APIRouter()
 
+
 @router.get("/health", tags=["admin"])
 async def get_system_health(current_user: UserResponse = Depends(get_current_user)):
     """

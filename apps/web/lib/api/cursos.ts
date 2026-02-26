@@ -17,6 +17,13 @@ export const cursosApi = {
     },
 
     /**
+     * Listar plantillas de evaluación disponibles
+     */
+    async obtenerPlantillas(): Promise<any[]> {
+        return api.get('/cursos/templates');
+    },
+
+    /**
      * Obtener detalle de un curso con sus módulos
      */
     async obtenerCurso(id: string): Promise<CursoDetail> {

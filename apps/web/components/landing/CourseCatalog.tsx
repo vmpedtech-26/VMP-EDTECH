@@ -1,88 +1,54 @@
 'use client';
 
-import { useState } from 'react';
-import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone, BookOpen, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { publicApi } from '@/lib/api/public';
+import { Curso } from '@/types/training';
 
-interface Course {
-    id: string;
-    slug: string;
-    icon: any;
-    title: string;
-    category: string;
-    duration: string;
-    modality: string;
-    validity: string;
-    minScore: string;
-
-    description: string;
-    image: string;
-}
-
-
-
+const CATEGORY_MAP: Record<string, { icon: any, label: string, color: string }> = {
+    'Transporte': { icon: Truck, label: 'Transporte', color: 'bg-blue-500' },
+    'Preventivo': { icon: Shield, label: 'Preventivo', color: 'bg-emerald-500' },
+    'Especializado': { icon: Mountain, label: 'Especializado', color: 'bg-amber-500' },
+    'Default': { icon: BookOpen, label: 'Capacitación', color: 'bg-primary' }
+};
 
 export default function CourseCatalog() {
+    const [courses, setCourses] = useState<Curso[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
 
-    const courses: Course[] = [
-        {
-            id: 'carga-pesada',
-            slug: 'flota-liviana-pesada',
-            icon: Truck,
-            title: 'Conducción Flota Liviana / Pesada',
-            category: 'Transporte',
-            duration: '12 horas',
-            modality: 'Online/Presencial',
-            validity: '24 meses',
-            minScore: '75%',
-
-            description: 'Capacitación especializada para conductores de flotas livianas y pesadas según normativas vigentes.',
-            image: '/images/courses/carga-pesada.png'
-        },
-
-        {
-            id: 'preventivo',
-            slug: 'conduccion-preventiva',
-            icon: Shield,
-            title: 'Conducción Preventiva',
-            category: 'Preventivo',
-            duration: '8 horas',
-            modality: '100% Online',
-            validity: '12 meses',
-            minScore: '70%',
-
-            description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
-            image: '/images/courses/conduccion-preventiva.png'
-        },
-        {
-            id: '2-traccion',
-            slug: 'doble-traccion',
-            icon: Mountain,
-            title: 'Conducción Doble Tracción',
-            category: 'Especializado',
-            duration: '16 horas',
-            modality: 'Presencial',
-            validity: '36 meses',
-            minScore: '80%',
-
-            description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
-            image: '/images/courses/conduccion-2-traccion.png'
-        }
-    ];
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const data = await publicApi.listarCursosPublicos();
+                setCourses(data);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     const tabs = [
         { id: 'all', label: 'Todos' },
-        { id: 'preventivo', label: 'Conducción Preventiva' },
-        { id: 'carga', label: 'Conducción Flota Liviana / Pesada' },
-        { id: '2-traccion', label: 'Conducción Doble Tracción' }
+        { id: 'Transporte', label: 'Transporte' },
+        { id: 'Preventivo', label: 'Seguridad' },
+        { id: 'Especializado', label: 'Técnico' }
     ];
 
     const filteredCourses = activeTab === 'all'
         ? courses
-        : courses.filter(c => c.id.includes(activeTab));
+        : courses.filter(c => {
+            // Intentar inferir categoría o usar default
+            const cat = c.nombre.toLowerCase().includes('conduccion') ? 'Transporte' :
+                c.nombre.toLowerCase().includes('seguridad') ? 'Preventivo' : 'Especializado';
+            return cat === activeTab;
+        });
 
     // Animation variants
     const containerVariants = {
@@ -152,105 +118,106 @@ export default function CourseCatalog() {
 
                 {/* Course Cards */}
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={activeTab}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                    >
-                        {filteredCourses.map((course, index) => {
-                            const Icon = course.icon;
-                            return (
-                                <motion.div
-                                    key={course.id}
-                                    variants={cardVariants}
-                                    className="relative glass-card rounded-2xl overflow-hidden group"
-                                    whileHover={{
-                                        y: -8,
-                                        boxShadow: '0 25px 50px -12px rgba(79, 70, 229, 0.25)',
-                                        transition: { duration: 0.3 }
-                                    }}
-                                    style={{
-                                        transformStyle: 'preserve-3d',
-                                        perspective: 1000
-                                    }}
-                                >
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="h-96 bg-white/50 animate-pulse rounded-2xl" />
+                            ))}
+                        </div>
+                    ) : (
+                        <motion.div
+                            key={activeTab}
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
+                            variants={containerVariants}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                        >
+                            {filteredCourses.map((course, index) => {
+                                // Inferir categoría para estilo
+                                const catKey = course.nombre.toLowerCase().includes('conduccion') ? 'Transporte' :
+                                    course.nombre.toLowerCase().includes('seguridad') ? 'Preventivo' :
+                                        course.nombre.toLowerCase().includes('montaña') ? 'Especializado' : 'Default';
+                                const cat = CATEGORY_MAP[catKey];
+                                const Icon = cat.icon;
 
+                                // Imagen por defecto o basada en categoría
+                                const imageUrl = `/images/courses/${catKey.toLowerCase()}.png`;
 
-                                    {/* Header with Image */}
-                                    <div className="relative h-48 overflow-hidden">
-                                        <Image
-                                            src={course.image}
-                                            alt={course.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent" />
-                                        <div className="absolute top-4 left-4">
-                                            <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
-                                                VMP
-                                            </span>
-                                        </div>
-                                        <div className="absolute bottom-4 left-6">
-                                            <motion.div
-                                                whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                                                transition={{ duration: 0.5 }}
-                                            >
+                                return (
+                                    <motion.div
+                                        key={course.id}
+                                        variants={cardVariants}
+                                        className="relative glass-card rounded-2xl overflow-hidden group"
+                                        whileHover={{
+                                            y: -8,
+                                            boxShadow: '0 25px 50px -12px rgba(79, 70, 229, 0.25)',
+                                            transition: { duration: 0.3 }
+                                        }}
+                                    >
+                                        {/* Header with Image */}
+                                        <div className="relative h-48 overflow-hidden bg-slate-100">
+                                            {/* Usamos un fallback visual si la imagen no existe */}
+                                            <div className={`absolute inset-0 ${cat.color} opacity-10`} />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
+                                            <div className="absolute top-4 left-4">
+                                                <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
+                                                    {course.codigo}
+                                                </span>
+                                            </div>
+
+                                            <div className="absolute bottom-4 left-6 right-6">
                                                 <Icon className="h-10 w-10 text-white mb-2" />
-                                            </motion.div>
-                                            <h3 className="font-heading font-bold text-2xl text-white mb-1">
-                                                {course.title}
-                                            </h3>
-                                            <p className="text-white/80 text-sm">
-                                                {course.category}
+                                                <h3 className="font-heading font-bold text-2xl text-white mb-1 line-clamp-1">
+                                                    {course.nombre}
+                                                </h3>
+                                                <p className="text-white/80 text-sm">
+                                                    {cat.label}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Content */}
+                                        <div className="p-6 bg-white min-h-[220px] flex flex-col">
+                                            <p className="text-slate-800 mb-6 leading-relaxed line-clamp-3">
+                                                {course.descripcion}
                                             </p>
+
+                                            {/* Details */}
+                                            <div className="space-y-3 mb-6 mt-auto">
+                                                <div className="flex items-center text-sm">
+                                                    <Clock className="h-4 w-4 text-primary mr-2" />
+                                                    <span className="text-slate-800">
+                                                        <strong>Duración:</strong> {course.duracionHoras} horas
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center text-sm">
+                                                    <Award className="h-4 w-4 text-primary mr-2" />
+                                                    <span className="text-slate-800">
+                                                        <strong>Vigencia:</strong> {course.vigenciaMeses || 12} meses
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* CTA */}
+                                            <Link
+                                                href={`/registro?curso=${course.id}`}
+                                                className="block w-full text-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                                            >
+                                                Inscribirse Ahora
+                                            </Link>
                                         </div>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="p-6 bg-white">
-                                        <p className="text-slate-800 mb-6 leading-relaxed">
-                                            {course.description}
-                                        </p>
-
-                                        {/* Details */}
-                                        <div className="space-y-3 mb-6">
-                                            <div className="flex items-center text-sm">
-                                                <Clock className="h-4 w-4 text-primary mr-2" />
-                                                <span className="text-slate-800">
-                                                    <strong>Duración:</strong> {course.duration}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center text-sm">
-                                                <Smartphone className="h-4 w-4 text-primary mr-2" />
-                                                <span className="text-slate-800">
-                                                    <strong>Modalidad:</strong> {course.modality}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center text-sm">
-                                                <Award className="h-4 w-4 text-primary mr-2" />
-                                                <span className="text-slate-800">
-                                                    <strong>Vigencia:</strong> {course.validity}
-                                                </span>
-                                            </div>
-                                        </div>
-
-
-
-                                        {/* CTA */}
-                                        <Link
-                                            href={`/cursos/${course.slug}`}
-                                            className="block w-full text-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
-                                        >
-                                            Ver Detalles
-                                        </Link>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
+                                    </motion.div>
+                                );
+                            })}
+                            {filteredCourses.length === 0 && !isLoading && (
+                                <div className="col-span-full py-20 text-center">
+                                    <p className="text-slate-500 text-lg">Próximamente más capacitaciones en esta categoría.</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
                 {/* Bottom CTA */}
