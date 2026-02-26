@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Loader2, Save, ArrowLeft } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Video, ScrollText } from 'lucide-react';
 import { Curso } from '@/types/training';
 import { cursosApi } from '@/lib/api/cursos';
 import Link from 'next/link';
@@ -23,6 +23,9 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         duracionHoras: 0,
         vigenciaMeses: 12,
         activo: true,
+        liveClassPlatform: undefined,
+        liveClassUrl: '',
+        evaluationTemplateId: '',
     });
     const [isCheckingCode, setIsCheckingCode] = useState(false);
     const [isCodeAvailable, setIsCodeAvailable] = useState<boolean | null>(null);
@@ -195,6 +198,71 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 value={formData.vigenciaMeses}
                                 onChange={handleChange}
                             />
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-100 space-y-6">
+                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <Video className="h-5 w-5 text-primary" />
+                            Clase en Vivo (Opcional)
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                    Plataforma
+                                </label>
+                                <select
+                                    name="liveClassPlatform"
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                    value={formData.liveClassPlatform || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, liveClassPlatform: e.target.value as any || undefined }))}
+                                >
+                                    <option value="">Ninguna</option>
+                                    <option value="google_meet">Google Meet</option>
+                                    <option value="teams">Microsoft Teams</option>
+                                </select>
+                            </div>
+                            {formData.liveClassPlatform && (
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                        Enlace de la Clase
+                                    </label>
+                                    <input
+                                        type="url"
+                                        name="liveClassUrl"
+                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                        placeholder="https://meet.google.com/..."
+                                        value={formData.liveClassUrl || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-100 space-y-6">
+                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <ScrollText className="h-5 w-5 text-primary" />
+                            Evaluación Automática
+                        </h3>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                Plantilla de Examen
+                            </label>
+                            <select
+                                name="evaluationTemplateId"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                value={formData.evaluationTemplateId || ''}
+                                onChange={(e) => setFormData(prev => ({ ...prev, evaluationTemplateId: e.target.value }))}
+                            >
+                                <option value="">No crear evaluación automáticamente</option>
+                                <option value="MANEJO_DEFENSIVO_LIVIANO">Manejo Defensivo Livianos (3 preguntas)</option>
+                                <option value="MANEJO_DEFENSIVO_PESADO">Manejo Defensivo Pesados (2 preguntas)</option>
+                                <option value="PRIMEROS_AUXILIOS">Primeros Auxilios y RCP (2 preguntas)</option>
+                            </select>
+                            <p className="text-xs text-slate-500 italic">
+                                Al seleccionar una plantilla, se creará automáticamente un módulo de examen al final del curso.
+                            </p>
                         </div>
                     </div>
 

@@ -23,6 +23,10 @@ class CreateCursoRequest(BaseModel):
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
+    # Nuevos campos para automatización
+    liveClassPlatform: Optional[str] = None # "google_meet", "teams"
+    liveClassUrl: Optional[str] = None
+    evaluationTemplateId: Optional[str] = None # Identificador de la plantilla
 
 class UpdateCursoRequest(BaseModel):
     nombre: Optional[str] = None

@@ -54,6 +54,7 @@ async def listar_cursos(current_user=Depends(get_current_user)):
 @router.post("/", response_model=CursoListItem)
 async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo curso (Solo SUPER_ADMIN)"""
+    from constants.templates import EVALUATION_TEMPLATES
     
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos para crear cursos")
@@ -74,6 +75,48 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "activo": True
         }
     )
+
+    modulo_orden = 1
+
+    # 1. Crear Clase en Vivo si se proporcionó URL
+    if data.liveClassUrl:
+        platform_name = "Clase en Vivo (Meet)" if data.liveClassPlatform == "google_meet" else "Clase en Vivo (Teams)"
+        await prisma.modulo.create(
+            data={
+                "cursoId": curso.id,
+                "titulo": platform_name,
+                "orden": modulo_orden,
+                "tipo": "TEORIA",
+                "liveClassUrl": data.liveClassUrl,
+                "liveClassPlatform": data.liveClassPlatform,
+                "contenidoHtml": f"<p>Haga clic en el siguiente enlace para unirse a la clase en vivo:</p><p><a href='{data.liveClassUrl}' target='_blank' class='text-primary font-bold'>{data.liveClassUrl}</a></p>"
+            }
+        )
+        modulo_orden += 1
+
+    # 2. Crear Evaluación si se seleccionó una plantilla
+    if data.evaluationTemplateId and data.evaluationTemplateId in EVALUATION_TEMPLATES:
+        template = EVALUATION_TEMPLATES[data.evaluationTemplateId]
+        
+        modulo_quiz = await prisma.modulo.create(
+            data={
+                "cursoId": curso.id,
+                "titulo": template["titulo"],
+                "orden": modulo_orden,
+                "tipo": "QUIZ"
+            }
+        )
+        
+        for p in template["preguntas"]:
+            await prisma.pregunta.create(
+                data={
+                    "moduloId": modulo_quiz.id,
+                    "pregunta": p["pregunta"],
+                    "opciones": p["opciones"],
+                    "respuestaCorrecta": p["respuestaCorrecta"],
+                    "explicacion": p.get("explicacion")
+                }
+            )
     
     return curso
 

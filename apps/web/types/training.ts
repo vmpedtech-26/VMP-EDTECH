@@ -17,6 +17,23 @@ export interface Curso {
     duracionHoras: number;
     vigenciaMeses?: number;
     activo: boolean;
+    // Campos opcionales para la creación/edición
+    liveClassPlatform?: 'google_meet' | 'teams';
+    liveClassUrl?: string;
+    evaluationTemplateId?: string;
+    empresaId?: string | null;
+}
+
+export interface CreateCursoRequest {
+    nombre: string;
+    descripcion: string;
+    codigo: string;
+    duracionHoras: number;
+    vigenciaMeses?: number;
+    empresaId?: string | null;
+    liveClassPlatform?: string;
+    liveClassUrl?: string;
+    evaluationTemplateId?: string;
 }
 
 export interface ModuloSummary {
