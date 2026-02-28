@@ -381,6 +381,8 @@ async def actualizar_modulo(
     if data.contenidoHtml is not None: update_data["contenidoHtml"] = data.contenidoHtml
     if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
     if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
+    if data.liveClassPlatform is not None: update_data["liveClassPlatform"] = data.liveClassPlatform
+    if data.liveClassDate is not None: update_data["liveClassDate"] = data.liveClassDate
     
     await prisma.modulo.update(where={"id": moduloId}, data=update_data)
     

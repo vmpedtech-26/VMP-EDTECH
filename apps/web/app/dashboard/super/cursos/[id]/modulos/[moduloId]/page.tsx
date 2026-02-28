@@ -5,9 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft, Save, Video, FileText, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Modulo } from '@/types/training';
+import { Modulo, Pregunta, TareaPractica } from '@/types/training';
 import { cursosApi } from '@/lib/api/cursos';
 import Link from 'next/link';
+import { QuizEditor } from '@/components/admin/QuizEditor';
+import { PracticaEditor } from '@/components/admin/PracticaEditor';
 
 export default function ModuloConfigPage() {
     const { id: cursoId, moduloId } = useParams();
@@ -35,10 +37,18 @@ export default function ModuloConfigPage() {
         if (!modulo) return;
         setIsSaving(true);
         try {
-            // TODO: Implement updateModulo in API
-            // For now we'll just log
-            console.log('Saving modulo content:', modulo);
-            alert('Cambios guardados correctamente (Simulado)');
+            await cursosApi.actualizarModulo(cursoId as string, moduloId as string, {
+                titulo: modulo.titulo,
+                orden: modulo.orden,
+                contenidoHtml: modulo.contenidoHtml,
+                videoUrl: modulo.videoUrl,
+                liveClassUrl: modulo.liveClassUrl,
+                liveClassPlatform: modulo.liveClassPlatform,
+                liveClassDate: modulo.liveClassDate,
+                preguntas: modulo.preguntas,
+                tareasPracticas: modulo.tareasPracticas
+            });
+            alert('Cambios guardados correctamente');
         } catch (error) {
             console.error('Error saving modulo:', error);
             alert('Error al guardar');
@@ -119,27 +129,21 @@ export default function ModuloConfigPage() {
             )}
 
             {modulo.tipo === 'QUIZ' && (
-                <Card className="p-8 text-center space-y-4">
-                    <div className="h-16 w-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mx-auto">
-                        <CheckCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold">Editor de Cuestionarios</h3>
-                        <p className="text-slate-700">Pronto podrás agregar y editar las preguntas de este examen.</p>
-                    </div>
-                </Card>
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <QuizEditor
+                        preguntas={modulo.preguntas as any || []}
+                        onChange={(preguntas) => setModulo({ ...modulo, preguntas: preguntas as any })}
+                    />
+                </div>
             )}
 
             {modulo.tipo === 'PRACTICA' && (
-                <Card className="p-8 text-center space-y-4">
-                    <div className="h-16 w-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mx-auto">
-                        <CheckCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold">Tareas Prácticas</h3>
-                        <p className="text-slate-700">Define los requerimientos que el alumno debe subir como evidencia.</p>
-                    </div>
-                </Card>
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <PracticaEditor
+                        tareas={modulo.tareasPracticas as any || []}
+                        onChange={(tareas) => setModulo({ ...modulo, tareasPracticas: tareas as any })}
+                    />
+                </div>
             )}
         </div>
     );

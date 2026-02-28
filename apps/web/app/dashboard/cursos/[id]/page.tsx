@@ -13,7 +13,8 @@ import {
     PlayCircle,
     FileText,
     HelpCircle,
-    Award
+    Award,
+    Video
 } from 'lucide-react';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
@@ -149,6 +150,23 @@ export default function CursoDetailPage() {
                                                 <h3 className={`font-bold ${isDisabled ? 'text-slate-600' : 'text-slate-900'}`}>
                                                     {modulo.titulo}
                                                 </h3>
+                                                {/* Live Class Indicator */}
+                                                {(modulo as any).liveClassUrl && (
+                                                    <div className="flex items-center gap-1.5 mt-1">
+                                                        <span className="relative flex h-2 w-2">
+                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
+                                                            Clase en Vivo
+                                                        </span>
+                                                        {(modulo as any).liveClassDate && (
+                                                            <span className="text-[10px] text-slate-500 font-medium">
+                                                                • {new Date((modulo as any).liveClassDate).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
@@ -157,11 +175,21 @@ export default function CursoDetailPage() {
                                                 {isCompleted ? (
                                                     <CheckCircle2 className="h-6 w-6 text-success" />
                                                 ) : isNext ? (
-                                                    <Button size="sm" asChild>
-                                                        <Link href={`/dashboard/cursos/${curso.id}/modulos/${modulo.id}`}>
-                                                            Iniciar
-                                                        </Link>
-                                                    </Button>
+                                                    <div className="flex items-center gap-2">
+                                                        {(modulo as any).liveClassUrl && (
+                                                            <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 gap-2" asChild>
+                                                                <a href={(modulo as any).liveClassUrl} target="_blank" rel="noopener noreferrer">
+                                                                    <Video className="h-4 w-4" />
+                                                                    Unirse
+                                                                </a>
+                                                            </Button>
+                                                        )}
+                                                        <Button size="sm" asChild>
+                                                            <Link href={`/dashboard/cursos/${curso.id}/modulos/${modulo.id}`}>
+                                                                Iniciar
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
                                                 ) : (
                                                     <span className="text-xs text-slate-600 italic">No disponible</span>
                                                 )}

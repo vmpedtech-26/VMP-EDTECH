@@ -51,6 +51,8 @@ export interface Pregunta {
     id: string;
     pregunta: string;
     opciones: string[];
+    respuestaCorrecta?: number; // Opcional para alumnos, obligatorio para admin
+    explicacion?: string;
 }
 
 export interface PreguntaFeedback {

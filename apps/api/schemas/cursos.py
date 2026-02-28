@@ -150,9 +150,10 @@ class UpdateModuloRequest(BaseModel):
     titulo: Optional[str] = None
     orden: Optional[int] = None
     contenidoHtml: Optional[str] = None
-    videoUrl: Optional[str] = None
     # Live class support
     liveClassUrl: Optional[str] = None
+    liveClassPlatform: Optional[str] = None
+    liveClassDate: Optional[str] = None
     # Optional sync for Quiz/Practica
     preguntas: Optional[List[PreguntaCreate]] = None
     tareasPracticas: Optional[List[TareaCreate]] = None

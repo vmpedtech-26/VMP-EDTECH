@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, ArrowLeft, Save, Video, FileText, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Save, Video, FileText, CheckCircle, Link as LinkIcon, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Modulo } from '@/types/training';
@@ -44,6 +44,9 @@ export default function ModuloConfigPage() {
                 orden: modulo.orden,
                 videoUrl: modulo.videoUrl,
                 contenidoHtml: modulo.contenidoHtml,
+                liveClassUrl: modulo.liveClassUrl,
+                liveClassPlatform: modulo.liveClassPlatform,
+                liveClassDate: modulo.liveClassDate,
                 preguntas: modulo.preguntas,
                 tareasPracticas: modulo.tareasPracticas
             });
@@ -92,6 +95,49 @@ export default function ModuloConfigPage() {
 
             {modulo.tipo === 'TEORIA' && (
                 <div className="grid grid-cols-1 gap-6">
+                    <Card className="p-6 space-y-4 border-none shadow-sm ring-1 ring-gray-100">
+                        <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
+                            <LinkIcon className="h-5 w-5" />
+                            Clase en Vivo (Meet/Teams)
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">URL de la reunión</label>
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                                    placeholder="https://meet.google.com/..."
+                                    value={modulo.liveClassUrl || ''}
+                                    onChange={(e) => setModulo({ ...modulo, liveClassUrl: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Plataforma</label>
+                                <select
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                                    value={modulo.liveClassPlatform || ''}
+                                    onChange={(e) => setModulo({ ...modulo, liveClassPlatform: e.target.value })}
+                                >
+                                    <option value="">Seleccionar plataforma...</option>
+                                    <option value="google_meet">Google Meet</option>
+                                    <option value="teams">Microsoft Teams</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Fecha y Hora (Opcional)</label>
+                                <div className="relative">
+                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                    <input
+                                        type="datetime-local"
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                                        value={modulo.liveClassDate ? modulo.liveClassDate.substring(0, 16) : ''}
+                                        onChange={(e) => setModulo({ ...modulo, liveClassDate: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
                     <Card className="p-6 space-y-4 border-none shadow-sm ring-1 ring-gray-100">
                         <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
                             <Video className="h-5 w-5" />
