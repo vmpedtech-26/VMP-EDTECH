@@ -92,4 +92,18 @@ export const cursosApi = {
     async actualizarModulo(cursoId: string, moduloId: string, data: any): Promise<any> {
         return api.put(`/cursos/${cursoId}/modulos/${moduloId}`, data);
     },
+
+    /**
+     * Registrar asistencia a una clase en vivo
+     */
+    async registrarAsistencia(cursoId: string, moduloId: string): Promise<any> {
+        return api.post(`/cursos/${cursoId}/modulos/${moduloId}/asistir`, {});
+    },
+
+    /**
+     * Obtener reporte de asistencia para un curso (Instructor/Admin)
+     */
+    async obtenerAsistencia(id: string): Promise<any> {
+        return api.get(`/cursos/${id}/asistencia`);
+    },
 };

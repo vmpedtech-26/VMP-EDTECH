@@ -1,9 +1,12 @@
-'use client';
-
 import React from 'react';
-import { Play, Video, ExternalLink } from 'lucide-react';
+import { Play, Video, ExternalLink, CheckCircle2, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { cursosApi } from '@/lib/api/cursos';
+import { toast } from 'sonner';
 
 interface TheoriaViewerProps {
+    cursoId?: string;
+    moduloId?: string;
     titulo: string;
     contenidoHtml?: string;
     videoUrl?: string;
@@ -11,7 +14,25 @@ interface TheoriaViewerProps {
     onComplete: () => void;
 }
 
-export function TheoriaViewer({ titulo, contenidoHtml, videoUrl, liveClassUrl, onComplete }: TheoriaViewerProps) {
+export function TheoriaViewer({ cursoId, moduloId, titulo, contenidoHtml, videoUrl, liveClassUrl, onComplete }: TheoriaViewerProps) {
+    const [isCheckingIn, setIsCheckingIn] = React.useState(false);
+    const [hasCheckedIn, setHasCheckedIn] = React.useState(false);
+
+    const handleCheckIn = async () => {
+        if (!cursoId || !moduloId) return;
+        setIsCheckingIn(true);
+        try {
+            await cursosApi.registrarAsistencia(cursoId, moduloId);
+            setHasCheckedIn(true);
+            toast.success("Asistencia registrada correctamente");
+        } catch (error) {
+            console.error("Error check-in:", error);
+            toast.error("Error al registrar asistencia");
+        } finally {
+            setIsCheckingIn(false);
+        }
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {liveClassUrl && (
@@ -37,15 +58,30 @@ export function TheoriaViewer({ titulo, contenidoHtml, videoUrl, liveClassUrl, o
                             </p>
                         </div>
 
-                        <a
-                            href={liveClassUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full md:w-auto px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
-                        >
-                            Unirse a la Clase
-                            <ExternalLink className="h-5 w-5" />
-                        </a>
+                        <div className="flex flex-col gap-3 w-full md:w-auto">
+                            <a
+                                href={liveClassUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                            >
+                                Unirse a la Clase
+                                <ExternalLink className="h-5 w-5" />
+                            </a>
+
+                            <Button
+                                onClick={handleCheckIn}
+                                disabled={isCheckingIn || hasCheckedIn}
+                                variant="outline"
+                                className={hasCheckedIn
+                                    ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                    : "text-white border-white/20 hover:bg-white/10"}
+                            >
+                                {isCheckingIn ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> :
+                                    hasCheckedIn ? <CheckCircle2 className="h-4 w-4 mr-2" /> : null}
+                                {hasCheckedIn ? "Asistencia Registrada" : "Presente en Clase"}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}

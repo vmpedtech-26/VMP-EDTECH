@@ -9,7 +9,8 @@ from schemas.cursos import (
     CreateCursoRequest,
     UpdateCursoRequest,
     CreateModuloRequest,
-    UpdateModuloRequest
+    UpdateModuloRequest,
+    AsistenciaClaseResponse
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
@@ -209,6 +210,40 @@ async def eliminar_curso(id: str, current_user=Depends(get_current_user)):
     
     await prisma.curso.delete(where={"id": id})
     return {"message": "Curso eliminado exitosamente"}
+
+
+@router.get("/{id}/asistencia")
+async def obtener_asistencia_curso(id: str, current_user=Depends(get_current_user)):
+    """Obtener reporte de asistencia para un curso (Instructor/Admin)"""
+    
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+        
+    # 1. Obtener módulos con clase en vivo
+    modulos_vivos = await prisma.modulo.find_many(
+        where={
+            "cursoId": id,
+            "liveClassUrl": {"not": None}
+        },
+        order={"orden": "asc"}
+    )
+    
+    # 2. Obtener inscritos
+    inscritos = await prisma.inscripcion.find_many(
+        where={"cursoId": id},
+        include={"alumno": True}
+    )
+    
+    # 3. Obtener todas las asistencias del curso
+    asistencias = await prisma.asistenciaclase.find_many(
+        where={"cursoId": id}
+    )
+    
+    return {
+        "modulos": modulos_vivos,
+        "alumnos": [i.alumno for i in inscritos],
+        "asistencias": asistencias
+    }
 
 
 @router.get("/{id}/modulos", response_model=List[ModuloSummary])
@@ -438,3 +473,62 @@ async def eliminar_modulo(
         
     await prisma.modulo.delete(where={"id": moduloId})
     return {"message": "Módulo eliminado exitosamente"}
+
+
+@router.post("/{cursoId}/modulos/{moduloId}/asistir", response_model=AsistenciaClaseResponse)
+async def registrar_asistencia(
+    cursoId: str,
+    moduloId: str,
+    current_user=Depends(get_current_user)
+):
+    """Registrar asistencia a una clase en vivo y marcar módulo como completado"""
+    
+    # 1. Verificar inscripción
+    inscripcion = await prisma.inscripcion.find_first(
+        where={"alumnoId": current_user.id, "cursoId": cursoId}
+    )
+    
+    if not inscripcion:
+        raise HTTPException(status_code=403, detail="No estás inscrito en este curso")
+        
+    # 2. Registrar asistencia
+    try:
+        asistencia = await prisma.asistenciaclase.create(
+            data={
+                "alumnoId": current_user.id,
+                "moduloId": moduloId,
+                "cursoId": cursoId
+            }
+        )
+    except Exception:
+        # Probablemente ya registró asistencia (unique constraint)
+        asistencia = await prisma.asistenciaclase.find_unique(
+            where={
+                "alumnoId_moduloId": {
+                    "alumnoId": current_user.id,
+                    "moduloId": moduloId
+                }
+            }
+        )
+        if not asistencia:
+            raise HTTPException(status_code=500, detail="Error al registrar asistencia")
+
+    # 3. Marcar módulo como completado automáticamente
+    await prisma.modulocompletado.upsert(
+        where={
+            "alumnoId_moduloId": {
+                "alumnoId": current_user.id,
+                "moduloId": moduloId
+            }
+        },
+        data={
+            "create": {
+                "alumnoId": current_user.id,
+                "moduloId": moduloId,
+                "cursoId": cursoId
+            },
+            "update": {}
+        }
+    )
+    
+    return asistencia

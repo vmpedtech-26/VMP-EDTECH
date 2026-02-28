@@ -63,6 +63,10 @@ model User {
   fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
   fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
   
+  asistencias         AsistenciaClase[]
+  evidenciasEnviadas  Evidencia[]      @relation("AlumnoEvidencia")
+  evidenciasEvaluadas Evidencia[]      @relation("EvaluadorEvidencia")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -128,6 +132,9 @@ model Modulo {
   curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   preguntas        Pregunta[]
   
+  asistencias      AsistenciaClase[]
+  tareasPracticas  TareaPractica[]
+  
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -149,7 +156,57 @@ model Pregunta {
   @@map("preguntas")
 }
 
-// TareaPractica eliminado - ya no se usa
+model TareaPractica {
+  id            String  @id @default(uuid())
+  moduloId      String  @map("modulo_id")
+  descripcion   String
+  requiereFoto  Boolean @default(true) @map("requiere_foto")
+  
+  modulo     Modulo      @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  evidencias Evidencia[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tareas_practicas")
+}
+
+model Evidencia {
+  id          String          @id @default(uuid())
+  tareaId     String          @map("tarea_id")
+  alumnoId    String          @map("alumno_id")
+  fotoUrl     String          @map("foto_url")
+  comentario  String?
+  estado      EstadoEvidencia @default(PENDIENTE)
+  feedback    String?
+  evaluadorId String?         @map("evaluador_id")
+
+  tarea    TareaPractica @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  alumno   User          @relation("AlumnoEvidencia", fields: [alumnoId], references: [id])
+  evaluador User?        @relation("EvaluadorEvidencia", fields: [evaluadorId], references: [id])
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([tareaId])
+  @@index([alumnoId])
+  @@map("evidencias")
+}
+
+model AsistenciaClase {
+  id        String   @id @default(uuid())
+  alumnoId  String   @map("alumno_id")
+  moduloId  String   @map("modulo_id")
+  cursoId   String   @map("curso_id")
+  checkIn   DateTime @default(now()) @map("check_in")
+  
+  alumno User   @relation(fields: [alumnoId], references: [id])
+  modulo Modulo @relation(fields: [moduloId], references: [id])
+
+  @@unique([alumnoId, moduloId])
+  @@index([cursoId])
+  @@map("asistencias_clase")
+}
 
 model Inscripcion {
   id        String             @id @default(uuid())

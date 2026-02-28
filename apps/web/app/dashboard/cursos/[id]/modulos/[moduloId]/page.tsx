@@ -121,6 +121,8 @@ export default function ModuloDetailPage() {
             <main className="max-w-5xl mx-auto px-4 pt-12">
                 {modulo.tipo === 'TEORIA' && (
                     <TheoriaViewer
+                        cursoId={id as string}
+                        moduloId={moduloId as string}
                         titulo={modulo.titulo}
                         contenidoHtml={modulo.contenidoHtml}
                         videoUrl={modulo.videoUrl}

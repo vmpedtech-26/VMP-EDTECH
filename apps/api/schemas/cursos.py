@@ -167,3 +167,16 @@ class UpdatePreguntaRequest(BaseModel):
 class UpdateTareaRequest(BaseModel):
     descripcion: Optional[str] = None
     requiereFoto: Optional[bool] = None
+
+# ============= ASISTENCIA SCHEMAS =============
+
+class AsistenciaClaseResponse(BaseModel):
+    id: str
+    alumnoId: str
+    moduloId: str
+    cursoId: str
+    checkIn: str
+    success: bool = True
+    
+    class Config:
+        from_attributes = True
