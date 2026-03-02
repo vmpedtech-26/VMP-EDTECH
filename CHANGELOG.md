@@ -5,6 +5,31 @@ All notable changes to VMP Servicios will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0-beta] - 2026-02-28
+
+### ✨ Attendance & Practical Training Enhancements
+
+#### Attendance Control
+- ✅ **Live Class Attendance System**
+  - New `AsistenciaClase` model and database tracking.
+  - Dedicated Attendance Dashboard for instructors per course.
+  - One-click "Presente en Clase" check-in for students in live modules.
+  - Automatic module completion upon attendance registration.
+
+#### Practical Modules & Evidence
+- ✅ **Restored Practical Workflow**
+  - Re-implemented `TareaPractica` and `Evidencia` models.
+  - New Evidence Review interface for instructors with vibrant status badges.
+  - Enhanced task cards for students with clear feedback for rejected items.
+  - Integrated custom Quiz and Practice editors for administrators.
+
+#### Backend & API
+- ✅ New endpoints for attendance registration and reporting.
+- ✅ Refined evidence submission and evaluation endpoints.
+- ✅ Updated Prisma client and database schemas.
+
+---
+
 ## [1.0.0] - 2026-02-02
 
 ### 🎉 Initial Production Release

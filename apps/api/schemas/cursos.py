@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 # ============= CURSO SCHEMAS =============
 
@@ -175,8 +176,9 @@ class AsistenciaClaseResponse(BaseModel):
     alumnoId: str
     moduloId: str
     cursoId: str
-    checkIn: str
+    checkIn: datetime
     success: bool = True
     
     class Config:
         from_attributes = True
+
