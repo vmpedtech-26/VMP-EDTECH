@@ -9,10 +9,11 @@ class InscripcionDetailResponse(BaseModel):
     id: str
     progreso: int  # 0-100
     estado: str  # NO_INICIADO, EN_PROGRESO, COMPLETADO, APROBADO, REPROBADO
-    inicioDate: Optional[str] = None
-    finDate: Optional[str] = None
+    inicioDate: Optional[datetime] = None
+    finDate: Optional[datetime] = None
     cursoId: str
     alumnoId: str
+    modulosCompletados: List[str] = []  # IDs de módulos completados (para desbloqueo cascada)
     
     class Config:
         from_attributes = True

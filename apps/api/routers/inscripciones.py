@@ -126,7 +126,7 @@ async def inscribirse_en_curso(cursoId: str, current_user=Depends(get_current_us
 
 @router.get("/{cursoId}", response_model=InscripcionDetailResponse)
 async def obtener_inscripcion(cursoId: str, current_user=Depends(get_current_user)):
-    """Obtener estado de inscripción específica"""
+    """Obtener estado de inscripción específica con módulos completados"""
     
     inscripcion = await prisma.inscripcion.find_first(
         where={
@@ -141,7 +141,30 @@ async def obtener_inscripcion(cursoId: str, current_user=Depends(get_current_use
             detail="No estás inscrito en este curso"
         )
     
-    return inscripcion
+    # Obtener IDs de módulos completados por este alumno en este curso
+    completados = await prisma.modulocompletado.find_many(
+        where={
+            "alumnoId": current_user.id,
+            "cursoId": cursoId
+        }
+    )
+    modulos_completados_ids = [c.moduloId for c in completados]
+    
+    # Calcular progreso actual (puede haber cambiado desde la última vez)
+    progreso_actual = await calcular_progreso_curso(current_user.id, cursoId)
+    
+    # Construir respuesta manualmente para incluir modulosCompletados
+    return InscripcionDetailResponse(
+        id=inscripcion.id,
+        progreso=progreso_actual,
+        estado=inscripcion.estado,
+        inicioDate=inscripcion.inicioDate,
+        finDate=inscripcion.finDate,
+        cursoId=inscripcion.cursoId,
+        alumnoId=inscripcion.alumnoId,
+        modulosCompletados=modulos_completados_ids
+    )
+
 
 
 @router.post("/{cursoId}/modulos/{moduloId}/completar", response_model=CompletarModuloResponse)

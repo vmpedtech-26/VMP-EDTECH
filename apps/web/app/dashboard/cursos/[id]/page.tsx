@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -31,31 +31,43 @@ export default function CursoDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [showCelebration, setShowCelebration] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [cursoData, inscripcionData] = await Promise.all([
-                    cursosApi.obtenerCurso(id as string),
-                    inscripcionesApi.obtenerInscripcion(id as string).catch(() => null)
-                ]);
-                setCurso(cursoData);
-                setInscripcion(inscripcionData);
+    const fetchData = useCallback(async () => {
+        try {
+            const [cursoData, inscripcionData] = await Promise.all([
+                cursosApi.obtenerCurso(id as string),
+                inscripcionesApi.obtenerInscripcion(id as string).catch(() => null)
+            ]);
+            setCurso(cursoData);
+            setInscripcion(inscripcionData);
 
-                // Activar celebración si viene de completar el último módulo
-                if (searchParams.get('completed') === 'true') {
-                    setShowCelebration(true);
-                    // Limpiar la URL sin refrescar
-                    window.history.replaceState({}, '', `/dashboard/cursos/${id}`);
-                }
-            } catch (error) {
-                console.error('Error fetching course detail:', error);
-            } finally {
-                setIsLoading(false);
+            // Activar celebración si viene de completar el último módulo
+            if (searchParams.get('completed') === 'true') {
+                setShowCelebration(true);
+                // Limpiar la URL sin refrescar
+                window.history.replaceState({}, '', `/dashboard/cursos/${id}`);
+            }
+        } catch (error) {
+            console.error('Error fetching course detail:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [id, searchParams]);
+
+    // Carga inicial
+    useEffect(() => {
+        if (id) fetchData();
+    }, [fetchData]);
+
+    // Re-fetch cuando el alumno vuelve de un módulo (tab/window focus)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && id) {
+                fetchData();
             }
         };
-
-        if (id) fetchData();
-    }, [id, searchParams]);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [fetchData, id]);
 
     if (isLoading) {
         return (
