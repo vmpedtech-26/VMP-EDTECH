@@ -44,6 +44,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/super' },
         { icon: Users, label: 'Empresas', href: '/dashboard/super/empresas' },
         { icon: Users, label: 'Alumnos', href: '/dashboard/super/alumnos' },
+        { icon: Award, label: 'Fotos', href: '/dashboard/super/participantes' },
         { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
         { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
         { icon: Sliders, label: 'Centro de Control', href: '/dashboard/super/control' },
