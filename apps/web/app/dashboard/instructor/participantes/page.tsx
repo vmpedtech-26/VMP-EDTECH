@@ -172,8 +172,8 @@ export default function ParticipantesPage() {
                                 <option value="all">Todas las empresas</option>
                                 {empresas
                                     .filter(empresa => {
-                                        const term = (empresaSearch || '').toLowerCase();
-                                        const nombre = (empresa.nombre || '').toLowerCase();
+                                        const term = String(empresaSearch || '').toLowerCase();
+                                        const nombre = String(empresa.nombre || '').toLowerCase();
                                         return nombre.includes(term);
                                     })
                                     .map(empresa => (

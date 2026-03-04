@@ -338,10 +338,10 @@ function GenerarCredencialModal({
     }, []);
 
     const filteredAlumnos = alumnos.filter(a => {
-        const term = (alumnoSearch || '').toLowerCase();
-        const nombre = (a.nombre || '').toLowerCase();
-        const apellido = (a.apellido || '').toLowerCase();
-        const dni = (a.dni || '').toLowerCase();
+        const term = String(alumnoSearch || '').toLowerCase();
+        const nombre = String(a.nombre || '').toLowerCase();
+        const apellido = String(a.apellido || '').toLowerCase();
+        const dni = String(a.dni || '').toLowerCase();
         return nombre.includes(term) || apellido.includes(term) || dni.includes(term);
     });
 
@@ -448,9 +448,9 @@ function GenerarCredencialModal({
                                     >
                                         <option value="">Seleccionar curso...</option>
                                         {cursos.filter(c => {
-                                            const term = (cursoSearch || '').toLowerCase();
-                                            const nombre = (c.nombre || '').toLowerCase();
-                                            const codigo = (c.codigo || '').toLowerCase();
+                                            const term = String(cursoSearch || '').toLowerCase();
+                                            const nombre = String(c.nombre || '').toLowerCase();
+                                            const codigo = String(c.codigo || '').toLowerCase();
                                             return nombre.includes(term) || codigo.includes(term);
                                         }).map(c => (
                                             <option key={c.id} value={c.id}>

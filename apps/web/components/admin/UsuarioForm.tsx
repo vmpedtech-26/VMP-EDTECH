@@ -223,8 +223,8 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                                 <option value="">Seleccionar Empresa...</option>
                                 {empresas
                                     .filter(e => {
-                                        const term = (empresaSearch || '').toLowerCase();
-                                        const nombre = (e.nombre || '').toLowerCase();
+                                        const term = String(empresaSearch || '').toLowerCase();
+                                        const nombre = String(e.nombre || '').toLowerCase();
                                         return nombre.includes(term);
                                     })
                                     .map(e => (
