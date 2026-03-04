@@ -3,15 +3,16 @@ import uuid
 from pathlib import Path
 from fastapi import UploadFile, HTTPException
 from typing import Optional
+from core.config import settings
 
 # Configuración
-UPLOAD_DIR = Path("uploads/credenciales")
+UPLOAD_DIR = Path(settings.STORAGE_PATH) / "uploads/credenciales"
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 # Crear directorios si no existen
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-EVIDENCE_DIR = Path("uploads/evidencias")
+EVIDENCE_DIR = Path(settings.STORAGE_PATH) / "uploads/evidencias"
 EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
 
 async def save_credencial_photo(file: UploadFile) -> str:

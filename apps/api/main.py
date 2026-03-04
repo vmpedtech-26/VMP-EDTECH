@@ -37,10 +37,29 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     await connect_db()
-    # Ensure storage directories exist
     os.makedirs(os.path.join(settings.STORAGE_PATH, "credenciales"), exist_ok=True)
     os.makedirs(os.path.join(settings.STORAGE_PATH, "uploads"), exist_ok=True)
     os.makedirs(os.path.join(settings.STORAGE_PATH, "evidencias"), exist_ok=True)
+
+    # Sync pre-seeded static files from repo into persistent volume
+    import shutil
+    base_dir = os.path.dirname(__file__)
+    repo_storage = os.path.join(base_dir, "storage")
+    repo_uploads = os.path.join(base_dir, "uploads")
+    
+    if os.path.exists(repo_storage) and repo_storage != settings.STORAGE_PATH:
+        try:
+            shutil.copytree(repo_storage, settings.STORAGE_PATH, dirs_exist_ok=True)
+            print("Successfully synced pre-seeded storage files to persistent volume")
+        except Exception as e:
+            print(f"Error syncing storage: {e}")
+            
+    if os.path.exists(repo_uploads) and repo_uploads != os.path.join(settings.STORAGE_PATH, "uploads"):
+        try:
+            shutil.copytree(repo_uploads, os.path.join(settings.STORAGE_PATH, "uploads"), dirs_exist_ok=True)
+            print("Successfully synced pre-seeded upload files to persistent volume")
+        except Exception as e:
+            print(f"Error syncing uploads: {e}")
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -87,6 +106,11 @@ app.include_router(contact.router)
 
 # Serve static files (credential PDFs, uploaded photos, etc.)
 app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storage")
+
+uploads_path = os.path.join(settings.STORAGE_PATH, "uploads")
+if not os.path.exists(uploads_path):
+    os.makedirs(uploads_path, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
 
 
 
