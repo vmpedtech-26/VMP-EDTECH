@@ -34,6 +34,7 @@ export default function ParticipantesPage() {
     const [filtroEstado, setFiltroEstado] = useState<string>('all');
     const [loading, setLoading] = useState(true);
     const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+    const [empresaSearch, setEmpresaSearch] = useState('');
 
     useEffect(() => {
         fetchEmpresas();
@@ -155,16 +156,27 @@ export default function ParticipantesPage() {
                             <Building2 className="inline h-4 w-4 mr-1" />
                             Empresa
                         </label>
-                        <select
-                            value={selectedEmpresa}
-                            onChange={(e) => setSelectedEmpresa(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        >
-                            <option value="all">Todas las empresas</option>
-                            {empresas.map(empresa => (
-                                <option key={empresa.id} value={empresa.id}>{empresa.nombre}</option>
-                            ))}
-                        </select>
+                        <div className="space-y-3">
+                            <input
+                                type="text"
+                                placeholder="Buscar empresa por nombre..."
+                                value={empresaSearch}
+                                onChange={(e) => setEmpresaSearch(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <select
+                                value={selectedEmpresa}
+                                onChange={(e) => setSelectedEmpresa(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+                            >
+                                <option value="all">Todas las empresas</option>
+                                {empresas
+                                    .filter(empresa => empresa.nombre.toLowerCase().includes(empresaSearch.toLowerCase()))
+                                    .map(empresa => (
+                                        <option key={empresa.id} value={empresa.id}>{empresa.nombre}</option>
+                                    ))}
+                            </select>
+                        </div>
                     </div>
 
                     {/* Filtro por estado de foto */}

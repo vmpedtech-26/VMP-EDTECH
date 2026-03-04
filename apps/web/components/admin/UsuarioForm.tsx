@@ -40,6 +40,7 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
         password: '',
         activo: initialData?.activo !== undefined ? initialData.activo : true
     });
+    const [empresaSearch, setEmpresaSearch] = useState('');
 
     useEffect(() => {
         if (isSuperAdminView) {
@@ -203,18 +204,30 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                         <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
                             <Building2 className="h-3 w-3 text-gray-300" /> Empresa Asignada
                         </label>
-                        <select
-                            disabled={!isSuperAdminView}
-                            required={formData.rol !== 'SUPER_ADMIN'}
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-slate-700"
-                            value={formData.empresaId}
-                            onChange={(e) => setFormData({ ...formData, empresaId: e.target.value })}
-                        >
-                            <option value="">Seleccionar Empresa...</option>
-                            {empresas.map(e => (
-                                <option key={e.id} value={e.id}>{e.nombre}</option>
-                            ))}
-                        </select>
+                        <div className="space-y-3">
+                            <input
+                                type="text"
+                                placeholder="Buscar empresa por nombre..."
+                                disabled={!isSuperAdminView}
+                                value={empresaSearch}
+                                onChange={(e) => setEmpresaSearch(e.target.value)}
+                                className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-700"
+                            />
+                            <select
+                                disabled={!isSuperAdminView}
+                                required={formData.rol !== 'SUPER_ADMIN'}
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-slate-700 cursor-pointer"
+                                value={formData.empresaId}
+                                onChange={(e) => setFormData({ ...formData, empresaId: e.target.value })}
+                            >
+                                <option value="">Seleccionar Empresa...</option>
+                                {empresas
+                                    .filter(e => e.nombre.toLowerCase().includes(empresaSearch.toLowerCase()))
+                                    .map(e => (
+                                        <option key={e.id} value={e.id}>{e.nombre}</option>
+                                    ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 

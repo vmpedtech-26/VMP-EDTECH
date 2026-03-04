@@ -276,6 +276,7 @@ function GenerarCredencialModal({
     const [isGenerating, setIsGenerating] = useState(false);
     const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
     const [alumnoSearch, setAlumnoSearch] = useState('');
+    const [cursoSearch, setCursoSearch] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -380,18 +381,30 @@ function GenerarCredencialModal({
                                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                                     <BookOpen className="h-4 w-4 text-slate-400" /> Curso
                                 </label>
-                                <select
-                                    value={selectedCurso}
-                                    onChange={(e) => setSelectedCurso(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                                >
-                                    <option value="">Seleccionar curso...</option>
-                                    {cursos.map(c => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.nombre} ({c.codigo})
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="space-y-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar curso por nombre o código..."
+                                        value={cursoSearch}
+                                        onChange={(e) => setCursoSearch(e.target.value)}
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                                    />
+                                    <select
+                                        value={selectedCurso}
+                                        onChange={(e) => setSelectedCurso(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                                    >
+                                        <option value="">Seleccionar curso...</option>
+                                        {cursos.filter(c =>
+                                            c.nombre.toLowerCase().includes(cursoSearch.toLowerCase()) ||
+                                            c.codigo.toLowerCase().includes(cursoSearch.toLowerCase())
+                                        ).map(c => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.nombre} ({c.codigo})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             {selectedAlumnoData && selectedCursoData && (
