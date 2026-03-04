@@ -196,8 +196,8 @@ export default function SuperCredencialesPage() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${isVigente
-                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                                                     }`}>
                                                     <span className={`h-1.5 w-1.5 rounded-full ${isVigente ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                                                     {isVigente ? 'Vigente' : 'Vencida'}
@@ -353,25 +353,27 @@ function GenerarCredencialModal({
                                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                                     <User className="h-4 w-4 text-slate-400" /> Alumno
                                 </label>
-                                <input
-                                    type="text"
-                                    placeholder="Buscar alumno por nombre o DNI..."
-                                    value={alumnoSearch}
-                                    onChange={(e) => setAlumnoSearch(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                />
-                                <select
-                                    value={selectedAlumno}
-                                    onChange={(e) => setSelectedAlumno(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                                >
-                                    <option value="">Seleccionar alumno...</option>
-                                    {filteredAlumnos.map(a => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.nombre} {a.apellido} — DNI {a.dni}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="space-y-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar alumno por nombre o DNI..."
+                                        value={alumnoSearch}
+                                        onChange={(e) => setAlumnoSearch(e.target.value)}
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                                    />
+                                    <select
+                                        value={selectedAlumno}
+                                        onChange={(e) => setSelectedAlumno(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+                                    >
+                                        <option value="">Seleccionar alumno...</option>
+                                        {filteredAlumnos.map(a => (
+                                            <option key={a.id} value={a.id}>
+                                                {a.nombre} {a.apellido} — DNI {a.dni}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
