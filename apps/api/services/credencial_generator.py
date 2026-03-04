@@ -6,6 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.colors import HexColor
+from reportlab.lib.utils import ImageReader
 from core.config import settings
 
 def generate_credencial_number(year: int, sequential: int) -> str:
@@ -272,7 +273,7 @@ def draw_credencial_back(c, data, width, height):
         qr_buffer = generate_qr_code(data['qr_url'])
         qr_size = 10*mm
         qr_x = width - 4*mm - qr_size
-        c.drawImage(qr_buffer, qr_x, foot_y, qr_size, qr_size, mask='auto', preserveAspectRatio=True)
+        c.drawImage(ImageReader(qr_buffer), qr_x, foot_y, qr_size, qr_size, mask='auto', preserveAspectRatio=True)
     c.setFillColor(slate_800)
     c.setFont("Helvetica-Bold", 2.5)
     c.drawRightString(width - 4*mm, foot_y + 10.5*mm, f"N°: {data.get('numero_credencial', '')}")
