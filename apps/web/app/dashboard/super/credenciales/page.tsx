@@ -23,6 +23,7 @@ import { credencialesApi, CredencialListItem } from '@/lib/api/credenciales';
 import { usersApi, UserAdmin } from '@/lib/api/users';
 import { cursosApi } from '@/lib/api/cursos';
 import { useAuth } from '@/lib/auth-context';
+import { getFileUrl } from '@/lib/utils';
 
 interface Curso {
     id: string;
@@ -206,7 +207,7 @@ export default function SuperCredencialesPage() {
                                             <td className="py-4 px-6 text-right">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <a
-                                                        href={c.pdfUrl}
+                                                        href={getFileUrl(c.pdfUrl)}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors"

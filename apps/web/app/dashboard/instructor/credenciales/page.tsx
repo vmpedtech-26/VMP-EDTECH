@@ -22,6 +22,7 @@ import { credencialesApi, CredencialListItem } from '@/lib/api/credenciales';
 import { usersApi, UserAdmin } from '@/lib/api/users';
 import { cursosApi } from '@/lib/api/cursos';
 import { useAuth } from '@/lib/auth-context';
+import { getFileUrl } from '@/lib/utils';
 
 interface Curso {
     id: string;
@@ -88,7 +89,7 @@ export default function InstructorCredencialesPage() {
         setIsDownloadingBatch(true);
         try {
             const res = await credencialesApi.descargarLote(selectedFilterCurso);
-            window.open(res.pdfUrl, '_blank');
+            window.open(getFileUrl(res.pdfUrl), '_blank');
         } catch (error: any) {
             console.error('Error downloading batch:', error);
             alert(error.message || 'Error al generar el lote de credenciales');
@@ -254,7 +255,7 @@ export default function InstructorCredencialesPage() {
                                             </td>
                                             <td className="py-4 px-6 text-right">
                                                 <a
-                                                    href={c.pdfUrl}
+                                                    href={getFileUrl(c.pdfUrl)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors"

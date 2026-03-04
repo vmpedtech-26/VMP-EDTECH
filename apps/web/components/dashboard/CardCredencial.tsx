@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { QrCode, Download, Share2, Shield, Calendar, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Credencial } from '@/types/training';
+import { getFileUrl } from '@/lib/utils';
 
 interface CardCredencialProps {
     credencial: Credencial;
@@ -76,7 +77,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                         variant="primary"
                         size="sm"
                         className="w-full text-[11px]"
-                        onClick={() => window.open(pdfUrl, '_blank')}
+                        onClick={() => window.open(getFileUrl(pdfUrl), '_blank')}
                     >
                         <Download className="h-3.5 w-3.5 mr-1.5" />
                         Descargar PDF
@@ -89,7 +90,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                             if (navigator.share) {
                                 navigator.share({
                                     title: `Credencial VMP - ${curso.nombre}`,
-                                    url: window.location.origin + pdfUrl
+                                    url: getFileUrl(pdfUrl)
                                 });
                             }
                         }}

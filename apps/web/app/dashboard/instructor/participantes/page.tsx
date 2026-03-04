@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Camera, Check, X, Upload, Users, Building2, Filter } from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/lib/api-client';
+import { getFileUrl } from '@/lib/utils';
 
 interface Alumno {
     id: string;
@@ -223,10 +224,11 @@ export default function ParticipantesPage() {
                                 {alumno.fotoCredencial ? (
                                     <>
                                         <Image
-                                            src={alumno.fotoCredencial.fotoUrl}
+                                            src={getFileUrl(alumno.fotoCredencial.fotoUrl)}
                                             alt={`${alumno.nombre} ${alumno.apellido}`}
                                             fill
                                             className="object-cover"
+                                            unoptimized
                                         />
                                         {/* Badge de estado */}
                                         <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold ${alumno.fotoCredencial.estado === 'APROBADA'

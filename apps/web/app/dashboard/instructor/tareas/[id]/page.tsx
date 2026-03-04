@@ -22,6 +22,7 @@ import { Evidencia } from '@/types/training';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { getFileUrl } from '@/lib/utils';
 
 export default function EvaluarEvidenciaPage() {
     const { id } = useParams();
@@ -108,9 +109,8 @@ export default function EvaluarEvidenciaPage() {
                     <div className="relative group rounded-[2.5rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-2xl">
                         <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,transparent,black)] pointer-events-none opacity-20" />
 
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                            src={evidencia.fotoUrl}
+                            src={getFileUrl(evidencia.fotoUrl)}
                             alt="Evidencia del alumno"
                             className="w-full aspect-[4/3] object-contain relative z-10"
                         />
@@ -122,7 +122,7 @@ export default function EvaluarEvidenciaPage() {
                                 className="rounded-2xl shadow-xl h-12 w-12 flex items-center justify-center bg-white/80 backdrop-blur-md border-white/40 border-2 hover:scale-110 transition-transform"
                                 asChild
                             >
-                                <a href={evidencia.fotoUrl} target="_blank" rel="noopener noreferrer">
+                                <a href={getFileUrl(evidencia.fotoUrl)} target="_blank" rel="noopener noreferrer">
                                     <Maximize2 className="h-5 w-5 text-slate-900" />
                                 </a>
                             </Button>
