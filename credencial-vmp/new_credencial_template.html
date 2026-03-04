@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credencial VMP - EDTECH</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+            gap: 50px;
+            min-height: 100vh;
+        }
+
+        /* ── Variables de Color ── */
+        :root {
+            --primary: #3AAFA9;
+            /* Teal VMP */
+            --primary-light: #5EEAD4;
+            --primary-dark: #2D9E93;
+            --slate-900: #0F172A;
+            /* Texto principal y fondos oscuros */
+            --slate-800: #1E293B;
+            --slate-600: #475569;
+            /* Textos secundarios */
+            --slate-400: #94A3B8;
+            /* Líneas y bordes */
+            --slate-100: #F1F5F9;
+            /* Fondos claritos */
+            --white: #FFFFFF;
+        }
+
+        /* ── Tarjeta CR80 Proporcion ── */
+        .card {
+            width: 856px;
+            height: 540px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--white);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15), 0 5px 15px rgba(15, 23, 42, 0.05);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header Compartido ── */
+        .header {
+            height: 90px;
+            background: var(--slate-900);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decoración sutil en el header */
+        .header::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(58, 175, 169, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 26px;
+            color: var(--white);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-text span.brand-hl {
+            color: var(--primary-light);
+        }
+
+        .logo-text span.divider {
+            font-weight: 300;
+            color: var(--slate-600);
+        }
+
+        .header-badge {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--primary-light);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .badge-line {
+            font-size: 15px;
+            color: var(--white);
+            letter-spacing: 5px;
+        }
+
+        /* ══════════════════════════════════
+     CARA FRONTAL
+  ══════════════════════════════════ */
+        .front-content {
+            flex: 1;
+            display: flex;
+            position: relative;
+            background: var(--white);
+        }
+
+        /* Patrón de fondo geométrico elegante */
+        .front-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(var(--slate-100) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .col-left {
+            flex: 0 0 65%;
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 1;
+            border-right: 1px solid var(--slate-100);
+        }
+
+        .col-right {
+            flex: 1;
+            padding: 35px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(180deg, var(--white) 0%, var(--slate-100) 100%);
+            z-index: 1;
+        }
+
+        /* Campos Izquierda */
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-label {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--slate-600);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .field-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--slate-900);
+            line-height: 1.4;
+            border-bottom: 2px solid var(--slate-400);
+            padding-bottom: 4px;
+            min-height: 29px;
+            /* Placeholder spacing */
+        }
+
+        .field-value.large {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+
+
+        /* Firma Block */
+        .signature-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .sig-img {
+            height: 60px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            margin-bottom: -5px;
+        }
+
+        .sig-line {
+            width: 60%;
+            height: 1px;
+            background: var(--slate-400);
+            margin-bottom: 8px;
+        }
+
+        .sig-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .sig-role {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--slate-600);
+        }
+
+        /* Profile Photo Block */
+        .profile-photo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            margin-top: 10px;
+        }
+
+        .profile-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 4px solid var(--white);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+            background-color: var(--slate-100);
+        }
+
+
+        /* ══════════════════════════════════
+     CARA POSTERIOR
+  ══════════════════════════════════ */
+        .back-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 35px 40px;
+            background: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-text-box {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .back-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 10px;
+        }
+
+        .back-course-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            min-height: 26px;
+        }
+
+        .legal-box {
+            background: #FFFBEB;
+            /* Amber muy clarito */
+            border-left: 4px solid #F59E0B;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .legal-icon {
+            font-size: 24px;
+        }
+
+        .legal-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: #92400E;
+            line-height: 1.5;
+        }
+
+        .back-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-top: 1px solid var(--slate-100);
+            padding-top: 25px;
+        }
+
+        .horas-badge {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--slate-100);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--slate-400);
+        }
+
+        .horas-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--slate-600);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .horas-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--slate-900);
+        }
+
+        .logos-container {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        /* Logos estilización limpia */
+        .logo-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .blister-text {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--slate-800);
+            text-align: center;
+        }
+
+        .blister-sub {
+            font-size: 8px;
+            color: var(--slate-600);
+        }
+
+        .nsc-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #1a7f4f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+        }
+
+        .nsc-inner {
+            font-size: 5px;
+            font-weight: 800;
+            color: #1a7f4f;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .sv-box {
+            background: #0EA5E9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .sv-title {
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .sv-sub {
+            font-size: 7px;
+            opacity: 0.9;
+        }
+
+        /* ── Divider Interfaz ── */
+        .ui-divider {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 856px;
+            margin: 20px 0;
+        }
+
+        .ui-line {
+            flex: 1;
+            height: 1px;
+            background: var(--slate-400);
+            opacity: 0.5;
+        }
+
+        .ui-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--slate-600);
+            letter-spacing: 2px;
+        }
+
+        /* Utilities */
+        .print-hide {
+            display: flex;
+        }
+
+        @media print {
+            body {
+                background: transparent;
+                padding: 0;
+            }
+
+            .ui-divider {
+                display: none;
+            }
+
+            .card {
+                box-shadow: none;
+                border-radius: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════ CARA FRONTAL ══════════ -->
+    <div class="card">
+        <div class="header">
+            <div class="logo-text">VMP <span class="divider">|</span> <span class="brand-hl">EDTECH</span></div>
+            <div class="header-badge">
+                <span class="badge-line">CREDENCIAL OFICIAL</span>
+                <span>CAPACITACIÓN VIAL PROFESIONAL</span>
+            </div>
+        </div>
+
+        <div class="front-content">
+            <div class="front-bg-pattern"></div>
+
+            <div class="col-left">
+                <div>
+                    <div class="row-2">
+                        <div class="field-group">
+                            <span class="field-label">Apellido</span>
+                            <div class="field-value large"></div>
+                        </div>
+                        <div class="field-group">
+                            <span class="field-label">Nombre</span>
+                            <div class="field-value large"></div>
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="field-group">
+                            <span class="field-label">DNI / PSP</span>
+                            <div class="field-value"></div>
+                        </div>
+                        <div class="field-group">
+                            <span class="field-label">Puesto</span>
+                            <div class="field-value"></div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <span class="field-label">Empresa</span>
+                        <div class="field-value"></div>
+                    </div>
+
+                    <div class="field-group" style="margin-bottom:0;">
+                        <span class="field-label">Fecha de Evaluación</span>
+                        <div class="field-value"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-right">
+                <div class="profile-photo-container">
+                    <img src="{{FOTO_PERFIL}}" alt="Foto de Perfil" class="profile-photo" />
+                </div>
+
+                <div class="signature-block">
+                    <img class="sig-img" src="{{BASE64}}" alt="Firma Instructor" />
+                    <div class="sig-line"></div>
+                    <div class="sig-name">Pedro Orejas</div>
+                    <div class="sig-role">Instructor VMP | Mat. N° 2206825</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-divider print-hide">
+        <div class="ui-line"></div>
+        <div class="ui-label">REVERSO</div>
+        <div class="ui-line"></div>
+    </div>
+
+    <!-- ══════════ CARA POSTERIOR ══════════ -->
+    <div class="card">
+        <div class="header">
+            <div class="logo-text">VMP <span class="divider">|</span> <span class="brand-hl">EDTECH</span></div>
+            <div class="header-badge">
+                <span class="badge-line">CREDENCIAL OFICIAL</span>
+                <span>CAPACITACIÓN VIAL PROFESIONAL</span>
+            </div>
+        </div>
+
+        <div class="back-content">
+            <div class="back-text-box">
+                <div class="back-title">Esta credencial certifica que su titular ha aprobado la capacitación de:</div>
+                <div class="back-course-name"></div>
+            </div>
+
+            <div class="legal-box">
+                <div class="legal-icon">⚠️</div>
+                <div class="legal-text">
+                    Este comprobante no reemplaza a la licencia de conducir, único documento habilitante y con validez a
+                    los efectos legales.
+                </div>
+            </div>
+
+            <!-- Firma en la parte posterior tmb -->
+            <div style="display:flex; justify-content:center; align-items:center;">
+                <div class="signature-block" style="transform: scale(0.9);">
+                    <div
+                        style="font-size:9px; font-weight:700; color:var(--slate-400); text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">
+                        Acreditado por</div>
+                    <img class="sig-img" src="{{BASE64}}" alt="Firma Instructor" />
+                    <div class="sig-name">Pedro Orejas</div>
+                    <div class="sig-role">Instructor VMP | Mat. N° 2206825</div>
+                </div>
+            </div>
+
+            <div class="back-footer">
+                <div class="horas-badge">
+                    <span class="horas-lbl">Carga Horaria</span>
+                    <span class="horas-val">8 HORAS</span>
+                </div>
+
+                <div class="logos-container">
+                    <div class="logo-item" style="border-right:1px solid #E2E8F0; padding-right:32px;">
+                        <div style="font-size:18px;">🇦🇷</div>
+                        <div class="blister-text">Blister Technologies SRL</div>
+                        <div class="blister-sub">blister.com.ar</div>
+                    </div>
+
+                    <div class="logo-item">
+                        <div class="nsc-circle">
+                            <span class="nsc-inner">NATIONAL<br>SAFETY<br><span
+                                    style="font-size:12px;">✚</span><br>COUNCIL</span>
+                        </div>
+                        <div class="blister-sub">Proveedores Oficiales</div>
+                    </div>
+
+                    <div class="logo-item">
+                        <div class="sv-box">
+                            <div class="sv-title" style="color:#BAE6FD;">Seguridad <span style="color:#fff;">Vial</span>
+                            </div>
+                            <div class="sv-sub">Ministerio de Transporte</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -35,15 +35,17 @@ export default function ModuloDetailPage() {
 
     const handleComplete = async (quizData?: { calificacion: number; aprobado: boolean }) => {
         try {
+            // Para módulos QUIZ: si no aprobó, NO persistir como completado
+            // El backend de examenes/enviar-quiz ya registró el intento
+            if (quizData && !quizData.aprobado) return;
+
+            // Marcar módulo como completado en inscripciones
             await inscripcionesApi.completarModulo(
                 id as string,
                 moduloId as string,
                 quizData?.calificacion,
                 quizData?.aprobado
             );
-
-            // Si es un quiz y no aprobó, no avanzamos
-            if (quizData && !quizData.aprobado) return;
 
             // Obtener el curso para saber cuál es el siguiente módulo
             const curso = await cursosApi.obtenerCurso(id as string);
@@ -55,7 +57,7 @@ export default function ModuloDetailPage() {
                 // Auto-advance al siguiente módulo
                 router.push(`/dashboard/cursos/${id}/modulos/${nextModulo.id}`);
             } else {
-                // Si es el último, volver a la página del curso (o mostrar éxito)
+                // Si es el último, volver a la página del curso
                 router.push(`/dashboard/cursos/${id}?completed=true`);
             }
         } catch (error) {

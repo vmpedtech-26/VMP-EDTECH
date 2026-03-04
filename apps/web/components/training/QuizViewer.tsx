@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { CheckCircle2, XCircle, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronRight, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 import { Pregunta, QuizFeedbackResponse } from '@/types/training';
+import { examenesApi } from '@/lib/api/examenes';
 import { toast } from 'sonner';
 
 interface QuizViewerProps {
@@ -13,6 +15,7 @@ interface QuizViewerProps {
 }
 
 export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
+    const { id: cursoId, moduloId } = useParams();
     const [currentStep, setCurrentStep] = useState(0);
     const [respuestas, setRespuestas] = useState<Record<string, number>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,48 +33,53 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
         }
     };
 
+    const handleRetry = () => {
+        setCurrentStep(0);
+        setRespuestas({});
+        setFeedback(null);
+    };
+
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
-            // In a real app, this would be validated by the backend
-            // For now, we simulate the logic or call the provided onComplete
-            const correctasCount = preguntas.filter((p, idx) => {
-                // Mock: correct answer is always index 0 for testing purposes 
-                // In production, we send selection to backend
-                return respuestas[p.id] === 0;
-            }).length;
+            // Enviar respuestas al backend para evaluación real
+            const result = await examenesApi.enviarQuiz(
+                cursoId as string,
+                moduloId as string,
+                respuestas
+            );
 
-            const calificacion = (correctasCount / preguntas.length) * 100;
-            const aprobado = calificacion >= 70;
+            setFeedback(result);
 
-            await onComplete({ calificacion, aprobado });
+            // Notificar al padre para actualizar progreso
+            await onComplete({
+                calificacion: result.calificacion,
+                aprobado: result.aprobado,
+            });
 
-            if (aprobado) {
-                toast.success('¡Felicidades!', {
-                    description: 'Has aprobado el examen y el módulo ha sido completado.',
+            if (result.aprobado) {
+                toast.success('¡Módulo aprobado!', {
+                    description: `Obtuviste ${result.calificacion.toFixed(0)}% — Módulo completado.`,
                 });
             } else {
-                toast.error('Examen no aprobado', {
-                    description: 'No has alcanzado la nota mínima. Puedes intentarlo de nuevo.',
+                toast.error('No aprobaste esta vez', {
+                    description: `Obtuviste ${result.calificacion.toFixed(0)}%. Necesitás más del 70% para aprobar.`,
                 });
             }
-
-            setFeedback({
-                calificacion,
-                aprobado,
-                respuestasCorrectas: correctasCount,
-                totalPreguntas: preguntas.length,
-                feedback: [], // Detailed feedback omitted for simplicity in mock
-                message: aprobado ? '¡Felicidades! Has aprobado el examen.' : 'Lo sentimos, no has alcanzado la nota mínima.'
-            });
         } catch (err) {
-            console.error('Error submitting quiz:', err);
+            console.error('Error al enviar quiz:', err);
+            toast.error('Error al enviar respuestas', {
+                description: 'Intentá de nuevo en unos segundos.',
+            });
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    // ─── Pantalla de resultado ───────────────────────────────────────────────
     if (feedback) {
+        const puntaje = (feedback.respuestasCorrectas / feedback.totalPreguntas) * 10;
+
         return (
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-in zoom-in duration-500">
                 <div className={`inline-flex p-6 rounded-full ${feedback.aprobado ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
@@ -80,14 +88,27 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
 
                 <div>
                     <h2 className="text-4xl font-bold text-slate-900 mb-2">{feedback.message}</h2>
-                    <p className="text-slate-700 text-lg">Tu calificación final: <span className="font-bold text-slate-900">{feedback.calificacion}%</span></p>
+                    <p className="text-slate-700 text-lg">
+                        Tu puntaje:{' '}
+                        <span className="font-bold text-slate-900">
+                            {puntaje.toFixed(1)} / 10
+                        </span>{' '}
+                        <span className="text-slate-500">({feedback.calificacion.toFixed(0)}%)</span>
+                    </p>
                 </div>
 
                 <Card className="bg-slate-50 border-0 p-8">
                     <div className="flex justify-around items-center">
                         <div className="text-center">
-                            <div className="text-3xl font-bold text-slate-900">{feedback.respuestasCorrectas}</div>
+                            <div className="text-3xl font-bold text-success">{feedback.respuestasCorrectas}</div>
                             <div className="text-xs text-slate-700 uppercase tracking-wider">Correctas</div>
+                        </div>
+                        <div className="h-12 w-px bg-gray-200" />
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-destructive">
+                                {feedback.totalPreguntas - feedback.respuestasCorrectas}
+                            </div>
+                            <div className="text-xs text-slate-700 uppercase tracking-wider">Incorrectas</div>
                         </div>
                         <div className="h-12 w-px bg-gray-200" />
                         <div className="text-center">
@@ -97,11 +118,24 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
                     </div>
                 </Card>
 
-                <div className="pt-4">
-                    {feedback.aprobado ? (
-                        <p className="text-slate-800 mb-6">El módulo ha sido marcado como completado y tu progreso ha sido actualizado.</p>
-                    ) : (
-                        <p className="text-slate-800 mb-6">Puedes revisar el material e intentar nuevamente cuando estés listo.</p>
+                {/* Mínimo requerido */}
+                <div className={`rounded-xl p-4 text-sm font-medium ${feedback.aprobado ? 'bg-success/10 text-success' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                    {feedback.aprobado
+                        ? '✅ Superaste el mínimo requerido (más de 7/10). Módulo completado.'
+                        : '⚠️ Mínimo requerido: más de 7 respuestas correctas de 10 (>70%). Podés intentarlo nuevamente.'}
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                    {!feedback.aprobado && (
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={handleRetry}
+                            className="gap-2"
+                        >
+                            <RotateCcw className="h-4 w-4" />
+                            Intentar de nuevo
+                        </Button>
                     )}
                     <Button
                         size="lg"
@@ -114,12 +148,13 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
         );
     }
 
+    // ─── Pantalla de preguntas ───────────────────────────────────────────────
     const currentPregunta = preguntas[currentStep];
     const selectedOpcion = respuestas[currentPregunta.id];
 
     return (
         <div className="max-w-3xl mx-auto space-y-8">
-            {/* Progress Header */}
+            {/* Encabezado de progreso */}
             <div className="space-y-4">
                 <div className="flex justify-between items-end">
                     <div>
@@ -136,9 +171,13 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
                         style={{ width: `${((currentStep + 1) / preguntas.length) * 100}%` }}
                     />
                 </div>
+                {/* Recordatorio del mínimo */}
+                <p className="text-xs text-slate-500 text-right">
+                    Necesitás más de 7 correctas para aprobar
+                </p>
             </div>
 
-            {/* Question Card */}
+            {/* Tarjeta de pregunta */}
             <Card className="p-8 md:p-12 shadow-xl border-0 ring-1 ring-gray-100">
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8 leading-tight">
                     {currentPregunta.pregunta}
@@ -169,7 +208,7 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
             <div className="flex justify-between items-center pt-4">
                 <div className="flex items-center text-slate-600 text-sm">
                     <AlertCircle className="h-4 w-4 mr-2" />
-                    <span>Selecciona una opción para continuar</span>
+                    <span>Seleccioná una opción para continuar</span>
                 </div>
                 <Button
                     size="lg"

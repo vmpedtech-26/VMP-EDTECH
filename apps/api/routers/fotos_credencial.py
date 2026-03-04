@@ -27,10 +27,16 @@ async def upload_foto_credencial(
     """
     
     # Verificar permisos
-    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN", "ALUMNO"]:
         raise HTTPException(
             status_code=403,
-            detail="Solo instructores pueden subir fotos de credencial"
+            detail="No tienes permisos para subir fotos de credencial"
+        )
+        
+    if current_user.rol == "ALUMNO" and current_user.id != alumnoId:
+        raise HTTPException(
+            status_code=403,
+            detail="Solo puedes subir tu propia foto de credencial"
         )
     
     # Verificar que el alumno existe

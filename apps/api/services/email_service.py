@@ -16,12 +16,15 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     def __init__(self):
-        self.smtp_host = os.getenv("SMTP_HOST", "smtp.sendgrid.net")
-        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        self.smtp_user = os.getenv("SMTP_USER", "apikey")
+        # Hostinger SMTP (puerto 465 SSL) como método principal
+        self.smtp_host = os.getenv("SMTP_HOST", "smtp.hostinger.com")
+        self.smtp_port = int(os.getenv("SMTP_PORT", "465"))
+        self.smtp_user = os.getenv("SMTP_USER", "administracion@vmp-edtech.com")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.email_from = os.getenv("EMAIL_FROM", "noreply@vmp-edtech.com")
-        self.email_ventas = os.getenv("EMAIL_VENTAS", "ventas@vmp-edtech.com")
+        self.email_from = os.getenv("EMAIL_FROM", "administracion@vmp-edtech.com")
+        self.email_ventas = os.getenv("EMAIL_VENTAS", "administracion@vmp-edtech.com")
+        # Puerto 465 usa SSL directo; puerto 587 usa STARTTLS
+        self.use_ssl = self.smtp_port == 465
         
         # Setup Jinja2 for templates
         template_dir = Path(__file__).parent.parent / "templates"
@@ -82,7 +85,8 @@ class EmailService:
                 port=self.smtp_port,
                 username=self.smtp_user,
                 password=self.smtp_password,
-                start_tls=True,
+                use_tls=self.use_ssl,       # SSL directo para puerto 465
+                start_tls=not self.use_ssl, # STARTTLS para puerto 587
             )
             
             logger.info(f"Email sent successfully to {to_email}")

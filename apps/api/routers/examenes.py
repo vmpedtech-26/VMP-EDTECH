@@ -82,8 +82,8 @@ async def enviar_quiz(
     # Calcular calificación (0-100)
     calificacion = (respuestas_correctas / total_preguntas) * 100 if total_preguntas > 0 else 0
     
-    # Determinar si aprobó (70% mínimo)
-    aprobado = calificacion >= 70
+    # Determinar si aprobó (más de 70%, equivalente a más de 7/10)
+    aprobado = calificacion > 70
     
     # Guardar examen en base de datos
     await prisma.examen.create(
@@ -151,7 +151,7 @@ async def enviar_quiz(
             print(f"[CREDENCIAL AUTO-GEN] Error: {e}")
             # No falla el quiz si falla la generación
     else:
-        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
+        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas más de 70% (más de 7 correctas de 10) para aprobar. Puedes intentarlo nuevamente."
     
     return QuizFeedbackResponse(
         calificacion=calificacion,

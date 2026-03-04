@@ -123,6 +123,10 @@ export interface QuizFeedbackResponse {
     totalPreguntas: number;
     feedback: PreguntaFeedback[];
     message: string;
+    credencialInfo?: {
+        numero: string;
+        pdfUrl: string;
+    } | null;
 }
 
 export interface CompletarModuloResponse {

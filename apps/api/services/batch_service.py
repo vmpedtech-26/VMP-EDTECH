@@ -9,7 +9,9 @@ from services.credencial_generator import (
     generate_credencial_number,
     create_credencial_pdf,
     save_credencial_pdf,
-    generate_qr_code
+    generate_qr_code,
+    draw_credencial_front,
+    draw_credencial_back
 )
 from core.config import settings
 
@@ -28,7 +30,8 @@ async def generate_batch_pdf_for_course(curso_id: str, emisor_id: str) -> str:
         include={
             "alumno": {
                 "include": {
-                    "fotos": {"where": {"estado": "APROBADA"}}
+                    "fotos": {"where": {"estado": "APROBADA"}},
+                    "empresa": True
                 }
             },
             "curso": True
@@ -51,60 +54,32 @@ async def generate_batch_pdf_for_course(curso_id: str, emisor_id: str) -> str:
         alumno = cred.alumno
         curso = cred.curso
         
-        # Background - Brand Teal (#3AAFA9)
-        c.setFillColorRGB(0.227, 0.686, 0.662)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
-        
-        # White text
-        c.setFillColorRGB(1, 1, 1)
-        
-        # Logo area
-        c.setFont("Helvetica-Bold", 8)
-        c.drawString(5*mm, 48*mm, "VMP - EDTECH")
-        c.setFont("Helvetica", 6)
-        c.drawString(5*mm, 45*mm, "Credencial Profesional")
-        
         # Student photo
         foto_path = None
         if alumno.fotos:
             foto_path = alumno.fotos[0].fotoUrl.replace("/uploads/", "uploads/")
-            
-        if foto_path and os.path.exists(foto_path):
-            try:
-                c.drawImage(foto_path, 60*mm, 28*mm, 20*mm, 25*mm, mask='auto')
-            except Exception:
-                pass
-                
-        # Nombre del alumno
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(5*mm, 35*mm, f"{alumno.nombre} {alumno.apellido}")
+
+        empresa_name = alumno.empresa.nombre if alumno.empresa else ""
+
+        pdf_data = {
+            "numero_credencial": cred.numero,
+            "alumno_nombre": f"{alumno.nombre} {alumno.apellido}",
+            "dni": alumno.dni,
+            "curso_nombre": curso.nombre,
+            "curso_codigo": curso.codigo,
+            "fecha_emision": cred.fechaEmision.strftime("%d/%m/%Y") if cred.fechaEmision else "",
+            "fecha_vencimiento": cred.fechaVencimiento.strftime("%d/%m/%Y") if cred.fechaVencimiento else None,
+            "qr_url": cred.qrCodeUrl,
+            "puesto": "Conductor",
+            "empresa_nombre": empresa_name
+        }
         
-        # DNI
-        c.setFont("Helvetica", 8)
-        c.drawString(5*mm, 31*mm, f"DNI: {alumno.dni}")
+        # Front Page
+        draw_credencial_front(c, pdf_data, width, height, foto_path)
+        c.showPage()
         
-        # Curso
-        c.setFont("Helvetica-Bold", 9)
-        c.drawString(5*mm, 26*mm, f"Curso: {curso.nombre}")
-        c.setFont("Helvetica", 7)
-        c.drawString(5*mm, 23*mm, f"Código: {curso.codigo}")
-        
-        # Fechas
-        c.setFont("Helvetica", 7)
-        c.drawString(5*mm, 17*mm, f"Emisión: {cred.fechaEmision.strftime('%d/%m/%Y')}")
-        
-        if cred.fechaVencimiento:
-            c.drawString(5*mm, 14*mm, f"Vence: {cred.fechaVencimiento.strftime('%d/%m/%Y')}")
-            
-        # Número de credencial
-        c.setFont("Helvetica-Bold", 6)
-        c.drawString(5*mm, 3*mm, cred.numero)
-        
-        # QR Code
-        qr_buffer = generate_qr_code(cred.qrCodeUrl)
-        c.drawImage(qr_buffer, 62*mm, 3*mm, 20*mm, 20*mm, mask='auto')
-        
-        # New page for next credential
+        # Back Page
+        draw_credencial_back(c, pdf_data, width, height)
         c.showPage()
         
     c.save()

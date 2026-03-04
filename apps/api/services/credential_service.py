@@ -36,7 +36,10 @@ async def generate_credential_for_student(
         ValueError si el alumno o curso no existen, o si ya existe credencial
     """
     # Verificar alumno
-    alumno = await prisma.user.find_unique(where={"id": alumno_id})
+    alumno = await prisma.user.find_unique(
+        where={"id": alumno_id},
+        include={"empresa": True}
+    )
     if not alumno:
         raise ValueError("Alumno no encontrado")
     
@@ -91,6 +94,8 @@ async def generate_credential_for_student(
     qr_url = f"{frontend_url}/validar/{numero_credencial}"
     
     # Preparar datos del PDF
+    empresa_name = alumno.empresa.nombre if alumno.empresa else ""
+    
     pdf_data = {
         "numero_credencial": numero_credencial,
         "alumno_nombre": f"{alumno.nombre} {alumno.apellido}",
@@ -99,7 +104,9 @@ async def generate_credential_for_student(
         "curso_codigo": curso.codigo,
         "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
         "fecha_vencimiento": fecha_vencimiento.strftime("%d/%m/%Y") if fecha_vencimiento else None,
-        "qr_url": qr_url
+        "qr_url": qr_url,
+        "puesto": "Conductor",
+        "empresa_nombre": empresa_name
     }
     
     # Generar PDF

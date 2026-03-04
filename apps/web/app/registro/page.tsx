@@ -20,6 +20,7 @@ export default function RegisterPage() {
         dni: '',
         telefono: '',
     });
+    const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +30,12 @@ export default function RegisterPage() {
         setError(null);
 
         try {
+            if (!fotoPerfil) {
+                setError('Por favor, selecciona una foto de perfil.');
+                setIsLoading(false);
+                return;
+            }
+
             const response = await api.post('/auth/register', formData);
 
             // Set cookie for Next.js middleware
@@ -37,10 +44,21 @@ export default function RegisterPage() {
             // Also save to localStorage for the auth context
             login(response.access_token, response.user);
 
+            // Subir la foto de la credencial
+            const fotoData = new FormData();
+            fotoData.append('file', fotoPerfil);
+            fotoData.append('alumnoId', response.user.id);
+
+            await api.post('/fotos-credencial/upload', fotoData, {
+                headers: {
+                    'Authorization': `Bearer ${response.access_token}`
+                }
+            });
+
             router.push('/dashboard');
         } catch (error: any) {
             console.error('Registration error:', error);
-            setError(error.message || 'Error al registrarse. Verifique los datos ingresados.');
+            setError(error.message || 'Error al registrarse. Verifique los datos ingresados y el formato de la imagen.');
         } finally {
             setIsLoading(false);
         }
@@ -143,6 +161,30 @@ export default function RegisterPage() {
                                 setFormData({ ...formData, password: e.target.value })
                             }
                         />
+
+                        <div className="flex flex-col space-y-1.5 pt-2">
+                            <label className="text-sm font-medium text-slate-700">Foto de Perfil (Credencial)</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                required
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                        setFotoPerfil(e.target.files[0]);
+                                    }
+                                }}
+                                className="block w-full text-sm text-slate-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-full file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-primary file:text-white
+                                  hover:file:bg-primary-dark
+                                "
+                            />
+                            <p className="text-xs text-slate-500 mt-1">
+                                Esta foto será utilizada para tu credencial oficial. Asegurate de que tu rostro se vea claramente.
+                            </p>
+                        </div>
 
                         <div className="pt-2 text-xs text-slate-700">
                             Al registrarte, aceptás nuestros <Link href="/terminos" className="text-primary hover:underline">Términos y Condiciones</Link> y nuestra <Link href="/privacidad" className="text-primary hover:underline">Política de Privacidad</Link>.
