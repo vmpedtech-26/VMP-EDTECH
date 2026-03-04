@@ -161,11 +161,7 @@ export default function CourseCatalog() {
                                             <div className={`absolute inset-0 ${cat.color} opacity-10`} />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                                            <div className="absolute top-4 left-4">
-                                                <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
-                                                    {course.codigo}
-                                                </span>
-                                            </div>
+
 
                                             <div className="absolute bottom-4 left-6 right-6">
                                                 <Icon className="h-10 w-10 text-white mb-2" />
