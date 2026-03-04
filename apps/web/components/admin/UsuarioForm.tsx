@@ -222,7 +222,11 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                             >
                                 <option value="">Seleccionar Empresa...</option>
                                 {empresas
-                                    .filter(e => e.nombre.toLowerCase().includes(empresaSearch.toLowerCase()))
+                                    .filter(e => {
+                                        const term = (empresaSearch || '').toLowerCase();
+                                        const nombre = (e.nombre || '').toLowerCase();
+                                        return nombre.includes(term);
+                                    })
                                     .map(e => (
                                         <option key={e.id} value={e.id}>{e.nombre}</option>
                                     ))}

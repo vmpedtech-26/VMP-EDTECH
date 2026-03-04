@@ -338,12 +338,11 @@ function GenerarCredencialModal({
     }, []);
 
     const filteredAlumnos = alumnos.filter(a => {
-        const term = alumnoSearch.toLowerCase();
-        return (
-            a.nombre.toLowerCase().includes(term) ||
-            a.apellido.toLowerCase().includes(term) ||
-            a.dni.includes(term)
-        );
+        const term = (alumnoSearch || '').toLowerCase();
+        const nombre = (a.nombre || '').toLowerCase();
+        const apellido = (a.apellido || '').toLowerCase();
+        const dni = (a.dni || '').toLowerCase();
+        return nombre.includes(term) || apellido.includes(term) || dni.includes(term);
     });
 
     const handleGenerar = async () => {
@@ -448,10 +447,12 @@ function GenerarCredencialModal({
                                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
                                     >
                                         <option value="">Seleccionar curso...</option>
-                                        {cursos.filter(c =>
-                                            c.nombre.toLowerCase().includes(cursoSearch.toLowerCase()) ||
-                                            c.codigo.toLowerCase().includes(cursoSearch.toLowerCase())
-                                        ).map(c => (
+                                        {cursos.filter(c => {
+                                            const term = (cursoSearch || '').toLowerCase();
+                                            const nombre = (c.nombre || '').toLowerCase();
+                                            const codigo = (c.codigo || '').toLowerCase();
+                                            return nombre.includes(term) || codigo.includes(term);
+                                        }).map(c => (
                                             <option key={c.id} value={c.id}>
                                                 {c.nombre} ({c.codigo})
                                             </option>

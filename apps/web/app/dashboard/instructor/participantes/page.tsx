@@ -171,7 +171,11 @@ export default function ParticipantesPage() {
                             >
                                 <option value="all">Todas las empresas</option>
                                 {empresas
-                                    .filter(empresa => empresa.nombre.toLowerCase().includes(empresaSearch.toLowerCase()))
+                                    .filter(empresa => {
+                                        const term = (empresaSearch || '').toLowerCase();
+                                        const nombre = (empresa.nombre || '').toLowerCase();
+                                        return nombre.includes(term);
+                                    })
                                     .map(empresa => (
                                         <option key={empresa.id} value={empresa.id}>{empresa.nombre}</option>
                                     ))}
