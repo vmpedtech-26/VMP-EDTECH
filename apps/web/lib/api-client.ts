@@ -49,9 +49,12 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         // Manejo especial para errores de autenticación
         if (response.status === 401) {
             console.error('Authentication error (401):', error.detail);
-            // Si el token ha expirado, podríamos limpiar localStorage y redirigir
-            // pero por ahora solo arrojamos un error más descriptivo
-            throw new Error(error.detail || 'Sesión expirada o inválida. Por favor, inicie sesión de nuevo.');
+            // Translate the raw FastAPI message into a friendly Spanish message
+            let message = error.detail;
+            if (message === 'Could not validate credentials') {
+                message = 'Sesión expirada o inválida. Por favor, inicie sesión de nuevo.';
+            }
+            throw new Error(message || 'Sesión expirada o inválida. Por favor, inicie sesión de nuevo.');
         }
 
         throw new Error(error.detail || 'Error en la petición');
