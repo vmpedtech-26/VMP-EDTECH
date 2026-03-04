@@ -1,0 +1,5 @@
+Attempting to connect with raw python...
+('02e2ca11-4534-437d-8807-cacb1af8373a', 'Manejo Defensivo 2026', True)
+('a981bd7d-94d1-4c80-8530-edc659f683a3', 'REPRODUCTION TEST 1', False)
+('b39545ee-5f74-4ed9-8d56-8b5536defb83', 'Manejo Defensivo', True)
+('ce8a947c-defe-45c5-bc98-1fa592dc5cd3', 'Carga Pesada', True)

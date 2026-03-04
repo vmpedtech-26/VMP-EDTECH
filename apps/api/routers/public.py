@@ -46,7 +46,14 @@ async def list_public_courses():
             },
             order={"nombre": "asc"}
         )
-        return cursos
+        
+        # Filtrar cursos de prueba (test) de la landing page pública
+        cursos_filtrados = [
+            c for c in cursos 
+            if "test" not in c.nombre.lower() and "reproduction" not in c.nombre.lower()
+        ]
+        
+        return cursos_filtrados
     except Exception as e:
         print(f"Error listing public courses: {str(e)}")
         raise HTTPException(
