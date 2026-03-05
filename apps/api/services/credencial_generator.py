@@ -40,16 +40,33 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
     slate_100 = HexColor("#F1F5F9")
     white = HexColor("#FFFFFF")
 
+    primary_dark = HexColor("#2D9E93")
+    
     # Base Background
     c.setFillColor(white)
     c.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # Right column gradient (simulated with light color)
-    c.setFillColor(slate_100)
+    # Subtle gradient/block
+    c.setFillColor(HexColor("#F8FAFC"))
     c.rect(55.6*mm, 0, 30*mm, height - 9*mm, fill=1, stroke=0)
+
+    # Background Watermark
+    c.saveState()
+    c.translate(35*mm, 25*mm)
+    c.rotate(35)
+    c.setFont("Helvetica-Bold", 60)
+    c.setFillColor(HexColor("#F1F5F9"))
+    c.drawCentredString(0, 0, "VMP")
+    c.restoreState()
+
+    # Left edge color bar
+    c.setFillColor(primary_light)
+    c.rect(0, 0, 1.5*mm, height - 9*mm, fill=1, stroke=0)
+    c.setFillColor(slate_900)
+    c.rect(1.5*mm, 0, 0.4*mm, height - 9*mm, fill=1, stroke=0)
     
     def draw_field(x, y, label, value, large=False):
-        c.setFillColor(slate_600)
+        c.setFillColor(primary_dark)
         c.setFont("Helvetica-Bold", 3.2)
         
         label_y = y + 3.5*mm if large else y + 2.5*mm
@@ -99,10 +116,13 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
     photo_x = 61.5*mm
     photo_y = height - 29.5*mm 
     
-    # border & bg
+    # Photo shadow & border
+    c.setFillColor(HexColor("#E2E8F0"))
+    c.roundRect(photo_x + 0.5*mm, photo_y - 0.5*mm, photo_size, photo_size, 1.5*mm, fill=1, stroke=0)
+    
     c.setFillColor(white)
-    c.setStrokeColor(white)
-    c.setLineWidth(1)
+    c.setStrokeColor(primary_dark)
+    c.setLineWidth(0.8)
     c.roundRect(photo_x - 1*mm, photo_y - 1*mm, photo_size + 2*mm, photo_size + 2*mm, 1*mm, fill=1, stroke=1)
     
     if foto_path and os.path.exists(foto_path):
@@ -144,6 +164,10 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
     header_h = 9 * mm
     c.setFillColor(slate_900)
     c.rect(0, height - header_h, width, header_h, fill=1, stroke=0)
+    
+    # Ribbon under header
+    c.setFillColor(primary_light)
+    c.rect(0, height - header_h - 0.7*mm, width, 0.7*mm, fill=1, stroke=0)
 
     c.setFillColor(white)
     c.setFont("Helvetica-Bold", 9)
@@ -173,11 +197,30 @@ def draw_credencial_back(c, data, width, height):
 
     c.setFillColor(white)
     c.rect(0, 0, width, height, fill=1, stroke=0)
+
+    # Background Watermark
+    c.saveState()
+    c.translate(width/2, height/2 - 5*mm)
+    c.rotate(30)
+    c.setFont("Helvetica-Bold", 55)
+    c.setFillColor(HexColor("#F1F5F9")) 
+    c.drawCentredString(0, 0, "EDTECH")
+    c.restoreState()
+
+    # Left edge color bar
+    c.setFillColor(primary_dark)
+    c.rect(0, 0, 1.5*mm, height - 9*mm, fill=1, stroke=0)
+    c.setFillColor(slate_900)
+    c.rect(1.5*mm, 0, 0.4*mm, height - 9*mm, fill=1, stroke=0)
     
     # Header
     header_h = 9 * mm
     c.setFillColor(slate_900)
     c.rect(0, height - header_h, width, header_h, fill=1, stroke=0)
+
+    # Ribbon under header
+    c.setFillColor(primary_light)
+    c.rect(0, height - header_h - 0.7*mm, width, 0.7*mm, fill=1, stroke=0)
 
     c.setFillColor(white)
     c.setFont("Helvetica-Bold", 9)
