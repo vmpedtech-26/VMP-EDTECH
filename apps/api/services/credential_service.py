@@ -73,7 +73,8 @@ async def generate_credential_for_student(
             }
         )
         if foto_credencial and foto_credencial.fotoUrl:
-            foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
+            filename = foto_credencial.fotoUrl.split("/")[-1]
+            foto_path = os.path.join(settings.STORAGE_PATH, "uploads", "credenciales", filename)
     except Exception:
         pass  # Si no hay foto, continuar sin ella
     
