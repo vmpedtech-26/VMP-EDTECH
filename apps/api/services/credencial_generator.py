@@ -93,9 +93,9 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
     draw_field(left_1, y_row4, "Fecha de Evaluación", data.get('fecha_emision', ''))
 
     # Photo Box
-    photo_size = 13.5*mm
-    photo_x = 64.5*mm
-    photo_y = height - 26*mm 
+    photo_size = 18.5*mm
+    photo_x = 61.5*mm
+    photo_y = height - 29.5*mm 
     
     # border & bg
     c.setFillColor(white)
@@ -115,9 +115,9 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
 
     # Signature
     sig_y = 6*mm
-    sig_x = 63*mm
-    sig_w = 16.5*mm
-    sig_h = 7*mm
+    sig_x = 61.5*mm
+    sig_w = 20*mm
+    sig_h = 10*mm
     
     try:
         sig_path = os.path.join(os.path.dirname(__file__), "..", "assets", "signature_clean.png")
@@ -245,25 +245,25 @@ def draw_credencial_back(c, data, width, height):
     c.drawCentredString(ch_box_x + ch_box_w/2, foot_y + 2.5*mm, "8 HORAS")
     
     # Signature reverse
-    sig2_w = 12*mm
-    sig2_h = 5*mm
+    sig2_w = 16*mm
+    sig2_h = 8*mm
     sig2_x = 36*mm
     sig2_y = foot_y + 1*mm
     
     c.setFillColor(slate_400)
     c.setFont("Helvetica-Bold", 3)
-    c.drawCentredString(sig2_x + sig2_w/2, sig2_y + 6*mm, "ACREDITADO POR")
+    c.drawCentredString(sig2_x + sig2_w/2, sig2_y + 6.5*mm, "ACREDITADO POR")
     
     try:
         sig_path = os.path.join(os.path.dirname(__file__), "..", "assets", "signature_clean.png")
         if os.path.exists(sig_path):
-            c.drawImage(sig_path, sig2_x, sig2_y + 2*mm, width=sig2_w, height=sig2_h, mask='auto', preserveAspectRatio=True)
+            c.drawImage(sig_path, sig2_x, sig2_y + 1.5*mm, width=sig2_w, height=sig2_h, mask='auto', preserveAspectRatio=True)
     except:
         pass
     
     c.setFillColor(slate_900)
     c.setFont("Helvetica-Bold", 2.8)
-    c.drawCentredString(sig2_x + sig2_w/2, sig2_y + 0.8*mm, "Pedro Orejas")
+    c.drawCentredString(sig2_x + sig2_w/2, sig2_y + 0.5*mm, "Pedro Orejas")
     c.setFillColor(slate_600)
     c.setFont("Helvetica-Bold", 1.8)
     c.drawCentredString(sig2_x + sig2_w/2, sig2_y, "Instructor VMP | Mat. N° 2206825")
