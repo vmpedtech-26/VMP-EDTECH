@@ -51,7 +51,9 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
     def draw_field(x, y, label, value, large=False):
         c.setFillColor(slate_600)
         c.setFont("Helvetica-Bold", 3.2)
-        c.drawString(x, y + 2*mm, label.upper())
+        
+        label_y = y + 3.5*mm if large else y + 2.5*mm
+        c.drawString(x, label_y, label.upper())
         
         c.setStrokeColor(slate_400)
         c.setLineWidth(0.5)
@@ -62,7 +64,7 @@ def draw_credencial_front(c, data, width, height, foto_path=None):
         
         if large:
             c.setFillColor(slate_900)
-            c.setFont("Helvetica-Bold", 6.2)
+            c.setFont("Helvetica-Bold", 7.0)
             c.drawString(x, y + 0.5*mm, value.upper())
         else:
             c.setFillColor(slate_900)
