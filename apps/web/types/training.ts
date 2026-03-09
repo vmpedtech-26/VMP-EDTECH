@@ -17,6 +17,7 @@ export interface Curso {
     duracionHoras: number;
     vigenciaMeses?: number;
     activo: boolean;
+    imagenUrl?: string;
     // Campos opcionales para la creación/edición
     liveClassPlatform?: 'google_meet' | 'teams';
     liveClassUrl?: string;

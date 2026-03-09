@@ -13,6 +13,62 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: 'nuevas-tecnologias-seguridad-vial-abril-2026',
+    title: 'Impacto de la Inteligencia Artificial en la Seguridad Vial (Abril 2026)',
+    excerpt: 'Análisis de las últimas implementaciones de IA en cabinas de camiones pesados durante el primer trimestre de 2026 y cómo están reduciendo la siniestralidad.',
+    content: `
+      <h2>Revolución Tecnológica en las Rutas durante 2026</h2>
+      <p>A partir de marzo y abril de 2026, las principales empresas de logística en Argentina han comenzado a implementar sistemas avanzados de asistencia a la conducción (ADAS) impulsados por Inteligencia Artificial, marcando un hito en la seguridad vial de la región.</p>
+      
+      <h3>Sistemas de Monitoreo de Fatiga en Tiempo Real</h3>
+      <p>Los nuevos dispositivos instalados en cabina analizan micro-expresiones faciales y el patrón de parpadeo del conductor. Según los primeros datos recolectados en abril de este año, flotas testeadas en la Patagonia han reportado una reducción del 40% en incidentes relacionados con la somnolencia.</p>
+      
+      <ul>
+        <li><strong>Alertas Predictivas:</strong> El sistema advierte de posible fatiga hasta 30 minutos antes de que el conductor lo perciba.</li>
+        <li><strong>Intervención Autónoma:</strong> En casos críticos, los sistemas pueden interactuar con los frenos del vehículo de forma controlada.</li>
+        <li><strong>Registro en Blockchain:</strong> Todos los eventos se registran de forma inmutable, mejorando las pólizas de seguros.</li>
+      </ul>
+
+      <blockquote>
+        "La integración de IA no busca reemplazar al conductor profesional, sino brindarle un copiloto incansable que vela por su seguridad segundo a segundo."
+      </blockquote>
+
+      <h3>Nuevos Formatos de Capacitación</h3>
+      <p>En VMP-EDTECH hemos actualizado nuestros cursos de Conducción Preventiva para incluir simulaciones específicas de cómo interactuar con estos nuevos sistemas ADAS, preparando a los conductores para la nueva normalidad del transporte logístico.</p>
+    `,
+    date: '04 de Abril, 2026',
+    author: 'Ing. Carlos Rodriguez',
+    category: 'Innovación',
+    image: '/images/blog/fleet-safety.png',
+    readTime: '7 min',
+    tags: ['Inteligencia Artificial', 'Tecnología', 'Seguridad Vial', 'Novedades 2026']
+  },
+  {
+    slug: 'actualizacion-normativa-transporte-marzo-2026',
+    title: 'Nuevas Regulaciones para el Transporte de Cargas Generales (Marzo 2026)',
+    excerpt: 'Resumen detallado de la última actualización normativa entrada en vigencia en marzo de 2026 para flotas livianas y pesadas.',
+    content: `
+      <h2>Cambios Clave en la Reglamentación Comercial</h2>
+      <p>Tras la última resolución emitida en marzo de 2026, el marco regulatorio del transporte de cargas generales a nivel nacional ha sufrido modificaciones significativas que todas las empresas deben conocer.</p>
+      
+      <h3>Nuevas Exigencias Documentales y Formativas</h3>
+      <ul>
+        <li><strong>Renovación de Credenciales Digitales:</strong> A partir de este mes, se exige que todas las credenciales de los conductores cuenten con verificación código QR dinámica y encriptada (estándar que nuestras credenciales VMP ya cumplen).</li>
+        <li><strong>Revisiones Técnicas Vehiculares (RTV):</strong> Aumento en la periodicidad de control para unidades con más de 10 años de antigüedad.</li>
+        <li><strong>Límites de Jornada Laboral Flexibles:</strong> Ajustes en los tiempos obligatorios de descanso en viajes de larga distancia, adaptándose a las condiciones climáticas invernales.</li>
+      </ul>
+
+      <h3>¿Cómo prepararse?</h3>
+      <p>Es imperativo revisar la vigencia de los cursos de "Manejo Defensivo" de toda la nómina de conductores. Evite multas de fiscalización manteniendo a su personal con las capacitaciones al día en nuestra plataforma de VMP.</p>
+    `,
+    date: '15 de Marzo, 2026',
+    author: 'Lic. Sofía Méndez',
+    category: 'Normativa',
+    image: '/images/blog/mercosur-transport.png',
+    readTime: '5 min',
+    tags: ['Normativa 2026', 'Regulación', 'Transporte', 'Credenciales']
+  },
+  {
     slug: 'capacitacion-obligatoria-conductores-2025',
     title: 'Capacitación Obligatoria para Conductores Profesionales en 2025',
     excerpt: 'Analizamos los requisitos actuales de capacitación vial obligatoria para conductores profesionales en Argentina y cómo cumplirlos.',

@@ -12,59 +12,101 @@ export function CredentialSection() {
                         <div className="relative">
                             {/* Mock de credencial - Estética Premium */}
                             <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-10 border border-white/50 ring-1 ring-black/[0.03]">
-                                <div className="aspect-[1.6/1] bg-[#0A0A0B] rounded-[1.5rem] p-8 text-white relative overflow-hidden flex flex-col justify-between shadow-2xl">
-                                    {/* Glassmorphism overlays */}
-                                    <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[80px]"></div>
-                                    <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-light/10 rounded-full blur-[60px]"></div>
-
-                                    {/* Micro-mesh pattern */}
-                                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
-
-                                    {/* Header */}
-                                    <div className="relative flex justify-between items-start">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center font-black text-[10px]">V</div>
-                                                <span className="text-[10px] font-black tracking-[0.2em] text-white/90">VMP - EDTECH</span>
+                                <div className="aspect-[1.58/1] bg-white rounded-[1.2rem] shadow-2xl relative overflow-hidden flex flex-col border border-slate-200">
+                                    {/* Franja Superior */}
+                                    <div className="h-[20%] bg-slate-900 w-full relative flex items-center justify-between px-4 sm:px-6 z-10">
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#5EEAD4] rounded-lg flex items-center justify-center font-black text-slate-900 text-lg sm:text-xl">V</div>
+                                            <div className="font-heading font-bold text-white text-base sm:text-xl tracking-wide flex items-center">
+                                                VMP <span className="text-slate-500 mx-1.5 sm:mx-2 text-xs sm:text-sm font-normal">|</span> <span className="text-[#5EEAD4]">EDTECH</span>
                                             </div>
-                                            <div className="text-[8px] uppercase tracking-widest text-white/40 font-medium">Credencial de Competencia Profesional</div>
                                         </div>
-                                        <div className="h-10 w-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center">
-                                            <Shield className="h-5 w-5 text-primary-light" />
+                                        <div className="text-right flex flex-col justify-center">
+                                            <div className="text-white font-bold text-[7px] sm:text-[9px] tracking-widest whitespace-nowrap">CREDENCIAL VÁLIDA</div>
+                                            <div className="text-[#5EEAD4] font-bold text-[6px] sm:text-[7px] tracking-widest whitespace-nowrap mt-0.5">CAPACITACIÓN CONDUCCIÓN PREVENTIVA</div>
                                         </div>
                                     </div>
+                                    <div className="h-1.5 bg-[#5EEAD4] w-full z-10"></div>
 
-                                    {/* User Info */}
-                                    <div className="relative space-y-4">
-                                        <div>
-                                            <div className="text-[8px] uppercase tracking-widest text-white/30 mb-1">Titular</div>
-                                            <div className="text-2xl font-bold tracking-tight">JUAN PÉREZ</div>
+                                    {/* Contenido (WHITE) */}
+                                    <div className="flex-1 bg-white relative p-4 sm:p-6 flex">
+                                        {/* Barra decorativa izquierda */}
+                                        <div className="absolute left-0 top-0 bottom-0 w-1.5 sm:w-2 flex">
+                                            <div className="w-[70%] h-full bg-[#5EEAD4]"></div>
+                                            <div className="flex-1 h-full bg-slate-900"></div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <div className="text-[8px] uppercase tracking-widest text-white/30 mb-0.5">DNI</div>
-                                                <div className="text-xs font-mono text-white/80">12.345.678</div>
-                                            </div>
-                                            <div>
-                                                <div className="text-[8px] uppercase tracking-widest text-white/30 mb-0.5">Credencial ID</div>
-                                                <div className="text-xs font-mono text-white/80">VMP-2026-00123</div>
+                                        {/* Columnas de datos */}
+                                        <div className="ml-3 sm:ml-4 flex-1 flex flex-col justify-center">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div className="space-y-2 sm:space-y-3 flex-1">
+                                                    <div className="flex gap-6 sm:gap-8">
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">APELLIDO</div>
+                                                            <div className="text-slate-900 font-bold text-sm sm:text-lg leading-none mt-1">PÉREZ</div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">NOMBRE</div>
+                                                            <div className="text-slate-900 font-bold text-sm sm:text-lg leading-none mt-1">JUAN</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex gap-6 sm:gap-8">
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">DNI / PSP</div>
+                                                            <div className="text-slate-900 font-bold text-xs sm:text-sm mt-1">12.345.678</div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">PUESTO</div>
+                                                            <div className="text-slate-900 font-bold text-xs sm:text-sm mt-1">Conductor</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5 w-[70%]">EMPRESA</div>
+                                                        <div className="text-slate-900 font-bold text-xs sm:text-sm mt-1">Servicios Petroleros S.A.</div>
+                                                    </div>
+
+                                                    <div className="flex gap-6 sm:gap-8 border-t border-slate-100 pt-1 mt-1 sm:mt-2">
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">FECHA DE EMISIÓN</div>
+                                                            <div className="text-slate-900 font-bold text-xs sm:text-sm mt-1">15/01/26</div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="text-[#2D9E93] font-bold text-[6px] sm:text-[8px] tracking-wider mb-0.5 border-b border-slate-300 pb-0.5">VTO.</div>
+                                                            <div className="text-slate-900 font-bold text-xs sm:text-sm mt-1">15/01/28</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Foto y Firma */}
+                                                <div className="w-[28%] sm:w-[25%] flex flex-col items-center shrink-0">
+                                                    <div className="w-full aspect-[3/3.2] rounded-lg overflow-hidden border-[1.5px] border-[#2D9E93] bg-slate-200">
+                                                        <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=94A3B8&color=fff&size=200" alt="Foto" className="w-full h-full object-cover" />
+                                                    </div>
+
+                                                    <div className="mt-3 sm:mt-4 w-full h-6 sm:h-8 border-b border-slate-400 flex flex-col justify-end items-center relative">
+                                                        <span className="font-serif italic text-slate-800 text-[10px] sm:text-sm absolute -bottom-1">Pedro Orejas</span>
+                                                    </div>
+                                                    <div className="text-[5px] sm:text-[6px] text-slate-500 font-bold uppercase mt-1">Instructor VMP</div>
+                                                    <div className="text-[4px] sm:text-[5px] text-slate-400 font-bold uppercase mt-[1px]">Mat. N° 2206825</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="relative flex justify-between items-end border-t border-white/5 pt-4">
-                                        <div className="space-y-1">
-                                            <div className="text-[8px] uppercase tracking-widest text-white/30">Curso Certificado</div>
-                                            <div className="text-xs font-bold text-primary-light">SEGURIDAD INDUSTRIAL E HIGIENE</div>
-                                            <div className="flex gap-4 mt-2">
-                                                <div className="text-[7px] text-white/40">EMISIÓN <span className="text-white/70 ml-1">15/01/26</span></div>
-                                                <div className="text-[7px] text-white/40">VENCE <span className="text-yellow-500 font-bold ml-1">15/01/28</span></div>
+                                    <div className="h-1.5 bg-[#5EEAD4] w-full z-10"></div>
+                                    <div className="h-[12%] bg-slate-900 w-full flex justify-between items-center px-4 sm:px-6 relative z-10">
+                                        <div className="flex items-center gap-2">
+                                            {/* YPF Mock Logo */}
+                                            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#00326F] rotate-45 flex items-center justify-center border-[0.5px] border-[#F6B40E]">
+                                                <span className="text-white text-[5px] sm:text-[6px] font-bold -rotate-45">YPF</span>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-2 rounded-xl shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                                            <QrCode className="h-8 w-8 text-black" />
+                                        <div className="bg-white p-1 sm:p-1.5 rounded-md sm:rounded-lg shadow-lg absolute -top-4 sm:-top-6 right-4 sm:right-6 rotate-3 hover:rotate-0 transition-transform duration-300 border border-slate-200">
+                                            <QrCode className="w-8 h-8 sm:w-10 sm:h-10 text-black hidden sm:block" />
+                                            <QrCode className="w-6 h-6 text-black sm:hidden" />
                                         </div>
                                     </div>
                                 </div>

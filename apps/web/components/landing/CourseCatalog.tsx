@@ -157,18 +157,20 @@ export default function CourseCatalog() {
                                     >
                                         {/* Header with Image */}
                                         <div className="relative h-48 overflow-hidden bg-slate-100">
-                                            {/* Usamos un fallback visual si la imagen no existe */}
-                                            <div className={`absolute inset-0 ${cat.color} opacity-10`} />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                            <Image
+                                                src={course.imagenUrl || imageUrl}
+                                                alt={course.nombre}
+                                                fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-
-
-                                            <div className="absolute bottom-4 left-6 right-6">
-                                                <Icon className="h-10 w-10 text-white mb-2" />
-                                                <h3 className="font-heading font-bold text-2xl text-white mb-1 line-clamp-1">
+                                            <div className="absolute bottom-4 left-6 right-6 z-10">
+                                                <Icon className="h-8 w-8 text-white mb-3" />
+                                                <h3 className="font-heading font-bold text-2xl text-white mb-1">
                                                     {course.nombre}
                                                 </h3>
-                                                <p className="text-white/80 text-sm">
+                                                <p className="text-white/90 text-sm">
                                                     {cat.label}
                                                 </p>
                                             </div>
@@ -176,8 +178,8 @@ export default function CourseCatalog() {
 
                                         {/* Content */}
                                         <div className="p-6 bg-white min-h-[220px] flex flex-col">
-                                            <p className="text-slate-800 mb-6 leading-relaxed line-clamp-3">
-                                                {course.descripcion}
+                                            <p className="text-slate-800 mb-6 leading-relaxed text-sm">
+                                                {course.descripcion || `Programa integral de capacitación en ${cat.label.toLowerCase()} diseñado para profesionales.`}
                                             </p>
 
                                             {/* Details */}
