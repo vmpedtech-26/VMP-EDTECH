@@ -102,6 +102,7 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
                 "tipo": "TEORIA",
                 "liveClassUrl": data.liveClassUrl,
                 "liveClassPlatform": data.liveClassPlatform,
+                "liveClassDate": data.liveClassDate,
                 "contenidoHtml": f"<p>Haga clic en el siguiente enlace para unirse a la clase en vivo:</p><p><a href='{data.liveClassUrl}' target='_blank' class='text-primary font-bold'>{data.liveClassUrl}</a></p>"
             }
         )
@@ -409,15 +410,11 @@ async def actualizar_modulo(
     if not existing or existing.cursoId != cursoId:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
         
-    # 1. Actualizar campos base
-    update_data = {}
-    if data.titulo is not None: update_data["titulo"] = data.titulo
-    if data.orden is not None: update_data["orden"] = data.orden
-    if data.contenidoHtml is not None: update_data["contenidoHtml"] = data.contenidoHtml
-    if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
-    if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
-    if data.liveClassPlatform is not None: update_data["liveClassPlatform"] = data.liveClassPlatform
-    if data.liveClassDate is not None: update_data["liveClassDate"] = data.liveClassDate
+    # 1. Actualizar campos base usando exclude_unset para permitir limpiar campos enviados como null
+    update_data = data.model_dump(exclude_unset=True)
+    # Quitar las propiedades que no van directo en la tabla modulo
+    update_data.pop("preguntas", None)
+    update_data.pop("tareasPracticas", None)
     
     await prisma.modulo.update(where={"id": moduloId}, data=update_data)
     

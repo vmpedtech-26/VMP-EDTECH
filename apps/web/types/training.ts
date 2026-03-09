@@ -21,6 +21,7 @@ export interface Curso {
     // Campos opcionales para la creación/edición
     liveClassPlatform?: 'google_meet' | 'teams';
     liveClassUrl?: string;
+    liveClassDate?: string;
     evaluationTemplateId?: string;
     empresaId?: string | null;
 }
@@ -34,6 +35,7 @@ export interface CreateCursoRequest {
     empresaId?: string | null;
     liveClassPlatform?: string;
     liveClassUrl?: string;
+    liveClassDate?: string;
     evaluationTemplateId?: string;
 }
 

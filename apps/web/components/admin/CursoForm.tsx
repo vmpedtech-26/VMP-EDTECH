@@ -25,6 +25,7 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         activo: true,
         liveClassPlatform: undefined,
         liveClassUrl: '',
+        liveClassDate: '',
         evaluationTemplateId: '',
     });
     const [isCheckingCode, setIsCheckingCode] = useState(false);
@@ -109,6 +110,13 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         };
 
         await onSubmit(dataToSubmit);
+    };
+
+    const toLocalISO = (dateStr?: string) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '';
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     };
 
     return (
@@ -236,19 +244,33 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 </select>
                             </div>
                             {formData.liveClassPlatform && (
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                                        Enlace de la Clase
-                                    </label>
-                                    <input
-                                        type="url"
-                                        name="liveClassUrl"
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                        placeholder="https://meet.google.com/..."
-                                        value={formData.liveClassUrl || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
+                                <>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                            Enlace de la Clase
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="liveClassUrl"
+                                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                            placeholder="https://meet.google.com/..."
+                                            value={formData.liveClassUrl || ''}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                            Fecha y Hora Programada
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            name="liveClassDate"
+                                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                            value={toLocalISO(formData.liveClassDate)}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, liveClassDate: e.target.value ? new Date(e.target.value).toISOString() : undefined }))}
+                                        />
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>

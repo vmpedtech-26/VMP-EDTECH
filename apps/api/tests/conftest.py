@@ -4,6 +4,7 @@ Configuración de pytest para tests de la API.
 import pytest
 import asyncio
 from typing import Generator, AsyncGenerator
+import httpx
 from httpx import AsyncClient
 from fastapi.testclient import TestClient
 from main import app
@@ -33,7 +34,7 @@ async def client(db) -> AsyncGenerator:
     """
     Fixture para cliente HTTP de prueba.
     """
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
 
@@ -48,17 +49,18 @@ def test_client():
 @pytest.fixture
 async def test_user(db):
     """
-    Fixture para crear un usuario de prueba.
-    """
-    from auth.jwt import hash_password
+    import uuid
+    import random
+    email = f"test_{uuid.uuid4()}@example.com"
+    dni = str(random.randint(10000000, 99999999))
     
     user = await prisma.user.create(
         data={
-            "email": "test@example.com",
+            "email": email,
             "passwordHash": hash_password("testpass123"),
             "nombre": "Test",
             "apellido": "User",
-            "dni": "12345678",
+            "dni": dni,
             "telefono": "1234567890",
             "rol": "ALUMNO",
             "activo": True
@@ -74,17 +76,19 @@ async def test_user(db):
 @pytest.fixture
 async def test_admin(db):
     """
-    Fixture para crear un admin de prueba.
-    """
     from auth.jwt import hash_password
+    import uuid
+    import random
+    email = f"admin_{uuid.uuid4()}@example.com"
+    dni = str(random.randint(10000000, 99999999))
     
     admin = await prisma.user.create(
         data={
-            "email": "admin@example.com",
+            "email": email,
             "passwordHash": hash_password("adminpass123"),
             "nombre": "Admin",
             "apellido": "User",
-            "dni": "87654321",
+            "dni": dni,
             "telefono": "0987654321",
             "rol": "SUPER_ADMIN",
             "activo": True

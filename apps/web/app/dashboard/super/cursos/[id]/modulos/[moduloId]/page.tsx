@@ -33,6 +33,13 @@ export default function ModuloConfigPage() {
         if (cursoId && moduloId) fetchModulo();
     }, [cursoId, moduloId]);
 
+    const toLocalISO = (dateStr?: string) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '';
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    };
+
     const handleSave = async () => {
         if (!modulo) return;
         setIsSaving(true);
@@ -106,6 +113,15 @@ export default function ModuloConfigPage() {
                                 placeholder="https://youtube.com/watch?v=..."
                                 value={modulo.videoUrl || ''}
                                 onChange={(e) => setModulo({ ...modulo, videoUrl: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-600 uppercase">Fecha y Hora de Clase en Vivo</label>
+                            <input
+                                type="datetime-local"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                                value={toLocalISO(modulo.liveClassDate)}
+                                onChange={(e) => setModulo({ ...modulo, liveClassDate: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
                             />
                         </div>
                     </Card>

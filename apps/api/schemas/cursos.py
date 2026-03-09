@@ -27,6 +27,7 @@ class CreateCursoRequest(BaseModel):
     # Nuevos campos para automatización
     liveClassPlatform: Optional[str] = None # "google_meet", "teams"
     liveClassUrl: Optional[str] = None
+    liveClassDate: Optional[datetime] = None
     evaluationTemplateId: Optional[str] = None # Identificador de la plantilla
 
 class UpdateCursoRequest(BaseModel):
@@ -154,7 +155,7 @@ class UpdateModuloRequest(BaseModel):
     # Live class support
     liveClassUrl: Optional[str] = None
     liveClassPlatform: Optional[str] = None
-    liveClassDate: Optional[str] = None
+    liveClassDate: Optional[datetime] = None
     # Optional sync for Quiz/Practica
     preguntas: Optional[List[PreguntaCreate]] = None
     tareasPracticas: Optional[List[TareaCreate]] = None
