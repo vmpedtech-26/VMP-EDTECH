@@ -158,7 +158,7 @@ export default function CourseCatalog() {
                                         {/* Header with Image */}
                                         <div className="relative h-48 overflow-hidden bg-slate-100">
                                             <Image
-                                                src={course.imagenUrl || imageUrl}
+                                                src={imageUrl}
                                                 alt={course.nombre}
                                                 fill
                                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -235,6 +235,6 @@ export default function CourseCatalog() {
                     </Link>
                 </motion.div>
             </div>
-        </section>
+        </section >
     );
 }
