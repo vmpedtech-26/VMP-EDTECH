@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone, BookOpen, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Truck, Shield, Mountain, ArrowRight, Clock, Award, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { publicApi } from '@/lib/api/public';
-import { Curso } from '@/types/training';
 
 const CATEGORY_MAP: Record<string, { icon: any, label: string, color: string }> = {
     'Transporte': { icon: Truck, label: 'Transporte', color: 'bg-blue-500' },
@@ -14,24 +13,38 @@ const CATEGORY_MAP: Record<string, { icon: any, label: string, color: string }> 
     'Default': { icon: BookOpen, label: 'Capacitación', color: 'bg-primary' }
 };
 
-export default function CourseCatalog() {
-    const [courses, setCourses] = useState<Curso[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('all');
+const DISPLAY_COURSES = [
+    {
+        id: 'carga-pesada',
+        nombre: 'Conducción Flota Liviana y Pesada',
+        descripcion: 'Capacitación teórico-práctica para el dominio seguro de unidades livianas y pesadas. Incluye normativas de transporte, manejo de cargas, ergonomía al volante y prevención de fatiga en trayectos largos. Diseñado para maximizar la seguridad vial y la eficiencia operativa de tu flota.',
+        duracionHoras: 16,
+        vigenciaMeses: 12,
+        imageUrl: '/images/courses/carga-pesada.png',
+        categoria: 'Transporte'
+    },
+    {
+        id: 'conduccion-preventiva',
+        nombre: 'Conducción Preventiva y Defensiva',
+        descripcion: 'Aprende a anticipar riesgos, interpretar el entorno vial y reaccionar de forma segura ante situaciones de emergencia. Este programa enseña técnicas avanzadas para reducir accidentes, optimizar el uso del vehículo y proteger la vida del conductor y de terceros en todo tipo de rutas.',
+        duracionHoras: 8,
+        vigenciaMeses: 12,
+        imageUrl: '/images/courses/conduccion-preventiva.png',
+        categoria: 'Preventivo'
+    },
+    {
+        id: 'doble-traccion',
+        nombre: 'Conducción Especializada 4x4',
+        descripcion: 'Desarrolla habilidades críticas para la conducción de vehículos de tracción integral en terrenos complejos, lodo, nieve y ripio. Incluye técnicas de auto-rescate, uso correcto de la doble tracción, evaluación del terreno y preservación del vehículo en condiciones off-road extremas.',
+        duracionHoras: 24,
+        vigenciaMeses: 24,
+        imageUrl: '/images/courses/conduccion-2-traccion.png',
+        categoria: 'Especializado'
+    }
+];
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const data = await publicApi.listarCursosPublicos();
-                setCourses(data);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchCourses();
-    }, []);
+export default function CourseCatalog() {
+    const [activeTab, setActiveTab] = useState('all');
 
     const tabs = [
         { id: 'all', label: 'Todos' },
@@ -41,13 +54,8 @@ export default function CourseCatalog() {
     ];
 
     const filteredCourses = activeTab === 'all'
-        ? courses
-        : courses.filter(c => {
-            // Intentar inferir categoría o usar default
-            const cat = c.nombre.toLowerCase().includes('conduccion') ? 'Transporte' :
-                c.nombre.toLowerCase().includes('seguridad') ? 'Preventivo' : 'Especializado';
-            return cat === activeTab;
-        });
+        ? DISPLAY_COURSES
+        : DISPLAY_COURSES.filter(c => c.categoria === activeTab);
 
     // Animation variants
     const containerVariants = {
@@ -117,101 +125,93 @@ export default function CourseCatalog() {
 
                 {/* Course Cards */}
                 <AnimatePresence mode="wait">
-                    {isLoading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-96 bg-white/50 animate-pulse rounded-2xl" />
-                            ))}
-                        </div>
-                    ) : (
-                        <motion.div
-                            key={activeTab}
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true }}
-                        >
-                            {filteredCourses.map((course, index) => {
-                                // Inferir categoría para estilo
-                                const catKey = course.nombre.toLowerCase().includes('conduccion') ? 'Transporte' :
-                                    course.nombre.toLowerCase().includes('seguridad') ? 'Preventivo' :
-                                        course.nombre.toLowerCase().includes('montaña') ? 'Especializado' : 'Default';
-                                const cat = CATEGORY_MAP[catKey];
-                                const Icon = cat.icon;
+                    <motion.div
+                        key={activeTab}
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                    >
+                        {filteredCourses.map((course) => {
+                            const cat = CATEGORY_MAP[course.categoria] || CATEGORY_MAP['Default'];
+                            const Icon = cat.icon;
 
-                                // Imagen por defecto o basada en categoría
-                                const imageUrl = `/images/courses/${catKey.toLowerCase()}.png`;
+                            return (
+                                <motion.div
+                                    key={course.id}
+                                    variants={cardVariants}
+                                    className="relative bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 group flex flex-col"
+                                    whileHover={{
+                                        y: -8,
+                                        boxShadow: '0 25px 50px -12px rgba(79, 70, 229, 0.25)',
+                                        transition: { duration: 0.3 }
+                                    }}
+                                >
+                                    {/* Header with Real Image */}
+                                    <div className="relative h-56 overflow-hidden w-full flex-shrink-0">
+                                        <Image
+                                            src={course.imageUrl}
+                                            alt={course.nombre}
+                                            fill
+                                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
-                                return (
-                                    <motion.div
-                                        key={course.id}
-                                        variants={cardVariants}
-                                        className="relative glass-card rounded-2xl overflow-hidden group"
-                                        whileHover={{
-                                            y: -8,
-                                            boxShadow: '0 25px 50px -12px rgba(79, 70, 229, 0.25)',
-                                            transition: { duration: 0.3 }
-                                        }}
-                                    >
-                                        {/* Header with Image or Gradient */}
-                                        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-                                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
-                                            <Icon className="h-16 w-16 text-white/50 mb-3 drop-shadow-md transform transition-transform group-hover:scale-110" />
-
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                                            <div className="absolute bottom-4 left-6 right-6 z-10">
-                                                <Icon className="h-8 w-8 text-white mb-3" />
-                                                <h3 className="font-heading font-bold text-2xl text-white mb-1">
-                                                    {course.nombre}
-                                                </h3>
-                                                <p className="text-white/90 text-sm">
-                                                    {cat.label}
-                                                </p>
-                                            </div>
+                                        {/* Icon Badge Container (Matches Screenshot overlay) */}
+                                        <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
+                                            <Icon className="h-5 w-5 text-white" />
                                         </div>
 
-                                        {/* Content */}
-                                        <div className="p-6 bg-white min-h-[220px] flex flex-col">
-                                            <p className="text-slate-800 mb-6 leading-relaxed text-sm">
-                                                {course.descripcion || `Programa integral de capacitación en ${cat.label.toLowerCase()} diseñado para profesionales.`}
+                                        <div className="absolute bottom-4 left-6 right-6 z-10">
+                                            <h3 className="font-heading font-bold text-2xl text-white leading-tight mb-1">
+                                                {course.nombre}
+                                            </h3>
+                                            <p className="text-white/80 text-sm font-medium">
+                                                {cat.label}
                                             </p>
-
-                                            {/* Details */}
-                                            <div className="space-y-3 mb-6 mt-auto">
-                                                <div className="flex items-center text-sm">
-                                                    <Clock className="h-4 w-4 text-primary mr-2" />
-                                                    <span className="text-slate-800">
-                                                        <strong>Duración:</strong> {course.duracionHoras} horas
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center text-sm">
-                                                    <Award className="h-4 w-4 text-primary mr-2" />
-                                                    <span className="text-slate-800">
-                                                        <strong>Vigencia:</strong> {course.vigenciaMeses || 12} meses
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* CTA */}
-                                            <Link
-                                                href={`/registro?curso=${course.id}`}
-                                                className="block w-full text-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                                            >
-                                                Inscribirse Ahora
-                                            </Link>
                                         </div>
-                                    </motion.div>
-                                );
-                            })}
-                            {filteredCourses.length === 0 && !isLoading && (
-                                <div className="col-span-full py-20 text-center">
-                                    <p className="text-slate-500 text-lg">Próximamente más capacitaciones en esta categoría.</p>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="p-6 flex flex-col flex-grow">
+                                        <p className="text-slate-700 mb-6 leading-relaxed text-sm flex-grow">
+                                            {course.descripcion}
+                                        </p>
+
+                                        {/* Details */}
+                                        <div className="space-y-3 mb-6">
+                                            <div className="flex items-center text-sm">
+                                                <Clock className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
+                                                <span className="text-slate-800">
+                                                    <strong>Duración:</strong> {course.duracionHoras} horas
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center text-sm">
+                                                <Award className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
+                                                <span className="text-slate-800">
+                                                    <strong>Vigencia:</strong> {course.vigenciaMeses} meses
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* CTA */}
+                                        <Link
+                                            href={`/registro?curso=${course.id}`}
+                                            className="block w-full text-center px-6 py-3 bg-[#111827] text-white rounded-xl font-medium hover:bg-[#1f2937] hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                                        >
+                                            Inscribirse Ahora
+                                        </Link>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                        {filteredCourses.length === 0 && (
+                            <div className="col-span-full py-20 text-center">
+                                <p className="text-slate-500 text-lg">Próximamente más capacitaciones en esta categoría.</p>
+                            </div>
+                        )}
+                    </motion.div>
                 </AnimatePresence>
 
                 {/* Bottom CTA */}
