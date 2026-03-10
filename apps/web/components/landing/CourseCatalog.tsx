@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone, BookOpen, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { publicApi } from '@/lib/api/public';
 import { Curso } from '@/types/training';
@@ -155,14 +154,11 @@ export default function CourseCatalog() {
                                             transition: { duration: 0.3 }
                                         }}
                                     >
-                                        {/* Header with Image */}
-                                        <div className="relative h-48 overflow-hidden bg-slate-100">
-                                            <Image
-                                                src={imageUrl}
-                                                alt={course.nombre}
-                                                fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                            />
+                                        {/* Header with Image or Gradient */}
+                                        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
+                                            <Icon className="h-16 w-16 text-white/50 mb-3 drop-shadow-md transform transition-transform group-hover:scale-110" />
+
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                                             <div className="absolute bottom-4 left-6 right-6 z-10">
