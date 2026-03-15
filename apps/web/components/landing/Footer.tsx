@@ -76,6 +76,11 @@ export default function Footer() {
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">RECURSOS</h3>
                         <ul className="space-y-2">
                             <li>
+                                <Link href="/#quienes-somos" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    Quiénes Somos
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/blog" className="text-slate-300 hover:text-primary text-sm transition-colors">
                                     Blog
                                 </Link>

@@ -39,6 +39,9 @@ export default function Header() {
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
+                            <Link href="/#quienes-somos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                                Quiénes Somos
+                            </Link>
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Cursos
                             </Link>
@@ -82,20 +85,24 @@ export default function Header() {
                     {mobileMenuOpen && (
                         <div className="md:hidden py-4 border-t border-slate-200 animate-slideDown">
                             <div className="flex flex-col space-y-4">
-                                <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/#quienes-somos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                    Quiénes Somos
+                                </Link>
+                                <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Cursos
                                 </Link>
-                                <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Blog
                                 </Link>
-                                <Link href="/#validar" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/#validar" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Validar
                                 </Link>
-                                <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     FAQ
                                 </Link>
                                 <Link
                                     href="/login"
+                                    onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold text-center hover:bg-primary-50 transition-all"
                                 >
                                     Aula

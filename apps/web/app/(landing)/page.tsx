@@ -1,5 +1,6 @@
 import HeroSection from '@/components/landing/HeroSection';
 import ValueProposition from '@/components/landing/ValueProposition';
+import AboutUs from '@/components/landing/AboutUs';
 import { Benefits } from '@/components/landing/Benefits';
 import CourseCatalog from '@/components/landing/CourseCatalog';
 import { CredentialSection } from '@/components/landing/CredentialSection';
@@ -17,6 +18,7 @@ export default function LandingPage() {
             <Header />
             <HeroSection />
             <ValueProposition />
+            <AboutUs />
             <Benefits />
             <CourseCatalog />
             <CredentialSection />
