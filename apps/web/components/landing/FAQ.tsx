@@ -13,8 +13,8 @@ export default function FAQ() {
 
     const faqs: FAQItem[] = [
         {
-            question: "¿Los certificados tienen validez legal en Argentina?",
-            answer: "Sí, todos nuestros certificados tienen validez legal en todo el territorio argentino. Nuestros instructores están certificados profesionalmente y la plataforma cumple con todos los requisitos normativos vigentes."
+            question: "¿Los certificados tienen validez en Argentina?",
+            answer: "Sí, todos nuestros certificados tienen validez en todo el territorio argentino. Nuestros instructores están certificados profesionalmente y la plataforma cumple con todos los requisitos normativos vigentes."
         },
         {
             question: "¿Cuánto dura la vigencia de la certificación?",

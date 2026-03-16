@@ -125,7 +125,7 @@ export default function AboutUs() {
                             <ul className="space-y-4">
                                 {[
                                     "Reducción del riesgo operativo",
-                                    "Protección legal empresarial",
+                                    "Protección empresarial",
                                     "Optimización de procesos productivos",
                                     "Fortalecimiento de la cultura de seguridad en campo",
                                     "Información técnica para la toma de decisiones operativas"
@@ -244,7 +244,7 @@ export default function AboutUs() {
                                     <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Evaluación de gestión de emergencias.</li>
                                 </ul>
                                 <ul className="space-y-3 text-slate-300 text-sm">
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Verificación de cumplimiento legal.</li>
+                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Verificación de cumplimiento normativo.</li>
                                     <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Control de programas de capacitación.</li>
                                     <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Análisis de no conformidades (incidentes).</li>
                                 </ul>
