@@ -87,3 +87,45 @@ async def delete_backup(filename: str, current_user: UserResponse = Depends(get_
         raise HTTPException(status_code=404, detail="Backup file not found")
     
     return {"message": "Backup deleted successfully"}
+
+@router.post("/purge-test-data", tags=["admin"])
+async def purge_test_data(current_user: UserResponse = Depends(get_current_user)):
+    """
+    NUCLEAR OPTION: Purge all test/blister data (Alumnos, Inscripciones, Examenes, etc.)
+    Keeps SUPER_ADMIN and INSTRUCTOR accounts.
+    """
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    try:
+        # Delete in order of constraints
+        await prisma.evidencia.delete_many({})
+        await prisma.asistenciaclase.delete_many({})
+        await prisma.modulocompletado.delete_many({})
+        await prisma.fotocredencial.delete_many({})
+        await prisma.credencial.delete_many({})
+        await prisma.examen.delete_many({})
+        await prisma.inscripcion.delete_many({})
+        await prisma.cotizacion.delete_many({})
+        
+        # Delete students
+        count = await prisma.user.delete_many(where={"rol": "ALUMNO"})
+        
+        # Delete companies without users
+        all_cos = await prisma.company.find_many()
+        deleted_cos = 0
+        for co in all_cos:
+            u_count = await prisma.user.count(where={"empresaId": co.id})
+            if u_count == 0:
+                await prisma.company.delete(where={"id": co.id})
+                deleted_cos += 1
+                
+        return {
+            "status": "success",
+            "message": "Database purged successfully",
+            "deleted_students": count,
+            "deleted_empty_companies": deleted_cos
+        }
+    except Exception as e:
+        print(f"Purge error: {e}")
+        raise HTTPException(status_code=500, detail="Error during purge operation")
