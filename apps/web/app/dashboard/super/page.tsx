@@ -10,8 +10,8 @@ import {
     ArrowRight,
     Calculator,
     Loader2,
-    FileText,
     GraduationCap,
+    AlertTriangle,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -45,6 +45,7 @@ interface OverviewMetrics {
 export default function SuperDashboardPage() {
     const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isPurging, setIsPurging] = useState(false);
 
     const fetchMetrics = useCallback(async () => {
         try {
@@ -60,6 +61,24 @@ export default function SuperDashboardPage() {
     useEffect(() => {
         fetchMetrics();
     }, [fetchMetrics]);
+
+    const handlePurgeData = async () => {
+        if (!confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente todos los datos de prueba (alumnos, exámenes, etc). Esta acción no se puede deshacer.')) {
+            return;
+        }
+
+        setIsPurging(true);
+        try {
+            await api.post('/admin/purge-test-data', {});
+            alert('Base de datos purgada exitosamente. Solo quedan los administradores e instructores.');
+            fetchMetrics(); // Refresh stats
+        } catch (error) {
+            console.error('Error purging data:', error);
+            alert('Error al purgar la base de datos.');
+        } finally {
+            setIsPurging(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -128,7 +147,7 @@ export default function SuperDashboardPage() {
                         </div>
                     </div>
                 </Card>
-                <Card className="p-5 border-none shadow-sm ring-1 ring-gray-100" hover={false}>
+                <Card className="p-5 border-none shadow-sm ring-1 ring-cyan-50" hover={false}>
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-cyan-50">
                             <GraduationCap className="h-5 w-5 text-cyan-600" />
@@ -140,7 +159,7 @@ export default function SuperDashboardPage() {
                         </div>
                     </div>
                 </Card>
-                <Card className="p-5 border-none shadow-sm ring-1 ring-gray-100" hover={false}>
+                <Card className="p-5 border-none shadow-sm ring-1 ring-green-50" hover={false}>
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-green-50">
                             <TrendingUp className="h-5 w-5 text-green-600" />
@@ -168,7 +187,6 @@ export default function SuperDashboardPage() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-slate-900">Gestionar Cursos</h4>
-                                            <p className="text-xs text-slate-700">Crear, editar y organizar contenidos</p>
                                         </div>
                                     </div>
                                     <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
@@ -185,41 +203,6 @@ export default function SuperDashboardPage() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-slate-900">Gestionar Empresas</h4>
-                                            <p className="text-xs text-slate-700">Alta y administración de clientes</p>
-                                        </div>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
-                                </div>
-                            </Card>
-                        </Link>
-
-                        <Link href="/dashboard/super/alumnos">
-                            <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                            <Users className="h-6 w-6" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">Gestionar Alumnos</h4>
-                                            <p className="text-xs text-slate-700">Ver y administrar estudiantes</p>
-                                        </div>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
-                                </div>
-                            </Card>
-                        </Link>
-
-                        <Link href="/dashboard/super/cotizaciones">
-                            <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-600 group-hover:bg-yellow-600 group-hover:text-white transition-all">
-                                            <Calculator className="h-6 w-6" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">Ver Cotizaciones</h4>
-                                            <p className="text-xs text-slate-700">Leads desde landing page</p>
                                         </div>
                                     </div>
                                     <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
@@ -264,13 +247,41 @@ export default function SuperDashboardPage() {
                                 <span className={`text-lg font-bold ${item.color}`}>{item.value}</span>
                             </div>
                         ))}
-                        <div className="p-4">
-                            <Button variant="ghost" size="sm" className="w-full text-slate-600 hover:text-primary transition-colors" asChild>
-                                <Link href="/dashboard/super/cotizaciones">Ver todas las cotizaciones</Link>
-                            </Button>
-                        </div>
                     </Card>
                 </div>
+            </div>
+
+            {/* Maintenance Section */}
+            <div className="mt-12 pt-8 border-t border-slate-100">
+                <h2 className="text-xl font-bold text-slate-900 mb-6">Mantenimiento de Sistema</h2>
+                <Card className="p-8 border-none shadow-sm ring-1 ring-red-100 bg-red-50/20">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="space-y-2 text-center md:text-left">
+                            <h4 className="font-extrabold text-red-900 flex items-center gap-2 justify-center md:justify-start">
+                                <AlertTriangle className="h-5 w-5" />
+                                Zona de Peligro: Limpieza de Base de Datos
+                            </h4>
+                            <p className="text-sm text-red-700 max-w-xl">
+                                Esta acción eliminará todos los alumnos y datos de prueba. 
+                                <span className="font-bold underline"> Se mantendrán las cuentas de Administrador e Instructores.</span>
+                            </p>
+                        </div>
+                        <Button 
+                            onClick={handlePurgeData} 
+                            disabled={isPurging}
+                            className="bg-red-600 hover:bg-red-700 text-white font-black px-8 py-6 rounded-2xl shadow-lg transition-all disabled:opacity-50"
+                        >
+                            {isPurging ? (
+                                <>
+                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                    Purgando...
+                                </>
+                            ) : (
+                                "LIMPIAR TODOS LOS DATOS"
+                            )}
+                        </Button>
+                    </div>
+                </Card>
             </div>
         </div>
     );
