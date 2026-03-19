@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
-import { BookOpen, Award, TrendingUp, Clock, Loader2 } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, Loader2, Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth-context';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { examenesApi } from '@/lib/api/examenes';
+import { usersApi } from '@/lib/api/users';
 import { MisCursosResponse, Credencial } from '@/types/training';
 import { CardCredencial } from '@/components/dashboard/CardCredencial';
 
@@ -15,17 +16,20 @@ export default function DashboardPage() {
     const { user } = useAuth();
     const [data, setData] = useState<MisCursosResponse | null>(null);
     const [credenciales, setCredenciales] = useState<Credencial[]>([]);
+    const [meetLink, setMeetLink] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [cursosRes, credRes] = await Promise.all([
+                const [cursosRes, credRes, meetRes] = await Promise.all([
                     inscripcionesApi.misCursos(),
                     examenesApi.misCredenciales(),
+                    usersApi.getMeetLink(),
                 ]);
                 setData(cursosRes);
                 setCredenciales(credRes);
+                setMeetLink(meetRes.link);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {
@@ -56,12 +60,24 @@ export default function DashboardPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="glass-card p-6 rounded-2xl">
-                <h1 className="text-3xl font-heading font-bold text-slate-900">Dashboard</h1>
-                <p className="text-slate-800 mt-2">
-                    Bienvenido de vuelta, <span className="font-semibold gradient-text">{user?.nombre || 'Estudiante'}</span>!
-                    Aquí está tu progreso de capacitación.
-                </p>
+            <div className="glass-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h1 className="text-3xl font-heading font-bold text-slate-900">Dashboard</h1>
+                    <p className="text-slate-800 mt-2">
+                        Bienvenido de vuelta, <span className="font-semibold gradient-text">{user?.nombre || 'Estudiante'}</span>!
+                        Aquí está tu progreso de capacitación.
+                    </p>
+                </div>
+
+                {meetLink && (
+                    <Button asChild className="bg-primary hover:bg-primary-dark text-white font-bold h-14 px-8 rounded-2xl shadow-xl shadow-primary/20 animate-pulse-subtle">
+                        <a href={meetLink} target="_blank" rel="noopener noreferrer">
+                            <Video className="w-5 h-5 mr-3" />
+                            UNIRSE A SALA VIRTUAL
+                            <ExternalLink className="w-4 h-4 ml-3 opacity-50" />
+                        </a>
+                    </Button>
+                )}
             </div>
 
             {/* Stats Grid */}

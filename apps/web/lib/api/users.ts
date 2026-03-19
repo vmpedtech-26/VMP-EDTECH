@@ -49,4 +49,11 @@ export const usersApi = {
     async eliminarUsuario(id: string): Promise<{ message: string }> {
         return api.delete(`/users/${id}`);
     },
+
+    /**
+     * Obtener link de reunión (Google Meet / Teams)
+     */
+    async getMeetLink(): Promise<{ link: string | null }> {
+        return api.get('/users/me/meet-link');
+    },
 };

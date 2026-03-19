@@ -192,12 +192,23 @@ class MeetLinkRequest(BaseModel):
 
 @router.get("/me/meet-link")
 async def get_meet_link(current_user=Depends(get_current_user)):
-    """Get the saved meeting link for the current instructor"""
-    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
-        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
-
-    user = await prisma.user.find_unique(where={"id": current_user.id})
-    return {"link": user.meetLink if user else None}
+    """Get the meeting link for the current user or their instructor if student"""
+    if current_user.rol in ("INSTRUCTOR", "SUPER_ADMIN"):
+        user = await prisma.user.find_unique(where={"id": current_user.id})
+        return {"link": user.meetLink if user else None}
+    
+    # If student, find the instructor of their company
+    if current_user.rol == "ALUMNO" and current_user.empresaId:
+        instructor = await prisma.user.find_first(
+            where={
+                "empresaId": current_user.empresaId,
+                "rol": "INSTRUCTOR",
+                "meetLink": {"not": None}
+            }
+        )
+        return {"link": instructor.meetLink if instructor else None}
+    
+    return {"link": None}
 
 
 @router.put("/me/meet-link")
