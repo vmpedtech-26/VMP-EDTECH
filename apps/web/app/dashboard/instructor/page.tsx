@@ -54,6 +54,15 @@ export default function InstructorDashboard() {
             }
         };
 
+        const fetchRecentExams = async () => {
+            try {
+                const data = await api.get('/examenes/recientes');
+                setRecentExams(data);
+            } catch (error) {
+                console.error('Error fetching recent exams:', error);
+            }
+        };
+
         const fetchMeetLink = async () => {
             try {
                 const data = await api.get('/users/me/meet-link');
@@ -66,8 +75,11 @@ export default function InstructorDashboard() {
         };
 
         fetchStats();
+        fetchRecentExams();
         fetchMeetLink();
     }, []);
+
+    const [recentExams, setRecentExams] = useState<any[]>([]);
 
     const handleSaveLink = async () => {
         if (!liveLink.trim()) return;
