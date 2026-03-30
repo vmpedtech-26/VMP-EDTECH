@@ -61,8 +61,8 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    EMAIL_FROM: str = "noreply@vmpservicios.com"
-    EMAIL_VENTAS: str = "ventas@vmpservicios.com"
+    EMAIL_FROM: str = "noreply@vmp-edtech.com"
+    EMAIL_VENTAS: str = "ventas@vmp-edtech.com"
     ADMIN_URL: str = "http://localhost:3000"
     
     # Monitoring

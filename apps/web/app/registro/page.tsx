@@ -53,7 +53,7 @@ export default function RegisterPage() {
                     <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">V</span>
                     </div>
-                    <span className="text-2xl font-bold text-slate-900">VMP Servicios</span>
+                    <span className="text-2xl font-bold text-slate-900">VMP - EDTECH</span>
                 </Link>
 
                 {/* Register Card */}

@@ -25,7 +25,7 @@ export function BlisterSection() {
                                     <div className="relative h-full flex flex-col justify-between">
                                         <div>
                                             <div className="text-sm font-semibold mb-1">
-                                                VMP SERVICIOS
+                                                VMP - EDTECH
                                             </div>
                                             <div className="text-xs opacity-80">
                                                 Credencial Profesional

@@ -86,7 +86,7 @@ export function Hero() {
                                     <p className="text-slate-800 font-semibold">
                                         Sistema de Capacitación
                                         <br />
-                                        VMP Servicios
+                                        VMP - EDTECH
                                     </p>
                                 </div>
                             </div>

@@ -1,4 +1,7 @@
 #!/bin/zsh
-cd /Users/matias/.gemini/antigravity/scratch/vmp-servicios
-git remote set-url origin https://github.com/vmpedtech-26/VMP-EDTECH.git
+PROJECT_DIR="$(dirname "$0")"
+cd "$PROJECT_DIR"
+git add .
+git commit -m "update: landing page and credential design" || echo "No changes to commit"
 git push origin main --force
+

@@ -76,13 +76,13 @@ export default function FAQ() {
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full flex items-start justify-between text-left py-4 hover:text-[#FFD700] transition-colors group"
+                                className="w-full flex items-start justify-between text-left py-4 hover:text-primary transition-colors group"
                             >
-                                <span className="font-heading font-semibold text-lg text-[#0A192F] group-hover:text-[#1E3A5F] pr-8">
+                                <span className="font-heading font-semibold text-lg text-[#0A192F] group-hover:text-primary pr-8">
                                     {faq.question}
                                 </span>
                                 <ChevronDown
-                                    className={`h-6 w-6 text-[#FFD700] flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
+                                    className={`h-6 w-6 text-primary flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
                                         }`}
                                 />
                             </button>

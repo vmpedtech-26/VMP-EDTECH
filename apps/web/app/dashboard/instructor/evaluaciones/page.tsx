@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ClipboardCheck, Eye, CheckCircle, XCircle, Clock, Filter, Search } from 'lucide-react';
+import { api } from '@/lib/api-client';
 
 interface Examen {
     id: string;
@@ -39,21 +40,13 @@ export default function EvaluacionesPage() {
     const fetchExamenes = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams();
+            const params: any = {};
             if (filtroEstado !== 'all') {
-                params.append('estado', filtroEstado);
+                params.estado = filtroEstado;
             }
 
-            const res = await fetch(`/api/examenes?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                setExamenes(data);
-            }
+            const data = await api.get('/examenes', { params });
+            setExamenes(data);
         } catch (error) {
             console.error('Error fetching examenes:', error);
         } finally {

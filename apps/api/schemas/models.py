@@ -107,6 +107,7 @@ class QuizFeedbackResponse(BaseModel):
     totalPreguntas: int
     feedback: list[PreguntaFeedback]
     message: str
+    credencialInfo: dict | None = None
 
 # ============= CREDENCIAL SCHEMAS =============
 

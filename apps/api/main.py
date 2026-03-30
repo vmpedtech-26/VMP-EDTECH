@@ -29,7 +29,7 @@ if settings.SENTRY_DSN:
     )
 
 app = FastAPI(
-    title="VMP Servicios API",
+    title="VMP - EDTECH API",
     description="API para plataforma de capacitación profesional con credenciales verificables",
     version="0.1.0-beta",
 )
@@ -93,7 +93,7 @@ app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storag
 @app.get("/")
 async def root():
     return {
-        "message": "VMP Servicios API",
+        "message": "VMP - EDTECH API",
         "version": "0.1.0-beta",
         "docs": "/docs"
     }

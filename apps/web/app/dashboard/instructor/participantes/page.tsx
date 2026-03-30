@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Check, X, Upload, Users, Building2, Filter } from 'lucide-react';
 import Image from 'next/image';
+import { api } from '@/lib/api-client';
 
 interface Alumno {
     id: string;
@@ -41,15 +42,8 @@ export default function ParticipantesPage() {
 
     const fetchEmpresas = async () => {
         try {
-            const res = await fetch('/api/empresas', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setEmpresas(data);
-            }
+            const data = await api.get('/empresas');
+            setEmpresas(data);
         } catch (error) {
             console.error('Error fetching empresas:', error);
         }
@@ -58,43 +52,27 @@ export default function ParticipantesPage() {
     const fetchAlumnos = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams();
-            params.append('rol', 'ALUMNO');
+            const params: any = { rol: 'ALUMNO' };
             if (selectedEmpresa !== 'all') {
-                params.append('empresaId', selectedEmpresa);
+                params.empresaId = selectedEmpresa;
             }
 
-            const res = await fetch(`/api/users?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            const data = await api.get('/users', { params });
 
-            if (res.ok) {
-                const data = await res.json();
+            // Fetch fotos for each alumno
+            const alumnosWithFotos = await Promise.all(
+                data.map(async (alumno: Alumno) => {
+                    try {
+                        const foto = await api.get(`/fotos-credencial/alumno/${alumno.id}`);
+                        return { ...alumno, fotoCredencial: foto };
+                    } catch {
+                        // No foto found
+                    }
+                    return alumno;
+                })
+            );
 
-                // Fetch fotos for each alumno
-                const alumnosWithFotos = await Promise.all(
-                    data.map(async (alumno: Alumno) => {
-                        try {
-                            const fotoRes = await fetch(`/api/fotos-credencial/alumno/${alumno.id}`, {
-                                headers: {
-                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                }
-                            });
-                            if (fotoRes.ok) {
-                                const foto = await fotoRes.json();
-                                return { ...alumno, fotoCredencial: foto };
-                            }
-                        } catch {
-                            // No foto found
-                        }
-                        return alumno;
-                    })
-                );
-
-                setAlumnos(alumnosWithFotos);
-            }
+            setAlumnos(alumnosWithFotos);
         } catch (error) {
             console.error('Error fetching alumnos:', error);
         } finally {
@@ -110,24 +88,12 @@ export default function ParticipantesPage() {
             formData.append('alumnoId', alumnoId);
             formData.append('comentario', 'Foto de credencial subida por instructor');
 
-            const res = await fetch('/api/fotos-credencial/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: formData
-            });
-
-            if (res.ok) {
-                await fetchAlumnos(); // Refresh list
-                alert('Foto subida exitosamente');
-            } else {
-                const error = await res.json();
-                alert(`Error: ${error.detail || 'No se pudo subir la foto'}`);
-            }
-        } catch (error) {
+            await api.post('/fotos-credencial/upload', formData);
+            await fetchAlumnos(); // Refresh list
+            alert('Foto subida exitosamente');
+        } catch (error: any) {
             console.error('Error uploading foto:', error);
-            alert('Error al subir la foto');
+            alert(`Error: ${error.message || 'No se pudo subir la foto'}`);
         } finally {
             setUploadingFor(null);
         }
@@ -135,22 +101,12 @@ export default function ParticipantesPage() {
 
     const handleAprobarFoto = async (fotoId: string) => {
         try {
-            const res = await fetch(`/api/fotos-credencial/${fotoId}/evaluar`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    estado: 'APROBADA',
-                    feedback: 'Foto aprobada'
-                })
+            await api.put(`/fotos-credencial/${fotoId}/evaluar`, {
+                estado: 'APROBADA',
+                feedback: 'Foto aprobada'
             });
-
-            if (res.ok) {
-                await fetchAlumnos();
-                alert('Foto aprobada exitosamente');
-            }
+            await fetchAlumnos();
+            alert('Foto aprobada exitosamente');
         } catch (error) {
             console.error('Error aprobando foto:', error);
         }
@@ -161,22 +117,12 @@ export default function ParticipantesPage() {
         if (!feedback) return;
 
         try {
-            const res = await fetch(`/api/fotos-credencial/${fotoId}/evaluar`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    estado: 'RECHAZADA',
-                    feedback
-                })
+            await api.put(`/fotos-credencial/${fotoId}/evaluar`, {
+                estado: 'RECHAZADA',
+                feedback
             });
-
-            if (res.ok) {
-                await fetchAlumnos();
-                alert('Foto rechazada');
-            }
+            await fetchAlumnos();
+            alert('Foto rechazada');
         } catch (error) {
             console.error('Error rechazando foto:', error);
         }

@@ -83,7 +83,7 @@ export default function SuperDashboardPage() {
     const stats = [
         { label: 'Empresas Activas', value: t?.companies ?? 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
         { label: 'Cursos Globales', value: t?.courses ?? 0, icon: BookOpen, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Alumnos Totales', value: t?.users ?? 0, icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
+        { label: 'Alumnos Totales', value: t?.users ?? 0, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
         { label: 'Credenciales Emitidas', value: t?.credentials ?? 0, icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     ];
 
@@ -91,7 +91,7 @@ export default function SuperDashboardPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div>
                 <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Panel de Control</h1>
-                <p className="text-slate-700 mt-1">Bienvenido al centro de administración global de VMP Servicios</p>
+                <p className="text-slate-700 mt-1">Bienvenido al centro de administración global de VMP - EDTECH</p>
             </div>
 
             {/* Stats Grid */}
@@ -197,7 +197,7 @@ export default function SuperDashboardPage() {
                             <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                                        <div className="h-12 w-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                                             <Users className="h-6 w-6" />
                                         </div>
                                         <div>

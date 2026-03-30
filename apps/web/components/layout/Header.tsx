@@ -18,7 +18,7 @@ export function Header() {
                             <span className="text-white font-bold text-xl">V</span>
                         </div>
                         <span className="text-xl font-bold text-slate-900">
-                            VMP Servicios
+                            VMP - EDTECH
                         </span>
                     </Link>
 

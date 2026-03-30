@@ -19,8 +19,9 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { toast } from 'sonner';
+import { api } from '@/lib/api-client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
 
 interface HealthStats {
     status: string;
@@ -58,20 +59,13 @@ export default function ControlCenterPage() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            const [healthRes, backupsRes] = await Promise.all([
-                fetch(`${API_URL}/api/admin/health`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }),
-                fetch(`${API_URL}/api/admin/backups`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
+            const [healthData, backupsData] = await Promise.all([
+                api.get('/admin/health'),
+                api.get('/admin/backups')
             ]);
 
-            if (healthRes.ok) setHealth(await healthRes.json());
-            if (backupsRes.ok) setBackups(await backupsRes.json());
+            setHealth(healthData);
+            setBackups(backupsData);
         } catch (error) {
             console.error('Error fetching control data:', error);
             toast.error('Error al conectar con los servicios de administración');
@@ -83,21 +77,11 @@ export default function ControlCenterPage() {
     const handleCreateBackup = async () => {
         setIsCreatingBackup(true);
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/api/admin/backups/create`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (res.ok) {
-                toast.success('Backup creado exitosamente');
-                fetchData();
-            } else {
-                const err = await res.json();
-                toast.error(`Error: ${err.detail || 'No se pudo crear el backup'}`);
-            }
-        } catch (error) {
-            toast.error('Error de conexión');
+            await api.post('/admin/backups/create', {});
+            toast.success('Backup creado exitosamente');
+            fetchData();
+        } catch (error: any) {
+            toast.error(`Error: ${error.message || 'No se pudo crear el backup'}`);
         } finally {
             setIsCreatingBackup(false);
         }
@@ -107,26 +91,18 @@ export default function ControlCenterPage() {
         if (!confirm('¿Estás seguro de eliminar este backup?')) return;
 
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/api/admin/backups/${filename}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (res.ok) {
-                toast.success('Backup eliminado');
-                setBackups(backups.filter(b => b.filename !== filename));
-            } else {
-                toast.error('No se pudo eliminar el backup');
-            }
+            await api.delete(`/admin/backups/${filename}`);
+            toast.success('Backup eliminado');
+            setBackups(backups.filter(b => b.filename !== filename));
         } catch (error) {
-            toast.error('Error de conexión');
+            toast.error('No se pudo eliminar el backup');
         }
     };
 
     const handleDownloadBackup = async (filename: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('vmp_token');
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
             window.open(`${API_URL}/api/admin/backups/download/${filename}?token=${token}`, '_blank');
         } catch (error) {
             toast.error('Error al iniciar la descarga');
@@ -297,7 +273,7 @@ export default function ControlCenterPage() {
                                                         {new Date(backup.created_at).toLocaleDateString()}
                                                     </span>
                                                     <span className="text-[10px] text-slate-400">
-                                                        {new Date(backup.created_at).toLocaleTimeString([], { hour: '2-numeric', minute: '2-numeric' })}
+                                                        {new Date(backup.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
                                             </td>

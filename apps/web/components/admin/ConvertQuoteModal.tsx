@@ -129,7 +129,7 @@ export default function ConvertQuoteModal({
                                         required
                                         value={formData.empresaNombre}
                                         onChange={(e) => setFormData({ ...formData, empresaNombre: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
 
@@ -144,7 +144,7 @@ export default function ConvertQuoteModal({
                                             placeholder="XX-XXXXXXXX-X"
                                             value={formData.empresaCuit}
                                             onChange={(e) => setFormData({ ...formData, empresaCuit: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                         />
                                     </div>
 
@@ -156,7 +156,7 @@ export default function ConvertQuoteModal({
                                             type="text"
                                             value={formData.empresaTelefono}
                                             onChange={(e) => setFormData({ ...formData, empresaTelefono: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                         />
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@ export default function ConvertQuoteModal({
                                         type="text"
                                         value={formData.empresaDireccion}
                                         onChange={(e) => setFormData({ ...formData, empresaDireccion: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
 
@@ -185,7 +185,7 @@ export default function ConvertQuoteModal({
                                         max="500"
                                         value={formData.cantidadAlumnos}
                                         onChange={(e) => setFormData({ ...formData, cantidadAlumnos: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                     <p className="text-sm text-slate-700 mt-1">
                                         Se crearán {formData.cantidadAlumnos} alumnos con credenciales temporales
@@ -224,7 +224,7 @@ export default function ConvertQuoteModal({
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+                                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
                                 >
                                     Convertir en Cliente
                                 </button>
@@ -234,7 +234,7 @@ export default function ConvertQuoteModal({
 
                     {step === 'loading' && (
                         <div className="py-12 text-center">
-                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
+                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
                             <p className="text-slate-800">Creando empresa y alumnos...</p>
                         </div>
                     )}
@@ -273,18 +273,18 @@ export default function ConvertQuoteModal({
                             </div>
 
                             {/* Credentials */}
-                            <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
-                                <h4 className="font-semibold text-orange-900 mb-2 flex items-center gap-2">
+                            <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4">
+                                <h4 className="font-semibold text-primary/90 mb-2 flex items-center gap-2">
                                     <Mail className="w-5 h-5" />
                                     Credenciales de Acceso
                                 </h4>
-                                <p className="text-sm text-orange-800 mb-4">
+                                <p className="text-sm text-primary/80 mb-4">
                                     {result.credenciales.nota}
                                 </p>
 
                                 <div className="space-y-3 max-h-96 overflow-y-auto">
                                     {result.credenciales.alumnos.map((cred, index) => (
-                                        <div key={index} className="bg-white rounded-lg p-4 border border-orange-200">
+                                        <div key={index} className="bg-white rounded-lg p-4 border border-primary/10">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="font-medium text-slate-900">
                                                     Alumno {index + 1}
@@ -294,7 +294,7 @@ export default function ConvertQuoteModal({
                                                         index,
                                                         `Email: ${cred.email}\nContraseña: ${cred.password}`
                                                     )}
-                                                    className="text-orange-600 hover:text-orange-700 text-sm flex items-center gap-1"
+                                                    className="text-primary hover:text-primary-dark text-sm flex items-center gap-1"
                                                 >
                                                     <Copy className="w-4 h-4" />
                                                     {copiedIndex === index ? 'Copiado!' : 'Copiar'}
@@ -330,7 +330,7 @@ export default function ConvertQuoteModal({
                             <div className="flex gap-3 justify-end">
                                 <button
                                     onClick={handleClose}
-                                    className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+                                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
                                 >
                                     Cerrar
                                 </button>
