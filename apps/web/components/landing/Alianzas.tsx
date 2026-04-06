@@ -6,15 +6,15 @@ import { motion } from 'framer-motion';
 const ALIANZAS = [
   {
     name: 'Consultus',
-    logo: '/images/alianzas/consultus.png',
+    logo: '/images/alianzas/consultus_v2.png',
   },
   {
     name: 'Fatri Cleaning Group',
-    logo: '/images/alianzas/fatri.png',
+    logo: '/images/alianzas/fatri_v2.png',
   },
   {
     name: 'Biartic',
-    logo: '/images/alianzas/biartic.png',
+    logo: '/images/alianzas/biartic_v2.png',
   },
 ];
 
