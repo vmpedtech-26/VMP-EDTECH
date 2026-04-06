@@ -21,7 +21,6 @@ export default function LandingPage() {
             <Benefits />
             <Alianzas />
             <CourseCatalog />
-            <CredentialSection />
             <ContactSection />
             <Testimonials />
             <FAQ />

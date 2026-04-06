@@ -72,30 +72,6 @@ export function Benefits() {
                         );
                     })}
                 </div>
-
-                {/* Estadísticas */}
-                <div className="mt-16 bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 sm:p-12 text-white">
-                    <div className="grid sm:grid-cols-3 gap-8 text-center">
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">95%</div>
-                            <div className="text-primary-light opacity-90">
-                                Satisfacción de Empresas
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">-40%</div>
-                            <div className="text-primary-light opacity-90">
-                                Reducción de Incidentes
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">24/7</div>
-                            <div className="text-primary-light opacity-90">
-                                Acceso a Plataforma
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
     );
