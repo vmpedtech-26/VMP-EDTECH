@@ -51,6 +51,9 @@ export default function Header() {
                             <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 FAQ
                             </Link>
+                            <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                                Alianzas
+                            </Link>
                         </div>
 
                         {/* CTAs */}
@@ -93,6 +96,9 @@ export default function Header() {
                                 </Link>
                                 <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
                                     FAQ
+                                </Link>
+                                <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                    Alianzas
                                 </Link>
                                 <Link
                                     href="/login"

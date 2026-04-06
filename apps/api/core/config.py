@@ -54,7 +54,7 @@ class Settings(BaseSettings):
         ]
     
     # Storage — Railway Volume mount path (/data/storage in production)
-    STORAGE_PATH: str = "/data/storage"
+    STORAGE_PATH: str = "/Users/matias/.gemini/antigravity/scratch/vmp-abril/apps/api/storage"
     
     # Email
     SMTP_HOST: str = ""

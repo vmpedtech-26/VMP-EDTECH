@@ -1,6 +1,7 @@
 import HeroSection from '@/components/landing/HeroSection';
 import ValueProposition from '@/components/landing/ValueProposition';
 import { Benefits } from '@/components/landing/Benefits';
+import { Alianzas } from '@/components/landing/Alianzas';
 import CourseCatalog from '@/components/landing/CourseCatalog';
 import { CredentialSection } from '@/components/landing/CredentialSection';
 import ContactSection from '@/components/landing/ContactSection';
@@ -18,6 +19,7 @@ export default function LandingPage() {
             <HeroSection />
             <ValueProposition />
             <Benefits />
+            <Alianzas />
             <CourseCatalog />
             <CredentialSection />
             <ContactSection />

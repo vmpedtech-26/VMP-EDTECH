@@ -66,7 +66,8 @@ app.add_middleware(
 
 
 
-from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, evidencias, contact
+# from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, evidencias, contact
+from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -74,7 +75,7 @@ app.include_router(examenes.router, prefix="/api/examenes", tags=["examenes"])
 app.include_router(cursos.router, prefix="/api/cursos", tags=["cursos"])
 app.include_router(inscripciones.router, prefix="/api/inscripciones", tags=["inscripciones"])
 app.include_router(credenciales.router, prefix="/api/credenciales", tags=["credenciales"])
-app.include_router(evidencias.router, prefix="/api/evidencias", tags=["evidencias"])
+# app.include_router(evidencias.router, prefix="/api/evidencias", tags=["evidencias"])
 app.include_router(fotos_credencial.router, prefix="/api/fotos-credencial", tags=["fotos-credencial"])
 app.include_router(empresas.router, prefix="/api/empresas", tags=["empresas"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
@@ -84,6 +85,7 @@ app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
 app.include_router(seed.router, prefix="/api/seed", tags=["seed"])
 app.include_router(admin_ops.router, prefix="/api/admin", tags=["admin"])
 app.include_router(contact.router)
+
 
 # Serve static files (credential PDFs, uploaded photos, etc.)
 app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storage")
