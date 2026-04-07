@@ -16,7 +16,6 @@ interface Course {
     modality: string;
     validity: string;
     minScore: string;
-    priceFrom: number;
     description: string;
     image: string;
     isPopular?: boolean;
@@ -36,7 +35,6 @@ export default function CourseCatalog() {
             modality: 'Online/Presencial',
             validity: '24 meses',
             minScore: '75%',
-            priceFrom: 45000,
             description: 'Capacitación especializada para conductores de flotas livianas y pesadas según normativas vigentes.',
             image: '/images/courses/carga-pesada.png',
             isPopular: true
@@ -51,7 +49,6 @@ export default function CourseCatalog() {
             modality: '100% Online',
             validity: '12 meses',
             minScore: '70%',
-            priceFrom: 32000,
             description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
             image: '/images/courses/conduccion-preventiva.png'
         },
@@ -65,7 +62,6 @@ export default function CourseCatalog() {
             modality: 'Presencial',
             validity: '36 meses',
             minScore: '80%',
-            priceFrom: 68000,
             description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
             image: '/images/courses/conduccion-2-traccion.png'
         }
@@ -204,33 +200,26 @@ export default function CourseCatalog() {
                                             src={course.image}
                                             alt={course.title}
                                             fill
-                                            className="object-cover"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
                                         <div className="absolute top-4 right-4">
                                             <span className="bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold">
                                                 VMP
                                             </span>
                                         </div>
-                                        <div className="absolute bottom-4 left-6">
-                                            <motion.div
-                                                whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                <Icon className="h-10 w-10 text-white mb-2" />
-                                            </motion.div>
-                                            <h3 className="font-heading font-bold text-2xl text-white mb-1">
-                                                {course.title}
-                                            </h3>
-                                            <p className="text-white/80 text-sm">
-                                                {course.category}
-                                            </p>
-                                        </div>
                                     </div>
 
                                     {/* Content */}
                                     <div className="p-6 bg-white">
-                                        <p className="text-slate-800 mb-6 leading-relaxed">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <Icon className="h-6 w-6 text-primary" />
+                                            <span className="text-sm font-bold text-primary uppercase tracking-wider">{course.category}</span>
+                                        </div>
+                                        <h3 className="font-heading font-bold text-2xl text-slate-900 mb-3">
+                                            {course.title}
+                                        </h3>
+                                        <p className="text-slate-600 mb-6 leading-relaxed">
                                             {course.description}
                                         </p>
 
@@ -256,13 +245,7 @@ export default function CourseCatalog() {
                                             </div>
                                         </div>
 
-                                        {/* Price */}
-                                        <div className="mb-6">
-                                            <p className="text-sm text-slate-800 mb-1">Desde</p>
-                                            <p className="font-heading font-bold text-3xl gradient-text">
-                                                ${course.priceFrom.toLocaleString('es-AR')}
-                                            </p>
-                                        </div>
+
 
                                         {/* CTA */}
                                         <Link

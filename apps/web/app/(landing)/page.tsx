@@ -17,10 +17,10 @@ export default function LandingPage() {
         <main className="min-h-screen">
             <Header />
             <HeroSection />
+            <CourseCatalog />
             <ValueProposition />
             <Benefits />
             <Alianzas />
-            <CourseCatalog />
             <ContactSection />
             <Testimonials />
             <FAQ />

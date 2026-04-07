@@ -12,16 +12,12 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center space-x-3 mb-4">
                             <Image
-                                src="/images/vmp-isotipo.png"
-                                alt="VMP"
-                                width={36}
-                                height={36}
+                                src="/images/vmp-logotipo-2026.png"
+                                alt="VMP - EDTECH"
+                                width={120}
+                                height={40}
+                                className="h-auto w-auto max-h-10"
                             />
-                            <div className="font-heading font-bold text-xl">
-                                <span className="text-white">VMP</span>
-                                <span className="text-primary mx-1">-</span>
-                                <span className="gradient-text">EDTECH</span>
-                            </div>
                         </div>
                         <p className="text-slate-300 text-sm leading-relaxed mb-4">
                             Capacitación Vial Profesional
@@ -115,14 +111,14 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start space-x-3">
                                 <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="tel:+5491112345678" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    +54 9 11 1234-5678
+                                <a href="tel:+5492996731487" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    +54 9 299 673-1487
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                 <span className="text-slate-300 text-sm">
-                                    Buenos Aires, Argentina
+                                    Juan B. Justo 385, Piso 1, Neuquén (8300), Argentina
                                 </span>
                             </li>
                         </ul>
@@ -133,7 +129,7 @@ export default function Footer() {
                 <div className="border-t border-slate-700 pt-8">
                     <div className="text-center text-slate-400 text-sm">
                         <p className="mb-2">
-                            © 2025 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 20-12345678-9
+                            © 2026 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 30-71936908-8
                         </p>
                         <p className="text-xs">
                             Instructor Certificado - Matrícula 12345/2025

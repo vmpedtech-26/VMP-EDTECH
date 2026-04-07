@@ -24,17 +24,12 @@ export default function Header() {
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group">
                             <Image
-                                src="/images/vmp-isotipo.png"
-                                alt="VMP"
-                                width={44}
-                                height={44}
-                                className="group-hover:scale-110 transition-transform duration-300"
+                                src="/images/vmp-logotipo-2026.png"
+                                alt="VMP - EDTECH"
+                                width={180}
+                                height={50}
+                                className="group-hover:scale-105 transition-transform duration-300 h-auto w-auto max-h-12"
                             />
-                            <div className="font-heading font-bold text-2xl">
-                                <span className="text-slate-900">VMP</span>
-                                <span className="text-primary mx-1">-</span>
-                                <span className="gradient-text">EDTECH</span>
-                            </div>
                         </Link>
 
                         {/* Desktop Navigation */}

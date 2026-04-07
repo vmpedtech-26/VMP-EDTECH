@@ -90,8 +90,8 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Teléfono</p>
-                                        <a href="tel:+5491123456789" className="text-white/80 hover:text-white transition-colors">
-                                            +54 9 11 2345-6789
+                                        <a href="tel:+5492996731487" className="text-white/80 hover:text-white transition-colors">
+                                            +54 9 299 673-1487
                                         </a>
                                     </div>
                                 </div>
@@ -112,7 +112,7 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Ubicación</p>
-                                        <p className="text-white/80">Buenos Aires, Argentina</p>
+                                        <p className="text-white/80">Juan B. Justo 385, Piso 1, Neuquén (8300)</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -122,7 +122,7 @@ export default function ContactSection() {
                                     <div>
                                         <p className="font-semibold">WhatsApp</p>
                                         <a
-                                            href="https://wa.me/5491123456789?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
+                                            href="https://wa.me/5492996731487?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-white/80 hover:text-white transition-colors"

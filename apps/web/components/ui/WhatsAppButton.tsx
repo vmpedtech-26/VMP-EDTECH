@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '542995370173';
+const WHATSAPP_NUMBER = '5492996731487';
 const DEFAULT_MESSAGE = 'Hola, me interesa conocer más sobre los cursos de capacitación. ¿Podrían darme más información?';
 
 export default function WhatsAppButton() {

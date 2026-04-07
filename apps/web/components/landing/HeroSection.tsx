@@ -190,19 +190,19 @@ export default function HeroSection() {
                                 animate="animate"
                             >
                                 <Image
-                                    src="/images/hero-training.png"
-                                    alt="Capacitación profesional de conductores"
+                                    src="/images/hero-training-real.png"
+                                    alt="Capacitación profesional de conductores en Neuquén"
                                     fill
                                     className="object-cover"
                                     priority
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
                                 <div className="absolute bottom-6 left-6 right-6 text-white">
                                     <h3 className="text-2xl font-bold mb-1">VMP - EDTECH</h3>
-                                    <p className="text-white/90">Capacitación Profesional</p>
-                                    <div className="mt-3 inline-flex items-center space-x-2 bg-success/90 backdrop-blur-sm rounded-full px-4 py-2">
+                                    <p className="text-white/90">Capacitación en Terreno Real</p>
+                                    <div className="mt-3 inline-flex items-center space-x-2 bg-primary/90 backdrop-blur-sm rounded-full px-4 py-2">
                                         <CheckCircle className="h-5 w-5 text-white" />
-                                        <span className="text-sm font-semibold text-white">Verificado</span>
+                                        <span className="text-sm font-semibold text-white">Neuquén, Patagonia</span>
                                     </div>
                                 </div>
                             </motion.div>

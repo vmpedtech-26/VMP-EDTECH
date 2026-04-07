@@ -3,24 +3,25 @@
 import { Card } from '@/components/ui/Card';
 import { Star, Quote } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 const testimonials = [
     {
-        name: 'María González',
+        name: 'Valeria Rodríguez',
         role: 'Gerente de RRHH',
-        company: 'Constructora del Sur',
-        image: null,
+        company: 'Vialera del Neuquén',
+        image: '/images/avatar-valeria.png',
         quote:
-            'VMP - EDTECH transformó nuestra forma de capacitar. Las credenciales digitales son profesionales y nuestros clientes confían más en nuestro personal certificado.',
+            'VMP - EDTECH transformó nuestra forma de capacitar. Las credenciales digitales son profesionales y nuestros clientes confían más en nuestro personal certificado en toda la Patagonia.',
         rating: 5,
     },
     {
-        name: 'Carlos Rodríguez',
+        name: 'Juan Pérez',
         role: 'Director de Operaciones',
-        company: 'Transportes Rápidos',
-        image: null,
+        company: 'Transportes Patagónicos',
+        image: '/images/avatar-juan.png',
         quote:
-            'El sistema es intuitivo y los reportes nos permiten tomar decisiones basadas en datos reales. Vimos reducción del 35% en incidentes.',
+            'El sistema es intuitivo y los reportes nos permiten tomar decisiones basadas en datos reales. Vimos una reducción del 35% en incidentes en rutas de ripio.',
         rating: 5,
     },
     {
@@ -29,7 +30,7 @@ const testimonials = [
         company: 'Servicios Integrales SA',
         image: null,
         quote:
-            'La inversión se recuperó en 6 meses. El retorno en productividad y cumplimiento legal no tiene precio.',
+            'La inversión se recuperó en 6 meses. El retorno en productividad y cumplimiento legal no tiene precio para una empresa de servicios petroleros.',
         rating: 5,
     },
 ];
@@ -61,9 +62,20 @@ export function Testimonials() {
 
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white font-bold text-xl">
-                                    {testimonials[currentIndex].name.charAt(0)}
-                                </div>
+                                {testimonials[currentIndex].image ? (
+                                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20 shadow-sm">
+                                        <Image
+                                            src={testimonials[currentIndex].image}
+                                            alt={testimonials[currentIndex].name}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-white font-bold text-xl">
+                                        {testimonials[currentIndex].name.charAt(0)}
+                                    </div>
+                                )}
                                 <div>
                                     <div className="font-bold text-slate-900">
                                         {testimonials[currentIndex].name}
