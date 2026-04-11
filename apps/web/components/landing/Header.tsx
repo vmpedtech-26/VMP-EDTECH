@@ -22,18 +22,29 @@ export default function Header() {
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-3 group">
-                            <Image
-                                src="/images/vmp-logotipo-2026.png"
-                                alt="VMP - EDTECH"
-                                width={180}
-                                height={50}
-                                className="group-hover:scale-105 transition-transform duration-300 h-auto w-auto max-h-12"
-                            />
+                        <Link href="/" className="flex items-center gap-3 group">
+                            <div className="relative">
+                                <Image
+                                    src="/images/vmp-logo-oficial.png"
+                                    alt="VMP Logo Oficial"
+                                    width={140}
+                                    height={50}
+                                    className="h-10 w-auto group-hover:scale-105 transition-transform duration-300"
+                                    priority
+                                />
+                            </div>
+                            <div className="flex items-center border-l-2 border-slate-200 pl-3 ml-1">
+                                <span className="font-heading font-black text-xl leading-none text-slate-900 tracking-tighter">
+                                    EDTECH
+                                </span>
+                            </div>
                         </Link>
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
+                            <Link href="/#servicios-profesionales" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                                Servicios
+                            </Link>
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Cursos
                             </Link>
