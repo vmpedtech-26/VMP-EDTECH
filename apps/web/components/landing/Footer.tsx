@@ -16,13 +16,11 @@ export default function Footer() {
                                 alt="VMP - EDTECH"
                                 width={120}
                                 height={40}
-                                className="h-auto w-auto max-h-10"
+                                className="h-auto w-auto max-h-12 brightness-0 invert"
                             />
                         </div>
                         <p className="text-slate-300 text-sm leading-relaxed mb-4">
                             Capacitación Vial Profesional
-                            <br />
-                            Certificaciones Argentina
                         </p>
                         <div className="flex space-x-3">
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
