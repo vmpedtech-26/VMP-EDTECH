@@ -25,7 +25,7 @@ export default function Header() {
                         <Link href="/" className="flex items-center gap-3 group">
                             <div className="relative">
                                 <Image
-                                    src="/images/vmp-logotipo-2026.png"
+                                    src="/images/vmp_official.png"
                                     alt="VMP Logo Oficial"
                                     width={140}
                                     height={50}

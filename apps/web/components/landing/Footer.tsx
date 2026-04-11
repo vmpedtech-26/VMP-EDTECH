@@ -12,7 +12,7 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center space-x-3 mb-4">
                             <Image
-                                src="/images/vmp-logotipo-2026.png"
+                                src="/images/vmp_official.png"
                                 alt="VMP - EDTECH"
                                 width={120}
                                 height={40}
