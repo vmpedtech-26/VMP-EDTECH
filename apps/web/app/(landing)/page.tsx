@@ -10,6 +10,7 @@ import FAQ from '@/components/landing/FAQ';
 import FinalCTA from '@/components/landing/FinalCTA';
 import Header from '@/components/landing/Header';
 import { SafetyHygieneServices } from '@/components/landing/SafetyHygieneServices';
+import Footer from '@/components/landing/Footer';
 
 export default function LandingPage() {
     return (
