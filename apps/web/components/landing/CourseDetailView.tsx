@@ -276,7 +276,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                 <ArrowRight className="h-5 w-5" />
                             </Link>
                             <a
-                                href="https://wa.me/542995370173?text=Hola%2C%20me%20interesa%20el%20curso%20de%20"
+                                href={`https://wa.me/542996731487?text=Hola%2C%20me%20interesa%20el%20curso%20de%20${encodeURIComponent(course.title)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold px-8 py-4 rounded-xl transition-all"

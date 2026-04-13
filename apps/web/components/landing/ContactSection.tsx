@@ -122,7 +122,7 @@ export default function ContactSection() {
                                     <div>
                                         <p className="font-semibold">WhatsApp</p>
                                         <a
-                                            href="https://wa.me/5492996731487?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
+                                            href="https://wa.me/542996731487?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-white/80 hover:text-white transition-colors"
