@@ -41,10 +41,7 @@ export default function Header() {
                         </Link>
 
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/#seguridad-higiene" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
-                                Seguridad e Higiene
-                            </Link>
-                            <Link href="/#servicios-profesionales" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Servicios
                             </Link>
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">

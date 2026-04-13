@@ -9,7 +9,8 @@ import { Testimonials } from '@/components/landing/Testimonials';
 import FAQ from '@/components/landing/FAQ';
 import FinalCTA from '@/components/landing/FinalCTA';
 import Header from '@/components/landing/Header';
-import { SafetyHygieneServices } from '@/components/landing/SafetyHygieneServices';
+import Footer from '@/components/landing/Footer';
+import { ProfessionalServices } from '@/components/landing/ProfessionalServices';
 
 export default function LandingPage() {
     return (
@@ -17,7 +18,7 @@ export default function LandingPage() {
             <Header />
             <HeroSection />
             <CourseCatalog />
-            <SafetyHygieneServices />
+            <ProfessionalServices />
             <ValueProposition />
             <Benefits />
             <Alianzas />
