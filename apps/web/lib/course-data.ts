@@ -219,6 +219,75 @@ export const courseData: Record<string, CourseDetail> = {
         ],
         certification: 'Certificación digital con código QR verificable, válida por 36 meses. Habilitación para conducción de vehículos doble tracción en terrenos no convencionales.',
     },
+
+    'conduccion-invernal': {
+        slug: 'conduccion-invernal',
+        title: 'Conducción Invernal',
+        shortTitle: 'Invernal',
+        category: 'Cordillerano',
+
+        image: '/images/courses/conduccion-invernal.png',
+        duration: '12 horas',
+        modality: 'Online/Presencial',
+        validity: '12 meses',
+        minScore: '80%',
+        priceFrom: 55000,
+        description: 'Técnicas avanzadas para conducción segura en presencia de nieve, hielo y condiciones climáticas extremas.',
+        longDescription: 'Curso especializado diseñado para conductores que operan en zonas de alta montaña y regiones con climas invernales severos. El programa cubre desde la preparación del vehículo y uso de cadenas hasta maniobras avanzadas de recuperación ante pérdida de adherencia, derrapes y frenado de emergencia en superficies deslizantes.',
+        benefits: [
+            'Dominio de técnicas de conducción en nieve y hielo',
+            'Colocación y uso correcto de cadenas de nieve',
+            'Prevención de derrapes y técnicas de recuperación',
+            'Protocolos de supervivencia y emergencias en montaña',
+            'Habilitación profesional para regiones de clima frío extremo',
+            'Certificación digital verificable con código QR',
+        ],
+        targetAudience: 'Conductores de flotas petroleras, mineras, transporte de pasajeros y personal que opera en zonas cordilleranas o de clima frío extremo.',
+        temario: [
+            {
+                title: 'Módulo 1 - Preparación del Vehículo',
+                topics: [
+                    'Fluidos y anticongelantes específicos',
+                    'Baterías y sistema eléctrico en frío extremo',
+                    'Neumáticos de invierno y clavos',
+                    'Mantenimiento de visibilidad y descongelamiento',
+                ],
+            },
+            {
+                title: 'Módulo 2 - Neumáticos y Cadenas',
+                topics: [
+                    'Tipos de cadenas: tela, eslabón, araña',
+                    'Técnica de colocación rápida y segura',
+                    'Tensión, centrado y mantenimiento',
+                    'Límites de velocidad y conducción con cadenas',
+                ],
+            },
+            {
+                title: 'Módulo 3 - Técnicas de Conducción',
+                topics: [
+                    'Arranque y tracción en superficies deslizantes',
+                    'Control de tracción y estabilidad (ESP/TCS)',
+                    'Frenado con ABS en nieve y hielo',
+                    'Técnicas de visión y percepción en ventisca',
+                ],
+            },
+            {
+                title: 'Módulo 4 - Emergencias en Ruta',
+                topics: [
+                    'Recuperación de derrapes: sobreviraje y subviraje',
+                    'Atrapamiento en nieve y Viento Blanco',
+                    'Supervivencia: abrigo y señalización',
+                    'Primeros auxilios ante hipotermia y congelamiento',
+                ],
+            },
+        ],
+        requirements: [
+            'Licencia de conducir vigente',
+            'Acceso a internet para módulos teóricos online',
+            'Ropa de abrigo reglamentaria para práctica en campo',
+        ],
+        certification: 'Certificación digital con código QR verificable, válida por 12 meses. Especialización en conducción segura bajo condiciones climáticas extremas e invernales.',
+    },
 };
 
 export const courseList = Object.values(courseData);

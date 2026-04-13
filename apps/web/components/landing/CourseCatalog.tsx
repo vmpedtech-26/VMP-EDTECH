@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone } from 'lucide-react';
+import { Truck, Shield, Mountain, ArrowRight, Clock, Award, Smartphone, Snowflake } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -64,6 +64,19 @@ export default function CourseCatalog() {
             minScore: '80%',
             description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
             image: '/images/courses/conduccion-2-traccion.png'
+        },
+        {
+            id: 'invernal',
+            slug: 'conduccion-invernal',
+            icon: Snowflake,
+            title: 'Conducción Invernal',
+            category: 'Cordillerano',
+            duration: '12 horas',
+            modality: 'Online/Presencial',
+            validity: '12 meses',
+            minScore: '80%',
+            description: 'Técnicas avanzadas para conducción segura en presencia de nieve, hielo y condiciones climáticas extremas.',
+            image: '/images/courses/conduccion-invernal.png'
         }
     ];
 
@@ -71,7 +84,8 @@ export default function CourseCatalog() {
         { id: 'all', label: 'Todos' },
         { id: 'preventivo', label: 'Conducción Preventiva' },
         { id: 'carga', label: 'Conducción Flota Liviana / Pesada' },
-        { id: '2-traccion', label: 'Conducción Doble Tracción' }
+        { id: '2-traccion', label: 'Conducción Doble Tracción' },
+        { id: 'invernal', label: 'Conducción Invernal' }
     ];
 
     const filteredCourses = activeTab === 'all'
