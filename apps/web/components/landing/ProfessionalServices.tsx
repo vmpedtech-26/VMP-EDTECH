@@ -51,7 +51,7 @@ export function ProfessionalServices() {
             <span className="text-sm font-bold text-primary uppercase tracking-wider">Servicios Técnicos</span>
           </motion.div>
           <h2 className="text-4xl md:text-5xl font-heading font-black text-slate-900 mb-6">
-            Ingeniería en <span className="text-primary italic">Seguridad e Higiene</span>
+            <span className="text-primary italic">Seguridad e Higiene</span>
           </h2>
           <p className="max-w-3xl mx-auto text-lg text-slate-600">
             Consultoría técnica especializada para elevar los estándares de seguridad en su organización y garantizar el cumplimiento normativo.
