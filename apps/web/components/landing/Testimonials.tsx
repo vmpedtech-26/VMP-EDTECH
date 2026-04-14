@@ -30,7 +30,7 @@ const testimonials = [
         company: 'Servicios Integrales SA',
         image: null,
         quote:
-            'La inversión se recuperó en 6 meses. El retorno en productividad y cumplimiento legal no tiene precio para una empresa de servicios petroleros.',
+            'La inversión se recuperó en 6 meses. El retorno en productividad y cumplimiento no tiene precio para una empresa de servicios petroleros.',
         rating: 5,
     },
 ];

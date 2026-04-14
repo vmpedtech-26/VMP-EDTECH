@@ -5,7 +5,7 @@ export default function ValueProposition() {
         {
             image: "/images/certification.png",
             title: "Certificación Profesional Oficial",
-            description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez legal y reconocimiento empresarial en todo el territorio argentino.",
+            description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez y reconocimiento empresarial en todo el territorio argentino.",
             details: "Validez Nacional"
         },
         {
@@ -72,7 +72,7 @@ export default function ValueProposition() {
                 {/* Bottom CTA */}
                 <div className="text-center mt-12">
                     <p className="text-lg text-slate-800 italic">
-                        "Cumplimos con los más altos estándares de calidad, garantizando que tu certificación tenga validez legal y reconocimiento profesional en todo el territorio argentino."
+                        "Cumplimos con los más altos estándares de calidad, garantizando que tu certificación tenga validez y reconocimiento profesional en todo el territorio argentino."
                     </p>
                 </div>
             </div>

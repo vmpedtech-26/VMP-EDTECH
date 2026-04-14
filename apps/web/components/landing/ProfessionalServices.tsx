@@ -12,25 +12,25 @@ const safetyServices = [
   {
     title: 'Asesoramiento Integral',
     description: 'Cumplimiento Ley 19587 y normativas provinciales. Gestión de legajos técnicos y auditorías.',
-    icon: ShieldCheck,
+    iconImage: '/images/icons/consulting.png',
     image: '/images/services/safety_neuquen.png'
   },
   {
     title: 'Capacitaciones In-Situ',
     description: 'Formación obligatoria por puesto con certificación. Talleres de primeros auxilios y prevención activa.',
-    icon: Users,
+    iconImage: '/images/icons/training.png',
     image: '/images/services/training_real.png'
   },
   {
     title: 'Mediciones Técnicas',
     description: 'Protocolos de ruido, iluminación, puesta a tierra y estudios de ergonomía certificados.',
-    icon: Zap,
+    iconImage: '/images/icons/measurements.png',
     image: '/images/services/safety_measurements.png'
   },
   {
     title: 'Planes de Emergencia',
     description: 'Diseño de planes de evacuación, roles de emergencia, simulacros y protocolos de contingencia.',
-    icon: ClipboardCheck,
+    iconImage: '/images/icons/planning.png',
     image: '/images/services/support_real.png'
   }
 ];
@@ -80,8 +80,12 @@ export function ProfessionalServices() {
                   <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/0 transition-colors" />
                 </div>
                 <div className="p-6">
-                  <div className="bg-primary/10 w-10 h-10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all">
-                    <service.icon className="h-5 w-5 text-primary group-hover:text-white" />
+                  <div className="w-12 h-12 rounded-full overflow-hidden mb-4 ring-2 ring-primary/20 shadow-sm transition-all group-hover:scale-110">
+                    <img 
+                      src={service.iconImage} 
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h4 className="text-lg font-bold text-slate-900 mb-2">{service.title}</h4>
                   <p className="text-sm text-slate-500 leading-relaxed mb-4">{service.description}</p>
@@ -94,13 +98,7 @@ export function ProfessionalServices() {
           </div>
         </div>
 
-        {/* Badge de Confianza */}
-        <div className="mt-20 flex justify-center">
-          <div className="bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center space-x-4 shadow-xl">
-            <CheckCircle2 className="h-6 w-6 text-primary" />
-            <span className="font-medium">Certificaciones con validez nacional y cumplimiento normativo garantizado.</span>
-          </div>
-        </div>
+
 
       </div>
     </section>

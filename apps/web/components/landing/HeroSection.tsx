@@ -124,7 +124,7 @@ export default function HeroSection() {
                             className="text-xl md:text-2xl text-slate-800 mb-8 leading-relaxed"
                         >
                             Formamos conductores profesionales con los más altos estándares de calidad.
-                            Certificaciones con validez legal y reconocimiento empresarial en toda Argentina.
+                            Certificaciones con validez y reconocimiento empresarial en toda Argentina.
                         </motion.p>
 
                         {/* CTAs */}

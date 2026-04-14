@@ -1,11 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { 
-    ShieldCheck, Target, Globe, Gem, CheckCircle2, 
-    Briefcase, GraduationCap, Building2, HardHat, Car,
-    ClipboardCheck, Factory
-} from 'lucide-react';
+
 
 export default function AboutUs() {
     const fadeIn = {
@@ -33,9 +29,11 @@ export default function AboutUs() {
                         whileInView={fadeIn.whileInView}
                         viewport={fadeIn.viewport}
                         transition={fadeIn.transition}
-                        className="inline-flex items-center space-x-2 bg-white border border-primary/20 rounded-full px-5 py-2.5 mb-6 shadow-sm"
+                        className="inline-flex items-center space-x-2 bg-white border border-primary/20 rounded-full px-4 py-1.5 mb-6 shadow-sm"
                     >
-                        <Building2 className="h-5 w-5 text-primary" />
+                        <div className="w-6 h-6 rounded-full overflow-hidden">
+                            <img src="/images/icons/consulting.png" className="w-full h-full object-cover" alt="Empresa" />
+                        </div>
                         <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Sobre la Empresa</span>
                     </motion.div>
                     
@@ -71,8 +69,8 @@ export default function AboutUs() {
                         transition={{ duration: 0.6 }}
                         className="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-start"
                     >
-                        <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-8">
-                            <Target className="w-7 h-7 text-primary" />
+                        <div className="w-14 h-14 rounded-2xl overflow-hidden mb-8 shadow-md">
+                            <img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Misión" />
                         </div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Misión</h3>
                         <p className="text-slate-600 leading-relaxed">
@@ -88,8 +86,8 @@ export default function AboutUs() {
                         className="bg-slate-900 rounded-3xl p-8 md:p-12 shadow-xl shadow-slate-900/20 border border-slate-800 flex flex-col items-start text-white relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 blur-[80px] rounded-full" />
-                        <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-8 relative z-10 backdrop-blur-sm">
-                            <Globe className="w-7 h-7 text-secondary" />
+                        <div className="w-14 h-14 rounded-2xl overflow-hidden mb-8 relative z-10 shadow-md">
+                            <img src="/images/icons/reports.png" className="w-full h-full object-cover" alt="Visión" />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Visión</h3>
                         <p className="text-slate-300 leading-relaxed relative z-10">
@@ -108,8 +106,10 @@ export default function AboutUs() {
                 >
                     <div className="flex flex-col md:flex-row gap-12 items-center">
                         <div className="flex-1 space-y-6">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary font-semibold text-sm mb-2">
-                                <Gem className="w-4 h-4" />
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 text-secondary font-semibold text-sm mb-2">
+                                <div className="w-4 h-4 rounded-full overflow-hidden">
+                                    <img src="/images/icons/productivity.png" className="w-full h-full object-cover" alt="Valor" />
+                                </div>
                                 Propuesta de Valor
                             </div>
                             <h3 className="text-3xl font-bold text-slate-900">Transformamos la seguridad en una herramienta estratégica</h3>
@@ -156,8 +156,8 @@ export default function AboutUs() {
                             initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.1 }}
                             className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:border-primary/30 transition-all group"
                         >
-                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                                <Briefcase className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <img src="/images/icons/consulting.png" className="w-full h-full object-cover" alt="Servicios" />
                             </div>
                             <h4 className="text-xl font-bold text-slate-900 mb-4">Servicios Profesionales</h4>
                             <ul className="space-y-3 text-slate-600 text-sm">
@@ -177,8 +177,8 @@ export default function AboutUs() {
                             initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.2 }}
                             className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:border-primary/30 transition-all group"
                         >
-                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                                <GraduationCap className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <img src="/images/icons/training.png" className="w-full h-full object-cover" alt="Capacitación" />
                             </div>
                             <h4 className="text-xl font-bold text-slate-900 mb-4">Capacitación Técnica Especializada</h4>
                             <ul className="space-y-3 text-slate-600 text-sm">
@@ -198,8 +198,8 @@ export default function AboutUs() {
                             initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}
                             className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:border-primary/30 transition-all group lg:row-span-2 flex flex-col"
                         >
-                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                                <HardHat className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <img src="/images/icons/measurements.png" className="w-full h-full object-cover" alt="Operadores" />
                             </div>
                             <h4 className="text-xl font-bold text-slate-900 mb-4">Operadores de Equipos Industriales y Maquinaria Pesada</h4>
                             <p className="text-xs text-slate-500 mb-4 block">Incluyen contenidos técnicos, análisis de riesgos y legislación vigente:</p>
@@ -214,8 +214,8 @@ export default function AboutUs() {
                             
                             {/* 7. Programas de Conducción Segura */}
                             <div className="mt-auto pt-8 border-t border-slate-100">
-                                <div className="w-10 h-10 bg-secondary/10 text-secondary rounded-lg flex items-center justify-center mb-4">
-                                    <Car className="w-5 h-5" />
+                                <div className="w-10 h-10 rounded-lg overflow-hidden mb-4 shadow-sm">
+                                    <img src="/images/icons/time.png" className="w-full h-full object-cover" alt="Reloj" />
                                 </div>
                                 <h4 className="text-lg font-bold text-slate-900 mb-4">Programas de Conducción Segura</h4>
                                 <ul className="space-y-3 text-slate-600 text-sm">
@@ -232,21 +232,21 @@ export default function AboutUs() {
                             initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.4 }}
                             className="bg-slate-900 border-slate-800 text-white p-8 rounded-3xl shadow-lg transition-all group md:col-span-2 lg:col-span-2"
                         >
-                            <div className="w-12 h-12 bg-white/10 text-white rounded-xl flex items-center justify-center mb-6">
-                                <ClipboardCheck className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden mb-6 shadow-md ring-2 ring-white/20">
+                                <img src="/images/icons/planning.png" className="w-full h-full object-cover" alt="Auditorías" />
                             </div>
                             <h4 className="text-xl font-bold mb-4">Auditorías y Evaluaciones Técnicas</h4>
                             <p className="text-sm text-slate-300 mb-6 font-medium">Las auditorías en calidad, ambiente y seguridad permiten evaluar el grado de cumplimiento de los sistemas de gestión y detectar oportunidades de mejora en las operaciones.</p>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <ul className="space-y-3 text-slate-300 text-sm">
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Evaluación de emisiones y efluentes.</li>
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Integridad de ductos, tanques y procesos.</li>
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Evaluación de gestión de emergencias.</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Evaluación de emisiones y efluentes.</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Integridad de ductos, tanques y procesos.</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Evaluación de gestión de emergencias.</li>
                                 </ul>
                                 <ul className="space-y-3 text-slate-300 text-sm">
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Verificación de cumplimiento normativo.</li>
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Control de programas de capacitación.</li>
-                                    <li className="flex gap-2"><div className="mt-1"><CheckCircle2 className="w-4 h-4 text-secondary"/></div> Análisis de no conformidades (incidentes).</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Verificación de cumplimiento normativo.</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Control de programas de capacitación.</li>
+                                    <li className="flex gap-2"><div className="mt-1 w-4 h-4 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Análisis de no conformidades (incidentes).</li>
                                 </ul>
                             </div>
                         </motion.div>
@@ -262,7 +262,9 @@ export default function AboutUs() {
                         className="lg:col-span-2 bg-white border border-secondary/20 rounded-3xl p-8 md:p-12 shadow-xl shadow-secondary/5"
                     >
                         <div className="flex items-center gap-3 mb-8">
-                            <ShieldCheck className="w-8 h-8 text-secondary" />
+                            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm">
+                                <img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Fortalezas" />
+                            </div>
                             <h3 className="text-2xl font-bold text-slate-900">Fortalezas Organizacionales</h3>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-6">
@@ -275,7 +277,9 @@ export default function AboutUs() {
                                 "Estrategias de optimización de costos sin comprometer la seguridad."
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl">
-                                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 mt-0.5 shadow-sm">
+                                    <img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" />
+                                </div>
                                     <p className="text-slate-700 text-sm leading-relaxed">{item}</p>
                                 </div>
                             ))}
@@ -288,7 +292,9 @@ export default function AboutUs() {
                         className="bg-primary/5 rounded-3xl p-8 md:p-10 border border-primary/10 flex flex-col"
                     >
                         <div className="flex items-center gap-3 mb-8">
-                            <Factory className="w-7 h-7 text-primary" />
+                            <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm">
+                                <img src="/images/icons/scalability.png" className="w-full h-full object-cover" alt="Sectores" />
+                            </div>
                             <h3 className="text-xl font-bold text-slate-900">Sectores Atendidos</h3>
                         </div>
                         <div className="flex flex-wrap gap-3">
