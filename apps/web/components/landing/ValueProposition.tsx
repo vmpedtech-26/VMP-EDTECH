@@ -1,21 +1,21 @@
-import { Building2, Smartphone, Award } from 'lucide-react';
+
 
 export default function ValueProposition() {
     const values = [
         {
-            icon: Building2,
+            image: "/images/certification.png",
             title: "Certificación Profesional Oficial",
             description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez legal y reconocimiento empresarial en todo el territorio argentino.",
             details: "Validez Nacional"
         },
         {
-            icon: Smartphone,
+            image: "/images/platform.png",
             title: "Plataforma Digital Moderna",
             description: "Tecnología educativa de última generación con modalidad 100% online, presencial o mixta. Validación QR instantánea de certificados.",
             details: "Online/Offline + QR"
         },
         {
-            icon: Award,
+            image: "/images/instructor.png",
             title: "Instructores Certificados",
             description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
             details: "+15 años experiencia"
@@ -38,15 +38,18 @@ export default function ValueProposition() {
                 {/* Value Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {values.map((value, index) => {
-                        const Icon = value.icon;
                         return (
                             <div
                                 key={index}
                                 className="glass-card rounded-2xl p-8 hover:shadow-xl border border-white/50 hover:border-primary/30 transition-all duration-300 hover:-translate-y-2"
                             >
-                                {/* Icon */}
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6">
-                                    <Icon className="h-8 w-8 text-white" />
+                                {/* Image instead of Icon */}
+                                <div className="w-16 h-16 rounded-full overflow-hidden mb-6 ring-4 ring-primary/10 shadow-md">
+                                    <img 
+                                        src={value.image} 
+                                        alt={value.title}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
 
                                 {/* Content */}
