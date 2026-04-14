@@ -11,6 +11,7 @@ import FinalCTA from '@/components/landing/FinalCTA';
 import Header from '@/components/landing/Header';
 import Footer from '@/components/landing/Footer';
 import { ProfessionalServices } from '@/components/landing/ProfessionalServices';
+import AboutUs from '@/components/landing/AboutUs';
 
 export default function LandingPage() {
     return (
@@ -20,6 +21,7 @@ export default function LandingPage() {
             <CourseCatalog />
             <ProfessionalServices />
             <ValueProposition />
+            <AboutUs />
             <Benefits />
             <Alianzas />
             <ContactSection />
