@@ -130,8 +130,8 @@ export default function LegalSection() {
                                 transition={{ duration: 0.4, delay: index * 0.08 }}
                                 className={`rounded-2xl border transition-all duration-300 ${
                                     isOpen
-                                        ? 'bg-white/8 border-primary/40 shadow-lg shadow-primary/5'
-                                        : 'bg-white/4 border-white/8 hover:border-white/20'
+                                        ? 'bg-white/10 border-primary/40 shadow-lg shadow-primary/5'
+                                        : 'bg-white/5 border-white/10 hover:border-white/20'
                                 }`}
                             >
                                 {/* Accordion Trigger */}

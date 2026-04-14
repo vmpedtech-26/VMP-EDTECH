@@ -225,7 +225,7 @@ export default function CourseCatalog() {
                                         { icon: CalendarCheck, label: 'Vigencia', value: course.validity },
                                         { icon: CheckCircle, label: 'Acreditación', value: course.minScore },
                                     ].map(({ icon: StatIcon, label, value }) => (
-                                        <div key={label} className="bg-white/5 border border-white/8 rounded-xl p-3 backdrop-blur-sm">
+                                        <div key={label} className="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
                                             <StatIcon className="w-4 h-4 text-teal-400 mb-1.5" />
                                             <p className="text-slate-400 text-xs mb-0.5">{label}</p>
                                             <p className="text-white text-sm font-semibold">{value}</p>
