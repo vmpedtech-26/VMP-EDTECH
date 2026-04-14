@@ -10,6 +10,7 @@ import FAQ from '@/components/landing/FAQ';
 import FinalCTA from '@/components/landing/FinalCTA';
 import Header from '@/components/landing/Header';
 import Footer from '@/components/landing/Footer';
+import LegalSection from '@/components/landing/LegalSection';
 import { ProfessionalServices } from '@/components/landing/ProfessionalServices';
 import AboutUs from '@/components/landing/AboutUs';
 
@@ -28,6 +29,7 @@ export default function LandingPage() {
             <Testimonials />
             <FAQ />
             <FinalCTA />
+            <LegalSection />
             <Footer />
         </main>
     );
