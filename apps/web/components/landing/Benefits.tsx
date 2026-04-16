@@ -1,12 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
-import {
-    TrendingUp,
-    Clock,
-    Shield,
-    BarChart3,
-    CheckCircle,
-    Users,
-} from 'lucide-react';
 
 const benefits = [
     {
@@ -42,36 +37,57 @@ const benefits = [
 ];
 
 export function Benefits() {
+    const fadeIn = {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 }
+    };
+
     return (
-        <section id="beneficios" className="py-20 bg-white">
+        <section id="beneficios" className="py-20 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <motion.div 
+                    initial={fadeIn.initial}
+                    whileInView={fadeIn.whileInView}
+                    viewport={fadeIn.viewport}
+                    transition={fadeIn.transition}
+                    className="text-center max-w-3xl mx-auto mb-16"
+                >
                     <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
                         Beneficios para tu Empresa
                     </h2>
                     <p className="text-xl text-slate-800">
                         Digitaliza la capacitación de tu equipo y obtén resultados medibles
                     </p>
-                </div>
+                </motion.div>
 
                 {/* Grid de beneficios */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {benefits.map((benefit, index) => {
                         return (
-                            <Card key={index} className="flex flex-col items-start hover:shadow-lg transition-shadow">
-                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden mb-4 ring-2 ring-slate-100 shadow-sm">
-                                    <img 
-                                        src={benefit.image} 
-                                        alt={benefit.title} 
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <h3 className="text-lg font-bold text-slate-900 mb-2">
-                                    {benefit.title}
-                                </h3>
-                                <p className="text-slate-800">{benefit.description}</p>
-                            </Card>
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                            >
+                                <Card className="flex flex-col h-full items-start hover:shadow-2xl transition-all duration-300 group hover:-translate-y-2 border-slate-100 bg-white">
+                                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl overflow-hidden mb-6 ring-2 ring-primary/5 shadow-md transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                                        <img 
+                                            src={benefit.image} 
+                                            alt={benefit.title} 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
+                                        {benefit.title}
+                                    </h3>
+                                    <p className="text-slate-600 leading-relaxed text-sm md:text-base">{benefit.description}</p>
+                                </Card>
+                            </motion.div>
                         );
                     })}
                 </div>

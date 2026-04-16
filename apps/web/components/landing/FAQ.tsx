@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, HelpCircle } from 'lucide-react';
 
 interface FAQItem {
     question: string;
@@ -55,45 +56,89 @@ export default function FAQ() {
     ];
 
     return (
-        <section id="faq" className="py-20 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="faq" className="py-24 bg-slate-50 relative overflow-hidden">
+            {/* Background decorative elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
-                <div className="text-center mb-12">
-                    <h2 className="font-heading font-bold text-4xl md:text-5xl text-[#0A192F] mb-4">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center mb-16"
+                >
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+                        <HelpCircle className="w-3.5 h-3.5 text-primary" />
+                        Centro de Ayuda
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold font-heading text-[#0A192F] mb-6">
                         Preguntas Frecuentes
                     </h2>
-                    <p className="text-xl text-[#4A5568]">
+                    <p className="text-lg text-slate-600">
                         Resolvé tus dudas sobre nuestros cursos y certificaciones
                     </p>
-                </div>
+                </motion.div>
 
-                {/* Accordion */}
+                {/* FAQ List */}
                 <div className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <div
+                        <motion.div
                             key={index}
-                            className="border-b border-slate-200 pb-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.05 }}
+                            className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full flex items-start justify-between text-left py-4 hover:text-primary transition-colors group"
+                                className="w-full px-6 py-5 flex items-center justify-between text-left group transition-colors"
                             >
-                                <span className="font-heading font-semibold text-lg text-[#0A192F] group-hover:text-primary pr-8">
+                                <span className={`text-lg font-bold transition-colors pr-4 ${openIndex === index ? 'text-primary' : 'text-[#0A192F] group-hover:text-primary'}`}>
                                     {faq.question}
                                 </span>
-                                <ChevronDown
-                                    className={`h-6 w-6 text-primary flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
-                                        }`}
-                                />
-                            </button>
-                            {openIndex === index && (
-                                <div className="pt-2 pb-4 text-[#4A5568] leading-relaxed animate-fadeIn">
-                                    {faq.answer}
+                                <div className={`shrink-0 w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center transition-all duration-300 ${openIndex === index ? 'bg-primary text-white rotate-180 border-primary' : 'bg-slate-50 text-slate-400 group-hover:bg-slate-100'}`}>
+                                    <ChevronDown className="w-5 h-5" />
                                 </div>
-                            )}
-                        </div>
+                            </button>
+
+                            <AnimatePresence>
+                                {openIndex === index && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                    >
+                                        <div className="px-6 pb-6 text-[#4A5568] leading-relaxed border-t border-slate-50 pt-4">
+                                            {faq.answer}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     ))}
                 </div>
+
+                {/* Bottom Support Callout */}
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="mt-16 p-8 rounded-3xl bg-[#0A192F] text-white text-center relative overflow-hidden group border border-white/5"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <p className="text-slate-300 mb-4 relative z-10">¿Todavía tenés dudas?</p>
+                    <h3 className="text-2xl font-bold mb-6 relative z-10">Nuestro equipo está listo para asesorarte</h3>
+                    <a
+                        href="/#contacto"
+                        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-[#0A192F] font-bold hover:bg-primary hover:text-white transition-all duration-300 shadow-lg relative z-10"
+                    >
+                        Contactar Soporte Técnico
+                    </a>
+                </motion.div>
             </div>
         </section>
     );
