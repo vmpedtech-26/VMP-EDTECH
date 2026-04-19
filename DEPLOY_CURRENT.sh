@@ -17,11 +17,14 @@ if [ ! -d ".git" ]; then
     git branch -M main
 fi
 
-# 3. Configurar Remote
-REMOTE_URL="https://github.com/vmpedtech-26/VMP-EDTECH.git"
-echo "🔗 Configurando remote: $REMOTE_URL"
+# 3. Configurar Remote SSH
+REMOTE_URL="git@github.com:vmpedtech-26/VMP-EDTECH.git"
+echo "🔗 Configurando remote SSH: $REMOTE_URL"
 git remote remove origin 2>/dev/null
 git remote add origin "$REMOTE_URL"
+
+# Asegurar que se use la llave SSH correcta
+git config core.sshCommand "ssh -i /Users/matias/.ssh/vmp_deploy_key -o IdentitiesOnly=yes"
 
 # 4. Agregar y Commit
 echo "💾 Guardando cambios..."
