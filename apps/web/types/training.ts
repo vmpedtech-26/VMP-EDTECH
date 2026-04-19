@@ -156,4 +156,10 @@ export interface Credencial {
     fechaEmision: string;
     fechaVencimiento?: string;
     curso: Curso;
+    alumno?: {
+        nombre: string;
+        apellido: string;
+        dni: string;
+        fotoUrl?: string;
+    };
 }

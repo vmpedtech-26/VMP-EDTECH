@@ -4,8 +4,11 @@ from pathlib import Path
 from fastapi import UploadFile, HTTPException
 from typing import Optional
 
+from core.config import settings
+
 # Configuración
-UPLOAD_DIR = Path("uploads/credenciales")
+STORAGE_ROOT = Path(settings.STORAGE_PATH)
+UPLOAD_DIR = STORAGE_ROOT / "uploads" / "credenciales"
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
@@ -51,8 +54,8 @@ async def save_credencial_photo(file: UploadFile) -> str:
         f.write(content)
     
     # Retornar URL (ajustar según tu configuración de static files)
-    # Por ahora retornamos path relativo
-    return f"/uploads/credenciales/{unique_filename}"
+    # Por ahora retornamos path relativo prefijado con /storage
+    return f"/storage/uploads/credenciales/{unique_filename}"
 
 
 def delete_credencial_photo(file_url: str) -> bool:

@@ -42,7 +42,14 @@ async def mis_credenciales(current_user=Depends(get_current_user)):
     """Obtener credenciales del usuario actual (ALUMNO)"""
     credenciales = await prisma.credencial.find_many(
         where={"alumnoId": current_user.id},
-        include={"curso": True},
+        include={
+            "curso": True,
+            "alumno": {
+                "include": {
+                    "fotoCredencial": True
+                }
+            }
+        },
         order={"createdAt": "desc"}
     )
 
@@ -62,6 +69,12 @@ async def mis_credenciales(current_user=Depends(get_current_user)):
                 "duracionHoras": c.curso.duracionHoras,
                 "vigenciaMeses": c.curso.vigenciaMeses,
                 "activo": c.curso.activo
+            },
+            "alumno": {
+                "nombre": c.alumno.nombre,
+                "apellido": c.alumno.apellido,
+                "dni": c.alumno.dni,
+                "fotoUrl": c.alumno.fotoCredencial.fotoUrl if c.alumno.fotoCredencial and c.alumno.fotoCredencial.estado == "APROBADA" else None
             }
         }
         for c in credenciales
