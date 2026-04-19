@@ -1,9 +1,11 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
 
-    let url = `${API_URL}/api${path}`;
+    const baseUrl = API_URL;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    let url = `${baseUrl}/api${cleanPath}`;
     if (options.params) {
         const query = new URLSearchParams();
         Object.entries(options.params).forEach(([key, value]) => {
