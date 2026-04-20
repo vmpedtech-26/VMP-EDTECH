@@ -1,4 +1,27 @@
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const getApiUrl = () => {
+    // 1. Prioridad: Variable de entorno explícita
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    }
+
+    // 2. Detección automática por dominio (Producción)
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const isProduction = hostname.includes('vercel.app') || 
+                            hostname.includes('vmp-edtech.com') || 
+                            hostname.includes('vmpservicios.com');
+        
+        if (isProduction) {
+            return 'https://vmp-servicios-production.up.railway.app';
+        }
+    }
+
+    // 3. Fallback: Localhost 8000
+    return 'http://localhost:8000';
+};
+
+const API_URL = getApiUrl();
+
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
