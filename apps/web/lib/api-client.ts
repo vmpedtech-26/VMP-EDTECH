@@ -12,7 +12,7 @@ const getApiUrl = () => {
                             hostname.includes('vmpservicios.com');
         
         if (isProduction) {
-            return 'https://vmp-servicios-production.up.railway.app';
+            return 'https://web-production-1b0066.up.railway.app';
         }
     }
 
