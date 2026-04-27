@@ -1,7 +1,12 @@
 const getApiUrl = () => {
     // 1. Prioridad: Variable de entorno explícita
     if (process.env.NEXT_PUBLIC_API_URL) {
-        return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+        const envUrl = process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+        // Si la variable de Vercel apunta al backend muerto, forzamos el nuevo
+        if (envUrl.includes('vmp-servicios-production.up.railway.app')) {
+            return 'https://web-production-1b0066.up.railway.app';
+        }
+        return envUrl;
     }
 
     // 2. Detección automática por dominio (Producción)
