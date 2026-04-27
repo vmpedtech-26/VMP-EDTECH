@@ -24,6 +24,7 @@ export interface ModuloSummary {
     titulo: string;
     orden: number;
     tipo: TipoModulo;
+    liveClassUrl?: string;
 }
 
 export interface CursoDetail extends Curso {

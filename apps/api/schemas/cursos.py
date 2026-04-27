@@ -38,6 +38,7 @@ class ModuloSummary(BaseModel):
     titulo: str
     orden: int
     tipo: str  # TEORIA, QUIZ, PRACTICA
+    liveClassUrl: Optional[str] = None
     
     class Config:
         from_attributes = True
