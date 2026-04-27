@@ -24,6 +24,19 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         activo: true,
     });
 
+    const generateCodeFromName = (name: string): string => {
+        if (!name) return '';
+        const cleanName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const words = cleanName.toUpperCase().split(/[\s\-]+/).filter(w => w.length > 0);
+        
+        if (words.length === 1) {
+            return 'VMP-' + words[0].substring(0, 4);
+        } else {
+            const initials = words.map(w => w[0]).join('');
+            return 'VMP-' + initials;
+        }
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         
@@ -34,10 +47,16 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
             finalValue = value.toUpperCase().replace(/\s+/g, '-').replace(/-+/g, '-');
         }
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: finalValue
-        }));
+        setFormData(prev => {
+            const newData = { ...prev, [name]: finalValue };
+            
+            // Auto-generar código al escribir el nombre (solo en creación)
+            if (name === 'nombre' && !initialData?.id) {
+                newData.codigo = generateCodeFromName(value);
+            }
+            
+            return newData;
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
