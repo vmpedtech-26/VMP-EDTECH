@@ -26,9 +26,17 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
+        
+        let finalValue: string | number = value;
+        if (type === 'number') {
+            finalValue = parseInt(value) || 0;
+        } else if (name === 'codigo') {
+            finalValue = value.toUpperCase().replace(/\s+/g, '-').replace(/-+/g, '-');
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'number' ? parseInt(value) || 0 : value
+            [name]: finalValue
         }));
     };
 

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilla de Asistencia VMP</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0F172A;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .header img {
+            max-height: 70px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #0F172A;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-end;
+        }
+        .info-label {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap;
+            color: #0F172A;
+        }
+        .info-line {
+            flex-grow: 1;
+            border-bottom: 1px solid #94a3b8;
+            height: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        th, td {
+            border: 1px solid #475569;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            color: #0F172A;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        td {
+            height: 35px; /* Espacio suficiente para escribir a mano */
+        }
+        .col-n { width: 5%; }
+        .col-name { width: 45%; }
+        .col-dni { width: 20%; }
+        .col-sign { width: 30%; }
+        
+        .footer {
+            margin-top: 60px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .signature-box {
+            width: 250px;
+            text-align: center;
+        }
+        .signature-line {
+            border-bottom: 1px solid #0F172A;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+        .signature-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0F172A;
+        }
+
+        /* Configuración para impresión perfecta en A4 */
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+            .page {
+                max-width: 100%;
+                padding: 0;
+                box-shadow: none;
+            }
+            @page { 
+                margin: 1.5cm; 
+                size: A4 portrait; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- Encabezado con Logo y Título -->
+        <div class="header">
+            <!-- Intentará cargar desde producción, si falla cargará el archivo local -->
+            <img src="https://vmp-edtech-web.vercel.app/images/vmp-isotipo.png" alt="VMP Logo" onerror="this.src='../apps/web/public/images/vmp-isotipo.png'">
+            <h1>Planilla de Asistencia</h1>
+            <div style="width: 70px;"></div> <!-- Espaciador para mantener centrado el título -->
+        </div>
+
+        <!-- Sección de Información del Curso -->
+        <div class="info-section">
+            <div class="info-row">
+                <span class="info-label">Actividad:</span>
+                <div class="info-line"></div>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fecha:</span>
+                <div class="info-line"></div>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Facilitador:</span>
+                <div class="info-line"></div>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Empresa:</span>
+                <div class="info-line"></div>
+            </div>
+        </div>
+
+        <!-- Tabla de Asistentes -->
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-n">N°</th>
+                    <th class="col-name">Nombre y Apellido</th>
+                    <th class="col-dni">DNI</th>
+                    <th class="col-sign">Firma Asistente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td></td><td></td><td></td></tr>
+                <tr><td>2</td><td></td><td></td><td></td></tr>
+                <tr><td>3</td><td></td><td></td><td></td></tr>
+                <tr><td>4</td><td></td><td></td><td></td></tr>
+                <tr><td>5</td><td></td><td></td><td></td></tr>
+                <tr><td>6</td><td></td><td></td><td></td></tr>
+                <tr><td>7</td><td></td><td></td><td></td></tr>
+                <tr><td>8</td><td></td><td></td><td></td></tr>
+                <tr><td>9</td><td></td><td></td><td></td></tr>
+                <tr><td>10</td><td></td><td></td><td></td></tr>
+                <tr><td>11</td><td></td><td></td><td></td></tr>
+                <tr><td>12</td><td></td><td></td><td></td></tr>
+                <tr><td>13</td><td></td><td></td><td></td></tr>
+                <tr><td>14</td><td></td><td></td><td></td></tr>
+                <tr><td>15</td><td></td><td></td><td></td></tr>
+                <tr><td>16</td><td></td><td></td><td></td></tr>
+                <tr><td>17</td><td></td><td></td><td></td></tr>
+                <tr><td>18</td><td></td><td></td><td></td></tr>
+                <tr><td>19</td><td></td><td></td><td></td></tr>
+                <tr><td>20</td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+
+        <!-- Pie de página con firma del instructor -->
+        <div class="footer">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-label">Firma del Facilitador / Instructor</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
