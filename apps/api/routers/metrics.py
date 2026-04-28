@@ -27,7 +27,7 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
     try:
         # Contar totales
         total_users = await prisma.user.count()
-        total_companies = await prisma.empresa.count()
+        total_companies = await prisma.company.count()
         total_courses = await prisma.curso.count()
         total_enrollments = await prisma.inscripcion.count()
         total_credentials = await prisma.credencial.count()
@@ -40,7 +40,7 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
         quotes_rejected = await prisma.cotizacion.count(where={"status": "rejected"})
         
         # Inscripciones por estado
-        enrollments_active = await prisma.inscripcion.count(where={"estado": "ACTIVO"})
+        enrollments_active = await prisma.inscripcion.count(where={"estado": "EN_PROGRESO"})
         enrollments_completed = await prisma.inscripcion.count(where={"estado": "COMPLETADO"})
         
         # Calcular tasa de conversión
