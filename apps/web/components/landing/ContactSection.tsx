@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '@/lib/api-client';
 import { Send, Phone, Mail, MapPin, CheckCircle, Loader2, MessageSquare } from 'lucide-react';
 
 interface ContactForm {
@@ -33,7 +34,7 @@ export default function ContactSection() {
         setStatus('sending');
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api';
+            const apiUrl = `${API_URL}/api`;
             const res = await fetch(`${apiUrl}/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

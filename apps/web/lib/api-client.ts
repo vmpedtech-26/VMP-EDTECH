@@ -25,7 +25,7 @@ const getApiUrl = () => {
     return 'http://localhost:8000';
 };
 
-const API_URL = getApiUrl();
+export const API_URL = getApiUrl();
 
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {

@@ -41,7 +41,7 @@ export default function ModuloConfigPage() {
             alert('Cambios guardados correctamente (Simulado)');
         } catch (error) {
             console.error('Error saving modulo:', error);
-            alert('Error al guardar');
+            alert('Error al guardar: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsSaving(false);
         }

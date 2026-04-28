@@ -50,7 +50,7 @@ export default function AlumnosPage() {
             await usersApi.eliminarUsuario(id);
             fetchUsuarios();
         } catch (error) {
-            alert('Error al eliminar el usuario');
+            alert('Error al eliminar el usuario: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 

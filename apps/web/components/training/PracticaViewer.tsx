@@ -55,7 +55,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             }
         } catch (error) {
             console.error('Error uploading evidence:', error);
-            alert('Error al subir la evidencia');
+            alert('Error al subir la evidencia: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setUploading({ ...uploading, [tareaId]: false });
         }

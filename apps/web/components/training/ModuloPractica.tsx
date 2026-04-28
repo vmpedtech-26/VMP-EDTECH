@@ -73,7 +73,7 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
             alert('Evidencia subida exitosamente');
         } catch (error) {
             console.error('Error subiendo evidencia:', error);
-            alert('Error al subir la evidencia');
+            alert('Error al subir la evidencia: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setUploadingTareaId(null);
         }
@@ -93,7 +93,7 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setLoading(false);
         }
