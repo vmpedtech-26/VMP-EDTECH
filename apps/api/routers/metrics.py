@@ -27,7 +27,7 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
     try:
         # Contar totales
         total_users = await prisma.user.count()
-        total_companies = await prisma.company.count()
+        total_companies = await prisma.empresa.count()
         total_courses = await prisma.curso.count()
         total_enrollments = await prisma.inscripcion.count()
         total_credentials = await prisma.credencial.count()

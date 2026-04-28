@@ -247,21 +247,10 @@ async def crear_modulo(
                 }
             )
             
-    # 3. Si tiene tareas (Práctica)
-    if data.tipo == "PRACTICA" and data.tareasPracticas:
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": modulo.id,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
-            
     # Re-obtener con relaciones
     return await prisma.modulo.find_unique(
         where={"id": modulo.id},
-        include={"preguntas": True, "tareasPracticas": True}
+        include={"preguntas": True}
     )
 
 
