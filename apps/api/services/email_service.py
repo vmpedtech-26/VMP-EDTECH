@@ -37,8 +37,8 @@ class EmailService:
         """
         Send an email using SMTP
         """
-        # Development mode: if no SMTP password, just log the email
-        if not self.smtp_password:
+        # Development mode: if no SMTP password or placeholder, just log the email
+        if not self.smtp_password or self.smtp_password == "TU_API_KEY_AQUI":
             logger.info("=" * 80)
             logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT)")
             logger.info(f"To: {to_email}")
