@@ -80,8 +80,16 @@ async def generate_credential_for_student(
     
     # Generar número de credencial único
     year = datetime.now().year
-    count = await prisma.credencial.count()
-    numero_credencial = generate_credencial_number(year, count + 1)
+    last_cred = await prisma.credencial.find_first(
+        order={"createdAt": "desc"}
+    )
+    seq = 1
+    if last_cred:
+        try:
+            seq = int(last_cred.numero.split("-")[-1]) + 1
+        except:
+            seq = await prisma.credencial.count() + 1
+    numero_credencial = generate_credencial_number(year, seq)
     
     # Calcular fecha de vencimiento
     fecha_vencimiento = None
