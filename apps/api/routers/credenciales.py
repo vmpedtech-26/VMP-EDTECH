@@ -10,7 +10,7 @@ from core.database import prisma
 from services.credential_service import generate_credential_for_student
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 
 # ============= SCHEMAS =============

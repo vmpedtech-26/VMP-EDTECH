@@ -9,7 +9,7 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 
 @router.post("/enviar-quiz", response_model=QuizFeedbackResponse)

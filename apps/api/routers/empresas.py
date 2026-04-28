@@ -4,7 +4,7 @@ from schemas.empresas import EmpresaResponse, CreateEmpresaRequest, UpdateEmpres
 from auth.dependencies import get_current_user
 from core.database import prisma
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 @router.get("/", response_model=List[EmpresaResponse])
 async def listar_empresas(current_user=Depends(get_current_user)):

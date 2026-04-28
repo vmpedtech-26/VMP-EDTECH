@@ -5,7 +5,7 @@ from core.database import prisma
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 @router.post("/register", response_model=TokenResponse)
 async def register(data: UserRegister):

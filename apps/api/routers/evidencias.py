@@ -12,7 +12,7 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from services.file_upload import save_evidence_photo, delete_evidence_photo
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 @router.post("/upload", response_model=UploadEvidenciaResponse)
 async def upload_evidencia(

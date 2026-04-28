@@ -6,7 +6,7 @@ from core.database import prisma
 import psutil
 import os
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 
 @router.get("/health")

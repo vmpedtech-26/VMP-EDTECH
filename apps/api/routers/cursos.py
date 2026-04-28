@@ -14,7 +14,7 @@ from schemas.cursos import (
 from auth.dependencies import get_current_user
 from core.database import prisma
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 @router.get("/", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):

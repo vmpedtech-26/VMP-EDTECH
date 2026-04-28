@@ -11,7 +11,7 @@ from services.email_service import email_service
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api", tags=["Contact"])
+router = APIRouter(strict_slashes=False, prefix="/api", tags=["Contact"])
 
 
 class ContactFormRequest(BaseModel):

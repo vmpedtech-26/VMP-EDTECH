@@ -8,7 +8,7 @@ from schemas.models import UserResponse
 from services.backup_service import BackupService
 from core.database import prisma
 
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 @router.get("/health", tags=["admin"])
 async def get_system_health(current_user: UserResponse = Depends(get_current_user)):

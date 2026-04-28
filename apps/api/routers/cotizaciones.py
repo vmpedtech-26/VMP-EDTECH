@@ -8,7 +8,7 @@ from core.security_utils import sanitize_data
 from middleware.security import rate_limit_public
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(strict_slashes=False)
 
 # Schemas
 class CotizacionCreate(BaseModel):
