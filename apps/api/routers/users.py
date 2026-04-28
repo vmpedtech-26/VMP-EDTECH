@@ -5,7 +5,7 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from auth.jwt import hash_password
 
-router = APIRouter(strict_slashes=False)
+router = APIRouter()
 
 @router.get("/", response_model=List[UserWithEmpresaResponse])
 async def listar_usuarios(

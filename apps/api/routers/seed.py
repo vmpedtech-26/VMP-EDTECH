@@ -3,7 +3,7 @@ from core.database import prisma
 from auth.jwt import hash_password
 import os
 
-router = APIRouter(strict_slashes=False)
+router = APIRouter()
 
 @router.post("/run")
 async def run_seed():

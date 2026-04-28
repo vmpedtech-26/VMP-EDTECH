@@ -18,7 +18,7 @@ from services.progreso_calculator import (
 )
 from services.credential_service import generate_credential_for_student
 
-router = APIRouter(strict_slashes=False)
+router = APIRouter()
 
 @router.get("/mis-cursos", response_model=MisCursosResponse)
 async def obtener_mis_cursos(current_user=Depends(get_current_user)):

@@ -9,7 +9,7 @@ from core.database import prisma
 from auth.dependencies import get_current_user
 from schemas.models import UserResponse
 
-router = APIRouter(strict_slashes=False)
+router = APIRouter()
 
 
 @router.get("/overview")

@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, status, Request
 from services.credential_validator import credential_validator
 from middleware.security import rate_limit_public
 
-router = APIRouter(strict_slashes=False)
+router = APIRouter()
 
 
 @router.get("/validar/{numero}")
