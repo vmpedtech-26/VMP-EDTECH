@@ -1,4 +1,4 @@
-export const API_URL = 'https://web-production-1b0066.up.railway.app';
+export const API_URL = 'https://api.vmp-edtech.com';
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
