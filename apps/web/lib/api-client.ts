@@ -1,28 +1,31 @@
-const getApiUrl = () => {
-    // 1. Prioridad: Variable de entorno explícita
-    if (process.env.NEXT_PUBLIC_API_URL) {
-        const envUrl = process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
-        // Si la variable de Vercel apunta al backend muerto, forzamos el nuevo
-        if (envUrl.includes('vmp-servicios-production.up.railway.app')) {
-            return 'https://web-production-1b0066.up.railway.app';
-        }
-        return envUrl;
-    }
+// URL del backend Railway (única fuente de verdad para producción)
+const PRODUCTION_API = 'https://web-production-1b0066.up.railway.app';
 
-    // 2. Detección automática por dominio (Producción)
+const getApiUrl = () => {
+    // En producción (Vercel/dominios VMP): siempre usar el backend Railway confirmado.
+    // Esto ignora la variable de entorno de Vercel que puede estar desactualizada.
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
-        const isProduction = hostname.includes('vercel.app') || 
-                            hostname.includes('vmp-edtech.com') || 
-                            hostname.includes('vmpservicios.com');
-        
+        const isProduction = hostname.includes('vercel.app') ||
+                             hostname.includes('vmp-edtech.com') ||
+                             hostname.includes('vmpservicios.com');
         if (isProduction) {
-            return 'https://web-production-1b0066.up.railway.app';
+            return PRODUCTION_API;
         }
     }
 
-    // 3. Fallback: Localhost 8000
-    return 'http://localhost:8000';
+    // En server-side rendering durante build de producción de Vercel:
+    // VERCEL env var nos dice que estamos en Vercel
+    if (process.env.VERCEL === '1') {
+        return PRODUCTION_API;
+    }
+
+    // En entorno local: usar variable de entorno o localhost
+    const envUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+    if (envUrl && !envUrl.includes('localhost') === false) {
+        return envUrl;
+    }
+    return envUrl || 'http://localhost:8000';
 };
 
 export const API_URL = getApiUrl();
