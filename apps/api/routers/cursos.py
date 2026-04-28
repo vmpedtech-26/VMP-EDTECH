@@ -16,7 +16,7 @@ from core.database import prisma
 
 router = APIRouter()
 
-@router.get("/", response_model=List[CursoListItem])
+@router.get("", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """
     Listar todos los cursos activos
@@ -40,7 +40,7 @@ async def listar_cursos(current_user=Depends(get_current_user)):
     return cursos
 
 
-@router.post("/", response_model=CursoListItem)
+@router.post("", response_model=CursoListItem)
 async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo curso (Solo SUPER_ADMIN)"""
     
