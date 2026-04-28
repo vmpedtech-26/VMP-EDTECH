@@ -1,35 +1,4 @@
-// URL del backend Railway (única fuente de verdad para producción)
-const PRODUCTION_API = 'https://web-production-1b0066.up.railway.app';
-
-const getApiUrl = () => {
-    // En producción (Vercel/dominios VMP): siempre usar el backend Railway confirmado.
-    // Esto ignora la variable de entorno de Vercel que puede estar desactualizada.
-    if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const isProduction = hostname.includes('vercel.app') ||
-                             hostname.includes('vmp-edtech.com') ||
-                             hostname.includes('vmpservicios.com');
-        if (isProduction) {
-            return PRODUCTION_API;
-        }
-    }
-
-    // En server-side rendering durante build de producción de Vercel:
-    // VERCEL env var nos dice que estamos en Vercel
-    if (process.env.VERCEL === '1') {
-        return PRODUCTION_API;
-    }
-
-    // En entorno local: usar variable de entorno o localhost
-    const envUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-    if (envUrl && !envUrl.includes('localhost') === false) {
-        return envUrl;
-    }
-    return envUrl || 'http://localhost:8000';
-};
-
-export const API_URL = getApiUrl();
-
+export const API_URL = 'https://web-production-1b0066.up.railway.app';
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
@@ -37,6 +6,7 @@ async function request(path: string, options: RequestInit & { params?: Record<st
     const baseUrl = API_URL;
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
     let url = `${baseUrl}/api${cleanPath}`;
+    
     if (options.params) {
         const query = new URLSearchParams();
         Object.entries(options.params).forEach(([key, value]) => {
