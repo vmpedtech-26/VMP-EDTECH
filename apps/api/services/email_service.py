@@ -64,6 +64,7 @@ class EmailService:
                 username=self.smtp_user,
                 password=self.smtp_password,
                 start_tls=True,
+                timeout=5,
             )
             
             logger.info(f"Email sent successfully to {to_email}")
