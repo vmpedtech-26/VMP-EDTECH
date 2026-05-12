@@ -1,4 +1,6 @@
+// Trigger restoration: VMP ABRIL Frontend
 import type { Metadata } from 'next';
+
 import './globals.css';
 
 const SITE_URL = 'https://www.vmp-edtech.com';
