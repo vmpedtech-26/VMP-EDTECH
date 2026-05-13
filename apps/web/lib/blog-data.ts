@@ -120,5 +120,61 @@ export const blogPosts: BlogPost[] = [
     image: '/images/blog/mercosur-transport.png',
     readTime: '7 min',
     tags: ['Mercosur', 'Integración', 'Transporte Internacional', 'Normativa']
+  },
+  {
+    slug: 'conduccion-invernal-patagonia-2026',
+    title: 'Desafíos de la Conducción Invernal: Preparando la Flota para la Patagonia',
+    excerpt: 'Con la llegada de las primeras nevadas en el sur, repasamos los protocolos de seguridad indispensables para el transporte pesado.',
+    content: `
+      <h2>Seguridad en Climas Extremos</h2>
+      <p>El invierno en la Patagonia argentina no perdona errores. La combinación de hielo negro, ráfagas de viento y acumulación de nieve exige una preparación técnica superior tanto del vehículo como del conductor.</p>
+      
+      <h3>Protocolos de Mayo</h3>
+      <ul>
+        <li><strong>Control de Neumáticos y Cadenas:</strong> No es solo tenerlas, es saber colocarlas en condiciones de visibilidad nula.</li>
+        <li><strong>Sistemas de Calefacción y Fluidos:</strong> Verificación de anticongelantes y sistemas de climatización de cabina para prevenir la fatiga por frío.</li>
+        <li><strong>Planificación de Rutas:</strong> Uso de reportes de vialidad nacional en tiempo real para evitar cierres de pasos fronterizos.</li>
+      </ul>
+
+      <blockquote>
+        "La prevención en invierno comienza semanas antes del primer copo de nieve. Un conductor capacitado sabe cuándo avanzar y, más importante aún, cuándo detenerse."
+      </blockquote>
+
+      <h3>Nuevos Módulos de Entrenamiento</h3>
+      <p>Este mes hemos lanzado un simulador interactivo de conducción en hielo para nuestros alumnos de la región sur, permitiendo practicar maniobras de recuperación sin riesgos reales.</p>
+    `,
+    date: '15 de Mayo, 2026',
+    author: 'Inst. Marcos Peña',
+    category: 'Seguridad',
+    image: '/images/blog/winter-patagonia.png',
+    readTime: '10 min',
+    tags: ['Patagonia', 'Invierno', 'Seguridad Vial', 'Cadenas']
+  },
+  {
+    slug: 'vmp-accounting-innovacion-gestion',
+    title: 'VMP Accounting: Innovación en la Gestión de Capacitaciones',
+    excerpt: 'Lanzamos nuestro nuevo sistema de gestión financiera integrada para empresas de transporte y logística.',
+    content: `
+      <h2>Transformación Digital en VMP</h2>
+      <p>En nuestra búsqueda constante por profesionalizar el sector, hemos dado un paso gigante: la integración total de la gestión contable con el seguimiento académico de los conductores.</p>
+      
+      <h3>¿Qué significa esto para nuestros clientes?</h3>
+      <p>A partir de Junio, todas las empresas registradas en VMP-EDTECH podrán gestionar su facturación, cuentas corrientes y reportes de inversión en capacitación desde un solo panel centralizado.</p>
+      
+      <ul>
+        <li><strong>Asientos Automáticos:</strong> Cada curso asignado genera su trazabilidad contable instantánea.</li>
+        <li><strong>Transparencia Total:</strong> Auditoría en tiempo real de los presupuestos de capacitación.</li>
+        <li><strong>Dashboard de Rentabilidad:</strong> Visualización clara del ROI en formación profesional.</li>
+      </ul>
+
+      <h3>El Futuro del EdTech es Integrado</h3>
+      <p>No solo formamos conductores; ayudamos a las empresas a ser más eficientes. Con VMP Accounting, eliminamos la fricción administrativa para que el foco siga siendo la seguridad en las rutas.</p>
+    `,
+    date: '10 de Junio, 2026',
+    author: 'Ing. Matias - Antigravity AI',
+    category: 'Innovación',
+    image: '/images/blog/vmp-accounting.png',
+    readTime: '5 min',
+    tags: ['Fintech', 'EdTech', 'Innovación', 'Gestión']
   }
 ];
