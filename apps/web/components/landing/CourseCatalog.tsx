@@ -273,6 +273,7 @@ export default function CourseCatalog() {
                                             alt={course.title}
                                             fill
                                             className="object-cover"
+                                            sizes="(max-width: 768px) 100vw, 50vw"
                                             priority
                                         />
                                         {/* Subtle overlay */}

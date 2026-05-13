@@ -3,6 +3,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function ValueProposition() {
     const values = [
@@ -65,11 +66,12 @@ export default function ValueProposition() {
                                 className="glass-card rounded-2xl p-8 hover:shadow-2xl border border-white/50 hover:border-primary/30 transition-all duration-500 group hover:-translate-y-2 bg-white/70 backdrop-blur-sm"
                             >
                                 {/* Image instead of Icon */}
-                                <div className="w-20 h-20 rounded-2xl overflow-hidden mb-6 ring-4 ring-primary/5 shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3">
-                                    <img 
+                                <div className="w-20 h-20 rounded-2xl overflow-hidden mb-6 ring-4 ring-primary/5 shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3 relative">
+                                    <Image 
                                         src={value.image} 
                                         alt={value.title}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
 

@@ -80,11 +80,12 @@ export function ProfessionalServices() {
                   <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/0 transition-colors" />
                 </div>
                 <div className="p-6">
-                  <div className="w-12 h-12 rounded-full overflow-hidden mb-4 ring-2 ring-primary/20 shadow-sm transition-all group-hover:scale-110">
-                    <img 
+                  <div className="w-12 h-12 rounded-full overflow-hidden mb-4 ring-2 ring-primary/20 shadow-sm transition-all group-hover:scale-110 relative">
+                    <Image 
                       src={service.iconImage} 
                       alt={service.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                   <h4 className="text-lg font-bold text-slate-900 mb-2">{service.title}</h4>

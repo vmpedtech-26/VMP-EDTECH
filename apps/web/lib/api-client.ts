@@ -1,4 +1,4 @@
-export const API_URL = 'https://api.vmp-edtech.com';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;

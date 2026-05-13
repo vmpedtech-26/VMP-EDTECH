@@ -194,6 +194,7 @@ export default function HeroSection() {
                                     alt="Capacitación profesional de conductores en Neuquén"
                                     fill
                                     className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
                                     priority
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent" />

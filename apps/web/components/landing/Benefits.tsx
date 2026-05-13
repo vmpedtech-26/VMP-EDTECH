@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Card } from '@/components/ui/Card';
 
 const benefits = [
@@ -75,11 +76,12 @@ export function Benefits() {
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                                 <Card className="flex flex-col h-full items-start hover:shadow-2xl transition-all duration-300 group hover:-translate-y-2 border-slate-100 bg-white">
-                                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl overflow-hidden mb-6 ring-2 ring-primary/5 shadow-md transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                                        <img 
+                                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl overflow-hidden mb-6 ring-2 ring-primary/5 shadow-md transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 relative">
+                                        <Image 
                                             src={benefit.image} 
                                             alt={benefit.title} 
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
