@@ -111,6 +111,7 @@ async def generate_credential_for_student(
         "curso_codigo": curso.codigo,
         "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
         "fecha_vencimiento": fecha_vencimiento.strftime("%d/%m/%Y") if fecha_vencimiento else None,
+        "puesto": alumno.puesto,
         "qr_url": qr_url
     }
     
@@ -129,6 +130,7 @@ async def generate_credential_for_student(
             "qrCodeUrl": qr_url,
             "fechaEmision": datetime.now(),
             "fechaVencimiento": fecha_vencimiento,
+            "puesto": alumno.puesto
         }
     )
     

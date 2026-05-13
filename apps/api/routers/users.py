@@ -75,6 +75,7 @@ async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_curren
             "telefono": data.telefono,
             "rol": data.rol,
             "empresaId": data.empresaId,
+            "puesto": data.puesto,
             "activo": data.activo
         }
     )

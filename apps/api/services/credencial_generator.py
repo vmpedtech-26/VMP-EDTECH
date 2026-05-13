@@ -88,18 +88,23 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.setFont("Helvetica", 8)
     c.drawString(5*mm, 31*mm, f"DNI: {credencial_data['dni']}")
     
+    # Puesto
+    if credencial_data.get('puesto'):
+        c.setFont("Helvetica-Oblique", 7)
+        c.drawString(5*mm, 28*mm, f"Puesto: {credencial_data['puesto']}")
+    
     # Curso
     c.setFont("Helvetica-Bold", 9)
-    c.drawString(5*mm, 26*mm, f"Curso: {credencial_data['curso_nombre']}")
+    c.drawString(5*mm, 24*mm, f"Curso: {credencial_data['curso_nombre']}")
     c.setFont("Helvetica", 7)
-    c.drawString(5*mm, 23*mm, f"Código: {credencial_data['curso_codigo']}")
+    c.drawString(5*mm, 21*mm, f"Código: {credencial_data['curso_codigo']}")
     
     # Fechas
     c.setFont("Helvetica", 7)
-    c.drawString(5*mm, 17*mm, f"Emisión: {credencial_data['fecha_emision']}")
+    c.drawString(5*mm, 15*mm, f"Emisión: {credencial_data['fecha_emision']}")
     
     if credencial_data.get('fecha_vencimiento'):
-        c.drawString(5*mm, 14*mm, f"Vence: {credencial_data['fecha_vencimiento']}")
+        c.drawString(5*mm, 12*mm, f"Vence: {credencial_data['fecha_vencimiento']}")
     
     # Número de credencial
     c.setFont("Helvetica-Bold", 6)

@@ -10,6 +10,7 @@ export interface UserAdmin {
     rol: string;
     empresaId?: string;
     empresa_nombre?: string;
+    puesto?: string;
     activo: boolean;
     createdAt: string;
 }

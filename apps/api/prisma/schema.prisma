@@ -28,6 +28,7 @@ model User {
   empresaId    String?  @map("empresa_id")
   avatar       String?
   meetLink     String?  @map("meet_link")
+  puesto       String?  @map("puesto")
   activo       Boolean  @default(true)
   
   empresa       Company?      @relation(fields: [empresaId], references: [id])
@@ -193,6 +194,7 @@ model Credencial {
   qrCodeUrl        String    @map("qr_code_url")
   fechaEmision     DateTime  @default(now()) @map("fecha_emision")
   fechaVencimiento DateTime? @map("fecha_vencimiento")
+  puesto           String?   @map("puesto")
   
   alumno User  @relation(fields: [alumnoId], references: [id])
   curso  Curso @relation(fields: [cursoId], references: [id])
