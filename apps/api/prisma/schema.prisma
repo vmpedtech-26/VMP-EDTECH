@@ -8,37 +8,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// ============= ENUMS =============
-
-enum UserRole {
-  SUPER_ADMIN
-  INSTRUCTOR
-  ALUMNO
-}
-
-enum TipoModulo {
-  TEORIA
-  QUIZ
-  PRACTICA
-}
-
-enum EstadoEvidencia {
-  PENDIENTE
-  APROBADA
-  RECHAZADA
-}
-
-enum EstadoInscripcion {
-  NO_INICIADO
-  EN_PROGRESO
-  COMPLETADO
-  APROBADO
-  REPROBADO
-}
+// Enums removed for SQLite compatibility - Using String instead
 
 // ============= MODELOS =============
 
@@ -50,7 +24,7 @@ model User {
   apellido     String
   dni          String   @unique
   telefono     String?
-  rol          UserRole @default(ALUMNO)
+  rol          String   @default("ALUMNO")
   empresaId    String?  @map("empresa_id")
   avatar       String?
   meetLink     String?  @map("meet_link")
@@ -116,8 +90,8 @@ model Modulo {
   cursoId       String      @map("curso_id")
   titulo        String
   orden         Int
-  tipo          TipoModulo
-  contenidoHtml String?     @map("contenido_html") @db.Text
+  tipo          String
+  contenidoHtml String?     @map("contenido_html")
   videoUrl      String?     @map("video_url")
   
   // Live class support
@@ -138,7 +112,7 @@ model Pregunta {
   id                 String @id @default(uuid())
   moduloId           String @map("modulo_id")
   pregunta           String
-  opciones           Json // Array de strings
+  opciones           String // JSON string (Array de strings)
   respuestaCorrecta  Int    @map("respuesta_correcta") // Index de la opción correcta
   explicacion        String?
   
@@ -156,7 +130,7 @@ model Inscripcion {
   alumnoId  String             @map("alumno_id")
   cursoId   String             @map("curso_id")
   progreso  Int                @default(0) // 0-100
-  estado    EstadoInscripcion  @default(NO_INICIADO)
+  estado    String             @default("NO_INICIADO")
   inicioDate DateTime?         @map("inicio_date")
   finDate    DateTime?         @map("fin_date")
   
@@ -177,7 +151,7 @@ model Examen {
   id           String   @id @default(uuid())
   alumnoId     String   @map("alumno_id")
   cursoId      String   @map("curso_id")
-  respuestas   Json // { preguntaId: respuestaIndex }
+  respuestas   String // JSON string ({ preguntaId: respuestaIndex })
   calificacion Float?
   aprobado     Boolean?
   
@@ -196,7 +170,7 @@ model FotoCredencial {
   alumnoId    String          @unique @map("alumno_id") // Solo una foto por alumno
   fotoUrl     String          @map("foto_url")
   comentario  String?         // Comentario del instructor al subir
-  estado      EstadoEvidencia @default(PENDIENTE)
+  estado      String          @default("PENDIENTE")
   feedback    String?         // Feedback si se rechaza
   evaluadorId String?         @map("evaluador_id") // Instructor que subió/aprobó
 
@@ -241,7 +215,7 @@ model Cotizacion {
   nombre           String
   email            String
   telefono         String
-  comentarios      String?  @db.Text
+  comentarios      String?
   
   // Datos del cotizador
   quantity         Int      // Cantidad de conductores

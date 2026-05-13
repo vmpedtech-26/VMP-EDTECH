@@ -18,8 +18,8 @@ export default function LandingPage() {
     return (
         <main className="min-h-screen">
             <Header />
-            <HeroSection />
             <CourseCatalog />
+            <HeroSection />
             <ProfessionalServices />
             <ValueProposition />
             <AboutUs />

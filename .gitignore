@@ -46,3 +46,5 @@ db.sqlite3
 
 # Prisma
 /apps/api/prisma/schema.prisma.bak
+.vercel
+.env*.local
