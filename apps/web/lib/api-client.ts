@@ -1,4 +1,11 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+export const API_URL = (() => {
+    const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // If we're not on localhost and the url starts with http://, force https://
+    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && url.startsWith('http://') && !url.includes('localhost')) {
+        return url.replace('http://', 'https://');
+    }
+    return url;
+})();
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
