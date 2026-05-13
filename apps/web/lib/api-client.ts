@@ -1,11 +1,8 @@
 export const API_URL = (() => {
     const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    console.log('API_URL Debug:', url);
-    // If we're not on localhost and the url starts with http://, force https://
+    // If we're not on localhost, force https://
     if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
-        const forced = url.replace('http://', 'https://');
-        console.log('Forced API_URL:', forced);
-        return forced;
+        return url.replace('http://', 'https://');
     }
     return url;
 })();

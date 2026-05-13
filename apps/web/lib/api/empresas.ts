@@ -16,7 +16,7 @@ export const empresasApi = {
      * Listar todas las empresas (Solo SUPER_ADMIN)
      */
     async listarEmpresas(): Promise<Empresa[]> {
-        return api.get('/empresas/');
+        return api.get('/empresas');
     },
 
     /**
@@ -30,7 +30,7 @@ export const empresasApi = {
      * Crear una nueva empresa
      */
     async crearEmpresa(data: Partial<Empresa>): Promise<Empresa> {
-        return api.post('/empresas/', data);
+        return api.post('/empresas', data);
     },
 
     /**
