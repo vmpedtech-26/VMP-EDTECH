@@ -56,6 +56,7 @@ model Company {
   
   usuarios User[]
   cursos   Curso[]
+  ventas   Venta[]
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -255,4 +256,137 @@ model PasswordResetToken {
   @@index([token])
   @@index([userId])
   @@map("password_reset_tokens")
+}
+
+// ============= CONTABILIDAD =============
+
+model Account {
+  id          String   @id @default(uuid())
+  code        String   @unique // Ej: 1.1.1.01 (Caja)
+  name        String
+  type        String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  parentCode  String?  @map("parent_code")
+  level       Int      @default(1)
+  isSelectable Boolean  @default(true) @map("is_selectable")
+  
+  ledgerEntries LedgerEntry[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model JournalEntry {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  concept     String
+  reference   String?  // Ej: Factura A-0001-000001
+  type        String   @default("GENERAL") // SALES, PURCHASES, CASH, GENERAL
+  
+  entries     LedgerEntry[]
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("journal_entries")
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  journalId      String   @map("journal_id")
+  accountId      String   @map("account_id")
+  description    String?
+  debit          Float    @default(0)
+  credit         Float    @default(0)
+  
+  journal        JournalEntry @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  account        Account      @relation(fields: [accountId], references: [id])
+  
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("ledger_entries")
+}
+
+model Venta {
+  id              String   @id @default(uuid())
+  numero          String   @unique // A-0001-00000001
+  fecha           DateTime @default(now())
+  companyId       String   @map("company_id")
+  condicionIva    String   @default("RI") @map("condicion_iva")
+  subtotal        Float
+  iva             Float
+  percepciones    Float    @default(0)
+  total           Float
+  metodoPago      String   @default("TRANSFERENCIA") @map("metodo_pago")
+  estado          String   @default("PENDIENTE") // PENDIENTE, COBRADA, ANULADA
+  
+  company         Company  @relation(fields: [companyId], references: [id])
+  items           VentaItem[]
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("ventas")
+}
+
+model VentaItem {
+  id          String   @id @default(uuid())
+  ventaId     String   @map("venta_id")
+  descripcion String
+  cantidad    Int
+  precioUnit  Float    @map("precio_unit")
+  subtotal    Float
+  
+  venta       Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+
+  @@map("venta_items")
+}
+
+model Compra {
+  id              String   @id @default(uuid())
+  proveedor       String
+  cuit            String?
+  numero          String?
+  fecha           DateTime @default(now())
+  subtotal        Float
+  iva             Float
+  percepciones    Float    @default(0)
+  total           Float
+  metodoPago      String   @default("EFECTIVO") @map("metodo_pago")
+  categoria       String   @default("OTROS") // SERVICIOS, IMPUESTOS, SUELDOS, etc
+  
+  items           CompraItem[]
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("compras")
+}
+
+model CompraItem {
+  id          String   @id @default(uuid())
+  compraId    String   @map("compra_id")
+  descripcion String
+  cantidad    Int
+  precioUnit  Float    @map("precio_unit")
+  subtotal    Float
+  
+  compra      Compra   @relation(fields: [compraId], references: [id], onDelete: Cascade)
+
+  @@map("compra_items")
+}
+
+model CajaMovimiento {
+  id          String   @id @default(uuid())
+  fecha       DateTime @default(now())
+  tipo        String   // INGRESO, EGRESO
+  monto       Float
+  concepto    String
+  referencia  String?  // ID de Venta o Compra
+  metodo      String   @default("EFECTIVO") // EFECTIVO, TRANSFERENCIA, MERCADOPAGO
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("caja_movimientos")
 }

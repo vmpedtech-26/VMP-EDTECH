@@ -15,7 +15,8 @@ import {
     ChevronRight,
     ClipboardCheck,
     UserCog,
-    Sliders
+    Sliders,
+    CircleDollarSign
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -47,6 +48,16 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
         { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
         { icon: Sliders, label: 'Centro de Control', href: '/dashboard/super/control' },
+        {
+            icon: CircleDollarSign,
+            label: 'Contabilidad',
+            submenu: [
+                { icon: CircleDollarSign, label: 'Ventas', href: '/dashboard/super/contabilidad/ventas' },
+                { icon: CircleDollarSign, label: 'Compras', href: '/dashboard/super/contabilidad/compras' },
+                { icon: LayoutDashboard, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+                { icon: Sliders, label: 'Reportes', href: '/dashboard/super/contabilidad/reportes' },
+            ]
+        },
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
     ],
     INSTRUCTOR: [
