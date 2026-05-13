@@ -25,43 +25,35 @@ export interface Venta {
 export const accountingApi = {
   // Accounts
   getAccounts: async () => {
-    const response = await api.get('/accounting/accounts');
-    return response.data;
+    return await api.get('/accounting/accounts');
   },
   seedAccounts: async () => {
-    const response = await api.post('/accounting/seed');
-    return response.data;
+    return await api.post('/accounting/seed', {});
   },
   
   // Ventas
   getVentas: async () => {
-    const response = await api.get('/accounting/ventas');
-    return response.data;
+    return await api.get('/accounting/ventas');
   },
   createVenta: async (data: Venta) => {
-    const response = await api.post('/accounting/ventas', data);
-    return response.data;
+    return await api.post('/accounting/ventas', data);
   },
   
   // Compras
   getCompras: async () => {
-    const response = await api.get('/accounting/compras');
-    return response.data;
+    return await api.get('/accounting/compras');
   },
   createCompra: async (data: any) => {
-    const response = await api.post('/accounting/compras', data);
-    return response.data;
+    return await api.post('/accounting/compras', data);
   },
   
   // Reports
   getBalance: async () => {
-    const response = await api.get('/accounting/reports/balance');
-    return response.data;
+    return await api.get('/accounting/reports/balance');
   },
   
   // Journal
   getJournal: async () => {
-    const response = await api.get('/accounting/journal');
-    return response.data;
+    return await api.get('/accounting/journal');
   }
 };
