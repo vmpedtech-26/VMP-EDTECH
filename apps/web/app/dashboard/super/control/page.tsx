@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { toast } from 'sonner';
-import { api } from '@/lib/api-client';
+import { api, API_URL } from '@/lib/api-client';
 
 
 
@@ -104,7 +104,6 @@ export default function ControlCenterPage() {
     const handleDownloadBackup = async (filename: string) => {
         try {
             const token = localStorage.getItem('vmp_token');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
             window.open(`${API_URL}/api/admin/backups/download/${filename}?token=${token}`, '_blank');
         } catch (error) {
             toast.error('Error al iniciar la descarga');
