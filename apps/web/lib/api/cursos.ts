@@ -20,7 +20,7 @@ export const cursosApi = {
      * Crear un nuevo curso (Solo SUPER_ADMIN)
      */
     async crearCurso(data: Partial<Curso>): Promise<Curso> {
-        return api.post('/cursos/', data);
+        return api.post('/cursos', data);
     },
 
     /**

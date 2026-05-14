@@ -24,7 +24,7 @@ export const credencialesApi = {
         cursoId?: string;
         alumnoId?: string;
     }): Promise<CredencialListItem[]> {
-        return api.get('/credenciales/', { params });
+        return api.get('/credenciales', { params });
     },
 
     /**
