@@ -238,12 +238,33 @@ async def get_instructor_metrics(current_user: UserResponse = Depends(get_curren
             where_inscripciones["alumno"] = {"empresaId": empresa_id}
         inscripciones_activas = await prisma.inscripcion.count(where=where_inscripciones)
         
+        # Detalle de cursos (Actual vs Esperado)
+        cursos_data = await prisma.curso.find_many(
+            where={"empresaId": empresa_id} if empresa_id else {},
+            include={
+                "_count": {
+                    "select": {"inscripciones": True}
+                }
+            }
+        )
+        
+        cursos_stats = [
+            {
+                "id": c.id,
+                "nombre": c.nombre,
+                "reales": c._count.inscripciones,
+                "esperados": c.alumnosEsperados
+            }
+            for c in cursos_data
+        ]
+        
         return {
             "pending_evidencias": pending_evidencias,
             "active_alumnos": active_alumnos,
             "cursos_count": cursos_count,
             "credenciales_count": credenciales_count,
-            "inscripciones_activas": inscripciones_activas
+            "inscripciones_activas": inscripciones_activas,
+            "cursos_stats": cursos_stats
         }
     except Exception as e:
         print(f"Error getting instructor metrics: {str(e)}")
