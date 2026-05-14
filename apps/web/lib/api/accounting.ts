@@ -1,7 +1,7 @@
 import { api } from '../api-client';
 
 export interface VentaItem {
-  descripcion: str;
+  descripcion: string;
   cantidad: number;
   precioUnit: number;
   subtotal: number;

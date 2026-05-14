@@ -251,12 +251,6 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
 
     c.save()
     buffer.seek(0)
-    
-    return buffer.getvalue()
-    
-    c.save()
-    buffer.seek(0)
-    
     return buffer.getvalue()
 
 async def save_credencial_pdf(pdf_bytes: bytes, filename: str) -> str:

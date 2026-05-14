@@ -129,6 +129,7 @@ async def generar_credencial_manual(
 
 
 
+@router.get("", response_model=List[CredencialListItem])
 async def listar_credenciales(
     empresaId: Optional[str] = Query(None),
     cursoId: Optional[str] = Query(None),

@@ -63,8 +63,9 @@ async def registrar_venta(data: CreateVentaRequest, current_user=Depends(get_cur
     )
     
     # 2. Generar Asiento Contable Automático
-    # Necesitamos IDs de cuentas (esto asume que el Plan de Cuentas existe)
-    # Por simplicidad, buscaremos por código
+    # Verificar que la empresa existe (para la descripción del asiento)
+    company = await prisma.company.find_unique(where={"id": data.companyId})
+    company_name = company.nombre if company else data.companyId
     
     account_ventas = await prisma.account.find_unique(where={"code": "4.1.01"}) # Ventas de Servicios
     account_iva_df = await prisma.account.find_unique(where={"code": "2.1.05"}) # IVA Débito Fiscal
@@ -84,7 +85,7 @@ async def registrar_venta(data: CreateVentaRequest, current_user=Depends(get_cur
         
         await prisma.journalentry.create(
             data={
-                "concept": f"Venta {data.numero} - {data.companyId}",
+                "concept": f"Venta {data.numero} - {company_name}",
                 "reference": data.numero,
                 "type": "SALES",
                 "entries": {
@@ -127,7 +128,44 @@ async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_c
         include={"items": True}
     )
     
-    # Lógica de asiento para compras (opcional por ahora)
+    # 2. Generar Asiento Contable Automático para Compra
+    account_iva_cf = await prisma.account.find_unique(where={"code": "1.1.05"}) # IVA Crédito Fiscal
+    
+    # Cuenta de Gasto según categoría
+    gasto_code = "5.1.01" # Otros Gastos por defecto
+    if data.categoria == "SERVICIOS": gasto_code = "5.1.02"
+    elif data.categoria == "IMPUESTOS": gasto_code = "5.1.03"
+    elif data.categoria == "SUELDOS": gasto_code = "5.1.04"
+    
+    account_gasto = await prisma.account.find_unique(where={"code": gasto_code})
+    
+    # Cuenta de pago
+    if data.metodoPago == "EFECTIVO":
+        account_pago = await prisma.account.find_unique(where={"code": "1.1.01"}) # Caja
+    else:
+        account_pago = await prisma.account.find_unique(where={"code": "1.1.02"}) # Banco
+        
+    if account_gasto and account_pago:
+        entries = [
+            {"accountId": account_gasto.id, "debit": data.subtotal, "credit": 0, "description": f"Gasto {data.categoria} - {data.proveedor}"},
+            {"accountId": account_pago.id, "debit": 0, "credit": data.total, "description": f"Pago Compra {data.numero}"}
+        ]
+        
+        # Añadir IVA si existe
+        if data.iva > 0 and account_iva_cf:
+            entries.append({"accountId": account_iva_cf.id, "debit": data.iva, "credit": 0, "description": f"IVA CF Compra {data.numero}"})
+            
+        await prisma.journalentry.create(
+            data={
+                "concept": f"Compra {data.numero} - {data.proveedor}",
+                "reference": data.numero,
+                "type": "PURCHASES",
+                "entries": {
+                    "create": entries
+                }
+            }
+        )
+        
     return compra
 
 @router.get("/compras", response_model=List[CompraResponse])
@@ -179,10 +217,20 @@ async def seed_accounting(current_user=Depends(get_current_user)):
         {"code": "1.1", "name": "ACTIVO CORRIENTE", "type": "ASSET", "parentCode": "1", "isSelectable": False},
         {"code": "1.1.01", "name": "Caja", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.02", "name": "Banco", "type": "ASSET", "parentCode": "1.1"},
+        {"code": "1.1.05", "name": "IVA Crédito Fiscal", "type": "ASSET", "parentCode": "1.1"},
         {"code": "2", "name": "PASIVO", "type": "LIABILITY", "isSelectable": False},
+        {"code": "2.1", "name": "PASIVO CORRIENTE", "type": "LIABILITY", "parentCode": "2", "isSelectable": False},
+        {"code": "2.1.01", "name": "Proveedores", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "2.1.05", "name": "IVA Débito Fiscal", "type": "LIABILITY", "parentCode": "2.1"},
+        {"code": "3", "name": "PATRIMONIO NETO", "type": "EQUITY", "isSelectable": False},
+        {"code": "3.1.01", "name": "Capital Social", "type": "EQUITY", "parentCode": "3"},
         {"code": "4", "name": "INGRESOS", "type": "REVENUE", "isSelectable": False},
-        {"code": "4.1.01", "name": "Ventas de Servicios", "type": "REVENUE", "parentCode": "4"}
+        {"code": "4.1.01", "name": "Ventas de Servicios", "type": "REVENUE", "parentCode": "4"},
+        {"code": "5", "name": "EGRESOS", "type": "EXPENSE", "isSelectable": False},
+        {"code": "5.1.01", "name": "Otros Gastos", "type": "EXPENSE", "parentCode": "5"},
+        {"code": "5.1.02", "name": "Servicios Públicos", "type": "EXPENSE", "parentCode": "5"},
+        {"code": "5.1.03", "name": "Impuestos y Tasas", "type": "EXPENSE", "parentCode": "5"},
+        {"code": "5.1.04", "name": "Sueldos y Jornales", "type": "EXPENSE", "parentCode": "5"}
     ]
     
     for c in cuentas:

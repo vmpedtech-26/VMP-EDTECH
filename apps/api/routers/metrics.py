@@ -173,6 +173,7 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
                 "codigo": course.codigo,
                 "total_enrollments": course._count.inscripciones,
                 "total_credentials": course._count.credenciales,
+                "alumnos_esperados": course.alumnosEsperados,
                 "completed_enrollments": completed,
                 "completion_rate": round((completed / course._count.inscripciones * 100) if course._count.inscripciones > 0 else 0, 2)
             })
