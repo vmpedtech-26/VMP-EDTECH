@@ -11,6 +11,8 @@ class CursoListItem(BaseModel):
     codigo: str
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
+    empresaId: Optional[str] = None
+    alumnosEsperados: int = 0
     activo: bool
     
     class Config:
@@ -23,6 +25,7 @@ class CreateCursoRequest(BaseModel):
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
+    alumnosEsperados: int = 0
 
 class UpdateCursoRequest(BaseModel):
     nombre: Optional[str] = None
@@ -30,6 +33,8 @@ class UpdateCursoRequest(BaseModel):
     codigo: Optional[str] = None
     duracionHoras: Optional[int] = None
     vigenciaMeses: Optional[int] = None
+    empresaId: Optional[str] = None
+    alumnosEsperados: Optional[int] = None
     activo: Optional[bool] = None
 
 class ModuloSummary(BaseModel):
@@ -51,6 +56,8 @@ class CursoDetail(BaseModel):
     codigo: str
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
+    empresaId: Optional[str] = None
+    alumnosEsperados: int = 0
     activo: bool
     modulos: List[ModuloSummary]
     

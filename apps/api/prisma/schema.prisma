@@ -73,7 +73,8 @@ model Curso {
   duracionHoras  Int     @map("duracion_horas")
   vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
   empresaId      String? @map("empresa_id")
-  activo         Boolean @default(true)
+  alumnosEsperados Int     @default(0) @map("alumnos_esperados")
+  activo           Boolean @default(true)
   
   empresa       Company?      @relation(fields: [empresaId], references: [id])
   modulos       Modulo[]

@@ -1,9 +1,22 @@
 export const API_URL = (() => {
-    const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    // If we're not on localhost, force https://
-    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
-        return url.replace('http://', 'https://');
+    // 1. Get from env or default to localhost
+    let url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    
+    // 2. Browser-side adjustments
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        
+        // If we are on the production domain but the API URL is still pointing to localhost or uses http
+        if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
+            // Force production API if misconfigured
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+                url = 'https://api.vmp-edtech.com';
+            } else {
+                url = url.replace('http://', 'https://');
+            }
+        }
     }
+    
     return url;
 })();
 

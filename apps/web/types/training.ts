@@ -16,6 +16,8 @@ export interface Curso {
     codigo: string;
     duracionHoras: number;
     vigenciaMeses?: number;
+    empresaId?: string;
+    alumnosEsperados: number;
     activo: boolean;
 }
 
