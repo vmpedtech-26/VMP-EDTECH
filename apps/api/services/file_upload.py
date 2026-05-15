@@ -13,9 +13,9 @@ EVIDENCIAS_DIR = STORAGE_ROOT / "uploads" / "evidencias"
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
-# Crear directorios si no existen
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-EVIDENCIAS_DIR.mkdir(parents=True, exist_ok=True)
+# Directorios (se aseguran en main.py al inicio)
+UPLOAD_DIR = STORAGE_ROOT / "uploads" / "credenciales"
+EVIDENCIAS_DIR = STORAGE_ROOT / "uploads" / "evidencias"
 
 async def save_credencial_photo(file: UploadFile) -> str:
     """

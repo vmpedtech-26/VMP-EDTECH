@@ -36,15 +36,28 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    await connect_db()
-    # Ensure storage directories exist
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "credenciales"), exist_ok=True)
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "uploads"), exist_ok=True)
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "evidencias"), exist_ok=True)
-
-@app.on_event("shutdown")
-async def shutdown():
-    await disconnect_db()
+    # 1. Database Connection with better error handling
+    try:
+        await connect_db()
+    except Exception as e:
+        print(f"❌ CRITICAL ERROR: Could not connect to database: {e}")
+        # In production, we might want to continue or exit depending on criticality
+        # For now, we log and let it proceed (it will fail on requests anyway)
+    
+    # 2. Ensure ALL storage directories exist
+    # Using a list to ensure consistency and avoid missing subdirs
+    storage_dirs = [
+        os.path.join(settings.STORAGE_PATH, "credenciales"),
+        os.path.join(settings.STORAGE_PATH, "uploads", "credenciales"),
+        os.path.join(settings.STORAGE_PATH, "uploads", "evidencias"),
+    ]
+    
+    for directory in storage_dirs:
+        try:
+            os.makedirs(directory, exist_ok=True)
+            print(f"✅ Storage directory ready: {directory}")
+        except Exception as e:
+            print(f"⚠️ Warning: Could not create directory {directory}: {e}")
 
 # Rate limiter state
 app.state.limiter = limiter

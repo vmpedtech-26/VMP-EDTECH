@@ -53,8 +53,12 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3001",
         ]
     
-    # Storage — Railway Volume mount path (/data/storage in production)
-    STORAGE_PATH: str = "/Users/matias/.gemini/antigravity/scratch/vmp-abril/apps/api/storage"
+    # Storage — Railway Volume mount path (/app/storage or /data/storage in production)
+    # Default to 'storage' directory in the app root
+    STORAGE_PATH: str = os.getenv(
+        "STORAGE_PATH", 
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "storage"))
+    )
     
     # Email
     SMTP_HOST: str = ""
