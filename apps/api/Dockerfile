@@ -28,4 +28,4 @@ RUN python -m prisma generate
 EXPOSE 8000
 
 # Run the application
-CMD ["sh", "-c", "python -m prisma generate && python -m prisma db push --accept-data-loss && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
+CMD ["sh", "start.sh"]

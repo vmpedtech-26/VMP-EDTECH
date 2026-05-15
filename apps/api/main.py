@@ -36,31 +36,39 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    # 1. Database Connection with better error handling
-    try:
-        await connect_db()
-    except Exception as e:
-        print(f"❌ CRITICAL ERROR: Could not connect to database: {e}")
-        # In production, we might want to continue or exit depending on criticality
-        # For now, we log and let it proceed (it will fail on requests anyway)
+    print("🚀 API STARTUP INITIATED")
     
-    # 2. Ensure ALL storage directories exist
-    # Using a list to ensure consistency and avoid missing subdirs
+    # 1. Ensure ALL storage directories exist
+    _storage_path = settings.STORAGE_PATH
+    print(f"📁 Checking storage path: {_storage_path}")
+    
     storage_dirs = [
-        os.path.join(settings.STORAGE_PATH, "credenciales"),
-        os.path.join(settings.STORAGE_PATH, "uploads", "credenciales"),
-        os.path.join(settings.STORAGE_PATH, "uploads", "evidencias"),
+        os.path.join(_storage_path, "credenciales"),
+        os.path.join(_storage_path, "uploads", "credenciales"),
+        os.path.join(_storage_path, "uploads", "evidencias"),
     ]
     
     for directory in storage_dirs:
         try:
             os.makedirs(directory, exist_ok=True)
-            print(f"✅ Storage directory ready: {directory}")
+            print(f"✅ Directory ready: {directory}")
         except Exception as e:
-            print(f"⚠️ Warning: Could not create directory {directory}: {e}")
+            print(f"⚠️ Directory error {directory}: {e}")
+
+    # 2. Database Connection with timeout
+    print("🔌 Connecting to database...")
+    try:
+        import asyncio
+        await asyncio.wait_for(connect_db(), timeout=10.0)
+        print("✅ DATABASE CONNECTED SUCCESSFULLY")
+    except asyncio.TimeoutError:
+        print("❌ DATABASE CONNECTION TIMEOUT (10s)")
+    except Exception as e:
+        print(f"❌ DATABASE CONNECTION ERROR: {e}")
 
 @app.on_event("shutdown")
 async def shutdown():
+    print("🛑 API SHUTDOWN INITIATED")
     await disconnect_db()
 
 
