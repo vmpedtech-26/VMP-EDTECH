@@ -6,11 +6,19 @@ export const API_URL = (() => {
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
         
-        // If we are on the production domain but the API URL is still pointing to localhost or uses http
-        if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
-            // Force production API if misconfigured
+        // LOG the current URL for debugging in production
+        console.log(`[API-CLIENT] Current Hostname: ${hostname}`);
+        console.log(`[API-CLIENT] Initial API URL: ${url}`);
+        
+        // If we are on the production domain
+        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
+            url = 'https://api.vmp-edtech.com';
+            console.log(`[API-CLIENT] FORCED Production API URL: ${url}`);
+        } else if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
+            // Other cloud environments (Vercel previews, etc)
             if (url.includes('localhost') || url.includes('127.0.0.1')) {
                 url = 'https://api.vmp-edtech.com';
+                console.log(`[API-CLIENT] AUTO-DETECTED Production API URL: ${url}`);
             } else {
                 url = url.replace('http://', 'https://');
             }
