@@ -10,6 +10,7 @@ from middleware.security import (
     limiter,
     _rate_limit_exceeded_handler
 )
+from middleware.db_middleware import DatabaseConnectionMiddleware
 from slowapi.errors import RateLimitExceeded
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
@@ -70,7 +71,8 @@ app.state.limiter = limiter
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Security Middleware
+# Database & Security Middlewares
+app.add_middleware(DatabaseConnectionMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestIDMiddleware)
 
