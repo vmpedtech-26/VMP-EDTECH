@@ -59,6 +59,11 @@ async def startup():
         except Exception as e:
             print(f"⚠️ Warning: Could not create directory {directory}: {e}")
 
+@app.on_event("shutdown")
+async def shutdown():
+    await disconnect_db()
+
+
 # Rate limiter state
 app.state.limiter = limiter
 
@@ -101,7 +106,10 @@ app.include_router(contact.router)
 
 
 # Serve static files (credential PDFs, uploaded photos, etc.)
-app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storage")
+# Ensure directory exists before mounting (prevents crash if volume isn't mounted yet)
+_storage_path = settings.STORAGE_PATH
+os.makedirs(_storage_path, exist_ok=True)
+app.mount("/storage", StaticFiles(directory=_storage_path), name="storage")
 
 
 

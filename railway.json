@@ -2,16 +2,16 @@
     "$schema": "https://railway.app/railway.schema.json",
     "build": {
         "builder": "NIXPACKS",
-        "buildCommand": "cd apps/api && pip install -r requirements.txt && prisma generate",
+        "buildCommand": "cd apps/api && pip install -r requirements.txt && python -m prisma generate",
         "watchPatterns": [
             "apps/api/**"
         ]
     },
     "deploy": {
-        "startCommand": "cd apps/api && prisma generate && prisma db push --accept-data-loss && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}",
+        "startCommand": "cd apps/api && python -m prisma db push --accept-data-loss && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1",
         "healthcheckPath": "/health",
-        "healthcheckTimeout": 120,
+        "healthcheckTimeout": 180,
         "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 5
+        "restartPolicyMaxRetries": 3
     }
 }
