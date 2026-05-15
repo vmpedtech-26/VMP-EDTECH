@@ -36,9 +36,9 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    print("🚀 API STARTUP INITIATED")
+    print("🚀 API STARTUP INITIATED (LAZY DB MODE)")
     
-    # 1. Ensure ALL storage directories exist
+    # Ensure ALL storage directories exist
     _storage_path = settings.STORAGE_PATH
     print(f"📁 Checking storage path: {_storage_path}")
     
@@ -55,16 +55,7 @@ async def startup():
         except Exception as e:
             print(f"⚠️ Directory error {directory}: {e}")
 
-    # 2. Database Connection with timeout
-    print("🔌 Connecting to database...")
-    try:
-        import asyncio
-        await asyncio.wait_for(connect_db(), timeout=10.0)
-        print("✅ DATABASE CONNECTED SUCCESSFULLY")
-    except asyncio.TimeoutError:
-        print("❌ DATABASE CONNECTION TIMEOUT (10s)")
-    except Exception as e:
-        print(f"❌ DATABASE CONNECTION ERROR: {e}")
+    print("✅ STARTUP COMPLETED (DB will connect on demand)")
 
 @app.on_event("shutdown")
 async def shutdown():
