@@ -68,9 +68,9 @@ export default function HeroSection() {
             <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" style={{ animationDelay: '2s' }} />
             <div className="absolute -bottom-8 left-20 w-72 h-72 bg-accent-emerald/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" style={{ animationDelay: '4s' }} />
 
-            {/* Animated particles */}
+            {/* Animated particles - Reduced for performance */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(15)].map((_, i) => (
+                {[...Array(6)].map((_, i) => (
                     <motion.div
                         key={i}
                         className="absolute w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full"

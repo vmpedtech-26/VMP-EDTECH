@@ -1,10 +1,10 @@
 import dynamic from 'next/dynamic';
 import Header from '@/components/landing/Header';
-import CourseCatalog from '@/components/landing/CourseCatalog';
 import HeroSection from '@/components/landing/HeroSection';
 import Footer from '@/components/landing/Footer';
 
 // Dynamic imports for below-the-fold sections
+const CourseCatalog = dynamic(() => import('@/components/landing/CourseCatalog'));
 const ProfessionalServices = dynamic(() => import('@/components/landing/ProfessionalServices').then(mod => mod.ProfessionalServices));
 const ValueProposition = dynamic(() => import('@/components/landing/ValueProposition'));
 const AboutUs = dynamic(() => import('@/components/landing/AboutUs'));
@@ -20,8 +20,8 @@ export default function LandingPage() {
     return (
         <main className="min-h-screen">
             <Header />
-            <CourseCatalog />
             <HeroSection />
+            <CourseCatalog />
             <ProfessionalServices />
             <ValueProposition />
             <AboutUs />
