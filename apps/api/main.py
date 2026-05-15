@@ -105,11 +105,22 @@ app.include_router(accounting.router, prefix="/api/accounting", tags=["accountin
 app.include_router(contact.router)
 
 
-# Serve static files (credential PDFs, uploaded photos, etc.)
-# Ensure directory exists before mounting (prevents crash if volume isn't mounted yet)
+# Serve static files with caching
+# Ensure directory exists before mounting
 _storage_path = settings.STORAGE_PATH
 os.makedirs(_storage_path, exist_ok=True)
-app.mount("/storage", StaticFiles(directory=_storage_path), name="storage")
+
+class CachedStaticFiles(StaticFiles):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        # Cache for 30 days (PDFs and images don't change often)
+        response.headers["Cache-Control"] = "public, max-age=2592000"
+        return response
+
+app.mount("/storage", CachedStaticFiles(directory=_storage_path), name="storage")
 
 
 

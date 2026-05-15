@@ -31,14 +31,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         
-        # Content Security Policy
+        # Content Security Policy - Dynamic based on settings
+        origins = " ".join(settings.BACKEND_CORS_ORIGINS)
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
             "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
-            "connect-src 'self' http://localhost:8001 http://localhost:3000 http://127.0.0.1:8001 http://127.0.0.1:3000 https:;"
+            f"connect-src 'self' {origins} https:;"
         )
 
         return response

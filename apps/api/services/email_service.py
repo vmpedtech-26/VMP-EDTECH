@@ -32,47 +32,63 @@ class EmailService:
         to_email: str,
         subject: str,
         html_content: str,
-        from_email: Optional[str] = None
+        from_email: Optional[str] = None,
+        attachments: Optional[list] = None  # List of dicts with 'path' and 'filename'
     ) -> bool:
         """
-        Send an email using SMTP
+        Send an email using SMTP with retries
         """
         # Development mode: if no SMTP password or placeholder, just log the email
         if not self.smtp_password or self.smtp_password == "TU_API_KEY_AQUI":
-            logger.info("=" * 80)
             logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT)")
-            logger.info(f"To: {to_email}")
-            logger.info(f"From: {from_email or self.email_from}")
-            logger.info(f"Subject: {subject}")
-            logger.info(f"Content preview: {html_content[:200]}...")
-            logger.info("=" * 80)
+            logger.info(f"To: {to_email} | Subject: {subject}")
             return True
         
-        try:
-            message = MIMEMultipart("alternative")
-            message["From"] = from_email or self.email_from
-            message["To"] = to_email
-            message["Subject"] = subject
-            
-            html_part = MIMEText(html_content, "html")
-            message.attach(html_part)
-            
-            await aiosmtplib.send(
-                message,
-                hostname=self.smtp_host,
-                port=self.smtp_port,
-                username=self.smtp_user,
-                password=self.smtp_password,
-                start_tls=True,
-                timeout=5,
-            )
-            
-            logger.info(f"Email sent successfully to {to_email}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error sending email to {to_email}: {str(e)}")
-            return False
+        from email.mime.application import MIMEApplication
+        import asyncio
+
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                message = MIMEMultipart("mixed")
+                message["From"] = from_email or self.email_from
+                message["To"] = to_email
+                message["Subject"] = subject
+                
+                # HTML Part
+                msg_body = MIMEMultipart("alternative")
+                html_part = MIMEText(html_content, "html")
+                msg_body.attach(html_part)
+                message.attach(msg_body)
+                
+                # Attachments
+                if attachments:
+                    for att in attachments:
+                        if os.path.exists(att['path']):
+                            with open(att['path'], "rb") as f:
+                                part = MIMEApplication(f.read(), Name=att['filename'])
+                            part['Content-Disposition'] = f'attachment; filename="{att["filename"]}"'
+                            message.attach(part)
+                
+                await aiosmtplib.send(
+                    message,
+                    hostname=self.smtp_host,
+                    port=self.smtp_port,
+                    username=self.smtp_user,
+                    password=self.smtp_password,
+                    start_tls=True,
+                    timeout=10,
+                )
+                
+                logger.info(f"Email sent successfully to {to_email}")
+                return True
+                
+            except Exception as e:
+                logger.error(f"Attempt {attempt + 1} failed sending email to {to_email}: {str(e)}")
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(2 * (attempt + 1))
+        
+        return False
     
     async def send_cotizacion_ventas(self, cotizacion: Dict[str, Any]) -> bool:
         """
@@ -128,11 +144,18 @@ class EmailService:
         
         subject = f"Tu Credencial VMP - EDTECH - {credencial['curso_nombre']}"
         
-        # TODO: Add PDF attachment support
+        attachments = []
+        if pdf_path and os.path.exists(pdf_path):
+            attachments.append({
+                "path": pdf_path,
+                "filename": f"Credencial_{credencial['numero']}.pdf"
+            })
+        
         return await self.send_email(
             to_email=user['email'],
             subject=subject,
-            html_content=html_content
+            html_content=html_content,
+            attachments=attachments
         )
     
     async def send_reset_password(self, email: str, reset_token: str, reset_url: str) -> bool:

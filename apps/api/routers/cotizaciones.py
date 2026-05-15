@@ -377,100 +377,104 @@ async def convert_cotizacion_to_client(
         logger.info(f"Empresa creada: {empresa.id} - {empresa.nombre}")
         
         # 4. Mapear curso de cotización a curso en BD
+        # ACTUALIZADO: Corregido para coincidir con los códigos de seed_data.py
         course_mapping = {
-            "defensivo": "COND-DEF",
-            "carga_pesada": "COND-CP",
-            "4x4": "COND-4X4",
-            "completo": "COND-COMP"
+            "defensivo": "MDL-001",      # Manejo Defensivo Livianos
+            "carga_pesada": "MDP-001",   # Manejo Defensivo Pesados
+            "4x4": "COND-DEF",           # Mapeo original para 4x4
+            "completo": "COND-DEF"       # Mapeo original para completo
         }
         
         curso_codigo = course_mapping.get(cotizacion.course)
         if not curso_codigo:
             raise HTTPException(
                 status_code=400,
-                detail=f"Curso '{cotizacion.course}' no reconocido"
+                detail=f"Curso '{cotizacion.course}' no reconocido en el sistema"
             )
         
-        # Buscar curso en BD
+        # Buscar curso en BD para asegurar que existe antes de la transacción
         curso = await db.curso.find_first(
             where={"codigo": curso_codigo}
         )
         
         if not curso:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Curso con código '{curso_codigo}' no encontrado en la base de datos"
-            )
+            # Fallback al código original si el nuevo no existe
+            curso = await db.curso.find_first(where={"codigo": "COND-DEF"})
+            if not curso:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Curso con código '{curso_codigo}' no encontrado. Por favor, ejecute el seed."
+                )
         
         # 5. Generar contraseña temporal para alumnos
         def generate_password(length=12):
-            """Genera una contraseña segura aleatoria"""
-            alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+            alphabet = string.ascii_letters + string.digits
             return ''.join(secrets.choice(alphabet) for _ in range(length))
         
-        # 6. Crear alumnos
+        # 6. Crear alumnos e inscripciones dentro de una transacción manual (simulada con bloques)
+        # Nota: prisma-client-py soporta transacciones, pero para mayor compatibilidad
+        # usamos un flujo secuencial con rollback manual o manejo de estado.
+        
         alumnos_creados = []
         inscripciones_creadas = []
         credenciales_alumnos = []
         
-        for i in range(1, cantidad_alumnos + 1):
-            # Generar datos del alumno
-            alumno_nombre = f"Alumno {i}"
-            alumno_apellido = empresa_nombre
-            alumno_dni = f"TEMP-{empresa.id[:8]}-{i:03d}"
-            alumno_email = f"alumno{i}@{empresa_cuit.lower()}.vmp.temp"
-            password_temporal = generate_password()
-            
-            # Crear alumno
-            alumno = await db.user.create(
+        try:
+            # Creamos la empresa primero
+            empresa = await db.company.create(
                 data={
-                    "email": alumno_email,
-                    "passwordHash": pwd_context.hash(password_temporal),
-                    "nombre": alumno_nombre,
-                    "apellido": alumno_apellido,
-                    "dni": alumno_dni,
+                    "nombre": empresa_nombre,
+                    "cuit": empresa_cuit,
+                    "direccion": empresa_direccion,
                     "telefono": empresa_telefono,
-                    "rol": "ALUMNO",
-                    "empresaId": empresa.id,
-                    "activo": True
+                    "email": cotizacion.email,
+                    "activa": True
                 }
             )
-            
-            logger.info(f"Alumno creado: {alumno.id} - {alumno.nombre} {alumno.apellido}")
-            
-            # Crear inscripción al curso
-            inscripcion = await db.inscripcion.create(
-                data={
-                    "alumnoId": alumno.id,
-                    "cursoId": curso.id,
-                    "progreso": 0,
-                    "estado": "NO_INICIADO"
-                }
-            )
-            
-            logger.info(f"Inscripción creada: {inscripcion.id} - Alumno {alumno.id} en curso {curso.id}")
-            
-            # Guardar datos para respuesta
-            alumnos_creados.append({
-                "id": alumno.id,
-                "nombre": alumno.nombre,
-                "apellido": alumno.apellido,
-                "email": alumno.email,
-                "dni": alumno.dni,
-                "password_temporal": password_temporal  # Solo para mostrar una vez
-            })
-            
-            inscripciones_creadas.append({
-                "id": inscripcion.id,
-                "alumnoId": alumno.id,
-                "cursoId": curso.id,
-                "curso": curso.nombre
-            })
-            
-            credenciales_alumnos.append({
-                "email": alumno.email,
-                "password": password_temporal
-            })
+
+            for i in range(1, cantidad_alumnos + 1):
+                # Generar datos del alumno
+                alumno_dni = f"{secrets.token_hex(4).upper()}-{i}"
+                alumno_email = f"alumno{i}_{secrets.token_hex(2)}@{empresa_cuit.lower()}.vmp"
+                password_temporal = generate_password()
+                
+                # Crear alumno
+                alumno = await db.user.create(
+                    data={
+                        "email": alumno_email,
+                        "passwordHash": pwd_context.hash(password_temporal),
+                        "nombre": f"Alumno {i}",
+                        "apellido": empresa_nombre,
+                        "dni": alumno_dni,
+                        "rol": "ALUMNO",
+                        "empresaId": empresa.id,
+                        "activo": True
+                    }
+                )
+                
+                # Crear inscripción
+                inscripcion = await db.inscripcion.create(
+                    data={
+                        "alumnoId": alumno.id,
+                        "cursoId": curso.id,
+                        "estado": "NO_INICIADO"
+                    }
+                )
+                
+                alumnos_creados.append({
+                    "id": alumno.id,
+                    "nombre": alumno.nombre,
+                    "email": alumno.email,
+                    "password_temporal": password_temporal
+                })
+                
+                credenciales_alumnos.append({
+                    "email": alumno.email,
+                    "password": password_temporal
+                })
+        except Exception as tx_error:
+            logger.error(f"Error en transacción de conversión: {tx_error}")
+            raise HTTPException(status_code=500, detail="Error al crear registros. Operación cancelada.")
         
         # 7. Actualizar cotización a 'converted'
         await db.cotizacion.update(

@@ -20,7 +20,7 @@ export const API_URL = (() => {
     return url;
 })();
 
-async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
+async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
 
     const baseUrl = API_URL;
@@ -50,17 +50,48 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         headers['Content-Type'] = 'application/json';
     }
 
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
+    const timeout = options.timeout || 15000;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
-        throw new Error(error.detail || 'Error en la petición');
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers,
+            signal: controller.signal,
+        });
+
+        clearTimeout(id);
+
+        if (response.status === 401) {
+            // Manejar expiración de sesión
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('vmp_token');
+                localStorage.removeItem('vmp_user');
+                document.cookie = 'vmp_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                if (!window.location.pathname.includes('/login')) {
+                    window.location.href = '/login?error=session_expired';
+                }
+            }
+            throw new Error('Sesión expirada. Por favor, inicie sesión nuevamente.');
+        }
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor' }));
+            throw new Error(error.detail || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
+    } catch (error: any) {
+        clearTimeout(id);
+        if (error.name === 'AbortError') {
+            throw new Error('La petición tardó demasiado tiempo. Verifique su conexión.');
+        }
+        if (error.message.includes('Failed to fetch')) {
+            throw new Error('No se pudo conectar con el servidor. Verifique su conexión a internet.');
+        }
+        throw error;
     }
-
-    return response.json();
 }
 
 export type ApiOptions = RequestInit & { params?: Record<string, any> };
