@@ -37,58 +37,12 @@ app = FastAPI(
     default_response_class=ORJSONResponse
 )
 
-@app.on_event("startup")
-async def startup():
-    print("🚀 API STARTUP INITIATED (LAZY DB MODE)")
-    
-    # Ensure ALL storage directories exist
-    _storage_path = settings.STORAGE_PATH
-    print(f"📁 Checking storage path: {_storage_path}")
-    
-    storage_dirs = [
-        os.path.join(_storage_path, "credenciales"),
-        os.path.join(_storage_path, "uploads", "credenciales"),
-        os.path.join(_storage_path, "uploads", "evidencias"),
-    ]
-    
-    for directory in storage_dirs:
-        try:
-            os.makedirs(directory, exist_ok=True)
-            print(f"✅ Directory ready: {directory}")
-        except Exception as e:
-            print(f"⚠️ Directory error {directory}: {e}")
-
-    # 2. Ensure Database parent directory exists
-    db_url = settings.DATABASE_URL
-    if db_url.startswith("file:"):
-        db_path = db_url.replace("file:", "")
-        db_dir = os.path.dirname(db_path)
-        if db_dir and not os.path.exists(db_dir):
-            try:
-                os.makedirs(db_dir, exist_ok=True)
-                print(f"✅ Database directory created: {db_dir}")
-            except Exception as e:
-                print(f"⚠️ Could not create DB directory {db_dir}: {e}")
-
-    print("✅ STARTUP COMPLETED (DB will connect on demand)")
-
-@app.on_event("shutdown")
-async def shutdown():
-    print("🛑 API SHUTDOWN INITIATED")
-    await disconnect_db()
-
-
 # Rate limiter state
 app.state.limiter = limiter
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Database & Security Middlewares
-app.add_middleware(DatabaseConnectionMiddleware)
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RequestIDMiddleware)
-
-# CORS
+# CORS (Keep this, it's essential)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
@@ -96,6 +50,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup():
+    print("🚀 API STARTUP INITIATED")
+    
+    # 1. Ensure storage dirs
+    _storage_path = settings.STORAGE_PATH
+    os.makedirs(_storage_path, exist_ok=True)
+    
+    # 2. Connect DB immediately with timeout
+    try:
+        import asyncio
+        from core.database import connect_db
+        print("🔗 Connecting to Database...")
+        await asyncio.wait_for(connect_db(), timeout=20.0)
+        print("✅ Database connected successfully")
+    except Exception as e:
+        print(f"❌ Database connection FAILED: {e}")
+        # We don't exit, let's see if /health works at least
+    
+    print("✅ STARTUP COMPLETED")
+
+@app.on_event("shutdown")
+async def shutdown():
+    print("🛑 API SHUTDOWN INITIATED")
+    try:
+        from core.database import disconnect_db
+        await disconnect_db()
+    except:
+        pass
 
 
 
