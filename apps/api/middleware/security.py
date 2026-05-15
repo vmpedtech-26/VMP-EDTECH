@@ -10,6 +10,7 @@ from slowapi.errors import RateLimitExceeded
 from starlette.middleware.base import BaseHTTPMiddleware
 from typing import Callable
 import time
+from core.config import settings
 
 
 # Configurar rate limiter
