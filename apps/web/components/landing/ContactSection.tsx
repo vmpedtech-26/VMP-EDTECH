@@ -82,23 +82,7 @@ export default function ContactSection() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
                         {/* Family Crest / Sello de Compromiso */}
-                        <div className="flex justify-center">
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.7, type: "spring" }}
-                                className="relative w-32 h-32 md:w-40 md:h-40"
-                            >
-                                <Image
-                                    src="/images/family_crest.png"
-                                    alt="Compromiso Familiar VMP"
-                                    fill
-                                    className="object-contain drop-shadow-2xl"
-                                />
-                            </motion.div>
-                        </div>
-
+                    >
                         <div className="bg-gradient-to-br from-primary to-secondary p-8 rounded-2xl text-white shadow-lg">
                             <h3 className="font-heading font-bold text-2xl mb-6">
                                 Información de Contacto
