@@ -1,6 +1,5 @@
 import os
 from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from core.config import settings
@@ -33,8 +32,7 @@ if settings.SENTRY_DSN:
 app = FastAPI(
     title="VMP - EDTECH API",
     description="API para plataforma de capacitación profesional con credenciales verificables",
-    version="0.1.0-beta",
-    default_response_class=ORJSONResponse
+    version="0.1.0-beta"
 )
 
 # Rate limiter state
