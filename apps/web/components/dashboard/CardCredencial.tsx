@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { QrCode, Download, Share2, Shield, Calendar, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Credencial } from '@/types/training';
+import { API_URL } from '@/lib/api-client';
 
 interface CardCredencialProps {
     credencial: Credencial;
@@ -13,6 +13,7 @@ interface CardCredencialProps {
 
 export function CardCredencial({ credencial }: CardCredencialProps) {
     const { curso, numero, fechaEmision, fechaVencimiento, pdfUrl, alumno } = credencial;
+    const fullPdfUrl = pdfUrl.startsWith('http') ? pdfUrl : `${API_URL}${pdfUrl}`;
 
     return (
         <motion.div
@@ -53,7 +54,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                             <div className="w-20 h-24 rounded-lg overflow-hidden border-2 border-white/20 bg-slate-800 shadow-inner flex items-center justify-center">
                                 {alumno?.fotoUrl ? (
                                     <img 
-                                        src={alumno.fotoUrl} 
+                                        src={alumno.fotoUrl.startsWith('http') ? alumno.fotoUrl : `${API_URL}${alumno.fotoUrl}`} 
                                         alt={alumno.nombre}
                                         className="w-full h-full object-cover"
                                     />
@@ -118,7 +119,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                         variant="primary"
                         size="sm"
                         className="flex-1 text-[11px] h-9 shadow-lg shadow-primary/20"
-                        onClick={() => window.open(pdfUrl, '_blank')}
+                        onClick={() => window.open(fullPdfUrl, '_blank')}
                     >
                         <Download className="h-3.5 w-3.5 mr-2" />
                         Ver Certificado
@@ -133,7 +134,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                                 navigator.share({
                                     title: `Credencial VMP - ${curso.nombre}`,
                                     text: `Certificación oficial de ${alumno?.nombre} ${alumno?.apellido}`,
-                                    url: window.location.origin + pdfUrl
+                                    url: fullPdfUrl
                                 });
                             }
                         }}
