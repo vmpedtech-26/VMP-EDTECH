@@ -82,7 +82,7 @@ export default function ContactSection() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
                         {/* Family Crest / Sello de Compromiso */}
-                        <div className="flex justify-center lg:justify-start">
+                        <div className="flex justify-center">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
