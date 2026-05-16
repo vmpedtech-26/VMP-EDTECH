@@ -12,7 +12,7 @@ export const API_URL = (() => {
         
         // If we are on the production domain
         if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
-            url = 'https://web-production-1b0066.up.railway.app';
+            url = 'https://api.vmp-edtech.com';
             console.log(`[API-CLIENT] FORCED Production API URL: ${url}`);
         } else if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
             // Other cloud environments (Vercel previews, etc)
