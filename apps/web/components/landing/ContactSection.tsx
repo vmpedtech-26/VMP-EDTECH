@@ -81,8 +81,6 @@ export default function ContactSection() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        {/* Family Crest / Sello de Compromiso */}
-                    >
                         <div className="bg-gradient-to-br from-primary to-secondary p-8 rounded-2xl text-white shadow-lg">
                             <h3 className="font-heading font-bold text-2xl mb-6">
                                 Información de Contacto
