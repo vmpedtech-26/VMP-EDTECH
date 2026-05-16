@@ -111,9 +111,16 @@ export default function ContactSection() {
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <MapPin className="h-5 w-5" />
                                     </div>
-                                    <div>
+                                    <div className="space-y-2">
                                         <p className="font-semibold">Ubicación</p>
-                                        <p className="text-white/80">Juan B. Justo 385, Piso 1, Neuquén (8300)</p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">Argentina:</span>
+                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                        </p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">España:</span>
+                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">

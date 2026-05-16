@@ -115,9 +115,16 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start space-x-3">
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <span className="text-slate-300 text-sm">
-                                    Juan B. Justo 385, Piso 1, Neuquén (8300), Argentina
-                                </span>
+                                <div className="space-y-1">
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">Sede Argentina:</span>
+                                        Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                    </p>
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">Sede España:</span>
+                                        Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                    </p>
+                                </div>
                             </li>
                         </ul>
                     </div>
