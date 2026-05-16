@@ -40,6 +40,9 @@ app.state.limiter = limiter
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Database & Security Middlewares
+app.add_middleware(DatabaseConnectionMiddleware)
+
 # CORS (Keep this, it's essential)
 app.add_middleware(
     CORSMiddleware,
@@ -51,22 +54,19 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    print("🚀 API STARTUP INITIATED")
+    print("🚀 API STARTUP INITIATED (INSTANT MODE)")
     
     # 1. Ensure storage dirs
     _storage_path = settings.STORAGE_PATH
-    os.makedirs(_storage_path, exist_ok=True)
-    
-    # 2. Connect DB immediately with timeout
     try:
-        import asyncio
-        from core.database import connect_db
-        print("🔗 Connecting to Database...")
-        await asyncio.wait_for(connect_db(), timeout=20.0)
-        print("✅ Database connected successfully")
+        os.makedirs(_storage_path, exist_ok=True)
+        print(f"✅ Storage directory ready: {_storage_path}")
     except Exception as e:
-        print(f"❌ Database connection FAILED: {e}")
-        # We don't exit, let's see if /health works at least
+        print(f"⚠️ Storage directory error: {e}")
+    
+    # 2. Database will connect lazily on the first request 
+    # to avoid blocking the startup process and causing 502s
+    print("ℹ️ Database connection deferred to first request (Lazy Mode)")
     
     print("✅ STARTUP COMPLETED")
 
