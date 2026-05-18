@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '5492995370173';
-const DEFAULT_MESSAGE = 'Hola, me interesa conocer más sobre los cursos de capacitación. ¿Podrían darme más información?';
+const DEFAULT_MESSAGE = 'Hola, me interesa recibir información sobre las capacitaciones profesionales y soluciones corporativas de VMP. ¿Podrían asesorarme?';
 
 export default function WhatsAppButton() {
     const [isOpen, setIsOpen] = useState(false);
