@@ -254,6 +254,15 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
         subtotal = 0.0
         iva = 0.0
         
+        # Smart candidates extraction for AFIP invoices with multi-column layout
+        amount_candidates = []
+        matches_comma = re.findall(r'\b\d+(?:\.\d{3})*,\d{2}\b', full_text)
+        for m in matches_comma:
+            amount_candidates.append(clean_amount(m))
+        matches_dot = re.findall(r'\b\d+\.\d{2}\b', full_text)
+        for m in matches_dot:
+            amount_candidates.append(clean_amount(m))
+            
         # Look for Total amount
         total_patterns = [
             r'(?:Importe Total|Total|TOTAL|Total Facturado)(?:\s*[:$]?\s*)(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
@@ -267,6 +276,14 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
             if matches:
                 total = clean_amount(matches[-1])
                 break
+                
+        # Fallback to max amount candidate if total matches are empty or zero
+        if total == 0.0 and amount_candidates:
+            filtered_candidates = [c for c in amount_candidates if c > 10.0]
+            if filtered_candidates:
+                total = max(filtered_candidates)
+            else:
+                total = max(amount_candidates)
                     
         # Look for Subtotal (Net Amount)
         subtotal_patterns = [
@@ -281,7 +298,7 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 subtotal = clean_amount(matches[-1])
                 break
                     
-        if subtotal == 0.0 and total > 0.0:
+        if subtotal == 0.0:
             subtotal = total
             
         # Calculate/find IVA

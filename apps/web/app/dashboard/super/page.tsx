@@ -226,6 +226,23 @@ export default function SuperDashboardPage() {
                                 </div>
                             </Card>
                         </Link>
+
+                        <Link href="/dashboard/super/contabilidad">
+                            <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100 hover:ring-primary transition-all group">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                                            <Calculator className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">Centro Contable</h4>
+                                            <p className="text-xs text-slate-700">Ventas, compras y reportes financieros</p>
+                                        </div>
+                                    </div>
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
+                                </div>
+                            </Card>
+                        </Link>
                     </div>
 
                     <Card className="p-6 border-none shadow-sm ring-1 ring-emerald-100 bg-emerald-50/30">
