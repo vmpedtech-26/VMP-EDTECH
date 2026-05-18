@@ -103,8 +103,8 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Email</p>
-                                        <a href="mailto:ventas@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
-                                            ventas@vmp-edtech.com
+                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
+                                            administracion@vmp-edtech.com
                                         </a>
                                     </div>
                                 </div>
@@ -294,7 +294,7 @@ export default function ContactSection() {
 
                                     {status === 'error' && (
                                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-                                            Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a ventas@vmp-edtech.com
+                                            Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a administracion@vmp-edtech.com
                                         </div>
                                     )}
 

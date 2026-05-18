@@ -44,19 +44,9 @@ export default function AboutUs() {
                         whileInView={fadeIn.whileInView}
                         viewport={fadeIn.viewport}
                         transition={{ ...fadeIn.transition, delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-bold font-heading text-slate-900 tracking-tight mb-8 flex flex-col md:flex-row items-center justify-center gap-6"
+                        className="text-4xl md:text-5xl font-bold font-heading text-slate-900 tracking-tight mb-8"
                     >
-                        <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
-                            <Image 
-                                src="/images/family_crest.png" 
-                                alt="Sello Familiar" 
-                                fill 
-                                className="object-contain"
-                            />
-                        </div>
-                        <div>
-                            VMP-EDTECH <span className="gradient-text">Educación con Tecnología</span>
-                        </div>
+                        VMP-EDTECH <span className="gradient-text">Educación con Tecnología</span>
                     </motion.h2>
 
                     <div className="space-y-6 text-lg text-slate-600 leading-relaxed">

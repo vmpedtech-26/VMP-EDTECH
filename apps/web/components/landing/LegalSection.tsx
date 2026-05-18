@@ -15,7 +15,7 @@ const sections = [
             },
             {
                 subtitle: 'Derechos de los Titulares',
-                text: 'El titular de los datos personales tiene derecho a ejercer, en forma gratuita, los derechos de acceso, rectificación, actualización y supresión de sus datos, conforme a lo previsto en los artículos 14 a 17 de la Ley 25.326. La solicitud deberá cursarse por escrito al correo electrónico info@vmp-edtech.com, adjuntando acreditación de identidad suficiente. La AAIP, Órgano de Control de la Ley 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en sus derechos.'
+                text: 'El titular de los datos personales tiene derecho a ejercer, en forma gratuita, los derechos de acceso, rectificación, actualización y supresión de sus datos, conforme a lo previsto en los artículos 14 a 17 de la Ley 25.326. La solicitud deberá cursarse por escrito al correo electrónico administracion@vmp-edtech.com, adjuntando acreditación de identidad suficiente. La AAIP, Órgano de Control de la Ley 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en sus derechos.'
             }
         ]
     },
@@ -199,7 +199,7 @@ export default function LegalSection() {
                 >
                     <p className="text-slate-500 text-xs leading-relaxed max-w-2xl mx-auto">
                         La presente información legal fue elaborada conforme al ordenamiento jurídico vigente de la República Argentina, con referencia al <strong className="text-slate-400">Código Civil y Comercial de la Nación (Ley 26.994)</strong>, la <strong className="text-slate-400">Ley 25.326</strong> de Protección de Datos Personales, la <strong className="text-slate-400">Ley 24.240</strong> de Defensa del Consumidor y la <strong className="text-slate-400">Ley 11.723</strong> de Propiedad Intelectual. Última actualización: Abril de 2026. Para consultas jurídicas, contáctenos en{' '}
-                        <a href="mailto:info@vmp-edtech.com" className="text-primary hover:underline">info@vmp-edtech.com</a>.
+                        <a href="mailto:administracion@vmp-edtech.com" className="text-primary hover:underline">administracion@vmp-edtech.com</a>.
                     </p>
                 </motion.div>
             </div>

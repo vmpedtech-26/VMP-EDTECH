@@ -36,18 +36,7 @@ export default function Footer() {
                                 <Youtube className="h-5 w-5" />
                             </a>
                         </div>
-                        <div className="mt-8 opacity-40 hover:opacity-90 transition-opacity duration-500">
-                            <Image
-                                src="/images/family_crest.png"
-                                alt="Sello de Compromiso Familiar"
-                                width={70}
-                                height={70}
-                                className="object-contain"
-                            />
-                            <p className="text-[10px] text-slate-400 mt-2 font-medium tracking-wider uppercase">
-                                Compromiso Familiar VMP
-                            </p>
-                        </div>
+
                     </div>
 
                     {/* Cursos Column */}
@@ -115,8 +104,8 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start space-x-3">
                                 <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:info@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    info@vmp-edtech.com
+                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
