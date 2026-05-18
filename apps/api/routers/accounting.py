@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+import re
+import io
+from pypdf import PdfReader
 from typing import List, Optional
 from schemas.accounting import (
     AccountResponse, CreateAccountRequest, 
@@ -183,6 +186,182 @@ async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_c
             return compra
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar compra: {str(e)}")
+
+def clean_amount(val_str: str) -> float:
+    val_str = val_str.strip()
+    if re.search(r',\d{2}$', val_str):
+        val_str = val_str.replace(".", "").replace(",", ".")
+    elif re.search(r'\.\d{2}$', val_str):
+        if "," in val_str:
+            val_str = val_str.replace(",", "")
+    else:
+        if "." in val_str and "," in val_str:
+            if val_str.find(",") > val_str.find("."):
+                val_str = val_str.replace(".", "").replace(",", ".")
+            else:
+                val_str = val_str.replace(",", "")
+        elif "," in val_str:
+            parts = val_str.split(",")
+            if len(parts[-1]) != 3:
+                val_str = val_str.replace(",", ".")
+            else:
+                val_str = val_str.replace(",", "")
+    try:
+        return float(val_str)
+    except ValueError:
+        return 0.0
+
+@router.post("/compras/upload-pdf")
+async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+        
+    try:
+        contents = await file.read()
+        pdf_file = io.BytesIO(contents)
+        reader = PdfReader(pdf_file)
+        
+        # Extract text from all pages
+        full_text = ""
+        for page in reader.pages:
+            full_text += page.extract_text() or ""
+            
+        # Parse CUIT
+        cuit_match = re.search(r'\b(20|23|24|27|30|33)-?(\d{8})-?(\d)\b', full_text)
+        cuit = ""
+        if cuit_match:
+            cuit = f"{cuit_match.group(1)}-{cuit_match.group(2)}-{cuit_match.group(3)}"
+            
+        # Parse Invoice Number (AFIP specific Pt Vta + Comp Nro or standard fallback)
+        num_match = re.search(r'(?:Punto de Venta|Pt\. Vta|Vta)[:\s]*(\d{4,5})\s*(?:Comp\.?\s*Nro|Nro|N°|Nro\.?|Comp\.?|Nro\. Comprobante)[:\s]*(\d{8})', full_text, re.IGNORECASE)
+        numero = ""
+        if num_match:
+            numero = f"{num_match.group(1)}-{num_match.group(2)}"
+        else:
+            num_match_fallback = re.search(r'\b(\d{4,5})[ -](\d{8})\b', full_text)
+            if num_match_fallback:
+                numero = f"{num_match_fallback.group(1)}-{num_match_fallback.group(2)}"
+            
+        # Parse Date (DD/MM/YYYY)
+        date_match = re.search(r'\b(\d{2})[/-](\d{2})[/-](\d{4})\b', full_text)
+        fecha = datetime.now().strftime("%Y-%m-%d")
+        if date_match:
+            day, month, year = date_match.groups()
+            fecha = f"{year}-{month}-{day}"
+            
+        # Parse Totals
+        total = 0.0
+        subtotal = 0.0
+        iva = 0.0
+        
+        # Look for Total amount
+        total_patterns = [
+            r'(?:Importe Total|Total|TOTAL|Total Facturado)(?:\s*[:$]?\s*)(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+            r'(?:Importe Total|Total|TOTAL|Total Facturado)(?:\s*[:$]?\s*)(\d+[,.]\d{2})',
+            r'TOTAL\s+\$?\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+            r'Importe Total\s+\$?\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+        ]
+        
+        for p in total_patterns:
+            matches = re.findall(p, full_text, re.IGNORECASE)
+            if matches:
+                total = clean_amount(matches[-1])
+                break
+                    
+        # Look for Subtotal (Net Amount)
+        subtotal_patterns = [
+            r'(?:Importe Neto Gravado|Neto Gravado|Neto|Subtotal)(?:\s*[:$]?\s*)(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+            r'(?:Importe Neto Gravado|Neto Gravado|Neto|Subtotal)(?:\s*[:$]?\s*)(\d+[,.]\d{2})',
+            r'Neto\s+\$?\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+        ]
+        
+        for p in subtotal_patterns:
+            matches = re.findall(p, full_text, re.IGNORECASE)
+            if matches:
+                subtotal = clean_amount(matches[-1])
+                break
+                    
+        if subtotal == 0.0 and total > 0.0:
+            subtotal = total
+            
+        # Calculate/find IVA
+        iva_patterns = [
+            r'(?:IVA\s*(?:21|10\.5|27)%\s*:?\s*\$?)\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
+            r'(?:IVA\s*(?:21|10\.5|27)%\s*:?\s*\$?)\s*(\d+[,.]\d{2})',
+        ]
+        for p in iva_patterns:
+            matches = re.findall(p, full_text, re.IGNORECASE)
+            if matches:
+                iva = clean_amount(matches[-1])
+                break
+                    
+        # Parse Provider Name
+        proveedor = ""
+        lines = [l.strip() for l in full_text.split('\n') if l.strip()]
+        
+        for line in lines:
+            if "Razón Social:" in line or "Razon Social:" in line:
+                proveedor = line.split(":", 1)[1].strip()
+                break
+                
+        if not proveedor and len(lines) > 0:
+            for line in lines:
+                if "Razón Social:" in line or "Razon Social:" in line or "Nombre / Razón Social" in line or "Nombre/Razón Social" in line:
+                    parts = line.split(":")
+                    if len(parts) > 1:
+                        proveedor = parts[-1].strip()
+                        break
+                        
+        if not proveedor and len(lines) > 0:
+            for l in lines[:5]:
+                if not any(k in l.lower() for k in ["factura", "cuit", "fecha", "punto de venta", "pág", "pag", "original", "duplicado", "comprobante"]):
+                    proveedor = l
+                    break
+                    
+        if not proveedor:
+            proveedor = "Proveedor Desconocido"
+            
+        if cuit and cuit in proveedor:
+            proveedor = proveedor.replace(cuit, "").strip()
+        proveedor = re.sub(r'\s+', ' ', proveedor).strip()
+        proveedor = proveedor.replace("Apellido y Nombre /", "").replace("Razón Social:", "").replace("Razon Social:", "").strip()
+        
+        # Determine category based on keywords
+        categoria = "OTROS"
+        if any(k in full_text.lower() for k in ["honorarios", "servicios", "abono", "asesoramiento", "mensual", "alquiler"]):
+            categoria = "SERVICIOS"
+        elif any(k in full_text.lower() for k in ["impuesto", "tasa", "afip", "rentas", "iibb", "municipalidad"]):
+            categoria = "IMPUESTOS"
+        elif any(k in full_text.lower() for k in ["sueldo", "recibo", "jornal", "sac", "vacaciones"]):
+            categoria = "SUELDOS"
+            
+        item_desc = "Carga rápida desde factura PDF"
+        if categoria == "SERVICIOS":
+            item_desc = "Servicios profesionales / honorarios"
+        elif categoria == "IMPUESTOS":
+            item_desc = "Tasa / Impuesto nacional o provincial"
+            
+        items = [{
+            "descripcion": item_desc,
+            "cantidad": 1,
+            "precioUnit": subtotal,
+            "subtotal": subtotal
+        }]
+        
+        return {
+            "proveedor": proveedor,
+            "cuit": cuit,
+            "numero": numero,
+            "fecha": fecha,
+            "subtotal": subtotal,
+            "iva": iva,
+            "total": total,
+            "categoria": categoria,
+            "metodoPago": "TRANSFERENCIA" if categoria == "SERVICIOS" else "EFECTIVO",
+            "items": items
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al procesar PDF de factura: {str(e)}")
 
 @router.get("/compras", response_model=List[CompraResponse])
 async def listar_compras(current_user=Depends(get_current_user)):

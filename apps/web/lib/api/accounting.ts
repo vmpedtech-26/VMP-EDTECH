@@ -46,6 +46,15 @@ export const accountingApi = {
   createCompra: async (data: any) => {
     return await api.post('/accounting/compras', data);
   },
+  uploadPdf: async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await api.post('/accounting/compras/upload-pdf', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
   
   // Reports
   getBalance: async () => {
