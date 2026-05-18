@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '5492996731487';
+const WHATSAPP_NUMBER = '5492995370173';
 const DEFAULT_MESSAGE = 'Hola, me interesa conocer más sobre los cursos de capacitación. ¿Podrían darme más información?';
 
 export default function WhatsAppButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState(DEFAULT_MESSAGE);
 
-    const whatsappUrl = `https://wa.me/542996731487?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5492995370173?text=${encodeURIComponent(message)}`;
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">

@@ -92,8 +92,8 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Teléfono</p>
-                                        <a href="tel:+5492996731487" className="text-white/80 hover:text-white transition-colors">
-                                            +54 9 299 673-1487
+                                        <a href="tel:+5492995370173" className="text-white/80 hover:text-white transition-colors">
+                                            +54 9 299 537-0173
                                         </a>
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@ export default function ContactSection() {
                                     <div>
                                         <p className="font-semibold">WhatsApp</p>
                                         <a
-                                            href="https://wa.me/542996731487?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
+                                            href="https://wa.me/5492995370173?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-white/80 hover:text-white transition-colors"
