@@ -245,3 +245,27 @@ async def reset_password(data: ResetPasswordRequest):
             detail="Error al restablecer la contraseña"
         )
 
+
+@router.post("/debug-login")
+async def debug_login(data: UserLogin):
+    user = await prisma.user.find_unique(where={"email": data.email})
+    if not user:
+        return {"error": "User not found"}
+    try:
+        match = verify_password(data.password, user.passwordHash)
+        return {
+            "user_found": True,
+            "email": user.email,
+            "hash_in_db": user.passwordHash,
+            "password_verified": match
+        }
+    except Exception as e:
+        return {
+            "user_found": True,
+            "email": user.email,
+            "hash_in_db": user.passwordHash,
+            "error": str(e),
+            "error_type": type(e).__name__
+        }
+
+
