@@ -13,12 +13,43 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+        slug: 'operativo-invierno-mayo-amarillo-2026',
+        title: 'Operativo Invierno 2026 y Mayo Amarillo: Los retos del transporte profesional en este invierno',
+        excerpt: 'La ANSV da inicio al Operativo Invierno mientras culminan las campañas del Mayo Amarillo. Analizamos cómo preparar a los conductores para el hielo negro y rutas extremas.',
+        content: `
+      <h2>Doble Desafío para la Seguridad Vial</h2>
+      <p>Mayo de 2026 ha sido un mes de intensa actividad para la seguridad vial en Argentina. Por un lado, la campaña global <strong>"Mayo Amarillo"</strong> centró sus esfuerzos en la visibilización y protección de los usuarios más vulnerables de la vía pública. Por otro, el 15 de mayo marcó el inicio formal del <strong>Operativo Invierno 2026</strong>, liderado por la ANSV y Vialidad Nacional.</p>
+      
+      <h3>Operativo Invierno: Preparación Extrema</h3>
+      <p>El despliegue de controles y equipos barrenieve en las rutas de la Patagonia, Cuyo y el corredor andino tiene un objetivo claro: prevenir tragedias causadas por las inclemencias climáticas. Para los conductores de transporte pesado, esto significa enfrentar uno de los mayores enemigos invisibles: el <em>hielo negro</em>.</p>
+      <ul>
+        <li><strong>Portación obligatoria de cadenas:</strong> Los controles son más estrictos este año, exigiendo conocer la técnica correcta de colocación rápida.</li>
+        <li><strong>Reducción de velocidad preventiva:</strong> La distancia de frenado con pavimento helado puede multiplicarse hasta por 10.</li>
+        <li><strong>Planificación de rutas:</strong> Uso de reportes meteorológicos en tiempo real y telemetría para desviar unidades de zonas de alto riesgo de nevadas cerradas.</li>
+      </ul>
+
+      <blockquote>
+        "En el tránsito, ver al otro es salvar vidas. Esta premisa del Mayo Amarillo adquiere una urgencia crítica cuando la visibilidad se reduce por nieve o bancos de niebla invernales."
+      </blockquote>
+
+      <h3>El Rol de la Formación Continua</h3>
+      <p>En VMP EDTECH, hemos actualizado nuestros módulos de conducción defensiva para incorporar simulaciones teóricas avanzadas sobre pérdida de adherencia. Las empresas que utilizan nuestra plataforma están asignando proactivamente estos micro-módulos a sus flotas antes de que ingresen a los corredores invernales, reduciendo significativamente la tasa de siniestralidad estacional.</p>
+    `,
+        date: '19 de Mayo, 2026',
+        author: 'Equipo Editorial VMP',
+        category: 'Seguridad',
+        image: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?auto=format&fit=crop&q=80&w=800',
+        readTime: '4 min',
+        tags: ['Operativo Invierno', 'Mayo Amarillo', 'Seguridad Vial', 'Argentina']
+    },
+    {
     slug: 'capacitacion-obligatoria-conductores-2025',
     title: 'Capacitación Obligatoria para Conductores Profesionales en 2025',
     excerpt: 'Analizamos los requisitos actuales de capacitación vial obligatoria para conductores profesionales en Argentina y cómo cumplirlos.',
     content: `
       <h2>Actualización en Capacitación Vial Argentina</h2>
       <p>La normativa vigente establece requisitos cada vez más exigentes para la certificación de conductores de vehículos de carga y pasajeros, buscando elevar los estándares de seguridad en las rutas nacionales.</p>
+      <p>La Agencia Nacional de Seguridad Vial (ANSV) ha publicado recientemente la Disposición 54/2025, la cual introduce cambios significativos en el esquema de certificación para conductores de vehículos de carga y pasajeros.</p>
       
       <h3>Puntos Clave de la Normativa Vigente</h3>
       <ul>
