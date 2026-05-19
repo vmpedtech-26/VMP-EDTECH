@@ -6,8 +6,7 @@ import {
     Plus, 
     Search, 
     RefreshCcw,
-    CheckCircle2,
-    LayoutTree
+    CheckCircle2
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -50,7 +49,7 @@ export default function PlanCuentasPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                        <LayoutTree className="h-6 w-6 text-primary" />
+                        <Sliders className="h-6 w-6 text-primary" />
                         Plan de Cuentas
                     </h1>
                     <p className="text-slate-700 text-sm">Estructura jerárquica para el registro contable.</p>
@@ -116,7 +115,7 @@ export default function PlanCuentasPage() {
                 {!isLoading && accounts.length === 0 && (
                     <div className="p-20 text-center space-y-4">
                         <div className="mx-auto h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
-                            <LayoutTree className="h-6 w-6" />
+                            <Sliders className="h-6 w-6" />
                         </div>
                         <div>
                             <p className="text-slate-900 font-bold">No hay cuentas configuradas</p>
