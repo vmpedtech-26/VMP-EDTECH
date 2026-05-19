@@ -30,17 +30,23 @@ export default function ContabilidadDashboard() {
                         <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Centro Contable</h1>
                         <p className="text-slate-600 font-medium">Visualiza y gestiona la salud financiera de VMP.</p>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 flex-wrap">
                         <Button variant="outline" className="rounded-2xl border-slate-200 shadow-sm" asChild>
                             <Link href="/dashboard/super/contabilidad/diario">
                                 <BookOpen className="h-4 w-4 mr-2" />
                                 Libro Diario
                             </Link>
                         </Button>
+                        <Button variant="outline" className="rounded-2xl border-slate-200 shadow-sm text-rose-600 hover:text-rose-700 hover:bg-rose-50/50" asChild>
+                            <Link href="/dashboard/super/contabilidad/compras/nuevo">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Cargar Factura (Asistente)
+                            </Link>
+                        </Button>
                         <Button className="rounded-2xl shadow-lg shadow-primary/20" asChild>
                             <Link href="/dashboard/super/contabilidad/ventas/nuevo">
                                 <Plus className="h-4 w-4 mr-2" />
-                                Nueva Operación
+                                Registrar Venta
                             </Link>
                         </Button>
                     </div>

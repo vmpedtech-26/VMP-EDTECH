@@ -53,6 +53,7 @@ const menuItems: Record<string, MenuItem[]> = {
             label: 'Contabilidad',
             submenu: [
                 { icon: LayoutDashboard, label: 'Centro Contable', href: '/dashboard/super/contabilidad' },
+                { icon: Plus, label: 'Cargar Factura (Asistente)', href: '/dashboard/super/contabilidad/compras/nuevo' },
                 { icon: CircleDollarSign, label: 'Ventas', href: '/dashboard/super/contabilidad/ventas' },
                 { icon: CircleDollarSign, label: 'Compras', href: '/dashboard/super/contabilidad/compras' },
                 { icon: LayoutDashboard, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
