@@ -58,6 +58,12 @@ export default function ShareButtons({ title, url, text }: ShareButtonsProps) {
         window.open(`https://wa.me/?text=${encodedText}`, '_blank');
     };
 
+    const shareToLinkedIn = () => {
+        if (!fullUrl) return;
+        const encodedUrl = encodeURIComponent(fullUrl);
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank');
+    };
+
     return (
         <div className="flex flex-wrap items-center gap-3">
             <button 
@@ -75,7 +81,16 @@ export default function ShareButtons({ title, url, text }: ShareButtonsProps) {
                 className="flex items-center justify-center h-9 w-9 bg-[#25D366] text-white rounded-lg hover:opacity-90 transition-opacity shadow-sm"
                 title="Compartir en WhatsApp"
             >
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </button>
+            
+            {/* Botón rápido LinkedIn */}
+            <button 
+                onClick={shareToLinkedIn}
+                className="flex items-center justify-center h-9 w-9 bg-[#0A66C2] text-white rounded-lg hover:opacity-90 transition-opacity shadow-sm"
+                title="Compartir en LinkedIn"
+            >
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
             </button>
         </div>
     );
