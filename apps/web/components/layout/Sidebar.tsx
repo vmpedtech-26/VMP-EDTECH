@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
 interface SidebarProps {
-    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR';
+    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'SUPERVISOR';
 }
 
 interface MenuItem {
@@ -41,6 +41,11 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: BookOpen, label: 'Explorar Cursos', href: '/dashboard/explorar' },
         { icon: Award, label: 'Mis Credenciales', href: '/dashboard/credenciales' },
         { icon: Settings, label: 'Mi Perfil', href: '/dashboard/perfil' },
+    ],
+    SUPERVISOR: [
+        { icon: LayoutDashboard, label: 'Mi Empresa', href: '/dashboard/empresa' },
+        { icon: Users, label: 'Mi Flota', href: '/dashboard/empresa/colaboradores' },
+        { icon: BookOpen, label: 'Asignar Cursos', href: '/dashboard/empresa/asignar' },
     ],
     SUPER_ADMIN: [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/super' },

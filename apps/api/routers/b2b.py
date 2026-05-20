@@ -91,3 +91,112 @@ async def get_b2b_dashboard(current_user=Depends(get_current_user)):
         "expiringCredentials": expiring_credentials,
         "employees": employee_data
     }
+
+class EmpleadoCreate(BaseModel):
+    nombre: str
+    apellido: str
+    dni: str
+    email: str
+
+@router.post("/empleados")
+async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_user)):
+    """Alta de un chofer/empleado en la flota (Solo SUPERVISOR)"""
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] or not current_user.empresaId:
+        raise HTTPException(status_code=403, detail="Sin permisos B2B")
+    
+    from auth.jwt import hash_password
+    import secrets
+    import string
+    
+    # Generar contraseña temporal segura
+    alphabet = string.ascii_letters + string.digits
+    temp_password = ''.join(secrets.choice(alphabet) for i in range(10)) + "!"
+
+    existing_user = await prisma.user.find_unique(where={"email": data.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
+
+    existing_dni = await prisma.user.find_unique(where={"dni": data.dni})
+    if existing_dni:
+        raise HTTPException(status_code=400, detail="El DNI ya está registrado")
+
+    new_emp = await prisma.user.create(
+        data={
+            "email": data.email,
+            "passwordHash": hash_password(temp_password),
+            "nombre": data.nombre,
+            "apellido": data.apellido,
+            "dni": data.dni,
+            "rol": "ALUMNO",
+            "empresaId": current_user.empresaId,
+            "activo": True
+        }
+    )
+
+    return {
+        "message": "Empleado creado con éxito",
+        "empleado": {"id": new_emp.id, "email": new_emp.email},
+        "temp_password": temp_password
+    }
+
+@router.get("/cursos")
+async def listar_cursos_b2b(current_user=Depends(get_current_user)):
+    """Listar cursos disponibles para asignar"""
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"]:
+        raise HTTPException(status_code=403, detail="Sin permisos")
+        
+    cursos = await prisma.curso.find_many(where={"activo": True})
+    return [{"id": c.id, "nombre": c.nombre, "codigo": c.codigo} for c in cursos]
+
+class AsignacionMasiva(BaseModel):
+    cursoId: str
+    alumnoIds: List[str]
+
+@router.post("/asignar-curso")
+async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_current_user)):
+    """Asigna un curso a múltiples choferes de la flota"""
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] or not current_user.empresaId:
+        raise HTTPException(status_code=403, detail="Sin permisos B2B")
+    
+    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
+    if not curso:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+        
+    # Verificar que los alumnos pertenezcan a la empresa
+    alumnos = await prisma.user.find_many(
+        where={
+            "id": {"in": data.alumnoIds},
+            "empresaId": current_user.empresaId
+        }
+    )
+    
+    if len(alumnos) != len(data.alumnoIds):
+        raise HTTPException(status_code=400, detail="Uno o más empleados no pertenecen a tu empresa o no existen.")
+        
+    asignados = 0
+    ya_existian = 0
+    
+    for al en alumnos:
+        existing = await prisma.inscripcion.find_unique(
+            where={
+                "alumnoId_cursoId": {
+                    "alumnoId": al.id,
+                    "cursoId": curso.id
+                }
+            }
+        )
+        if not existing:
+            await prisma.inscripcion.create(
+                data={
+                    "alumnoId": al.id,
+                    "cursoId": curso.id,
+                    "estado": "NO_INICIADO"
+                }
+            )
+            asignados += 1
+        else:
+            ya_existian += 1
+            
+    return {
+        "message": f"Se asignaron {asignados} cursos correctamente. {ya_existian} ya estaban asignados."
+    }
