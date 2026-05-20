@@ -71,6 +71,9 @@ class Settings(BaseSettings):
     
     # Monitoring
     SENTRY_DSN: str = ""
+
+    # Redis & Celery
+    REDIS_URL: str = "redis://localhost:6379/0"
     
     class Config:
         env_file = ".env"
