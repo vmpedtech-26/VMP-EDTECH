@@ -50,7 +50,7 @@ export default function ModuloConfigPage() {
             alert('Cambios guardados correctamente');
         } catch (error) {
             console.error('Error saving modulo:', error);
-            alert('Error al guardar los cambios');
+            alert('Error al guardar los cambios: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsSaving(false);
         }

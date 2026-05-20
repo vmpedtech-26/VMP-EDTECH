@@ -4,18 +4,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '542995370173';
-const DEFAULT_MESSAGE = 'Hola, me interesa conocer más sobre los cursos de capacitación. ¿Podrían darme más información?';
+const WHATSAPP_NUMBER = '5492995370173';
+const DEFAULT_MESSAGE = 'Hola, me interesa recibir información sobre las capacitaciones profesionales y soluciones corporativas de VMP. ¿Podrían asesorarme?';
 
 export default function WhatsAppButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState(DEFAULT_MESSAGE);
 
-    const openWhatsApp = () => {
-        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
-        setIsOpen(false);
-    };
+    const whatsappUrl = `https://wa.me/5492995370173?text=${encodeURIComponent(message)}`;
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -71,14 +67,17 @@ export default function WhatsAppButton() {
                                     rows={2}
                                     className="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
                                 />
-                                <button
-                                    onClick={openWhatsApp}
+                                <a
+                                    href={whatsappUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => setIsOpen(false)}
                                     className="self-end bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors shrink-0 shadow-md"
                                 >
                                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5">
                                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </motion.div>

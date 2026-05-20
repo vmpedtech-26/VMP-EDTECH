@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
-import { BookOpen, Award, TrendingUp, Clock, Loader2 } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, Loader2, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth-context';
@@ -55,13 +55,26 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-8">
-            {/* Header */}
-            <div className="glass-card p-6 rounded-2xl">
-                <h1 className="text-3xl font-heading font-bold text-slate-900">Dashboard</h1>
-                <p className="text-slate-800 mt-2">
-                    Bienvenido de vuelta, <span className="font-semibold gradient-text">{user?.nombre || 'Estudiante'}</span>!
-                    Aquí está tu progreso de capacitación.
-                </p>
+            {/* Header / Welcome Area */}
+            <div className="relative overflow-hidden glass-card p-8 rounded-3xl border border-white/20 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+                <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="bg-primary/20 p-2 rounded-lg backdrop-blur-md border border-primary/30">
+                            <Shield className="h-5 w-5 text-primary-light" />
+                        </div>
+                        <span className="text-xs font-bold tracking-[0.3em] uppercase text-primary-light">VMP Certified Alumno</span>
+                    </div>
+                    <h1 className="text-4xl font-heading font-bold">
+                        ¡Hola, <span className="gradient-text">{user?.nombre || 'Estudiante'}</span>!
+                    </h1>
+                    <p className="text-slate-300 mt-3 max-w-xl text-lg leading-relaxed">
+                        Gestiona tus capacitaciones profesionales y visualiza tus credenciales verificadas en tiempo real.
+                    </p>
+                </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -translate-y-12 translate-x-12"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-[80px] translate-y-12 -translate-x-12"></div>
             </div>
 
             {/* Stats Grid */}

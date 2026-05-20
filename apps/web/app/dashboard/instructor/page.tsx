@@ -29,6 +29,12 @@ interface InstructorMetrics {
     cursos_count: number;
     credenciales_count: number;
     inscripciones_activas: number;
+    cursos_stats?: Array<{
+        id: string;
+        nombre: string;
+        reales: number;
+        esperados: number;
+    }>;
 }
 
 export default function InstructorDashboard() {
@@ -279,6 +285,59 @@ export default function InstructorDashboard() {
                             </div>
                         </Card>
                     </div>
+
+                    {/* New: Curso Progress Section */}
+                    {m?.cursos_stats && m.cursos_stats.length > 0 && (
+                        <div className="space-y-6 pt-4">
+                            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <TrendingUp className="h-5 w-5 text-primary" />
+                                Estado de Capacitación (Actual vs Esperado)
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {m.cursos_stats.map((curso: any) => {
+                                    const progress = curso.esperados > 0 
+                                        ? Math.min(100, (curso.reales / curso.esperados) * 100) 
+                                        : 0;
+                                    
+                                    return (
+                                        <Card key={curso.id} className="p-5 border-none shadow-sm ring-1 ring-slate-100">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="font-bold text-slate-900 line-clamp-1">{curso.nombre}</h4>
+                                                        <p className="text-xs text-slate-500 mt-0.5">Alumnos inscritos</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-lg font-bold text-slate-900">{curso.reales}</span>
+                                                        <span className="text-slate-400 text-sm"> / {curso.esperados || '∞'}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className={`h-full transition-all duration-1000 ${
+                                                                progress >= 100 ? 'bg-emerald-500' : 'bg-primary'
+                                                            }`}
+                                                            style={{ width: `${progress}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                                        <span>{progress.toFixed(0)}% Completado</span>
+                                                        {curso.esperados > 0 && curso.reales >= curso.esperados && (
+                                                            <span className="text-emerald-600 flex items-center gap-1">
+                                                                <CheckCircle2 className="h-3 w-3" />
+                                                                Meta Alcanzada
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-6">

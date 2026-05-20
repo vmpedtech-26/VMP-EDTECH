@@ -9,6 +9,7 @@ from middleware.security import (
     limiter,
     _rate_limit_exceeded_handler
 )
+from middleware.db_middleware import DatabaseConnectionMiddleware
 from slowapi.errors import RateLimitExceeded
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
@@ -31,31 +32,18 @@ if settings.SENTRY_DSN:
 app = FastAPI(
     title="VMP - EDTECH API",
     description="API para plataforma de capacitación profesional con credenciales verificables",
-    version="0.1.0-beta",
+    version="0.1.0-beta"
 )
-
-@app.on_event("startup")
-async def startup():
-    await connect_db()
-    # Ensure storage directories exist
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "credenciales"), exist_ok=True)
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "uploads"), exist_ok=True)
-    os.makedirs(os.path.join(settings.STORAGE_PATH, "evidencias"), exist_ok=True)
-
-@app.on_event("shutdown")
-async def shutdown():
-    await disconnect_db()
 
 # Rate limiter state
 app.state.limiter = limiter
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Security Middleware
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RequestIDMiddleware)
+# Database & Security Middlewares
+app.add_middleware(DatabaseConnectionMiddleware)
 
-# CORS
+# CORS (Keep this, it's essential)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
@@ -64,9 +52,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup():
+    print("🚀 API STARTUP INITIATED (INSTANT MODE)")
+    
+    # 1. Ensure storage dirs
+    _storage_path = settings.STORAGE_PATH
+    try:
+        os.makedirs(_storage_path, exist_ok=True)
+        print(f"✅ Storage directory ready: {_storage_path}")
+    except Exception as e:
+        print(f"⚠️ Storage directory error: {e}")
+    
+    # 2. Database will connect lazily on the first request 
+    # to avoid blocking the startup process and causing 502s
+    print("ℹ️ Database connection deferred to first request (Lazy Mode)")
+    
+    print("✅ STARTUP COMPLETED")
+
+@app.on_event("shutdown")
+async def shutdown():
+    print("🛑 API SHUTDOWN INITIATED")
+    try:
+        from core.database import disconnect_db
+        await disconnect_db()
+    except:
+        pass
 
 
-from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, evidencias, contact
+
+from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -83,10 +98,26 @@ app.include_router(public.router, prefix="/api/public", tags=["public"])
 app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
 app.include_router(seed.router, prefix="/api/seed", tags=["seed"])
 app.include_router(admin_ops.router, prefix="/api/admin", tags=["admin"])
+app.include_router(accounting.router, prefix="/api/accounting", tags=["accounting"])
 app.include_router(contact.router)
 
-# Serve static files (credential PDFs, uploaded photos, etc.)
-app.mount("/storage", StaticFiles(directory=settings.STORAGE_PATH), name="storage")
+
+# Serve static files with caching
+# Ensure directory exists before mounting
+_storage_path = settings.STORAGE_PATH
+os.makedirs(_storage_path, exist_ok=True)
+
+class CachedStaticFiles(StaticFiles):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        # Cache for 30 days (PDFs and images don't change often)
+        response.headers["Cache-Control"] = "public, max-age=2592000"
+        return response
+
+app.mount("/storage", CachedStaticFiles(directory=_storage_path), name="storage")
 
 
 

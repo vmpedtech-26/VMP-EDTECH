@@ -1,6 +1,6 @@
 // API configuration and utilities
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+import { API_URL } from './api-client';
 
 export interface CotizacionData {
     empresa: string;

@@ -25,7 +25,8 @@ class CredentialValidator:
             include={
                 "alumno": {
                     "include": {
-                        "empresa": True
+                        "empresa": True,
+                        "fotoCredencial": True
                     }
                 },
                 "curso": True
@@ -55,7 +56,8 @@ class CredentialValidator:
                 "alumno": {
                     "nombre": credencial.alumno.nombre,
                     "apellido": credencial.alumno.apellido,
-                    "dni": credencial.alumno.dni
+                    "dni": credencial.alumno.dni,
+                    "fotoUrl": credencial.alumno.fotoCredencial.fotoUrl if credencial.alumno.fotoCredencial and credencial.alumno.fotoCredencial.estado == "APROBADA" else None
                 },
                 "curso": {
                     "nombre": credencial.curso.nombre,

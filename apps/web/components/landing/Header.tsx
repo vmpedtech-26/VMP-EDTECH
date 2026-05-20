@@ -25,10 +25,10 @@ export default function Header() {
                         <Link href="/" className="flex items-center gap-3 group">
                             <div className="relative">
                                 <Image
-                                    src="/images/vmp-isotipo.png"
+                                    src="/images/vmp_official.png"
                                     alt="VMP Logo Oficial"
-                                    width={40}
-                                    height={40}
+                                    width={140}
+                                    height={50}
                                     className="h-10 w-auto group-hover:scale-105 transition-transform duration-300"
                                     priority
                                 />
@@ -40,9 +40,8 @@ export default function Header() {
                             </div>
                         </Link>
 
-                        {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/#servicios-profesionales" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Servicios
                             </Link>
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
@@ -106,7 +105,7 @@ export default function Header() {
                                 <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
                                     FAQ
                                 </Link>
-                                <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Alianzas
                                 </Link>
                                 <Link

@@ -49,7 +49,7 @@ export default function ModuloDetailPage() {
             router.push(`/dashboard/cursos/${id}`);
         } catch (error) {
             console.error('Error completing modulo:', error);
-            alert('Error al guardar progreso');
+            alert('Error al guardar progreso: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 

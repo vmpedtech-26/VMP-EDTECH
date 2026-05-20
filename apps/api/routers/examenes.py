@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
+import json
 from schemas.models import (
     EnviarQuizRequest,
     QuizFeedbackResponse,
@@ -55,6 +56,13 @@ async def enviar_quiz(
     feedback_list = []
     
     for pregunta in preguntas:
+        # Parse opciones if it's a string (SQLite case)
+        if isinstance(pregunta.opciones, str):
+            try:
+                pregunta.opciones = json.loads(pregunta.opciones)
+            except:
+                pass
+                
         respuesta_elegida = data.respuestas.get(pregunta.id)
         
         if respuesta_elegida is None:
@@ -90,7 +98,7 @@ async def enviar_quiz(
         data={
             "alumnoId": current_user.id,
             "cursoId": data.cursoId,
-            "respuestas": data.respuestas,
+            "respuestas": json.dumps(data.respuestas),
             "calificacion": calificacion,
             "aprobado": aprobado
         }

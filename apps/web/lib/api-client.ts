@@ -1,9 +1,40 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+export const API_URL = (() => {
+    // 1. Get from env or default to localhost
+    let url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    
+    // 2. Browser-side adjustments
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        
+        // LOG the current URL for debugging in production
+        console.log(`[API-CLIENT] Current Hostname: ${hostname}`);
+        console.log(`[API-CLIENT] Initial API URL: ${url}`);
+        
+        // If we are on the production domain
+        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
+            url = 'https://web-production-1b0066.up.railway.app';
+            console.log(`[API-CLIENT] FORCED Production API URL: ${url}`);
+        } else if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
+            // Other cloud environments (Vercel previews, etc)
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+                url = 'https://web-production-1b0066.up.railway.app';
+                console.log(`[API-CLIENT] AUTO-DETECTED Production API URL: ${url}`);
+            } else {
+                url = url.replace('http://', 'https://');
+            }
+        }
+    }
+    
+    return url;
+})();
 
-async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
+async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
 
-    let url = `${API_URL}/api${path}`;
+    const baseUrl = API_URL;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    let url = `${baseUrl}/api${cleanPath}`;
+    
     if (options.params) {
         const query = new URLSearchParams();
         Object.entries(options.params).forEach(([key, value]) => {
@@ -27,17 +58,48 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         headers['Content-Type'] = 'application/json';
     }
 
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
+    const timeout = options.timeout || 15000;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
-        throw new Error(error.detail || 'Error en la petición');
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers,
+            signal: controller.signal,
+        });
+
+        clearTimeout(id);
+
+        if (response.status === 401) {
+            // Manejar expiración de sesión
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('vmp_token');
+                localStorage.removeItem('vmp_user');
+                document.cookie = 'vmp_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                if (!window.location.pathname.includes('/login')) {
+                    window.location.href = '/login?error=session_expired';
+                }
+            }
+            throw new Error('Sesión expirada. Por favor, inicie sesión nuevamente.');
+        }
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor' }));
+            throw new Error(error.detail || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
+    } catch (error: any) {
+        clearTimeout(id);
+        if (error.name === 'AbortError') {
+            throw new Error('La petición tardó demasiado tiempo. Verifique su conexión.');
+        }
+        if (error.message.includes('Failed to fetch')) {
+            throw new Error('No se pudo conectar con el servidor. Verifique su conexión a internet.');
+        }
+        throw error;
     }
-
-    return response.json();
 }
 
 export type ApiOptions = RequestInit & { params?: Record<string, any> };

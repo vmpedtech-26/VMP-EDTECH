@@ -15,11 +15,12 @@ import {
     CheckCircle2,
     Clock,
     Plus,
-    Loader2
+    Loader2,
+    CircleDollarSign
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { toast } from 'sonner';
-import { api } from '@/lib/api-client';
+import { api, API_URL } from '@/lib/api-client';
 
 
 
@@ -51,6 +52,7 @@ export default function ControlCenterPage() {
     const [backups, setBackups] = useState<Backup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isCreatingBackup, setIsCreatingBackup] = useState(false);
+    const [isSeedingAccounting, setIsSeedingAccounting] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -102,10 +104,21 @@ export default function ControlCenterPage() {
     const handleDownloadBackup = async (filename: string) => {
         try {
             const token = localStorage.getItem('vmp_token');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
             window.open(`${API_URL}/api/admin/backups/download/${filename}?token=${token}`, '_blank');
         } catch (error) {
             toast.error('Error al iniciar la descarga');
+        }
+    };
+
+    const handleSeedAccounting = async () => {
+        setIsSeedingAccounting(true);
+        try {
+            await api.post('/accounting/seed', {});
+            toast.success('Plan de Cuentas inicializado correctamente');
+        } catch (error: any) {
+            toast.error(`Error: ${error.message || 'No se pudo inicializar la contabilidad'}`);
+        } finally {
+            setIsSeedingAccounting(false);
         }
     };
 
@@ -341,6 +354,24 @@ export default function ControlCenterPage() {
                                 </p>
                             </div>
                         </div>
+                    </Card>
+
+                    <Card className="p-6 border-none shadow-md ring-1 ring-slate-200 bg-white">
+                        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+                            <CircleDollarSign className="h-5 w-5 text-primary" />
+                            Inicialización Contable
+                        </h2>
+                        <p className="text-xs text-slate-500 mb-4">
+                            Si es la primera vez que usas el módulo de contabilidad, debes inicializar el Plan de Cuentas base.
+                        </p>
+                        <button
+                            onClick={handleSeedAccounting}
+                            disabled={isSeedingAccounting}
+                            className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            {isSeedingAccounting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                            Configurar Contabilidad
+                        </button>
                     </Card>
                 </div>
             </div>

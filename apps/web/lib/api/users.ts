@@ -10,6 +10,7 @@ export interface UserAdmin {
     rol: string;
     empresaId?: string;
     empresa_nombre?: string;
+    puesto?: string;
     activo: boolean;
     createdAt: string;
 }
@@ -19,7 +20,7 @@ export const usersApi = {
      * Listar usuarios con filtros
      */
     async listarUsuarios(params?: { rol?: string; empresaId?: string }): Promise<UserAdmin[]> {
-        return api.get('/users/', { params });
+        return api.get('/users', { params });
     },
 
     /**
@@ -33,7 +34,7 @@ export const usersApi = {
      * Crear un nuevo usuario
      */
     async crearUsuario(data: any): Promise<UserAdmin> {
-        return api.post('/users/', data);
+        return api.post('/users', data);
     },
 
     /**

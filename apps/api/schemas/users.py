@@ -11,9 +11,10 @@ class UserAdminBase(BaseModel):
     telefono: Optional[str] = None
     rol: str = "ALUMNO"
     empresaId: Optional[str] = None
+    puesto: Optional[str] = None
     activo: bool = True
 
-    @validator('nombre', 'apellido', 'dni', 'telefono', pre=True)
+    @validator('nombre', 'apellido', 'dni', 'telefono', 'puesto', pre=True)
     def sanitize_text(cls, v):
         if isinstance(v, str):
             return sanitize_data(v)
@@ -30,10 +31,11 @@ class UpdateUserRequest(BaseModel):
     telefono: Optional[str] = None
     rol: Optional[str] = None
     empresaId: Optional[str] = None
+    puesto: Optional[str] = None
     activo: Optional[bool] = None
     password: Optional[str] = None
 
-    @validator('nombre', 'apellido', 'dni', 'telefono', pre=True)
+    @validator('nombre', 'apellido', 'dni', 'telefono', 'puesto', pre=True)
     def sanitize_text(cls, v):
         if isinstance(v, str):
             return sanitize_data(v)

@@ -5,7 +5,7 @@ import ssl
 def test_login():
     host = "web-production-1b0066.up.railway.app"
     email = "admin@vmpservicios.com"
-    password = "VmpAdmin2026!"
+    password = "VmpAdmin2024!"
     
     # Create an unverified context
     context = ssl._create_unverified_context()

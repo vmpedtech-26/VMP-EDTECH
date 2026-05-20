@@ -25,7 +25,7 @@ export default function SistemaPage() {
     ];
 
     const services = [
-        { name: 'API Backend', url: 'https://api.vmp-edtech.com', status: 'online' },
+        { name: 'API Backend', url: 'https://web-production-1b0066.up.railway.app', status: 'online' },
         { name: 'Frontend Web', url: 'https://www.vmp-edtech.com', status: 'online' },
         { name: 'Base de Datos', url: 'Railway PostgreSQL', status: 'online' },
     ];
@@ -84,7 +84,7 @@ export default function SistemaPage() {
                 <div className="space-y-4">
                     <h2 className="text-xl font-bold text-slate-900">Enlaces Rápidos</h2>
                     <Card className="border-none shadow-sm ring-1 ring-gray-100 divide-y divide-gray-50" hover={false}>
-                        <a href="https://api.vmp-edtech.com/docs" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <a href="https://web-production-1b0066.up.railway.app/docs" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                                     <Server className="h-5 w-5" />

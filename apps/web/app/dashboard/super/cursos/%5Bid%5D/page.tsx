@@ -38,7 +38,7 @@ export default function EditarCursoPage() {
             alert('Curso actualizado correctamente');
         } catch (error) {
             console.error('Error updating curso:', error);
-            alert('Error al actualizar el curso');
+            alert('Error al actualizar el curso: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsSaving(false);
         }

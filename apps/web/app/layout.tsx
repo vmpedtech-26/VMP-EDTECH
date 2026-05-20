@@ -1,5 +1,17 @@
-import type { Metadata } from 'next';
+import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-inter',
+});
+
+const outfit = Outfit({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-outfit',
+});
 
 const SITE_URL = 'https://www.vmp-edtech.com';
 
@@ -68,8 +80,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="es">
-            <body>
+        <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
+            <body className="antialiased font-sans">
                 <AuthProvider>
                     {children}
                     <Toaster position="top-right" richColors />

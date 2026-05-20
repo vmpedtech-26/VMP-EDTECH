@@ -12,11 +12,13 @@ import {
     CheckCircle2,
     PlayCircle,
     FileText,
-    HelpCircle
+    HelpCircle,
+    Video
 } from 'lucide-react';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { CursoDetail, Inscripcion } from '@/types/training';
+import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
 import Link from 'next/link';
 
 export default function CursoDetailPage() {
@@ -65,9 +67,17 @@ export default function CursoDetailPage() {
     }
 
     const isEnrolled = !!inscripcion;
+    const activeLiveModule = curso.modulos?.find(m => m.liveClassUrl);
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
+            {/* Live Class Hub integration */}
+            {isEnrolled && activeLiveModule && (
+                <LiveClassHub 
+                    platform={activeLiveModule.liveClassUrl?.includes('teams') ? 'teams' : 'google_meet'}
+                    url={activeLiveModule.liveClassUrl || null}
+                />
+            )}
             {/* Header / Hero */}
             <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
                 <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -196,7 +206,7 @@ export default function CursoDetailPage() {
                                         await inscripcionesApi.inscribirse(curso.id);
                                         window.location.reload();
                                     } catch (err) {
-                                        alert('Error al inscribirse');
+                                        alert('Error al inscribirse: ' + (error instanceof Error ? error.message : String(error)));
                                     }
                                 }}
                             >

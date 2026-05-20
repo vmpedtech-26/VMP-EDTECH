@@ -27,6 +27,9 @@ export function Alianzas() {
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
             Alianzas Estratégicas
           </h2>
+          <p className="text-xl text-slate-600">
+            Colaboramos con empresas líderes para potenciar la capacitación y el desarrollo profesional.
+          </p>
         </div>
 
         {/* Logos Grid */}

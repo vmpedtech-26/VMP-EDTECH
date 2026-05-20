@@ -50,7 +50,7 @@ export default function AlumnosPage() {
             await usersApi.eliminarUsuario(id);
             fetchUsuarios();
         } catch (error) {
-            alert('Error al eliminar el usuario');
+            alert('Error al eliminar el usuario: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 
@@ -137,7 +137,7 @@ export default function AlumnosPage() {
                                         <span>{user.empresa_nombre || 'Sin Empresa'}</span>
                                     </div>
                                     <div className="text-[10px] text-slate-600 mt-1 uppercase tracking-widest font-bold">
-                                        Rol: {user.rol}
+                                        Rol: {user.rol} {user.puesto && <span className="text-primary ml-2">• {user.puesto}</span>}
                                     </div>
                                 </div>
                             </div>

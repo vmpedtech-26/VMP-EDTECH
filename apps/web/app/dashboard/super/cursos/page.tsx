@@ -50,7 +50,7 @@ export default function SuperCursosPage() {
             fetchCursos();
         } catch (error) {
             console.error('Error deleting curso:', error);
-            alert('Error al eliminar curso');
+            alert('Error al eliminar curso: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 

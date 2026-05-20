@@ -15,7 +15,9 @@ import {
     ChevronRight,
     ClipboardCheck,
     UserCog,
-    Sliders
+    Sliders,
+    CircleDollarSign,
+    Plus
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -47,6 +49,18 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
         { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
         { icon: Sliders, label: 'Centro de Control', href: '/dashboard/super/control' },
+        {
+            icon: CircleDollarSign,
+            label: 'Contabilidad',
+            submenu: [
+                { icon: LayoutDashboard, label: 'Centro Contable', href: '/dashboard/super/contabilidad' },
+                { icon: Plus, label: 'Cargar Factura (Asistente)', href: '/dashboard/super/contabilidad/compras/nuevo' },
+                { icon: CircleDollarSign, label: 'Ventas', href: '/dashboard/super/contabilidad/ventas' },
+                { icon: CircleDollarSign, label: 'Compras', href: '/dashboard/super/contabilidad/compras' },
+                { icon: LayoutDashboard, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+                { icon: Sliders, label: 'Reportes', href: '/dashboard/super/contabilidad/reportes' },
+            ]
+        },
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
     ],
     INSTRUCTOR: [
@@ -148,19 +162,24 @@ export function Sidebar({ userRole }: SidebarProps) {
                     }`}
             >
                 <div className="flex flex-col h-full">
-                    {/* Logo */}
-                    <div className="p-6 border-b border-slate-200">
-                        <Link href="/" className="flex items-center space-x-3 group">
-                            <Image
-                                src="/images/vmp-isotipo.png"
-                                alt="VMP"
-                                width={40}
-                                height={40}
-                                className="group-hover:scale-110 transition-transform duration-300"
-                            />
-                            <div>
-                                <div className="text-lg font-heading font-bold text-slate-900">VMP - <span className="gradient-text">EDTECH</span></div>
-                                <div className="text-xs text-slate-800">
+                    {/* Logo Area - Premium Brand Style */}
+                    <div className="p-8 border-b border-slate-100 bg-gradient-to-b from-slate-50/50 to-transparent">
+                        <Link href="/" className="flex flex-col items-center group">
+                            <div className="relative mb-4">
+                                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500 opacity-0 group-hover:opacity-100"></div>
+                                <Image
+                                    src="/images/vmp-isotipo.png"
+                                    alt="VMP Logo"
+                                    width={56}
+                                    height={56}
+                                    className="relative z-10 drop-shadow-sm group-hover:rotate-6 transition-all duration-300"
+                                />
+                            </div>
+                            <div className="text-center">
+                                <div className="text-xl font-heading font-black tracking-tighter text-slate-900 flex items-center justify-center gap-1">
+                                    VMP <span className="text-primary">EDTECH</span>
+                                </div>
+                                <div className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white uppercase tracking-[0.1em] shadow-sm">
                                     {userRole === 'ALUMNO' && 'Alumno'}
                                     {userRole === 'SUPER_ADMIN' && 'Super Admin'}
                                     {userRole === 'INSTRUCTOR' && 'Instructor'}

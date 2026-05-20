@@ -1,5 +1,5 @@
-import React from 'react';
 import { CreditCard, QrCode, Shield, Calendar, User, Building } from 'lucide-react';
+import Image from 'next/image';
 
 export function CredentialSection() {
     return (
@@ -84,10 +84,11 @@ export function CredentialSection() {
                                         <div className="relative group/photo">
                                             <div className="absolute -inset-1 bg-cyan-400 rounded-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                                             <div className="relative aspect-[4/5] bg-slate-100 rounded-xl overflow-hidden border-2 border-cyan-400">
-                                                <img 
+                                                <Image 
                                                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=500&auto=format&fit=crop" 
                                                     alt="Avatar Profesional"
-                                                    className="w-full h-full object-cover"
+                                                    fill
+                                                    className="object-cover"
                                                 />
                                             </div>
                                         </div>

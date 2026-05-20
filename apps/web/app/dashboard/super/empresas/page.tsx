@@ -49,7 +49,7 @@ export default function EmpresasPage() {
             await empresasApi.eliminarEmpresa(id);
             fetchEmpresas();
         } catch (error) {
-            alert('Error al eliminar la empresa');
+            alert('Error al eliminar la empresa: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 

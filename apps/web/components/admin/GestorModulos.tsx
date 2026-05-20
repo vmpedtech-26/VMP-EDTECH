@@ -49,7 +49,7 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
             onUpdate();
         } catch (error) {
             console.error('Error adding modulo:', error);
-            alert('Error al agregar módulo');
+            alert('Error al agregar módulo: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsLoading(false);
         }
@@ -62,7 +62,7 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
             onUpdate();
         } catch (error) {
             console.error('Error deleting modulo:', error);
-            alert('Error al eliminar módulo');
+            alert('Error al eliminar módulo: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 

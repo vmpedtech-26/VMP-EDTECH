@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '@/lib/api-client';
+import Image from 'next/image';
 import { Send, Phone, Mail, MapPin, CheckCircle, Loader2, MessageSquare } from 'lucide-react';
 
 interface ContactForm {
@@ -33,7 +35,7 @@ export default function ContactSection() {
         setStatus('sending');
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api';
+            const apiUrl = `${API_URL}/api`;
             const res = await fetch(`${apiUrl}/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -79,7 +81,7 @@ export default function ContactSection() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        <div className="bg-gradient-to-br from-primary to-secondary p-8 rounded-2xl text-white">
+                        <div className="bg-gradient-to-br from-primary to-secondary p-8 rounded-2xl text-white shadow-lg">
                             <h3 className="font-heading font-bold text-2xl mb-6">
                                 Información de Contacto
                             </h3>
@@ -90,8 +92,8 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Teléfono</p>
-                                        <a href="tel:+5491123456789" className="text-white/80 hover:text-white transition-colors">
-                                            +54 9 11 2345-6789
+                                        <a href="tel:+5492995370173" className="text-white/80 hover:text-white transition-colors">
+                                            +54 9 299 537-0173
                                         </a>
                                     </div>
                                 </div>
@@ -101,8 +103,8 @@ export default function ContactSection() {
                                     </div>
                                     <div>
                                         <p className="font-semibold">Email</p>
-                                        <a href="mailto:ventas@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
-                                            ventas@vmp-edtech.com
+                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
+                                            administracion@vmp-edtech.com
                                         </a>
                                     </div>
                                 </div>
@@ -110,9 +112,16 @@ export default function ContactSection() {
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <MapPin className="h-5 w-5" />
                                     </div>
-                                    <div>
+                                    <div className="space-y-2">
                                         <p className="font-semibold">Ubicación</p>
-                                        <p className="text-white/80">Buenos Aires, Argentina</p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇦🇷 Argentina:</span>
+                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                        </p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇪🇸 España:</span>
+                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -122,7 +131,7 @@ export default function ContactSection() {
                                     <div>
                                         <p className="font-semibold">WhatsApp</p>
                                         <a
-                                            href="https://wa.me/5491123456789?text=Hola%2C%20quiero%20info%20sobre%20capacitaci%C3%B3n%20vial"
+                                            href="https://wa.me/5492995370173?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20y%20soluciones%20corporativas%20de%20VMP."
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-white/80 hover:text-white transition-colors"
@@ -285,7 +294,7 @@ export default function ContactSection() {
 
                                     {status === 'error' && (
                                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-                                            Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a ventas@vmp-edtech.com
+                                            Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a administracion@vmp-edtech.com
                                         </div>
                                     )}
 

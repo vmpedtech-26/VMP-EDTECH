@@ -53,7 +53,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             setSubmitted(true);
         } catch (error) {
             console.error('Error al enviar quiz:', error);
-            alert('Error al enviar el quiz');
+            alert('Error al enviar el quiz: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setLoading(false);
         }
@@ -80,7 +80,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setLoading(false);
         }

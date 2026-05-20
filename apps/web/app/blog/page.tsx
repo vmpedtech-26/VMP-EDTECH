@@ -39,7 +39,7 @@ export default function BlogPage() {
 
             <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {blogPosts.map((post) => (
+                    {[...blogPosts].reverse().map((post) => (
                         <article key={post.slug} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border border-slate-100">
                             <div className="relative h-48 w-full">
                                 <Image

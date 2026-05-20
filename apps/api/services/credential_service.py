@@ -70,14 +70,26 @@ async def generate_credential_for_student(
             }
         )
         if foto_credencial and foto_credencial.fotoUrl:
-            foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
-    except Exception:
+            # La URL es /storage/uploads/credenciales/uuid.jpg
+            # Queremos el path local dentro de STOAGE_PATH
+            filename = foto_credencial.fotoUrl.split("/")[-1]
+            foto_path = os.path.join(settings.STORAGE_PATH, "uploads", "credenciales", filename)
+    except Exception as e:
+        print(f"Error buscando foto para credencial: {e}")
         pass  # Si no hay foto, continuar sin ella
     
     # Generar número de credencial único
     year = datetime.now().year
-    count = await prisma.credencial.count()
-    numero_credencial = generate_credencial_number(year, count + 1)
+    last_cred = await prisma.credencial.find_first(
+        order={"createdAt": "desc"}
+    )
+    seq = 1
+    if last_cred:
+        try:
+            seq = int(last_cred.numero.split("-")[-1]) + 1
+        except:
+            seq = await prisma.credencial.count() + 1
+    numero_credencial = generate_credencial_number(year, seq)
     
     # Calcular fecha de vencimiento
     fecha_vencimiento = None
@@ -99,6 +111,7 @@ async def generate_credential_for_student(
         "curso_codigo": curso.codigo,
         "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
         "fecha_vencimiento": fecha_vencimiento.strftime("%d/%m/%Y") if fecha_vencimiento else None,
+        "puesto": alumno.puesto,
         "qr_url": qr_url
     }
     
@@ -117,6 +130,7 @@ async def generate_credential_for_student(
             "qrCodeUrl": qr_url,
             "fechaEmision": datetime.now(),
             "fechaVencimiento": fecha_vencimiento,
+            "puesto": alumno.puesto
         }
     )
     

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+import json
 from typing import List
 from schemas.cursos import (
     CursoListItem, 
@@ -16,7 +17,7 @@ from core.database import prisma
 
 router = APIRouter()
 
-@router.get("/", response_model=List[CursoListItem])
+@router.get("", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """
     Listar todos los cursos activos
@@ -40,7 +41,7 @@ async def listar_cursos(current_user=Depends(get_current_user)):
     return cursos
 
 
-@router.post("/", response_model=CursoListItem)
+@router.post("", response_model=CursoListItem)
 async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo curso (Solo SUPER_ADMIN)"""
     
@@ -60,6 +61,7 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "duracionHoras": data.duracionHoras,
             "vigenciaMeses": data.vigenciaMeses,
             "empresaId": data.empresaId,
+            "alumnosEsperados": data.alumnosEsperados,
             "activo": True
         }
     )
@@ -112,6 +114,8 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     if data.codigo is not None: update_data["codigo"] = data.codigo
     if data.duracionHoras is not None: update_data["duracionHoras"] = data.duracionHoras
     if data.vigenciaMeses is not None: update_data["vigenciaMeses"] = data.vigenciaMeses
+    if data.empresaId is not None: update_data["empresaId"] = data.empresaId
+    if data.alumnosEsperados is not None: update_data["alumnosEsperados"] = data.alumnosEsperados
     if data.activo is not None: update_data["activo"] = data.activo
     
     curso = await prisma.curso.update(
@@ -204,9 +208,13 @@ async def obtener_modulo(
         raise HTTPException(status_code=400, detail="Módulo no pertenece a este curso")
     
     # Para estudiantes, no devolver respuestas correctas en las preguntas
-    if current_user.rol == "ALUMNO" and modulo.preguntas:
-        # Las preguntas ya se retornan sin respuestaCorrecta gracias al schema PreguntaResponse
-        pass
+    if modulo.preguntas:
+        for p in modulo.preguntas:
+            if isinstance(p.opciones, str):
+                try:
+                    p.opciones = json.loads(p.opciones)
+                except:
+                    p.opciones = []
     
     return modulo
 
@@ -241,28 +249,24 @@ async def crear_modulo(
                 data={
                     "moduloId": modulo.id,
                     "pregunta": p.pregunta,
-                    "opciones": p.opciones,
+                    "opciones": json.dumps(p.opciones),
                     "respuestaCorrecta": p.respuestaCorrecta,
                     "explicacion": p.explicacion
                 }
             )
             
-    # 3. Si tiene tareas (Práctica)
-    if data.tipo == "PRACTICA" and data.tareasPracticas:
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": modulo.id,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
-            
     # Re-obtener con relaciones
-    return await prisma.modulo.find_unique(
+    modulo = await prisma.modulo.find_unique(
         where={"id": modulo.id},
-        include={"preguntas": True, "tareasPracticas": True}
+        include={"preguntas": True}
     )
+    
+    if modulo and modulo.preguntas:
+        for p in modulo.preguntas:
+            if isinstance(p.opciones, str):
+                p.opciones = json.loads(p.opciones)
+                
+    return modulo
 
 
 @router.get("/{cursoId}/modulos/{moduloId}/admin", response_model=ModuloDetailAdmin)
@@ -288,6 +292,11 @@ async def admin_obtener_modulo(
     if not modulo or modulo.cursoId != cursoId:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
         
+    if modulo and modulo.preguntas:
+        for p in modulo.preguntas:
+            if isinstance(p.opciones, str):
+                p.opciones = json.loads(p.opciones)
+                
     return modulo
 
 
@@ -328,7 +337,7 @@ async def actualizar_modulo(
                 data={
                     "moduloId": moduloId,
                     "pregunta": p.pregunta,
-                    "opciones": p.opciones,
+                    "opciones": json.dumps(p.opciones),
                     "respuestaCorrecta": p.respuestaCorrecta,
                     "explicacion": p.explicacion
                 }
@@ -346,10 +355,17 @@ async def actualizar_modulo(
                 }
             )
             
-    return await prisma.modulo.find_unique(
+    modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={"preguntas": True, "tareasPracticas": True}
     )
+    
+    if modulo and modulo.preguntas:
+        for p in modulo.preguntas:
+            if isinstance(p.opciones, str):
+                p.opciones = json.loads(p.opciones)
+                
+    return modulo
 
 
 @router.delete("/{cursoId}/modulos/{moduloId}")

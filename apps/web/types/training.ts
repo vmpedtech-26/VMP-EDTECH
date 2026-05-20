@@ -16,6 +16,8 @@ export interface Curso {
     codigo: string;
     duracionHoras: number;
     vigenciaMeses?: number;
+    empresaId?: string;
+    alumnosEsperados: number;
     activo: boolean;
 }
 
@@ -24,6 +26,7 @@ export interface ModuloSummary {
     titulo: string;
     orden: number;
     tipo: TipoModulo;
+    liveClassUrl?: string;
 }
 
 export interface CursoDetail extends Curso {
@@ -156,4 +159,10 @@ export interface Credencial {
     fechaEmision: string;
     fechaVencimiento?: string;
     curso: Curso;
+    alumno?: {
+        nombre: string;
+        apellido: string;
+        dni: string;
+        fotoUrl?: string;
+    };
 }

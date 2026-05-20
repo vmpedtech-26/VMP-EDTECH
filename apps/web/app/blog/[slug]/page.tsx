@@ -4,8 +4,9 @@ import Image from 'next/image';
 import Header from '@/components/landing/Header';
 import Footer from '@/components/landing/Footer';
 import { blogPosts } from '@/lib/blog-data';
-import { Calendar, Clock, ArrowLeft, Share2, User, Tag } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, User, Tag } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import ShareButtons from '@/components/blog/ShareButtons';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
     const post = blogPosts.find((p) => p.slug === params.slug);
@@ -66,9 +67,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                         </div>
 
                         <div className="flex items-center space-x-3">
-                            <button className="p-2 rounded-full bg-slate-100 text-slate-800 hover:bg-gray-200 transition-colors">
-                                <Share2 className="h-5 w-5" />
-                            </button>
+                            <ShareButtons 
+                                title={post.title} 
+                                url={`/blog/${post.slug}`} 
+                                text={post.excerpt} 
+                            />
                         </div>
                     </div>
                 </div>

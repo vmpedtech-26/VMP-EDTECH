@@ -22,7 +22,7 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo');
+            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setLoading(false);
         }

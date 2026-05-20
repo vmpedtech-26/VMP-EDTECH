@@ -12,21 +12,15 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center space-x-3 mb-4">
                             <Image
-                                src="/images/vmp-isotipo.png"
-                                alt="VMP"
-                                width={36}
-                                height={36}
+                                src="/images/vmp_official.png"
+                                alt="VMP - EDTECH"
+                                width={120}
+                                height={40}
+                                className="h-auto w-auto max-h-12 brightness-0 invert"
                             />
-                            <div className="font-heading font-bold text-xl">
-                                <span className="text-white">VMP</span>
-                                <span className="text-primary mx-1">-</span>
-                                <span className="gradient-text">EDTECH</span>
-                            </div>
                         </div>
                         <p className="text-slate-300 text-sm leading-relaxed mb-4">
                             Capacitación Vial Profesional
-                            <br />
-                            Certificaciones Argentina
                         </p>
                         <div className="flex space-x-3">
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
@@ -42,6 +36,7 @@ export default function Footer() {
                                 <Youtube className="h-5 w-5" />
                             </a>
                         </div>
+
                     </div>
 
                     {/* Cursos Column */}
@@ -109,21 +104,28 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start space-x-3">
                                 <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:info@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    info@vmp-edtech.com
+                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="tel:+5491112345678" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    +54 9 11 1234-5678
+                                <a href="tel:+5492995370173" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                    +54 9 299 537-0173
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <span className="text-slate-300 text-sm">
-                                    Buenos Aires, Argentina
-                                </span>
+                                <div className="space-y-1">
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">🇦🇷 Sede Argentina:</span>
+                                        Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                    </p>
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">🇪🇸 Sede España:</span>
+                                        Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                    </p>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -133,7 +135,7 @@ export default function Footer() {
                 <div className="border-t border-slate-700 pt-8">
                     <div className="text-center text-slate-400 text-sm">
                         <p className="mb-2">
-                            © 2025 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 20-12345678-9
+                            © 2026 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 30-71936908-8
                         </p>
                         <p className="text-xs">
                             Instructor Certificado - Matrícula 12345/2025
