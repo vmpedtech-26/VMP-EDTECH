@@ -2,11 +2,11 @@ import { Card } from '@/components/ui/Card';
 import { BookOpen, Users, Award } from 'lucide-react';
 
 const services = [
-    {
+        {
         icon: BookOpen,
         title: 'Cursos Interactivos',
         description:
-            'Capacitaciones teórico-prácticas con videos, quizzes y evaluaciones en tiempo real.',
+            'Capacitaciones teórico-prácticas en conducción y trabajo en altura, con videos, quizzes y evaluaciones en tiempo real.',
     },
     {
         icon: Users,

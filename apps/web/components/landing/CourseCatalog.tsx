@@ -68,6 +68,20 @@ export default function CourseCatalog() {
             priceFrom: 68000,
             description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
             image: '/images/courses/conduccion-2-traccion.png'
+        },
+        {
+            id: 'altura',
+            slug: 'trabajo-en-altura',
+            icon: Mountain, // We reuse Mountain or Shield since it's height/safety
+            title: 'Trabajo en Altura',
+            category: 'Seguridad Industrial',
+            duration: '8 horas',
+            modality: 'Presencial',
+            validity: '12 meses',
+            minScore: '80%',
+            priceFrom: 40000,
+            description: 'Capacitación especializada en técnicas seguras, uso de arnés y prevención de caídas.',
+            image: '/images/courses/curso-altura.png'
         }
     ];
 

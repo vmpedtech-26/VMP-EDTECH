@@ -1,7 +1,9 @@
 import HeroSection from '@/components/landing/HeroSection';
 import ValueProposition from '@/components/landing/ValueProposition';
 import { Benefits } from '@/components/landing/Benefits';
+import { ProfessionalServices } from '@/components/landing/ProfessionalServices';
 import CourseCatalog from '@/components/landing/CourseCatalog';
+import { Alianzas } from '@/components/landing/Alianzas';
 import { CredentialSection } from '@/components/landing/CredentialSection';
 import ContactSection from '@/components/landing/ContactSection';
 import { Testimonials } from '@/components/landing/Testimonials';
@@ -18,8 +20,10 @@ export default function LandingPage() {
             <HeroSection />
             <ValueProposition />
             <Benefits />
+            <ProfessionalServices />
             <CourseCatalog />
-            <CredentialSection />
+            <Alianzas />
+            {/* <CredentialSection /> */}
             <ContactSection />
             <Testimonials />
             <FAQ />
