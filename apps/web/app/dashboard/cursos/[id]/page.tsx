@@ -206,7 +206,7 @@ export default function CursoDetailPage() {
                                         await inscripcionesApi.inscribirse(curso.id);
                                         window.location.reload();
                                     } catch (err) {
-                                        alert('Error al inscribirse: ' + (error instanceof Error ? error.message : String(error)));
+                                        alert('Error al inscribirse: ' + (err instanceof Error ? err.message : String(err)));
                                     }
                                 }}
                             >

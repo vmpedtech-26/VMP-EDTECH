@@ -24,7 +24,7 @@ export const credencialesApi = {
         cursoId?: string;
         alumnoId?: string;
     }): Promise<CredencialListItem[]> {
-        return api.get('/credenciales', { params });
+        return api.get('/credenciales/all', { params });
     },
 
     /**
@@ -38,7 +38,7 @@ export const credencialesApi = {
      * Generar credencial manualmente (INSTRUCTOR/SUPER_ADMIN)
      */
     async generar(alumnoId: string, cursoId: string) {
-        return api.post('/credenciales/generar', { alumnoId, cursoId });
+        return api.post('/credenciales/generar-manual', { alumnoId, cursoId });
     },
 
     /**

@@ -246,43 +246,6 @@ async def reset_password(data: ResetPasswordRequest):
         )
 
 
-@router.post("/debug-login")
-async def debug_login(data: UserLogin):
-    from core.config import settings
-    # Count total users
-    total_users = await prisma.user.count()
-    user = await prisma.user.find_unique(where={"email": data.email})
-    
-    db_masked = settings.DATABASE_URL
-    if "@" in db_masked:
-        parts = db_masked.split("@")
-        db_masked = "masked_user_pass@" + parts[-1]
-        
-    if not user:
-        return {
-            "error": "User not found",
-            "total_users_in_db": total_users,
-            "database_url_host": db_masked
-        }
-    try:
-        match = verify_password(data.password, user.passwordHash)
-        return {
-            "user_found": True,
-            "email": user.email,
-            "hash_in_db": user.passwordHash,
-            "password_verified": match,
-            "total_users_in_db": total_users,
-            "database_url_host": db_masked
-        }
-    except Exception as e:
-        return {
-            "user_found": True,
-            "email": user.email,
-            "hash_in_db": user.passwordHash,
-            "error": str(e),
-            "error_type": type(e).__name__,
-            "total_users_in_db": total_users,
-            "database_url_host": db_masked
-        }
 
-
+# NOTE: debug-login endpoint was removed for security reasons.
+# It was exposing password hashes. Do not re-add in production.

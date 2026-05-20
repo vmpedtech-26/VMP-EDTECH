@@ -28,7 +28,7 @@ async def listar_cuentas(current_user=Depends(get_current_user)):
 async def crear_cuenta(data: CreateAccountRequest, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
-    return await prisma.account.create(data=data.dict())
+    return await prisma.account.create(data=data.model_dump())
 
 # --- Libro Diario ---
 
@@ -81,7 +81,7 @@ async def registrar_venta(data: CreateVentaRequest, current_user=Depends(get_cur
                     "metodoPago": data.metodoPago,
                     "estado": data.estado,
                     "items": {
-                        "create": [item.dict() for item in data.items]
+                        "create": [item.model_dump() for item in data.items]
                     }
                 },
                 include={"items": True}
@@ -159,7 +159,7 @@ async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_c
                     "metodoPago": data.metodoPago,
                     "categoria": data.categoria,
                     "items": {
-                        "create": [item.dict() for item in data.items]
+                        "create": [item.model_dump() for item in data.items]
                     }
                 },
                 include={"items": True}
@@ -445,10 +445,14 @@ async def seed_accounting(current_user=Depends(get_current_user)):
         {"code": "5.1.04", "name": "Sueldos y Jornales", "type": "EXPENSE", "parentCode": "5"}
     ]
     
+    created = 0
     for c in cuentas:
-        await prisma.account.upsert(
-            where={"code": c["code"]},
-            data=c
-        )
+        existing = await prisma.account.find_unique(where={"code": c["code"]})
+        if not existing:
+            # Set level based on code depth
+            code_parts = c["code"].split(".")
+            c["level"] = len(code_parts)
+            await prisma.account.create(data=c)
+            created += 1
         
-    return {"message": "Plan de cuentas inicial creado"}
+    return {"message": f"Plan de cuentas inicial creado. {created} cuentas nuevas agregadas."}

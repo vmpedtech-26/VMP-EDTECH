@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, Building2, User, Calendar, Award, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { API_URL } from '@/lib/api-client';
@@ -32,21 +32,22 @@ interface ValidationResult {
     credential?: CredentialData;
 }
 
-export default function ValidarCredencialPage({ params }: { params: { codigo: string } }) {
+export default function ValidarCredencialPage({ params }: { params: Promise<{ codigo: string }> }) {
+    const resolvedParams = React.use(params);
     const [result, setResult] = useState<ValidationResult | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         validateCredential();
-    }, [params.codigo]);
+    }, [resolvedParams.codigo]);
 
     const validateCredential = async () => {
         try {
             setIsLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_URL}/api/public/validar/${params.codigo}`);
+            const response = await fetch(`${API_URL}/api/public/validar/${resolvedParams.codigo}`);
 
             if (!response.ok) {
                 throw new Error('Error al validar la credencial');

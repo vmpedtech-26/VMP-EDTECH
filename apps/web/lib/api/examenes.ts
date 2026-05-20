@@ -33,7 +33,7 @@ export const examenesApi = {
         alumnoId: string,
         cursoId: string
     ): Promise<any> {
-        return api.post('/credenciales/generar', {
+        return api.post('/credenciales/generar-manual', {
             alumnoId,
             cursoId,
         });

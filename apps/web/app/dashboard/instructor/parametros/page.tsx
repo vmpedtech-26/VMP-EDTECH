@@ -174,7 +174,7 @@ export default function ParametrosPage() {
                                                 Ver Aula
                                             </Button>
                                             <Button 
-                                                variant="danger" 
+                                                variant="outline" 
                                                 size="sm" 
                                                 className="bg-red-500 hover:bg-red-600 text-white border-0"
                                                 onClick={() => handleDeactivate(session.id)}

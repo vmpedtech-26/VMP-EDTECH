@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { QrCode, Download, Share2, Shield, Calendar, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/lib/api-client';
+import type { Credencial } from '@/types/training';
+
 
 interface CardCredencialProps {
     credencial: Credencial;

@@ -8,8 +8,9 @@ import { Calendar, Clock, ArrowLeft, User, Tag } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import ShareButtons from '@/components/blog/ShareButtons';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-    const post = blogPosts.find((p) => p.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+    const resolvedParams = await params;
+    const post = blogPosts.find((p) => p.slug === resolvedParams.slug);
     if (!post) return { title: 'Post no encontrado' };
 
     return {
@@ -18,8 +19,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-    const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+    const resolvedParams = await params;
+    const post = blogPosts.find((p) => p.slug === resolvedParams.slug);
 
     if (!post) {
         notFound();

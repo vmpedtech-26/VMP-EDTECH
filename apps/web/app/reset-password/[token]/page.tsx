@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
@@ -9,12 +9,13 @@ import { useRouter } from 'next/navigation';
 
 
 interface ResetPasswordPageProps {
-    params: {
+    params: Promise<{
         token: string;
-    };
+    }>;
 }
 
 export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
+    const resolvedParams = React.use(params);
     const router = useRouter();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -48,7 +49,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
 
         try {
             await api.post('/auth/reset-password', {
-                token: params.token,
+                token: resolvedParams.token,
                 new_password: newPassword,
             });
 

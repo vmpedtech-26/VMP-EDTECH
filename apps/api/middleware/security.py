@@ -23,7 +23,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
     
     async def dispatch(self, request: Request, call_next: Callable):
-        print(f"DEBUG: SecurityHeadersMiddleware executing for {request.url}")
         response = await call_next(request)
         # Headers de seguridad
         response.headers["X-Content-Type-Options"] = "nosniff"

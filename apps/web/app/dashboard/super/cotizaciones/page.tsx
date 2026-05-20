@@ -134,7 +134,7 @@ export default function CotizacionesPage() {
             setStatusToUpdate(null);
         } catch (err) {
             console.error('Error updating status:', err);
-            alert('Error al actualizar el estado. Intenta nuevamente.: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al actualizar el estado. Intenta nuevamente.: ' + (err instanceof Error ? err.message : String(err)));
         } finally {
             setIsUpdatingStatus(false);
         }

@@ -196,8 +196,7 @@ async def obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True,
-            "tareasPracticas": True
+            "preguntas": True
         }
     )
     
@@ -284,8 +283,7 @@ async def admin_obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True,
-            "tareasPracticas": True
+            "preguntas": True
         }
     )
     
@@ -343,21 +341,9 @@ async def actualizar_modulo(
                 }
             )
             
-    # 3. Si se envían tareas
-    if data.tareasPracticas is not None:
-        await prisma.tareapractica.delete_many(where={"moduloId": moduloId})
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": moduloId,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
-            
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
-        include={"preguntas": True, "tareasPracticas": True}
+        include={"preguntas": True}
     )
     
     if modulo and modulo.preguntas:
