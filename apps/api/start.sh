@@ -18,6 +18,10 @@ else
     echo "⚠️ DATABASE_URL not set, skipping sync."
 fi
 
-# 3. Start the application
+# 3. Start Celery worker in background (if needed)
+echo "⚙️ Starting Celery worker in background..."
+celery -A core.celery_app worker --loglevel=info &
+
+# 4. Start the application
 echo "📡 Starting Uvicorn on port ${PORT:-8000}..."
 exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --proxy-headers --forwarded-allow-ips="*"
