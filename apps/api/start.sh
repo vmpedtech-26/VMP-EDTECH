@@ -24,4 +24,8 @@ celery -A core.celery_app worker --loglevel=info &
 
 # 4. Start the application
 echo "📡 Starting Uvicorn on port ${PORT:-8000}..."
-exec uvicorn main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1 --proxy-headers --forwarded-allow-ips="*"
+uvicorn main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1 --proxy-headers --forwarded-allow-ips="*" > crash.log 2>&1
+
+# 5. If Uvicorn crashes, start the fallback server so we can read crash.log!
+echo "⚠️ Uvicorn crashed! Starting fallback server to serve crash.log..."
+python fallback_server.py
