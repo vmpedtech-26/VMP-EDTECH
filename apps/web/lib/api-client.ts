@@ -12,12 +12,12 @@ export const API_URL = (() => {
         
         // If we are on the production domain
         if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
-            url = 'https://web-production-1b0066.up.railway.app';
+            url = 'https://vmp-edtech-production.up.railway.app';
             console.log(`[API-CLIENT] FORCED Production API URL: ${url}`);
         } else if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
             // Other cloud environments (Vercel previews, etc)
             if (url.includes('localhost') || url.includes('127.0.0.1')) {
-                url = 'https://web-production-1b0066.up.railway.app';
+                url = 'https://vmp-edtech-production.up.railway.app';
                 console.log(`[API-CLIENT] AUTO-DETECTED Production API URL: ${url}`);
             } else {
                 url = url.replace('http://', 'https://');
