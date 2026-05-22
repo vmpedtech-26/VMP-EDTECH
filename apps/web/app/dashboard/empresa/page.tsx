@@ -11,8 +11,8 @@ interface EmployeeMetric {
     nombre: string;
     apellido: string;
     dni: string;
-    active_courses: int;
-    completed_courses: int;
+    active_courses: number;
+    completed_courses: number;
     credenciales: any[];
 }
 

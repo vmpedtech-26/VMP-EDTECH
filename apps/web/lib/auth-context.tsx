@@ -8,7 +8,7 @@ interface User {
     email: string;
     nombre: string;
     apellido: string;
-    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN';
+    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'SUPERVISOR';
     dni: string;
     empresaId?: string;
 }
