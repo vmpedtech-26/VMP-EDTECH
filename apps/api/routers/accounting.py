@@ -219,19 +219,36 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
     try:
         contents = await file.read()
         
-        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI ---
+        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI + MARKITDOWN ---
         gemini_key = os.environ.get("GEMINI_API_KEY")
         if gemini_key:
             try:
                 import google.generativeai as genai
                 import json
+                import tempfile
+                import os
+                from markitdown import MarkItDown
+                
+                # Convertir el archivo a Markdown con MarkItDown
+                file_ext = os.path.splitext(file.filename)[1].lower() if file.filename else ".pdf"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp:
+                    tmp.write(contents)
+                    tmp_path = tmp.name
+                    
+                try:
+                    md_converter = MarkItDown()
+                    result = md_converter.convert(tmp_path)
+                    document_markdown = result.text_content
+                finally:
+                    os.unlink(tmp_path)
+                
                 genai.configure(api_key=gemini_key)
-                # Usar Gemini 1.5 Flash que procesa PDFs e Imágenes a alta velocidad
+                # Usar Gemini 1.5 Flash
                 model = genai.GenerativeModel('gemini-1.5-flash')
-                prompt = """
+                prompt = f"""
                 Extrae los datos de esta factura contable en formato JSON estricto, sin bloques de código markdown ni texto adicional.
                 Estructura exacta requerida:
-                {
+                {{
                     "proveedor": "Nombre o Razón Social del emisor",
                     "cuit": "CUIT del emisor con guiones (XX-XXXXXXXX-X)",
                     "numero": "Punto de Venta y Número (Ej: 00001-00001234)",
@@ -239,30 +256,30 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                     "subtotal": Importe Neto Gravado (Float),
                     "iva": Total de impuestos IVA (Float),
                     "total": Importe Total de la factura (Float),
-                    "categoria": Clasifica como "SERVICIOS" (honorarios, abonos, alquileres), "IMPUESTOS" (tasas, afip, iibb), "SUELDOS" (recibos) u "OTROS" (bienes, compras varias),
+                    "categoria": Clasifica como "SERVICIOS", "IMPUESTOS", "SUELDOS" u "OTROS",
                     "metodoPago": "TRANSFERENCIA" o "EFECTIVO",
                     "items": [
-                        {
+                        {{
                             "descripcion": "Descripción del artículo o servicio",
                             "cantidad": Numero Float,
                             "precioUnit": Numero Float,
                             "subtotal": Numero Float
-                        }
+                        }}
                     ]
-                }
+                }}
                 IMPORTANTE: Extrae TODOS los ítems detallados de la factura dentro del array 'items'.
+                
+                Contenido de la factura (Convertida a Markdown):
+                {document_markdown}
                 """
-                response = model.generate_content([
-                    {"mime_type": "application/pdf", "data": contents},
-                    prompt
-                ])
+                response = model.generate_content(prompt)
                 json_str = response.text.replace('```json', '').replace('```', '').strip()
                 data = json.loads(json_str)
                 # Validaciones básicas del output de Gemini
                 if "proveedor" in data and "items" in data:
                     return data
             except Exception as e:
-                print(f"Error procesando con Gemini AI, haciendo fallback tradicional: {e}")
+                print(f"Error procesando con Gemini AI/MarkItDown, haciendo fallback tradicional: {e}")
         
         # --- OPCION B: EXTRACTION TRADICIONAL (FALLBACK) ---
         pdf_file = io.BytesIO(contents)
