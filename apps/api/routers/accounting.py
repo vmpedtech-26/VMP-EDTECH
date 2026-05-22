@@ -233,59 +233,53 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
     try:
         contents = await file.read()
         
-        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI + MARKITDOWN ---
+        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI NATIVA ---
         gemini_key = os.environ.get("GEMINI_API_KEY")
         if gemini_key:
             try:
                 import google.generativeai as genai
-                import tempfile
-                from markitdown import MarkItDown
-                
-                # Convertir el archivo a Markdown con MarkItDown
-                file_ext = os.path.splitext(file.filename)[1].lower() if file.filename else ".pdf"
-                with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp:
-                    tmp.write(contents)
-                    tmp_path = tmp.name
-                    
-                try:
-                    md_converter = MarkItDown()
-                    result = md_converter.convert(tmp_path)
-                    document_markdown = result.text_content
-                finally:
-                    os.unlink(tmp_path)
                 
                 genai.configure(api_key=gemini_key)
                 # Usar Gemini 2.5 Flash
                 model = genai.GenerativeModel('gemini-2.5-flash')
                 prompt = f"""
-                Extrae los datos de esta factura contable en formato JSON estricto, sin bloques de código markdown ni texto adicional.
-                Estructura exacta requerida:
+                Eres un auditor contable experto. Tu única tarea es extraer los datos reales de esta factura a partir del documento adjunto.
+                REGLA CRÍTICA DE ORO: ¡NO INVENTES NINGÚN DATO! Si un dato no está explícitamente en el documento, usa un string vacío "" (o 0 para números). NUNCA uses nombres genéricos como "Librería" o "Proveedor" si no aparecen.
+                
+                Extrae los datos en este formato JSON exacto:
                 {{
-                    "proveedor": "Nombre o Razón Social del emisor",
+                    "proveedor": "Nombre o Razón Social exacta del emisor",
                     "cuit": "CUIT del emisor con guiones (XX-XXXXXXXX-X)",
                     "numero": "Punto de Venta y Número (Ej: 00001-00001234)",
                     "fecha": "Fecha en formato YYYY-MM-DD",
-                    "subtotal": Importe Neto Gravado (Float),
-                    "iva": Total de impuestos IVA (Float),
-                    "total": Importe Total de la factura (Float),
-                    "categoria": Clasifica como "SERVICIOS", "IMPUESTOS", "SUELDOS" u "OTROS",
+                    "subtotal": Importe Neto Gravado (Float, usa 0 si no existe),
+                    "iva": Total de impuestos IVA (Float, usa 0 si no existe),
+                    "total": Importe Total de la factura (Float, usa 0 si no existe),
+                    "categoria": Clasifica obligatoriamente como "SERVICIOS", "IMPUESTOS", "SUELDOS" u "OTROS",
                     "metodoPago": "TRANSFERENCIA" o "EFECTIVO",
                     "items": [
                         {{
-                            "descripcion": "Descripción del artículo o servicio",
+                            "descripcion": "Descripción exacta del artículo o servicio",
                             "cantidad": Numero Float,
                             "precioUnit": Numero Float,
                             "subtotal": Numero Float
                         }}
                     ]
                 }}
-                IMPORTANTE: Extrae TODOS los ítems detallados de la factura dentro del array 'items'.
-                
-                Contenido de la factura (Convertida a Markdown):
-                {document_markdown}
+                IMPORTANTE: Extrae TODOS los ítems detallados de la factura dentro del array 'items'. Si no hay ítems detallados, devuelve un array vacío [].
                 """
-                response = model.generate_content(prompt)
-                json_str = response.text.replace('```json', '').replace('```', '').strip()
+                
+                # Pasar el archivo PDF directamente como blob a Gemini (soporta OCR nativo y layout visual)
+                response = model.generate_content(
+                    [
+                        {"mime_type": "application/pdf", "data": contents},
+                        prompt
+                    ],
+                    generation_config=genai.types.GenerationConfig(
+                        response_mime_type="application/json"
+                    )
+                )
+                json_str = response.text.strip()
                 data = json.loads(json_str)
                 # Validaciones básicas del output de Gemini
                 if "proveedor" in data and "items" in data:
