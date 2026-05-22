@@ -58,7 +58,7 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         headers['Content-Type'] = 'application/json';
     }
 
-    const timeout = options.timeout || 15000;
+    const timeout = options.timeout || 60000;
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
