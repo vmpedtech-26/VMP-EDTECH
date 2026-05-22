@@ -224,9 +224,7 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
         if gemini_key:
             try:
                 import google.generativeai as genai
-                import json
                 import tempfile
-                import os
                 from markitdown import MarkItDown
                 
                 # Convertir el archivo a Markdown con MarkItDown
