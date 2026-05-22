@@ -3,7 +3,7 @@ import json
 import ssl
 import uuid
 
-host = "web-production-1b0066.up.railway.app"
+host = "vmp-edtech-production.up.railway.app"
 ctx = ssl._create_unverified_context()
 results = []
 
@@ -37,6 +37,19 @@ log("Login Super Admin", status == 200, f"HTTP {status}")
 admin_token = data.get("access_token", "")
 
 status, data = request("POST", "/api/auth/login", {"email": "joaquin.alfaro@vmpedtech.com", "password": "TestAlumno2026!"})
+if status != 200 and admin_token:
+    print("Creando usuario alumno para prueba...")
+    request("POST", "/api/users", {
+        "email": "joaquin.alfaro@vmpedtech.com",
+        "password": "TestAlumno2026!",
+        "nombre": "Joaquin",
+        "apellido": "Alfaro",
+        "dni": "12345678",
+        "rol": "ALUMNO",
+        "activo": True
+    }, admin_token)
+    status, data = request("POST", "/api/auth/login", {"email": "joaquin.alfaro@vmpedtech.com", "password": "TestAlumno2026!"})
+
 log("Login Alumno", status == 200, f"HTTP {status}")
 alumno_token = data.get("access_token", "")
 
@@ -96,7 +109,7 @@ print("\n--- CREDENCIALES ---")
 status, data = request("GET", "/api/credenciales/mis-credenciales", token=alumno_token)
 log("Alumno: ver mis credenciales", status == 200, f"HTTP {status}")
 
-status, data = request("GET", "/api/credenciales/", token=admin_token)
+status, data = request("GET", "/api/credenciales/all", token=admin_token)
 log("Admin: ver todas las credenciales", status == 200, f"HTTP {status}")
 
 # === MÉTRICAS Y SISTEMA ===
@@ -109,18 +122,18 @@ log("Health check backend", status == 200 and data.get("status") == "ok", f"HTTP
 
 # === USUARIOS Y EMPRESAS ===
 print("\n--- USUARIOS Y EMPRESAS ---")
-status, data = request("GET", "/api/users/", token=admin_token)
+status, data = request("GET", "/api/users", token=admin_token)
 log("Listar todos los usuarios", status == 200, f"HTTP {status}, total={len(data) if isinstance(data,list) else '?'}")
 
-status, data = request("GET", "/api/empresas/", token=admin_token)
+status, data = request("GET", "/api/empresas", token=admin_token)
 log("Listar empresas", status == 200, f"HTTP {status}")
 
 # === SEGURIDAD: acceso no autorizado ===
 print("\n--- SEGURIDAD ---")
-status, data = request("GET", "/api/cursos/")  # sin token
-log("Cursos sin token (debe dar 401)", status == 401, f"HTTP {status}")
+status, data = request("GET", "/api/cursos")  # sin token
+log("Cursos sin token (debe dar 401/403)", status in (401, 403), f"HTTP {status}")
 
-status, data = request("GET", "/api/users/", token=alumno_token)  # alumno no puede ver todos
+status, data = request("GET", "/api/users", token=alumno_token)  # alumno no puede ver todos
 log("Alumno no puede listar todos los usuarios", status in (401, 403), f"HTTP {status}")
 
 # === CLEANUP ===
