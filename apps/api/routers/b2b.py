@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel
 from auth.dependencies import get_current_user
 from core.database import prisma
@@ -43,10 +43,7 @@ async def get_b2b_dashboard(current_user=Depends(get_current_user)):
 
     employee_data = []
 
-    thirty_days = datetime.now() + timedelta(days=30) if 'timedelta' in globals() else None
-
-    import datetime as dt
-    thirty_days = dt.datetime.now() + dt.timedelta(days=30)
+    thirty_days = datetime.now() + timedelta(days=30)
 
     for emp in empleados:
         emp_active = 0
@@ -64,7 +61,7 @@ async def get_b2b_dashboard(current_user=Depends(get_current_user)):
         for cred in emp.credenciales:
             is_expiring = False
             if cred.fechaVencimiento:
-                if dt.datetime.now() < cred.fechaVencimiento <= thirty_days:
+                if datetime.now() < cred.fechaVencimiento <= thirty_days:
                     expiring_credentials += 1
                     is_expiring = True
             
