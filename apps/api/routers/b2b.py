@@ -176,7 +176,7 @@ async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_
     asignados = 0
     ya_existian = 0
     
-    for al en alumnos:
+    for al in alumnos:
         existing = await prisma.inscripcion.find_unique(
             where={
                 "alumnoId_cursoId": {

@@ -10,7 +10,7 @@ celery_app = Celery(
     "vmp_tasks",
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL,
-    include=["workers.pdf_tasks", "workers.cron_jobs"]
+    include=["workers.cron_jobs"]
 )
 
 celery_app.conf.update(
