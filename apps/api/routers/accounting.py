@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 import re
 import io
+import os
+import json
 from pypdf import PdfReader
 from typing import List, Optional
 from schemas.accounting import (
