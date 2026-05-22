@@ -1,0 +1,188 @@
+{
+  "name": "VMP | Onboarding B2B Enterprise",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vmp-company-onboarded",
+        "responseMode": "onReceived",
+        "options": { "allowedOrigins": "*" }
+      },
+      "id": "webhook-onboard",
+      "name": "Webhook - Empresa Onboarded",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "vmp-company-onboarded"
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\nconst secret = $env.VMP_WEBHOOK_SECRET || 'vmp-n8n-default-secret-change-me';\nconst signature = $input.first().headers['x-vmp-signature'] || '';\nconst body = JSON.stringify($input.first().body);\nconst expected = 'sha256=' + crypto.createHmac('sha256', secret).update(body).digest('hex');\n\nif (signature && expected !== signature) {\n  throw new Error('Firma HMAC inválida');\n}\n\nconst company = $input.first().body.data;\nreturn [{ json: { \n  ...company,\n  isPremium: (company.cantidad_alumnos || 0) >= 50\n}}];"
+      },
+      "id": "verify-onboard",
+      "name": "Verificar Firma & Clasificar",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.brevo.com/v3/contacts",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "email", "value": "={{ $json.empresa_email }}" },
+            { "name": "attributes", "value": "={{ JSON.stringify({ FIRSTNAME: $json.empresa_nombre, EMPRESA: $json.empresa_nombre, CUIT: $json.empresa_cuit, ALUMNOS: $json.cantidad_alumnos, CURSO: $json.curso, VMP_CLIENTE: 'Si' }) }}" },
+            { "name": "listIds", "value": "[3]" }
+          ]
+        }
+      },
+      "id": "brevo-add-contact",
+      "name": "Brevo — Agregar a Audiencia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "bienvenida@vmp-edtech.com",
+        "toEmail": "={{ $json.empresa_email }}",
+        "subject": "Bienvenido a VMP EDTECH — Tu capacitación ya comenzó 🚀",
+        "emailType": "html",
+        "message": "=<div style='font-family:sans-serif;max-width:600px;margin:auto;padding:20px'>\n<img src='https://vmp-edtech.com/logo.png' width='150' alt='VMP EDTECH'>\n<h1 style='color:#1e3a5f'>¡Bienvenidos, equipo de {{ $json.empresa_nombre }}! 🎉</h1>\n<p>Nos complace confirmar que la inscripción de tus colaboradores fue procesada exitosamente.</p>\n<div style='background:#f0f7ff;border-radius:8px;padding:20px;margin:20px 0'>\n<h3>Resumen de tu plan:</h3>\n<p>📚 <strong>Curso:</strong> {{ $json.curso }}</p>\n<p>👥 <strong>Alumnos inscriptos:</strong> {{ $json.cantidad_alumnos }}</p>\n<p>🏢 <strong>Empresa:</strong> {{ $json.empresa_nombre }}</p>\n</div>\n<p>En los próximos días recibirás:</p>\n<ul><li>✅ Acceso a la plataforma para todos tus colaboradores</li><li>✅ Guía de uso del panel de empresa</li><li>✅ Contacto de tu instructor asignado</li></ul>\n<a href='https://vmp-edtech.com/dashboard/empresa' style='background:#1e3a5f;color:white;padding:14px 28px;border-radius:6px;text-decoration:none;display:inline-block;margin-top:10px'>Ir al Panel de Empresa</a>\n<p style='margin-top:30px;color:#999;font-size:12px'>VMP EDTECH — Capacitación Profesional para Conductores</p>\n</div>"
+      },
+      "id": "welcome-email-day1",
+      "name": "Email Bienvenida (Día 1)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [910, 300]
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "wait-3",
+      "name": "Esperar 3 días",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "soporte@vmp-edtech.com",
+        "toEmail": "={{ $json.empresa_email }}",
+        "subject": "¿Cómo va el progreso de tu equipo? — VMP EDTECH",
+        "emailType": "html",
+        "message": "=<h2>Hola equipo {{ $json.empresa_nombre }},</h2><p>Han pasado 3 días desde que comenzaron. ¿Cómo están progresando?</p><p>Podés ver el avance de cada colaborador en tiempo real desde tu panel:</p><a href='https://vmp-edtech.com/dashboard/empresa/colaboradores'>Ver Progreso del Equipo</a><p>Estamos a tu disposición para cualquier consulta.</p>"
+      },
+      "id": "email-day3",
+      "name": "Email Check-in (Día 3)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1350, 300]
+    },
+    {
+      "parameters": {
+        "amount": 4,
+        "unit": "days"
+      },
+      "id": "wait-4-more",
+      "name": "Esperar 4 días más",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1570, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "certificaciones@vmp-edtech.com",
+        "toEmail": "={{ $json.empresa_email }}",
+        "subject": "¡Última semana! Asegurá que tu equipo complete el curso 🏁",
+        "emailType": "html",
+        "message": "=<h2>¡Ya es la semana decisiva, {{ $json.empresa_nombre }}!</h2><p>Tu equipo está en la recta final del curso. Recordales que completen todos los módulos para obtener su credencial oficial.</p><p>Las credenciales son enviadas automáticamente al completar el curso, tanto por email como por WhatsApp.</p><a href='https://vmp-edtech.com/dashboard/empresa/colaboradores'>Ver Estado del Equipo</a>"
+      },
+      "id": "email-day7",
+      "name": "Email Urgencia (Día 7)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1790, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [{ "value1": "={{ $json.isPremium }}", "value2": true }]
+        }
+      },
+      "id": "is-premium",
+      "name": "¿Es Premium (≥50)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [910, 500]
+    },
+    {
+      "parameters": {
+        "url": "https://api.notion.com/v1/pages",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.NOTION_API_KEY }}" },
+            { "name": "Notion-Version", "value": "2022-06-28" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ parent: { database_id: $env.NOTION_SOPORTE_DB_ID }, properties: { Name: { title: [{ text: { content: 'Cliente Premium: ' + $json.empresa_nombre } }] }, Estado: { select: { name: 'Nuevo' } }, Empresa: { rich_text: [{ text: { content: $json.empresa_nombre } }] }, Email: { email: $json.empresa_email }, Alumnos: { number: $json.cantidad_alumnos }, Prioridad: { select: { name: 'Alta' } } } }) }}"
+      },
+      "id": "notion-premium",
+      "name": "Notion — Ticket Soporte Premium",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1130, 500]
+    }
+  ],
+  "connections": {
+    "Webhook - Empresa Onboarded": {
+      "main": [[{ "node": "Verificar Firma & Clasificar", "type": "main", "index": 0 }]]
+    },
+    "Verificar Firma & Clasificar": {
+      "main": [[
+        { "node": "Brevo — Agregar a Audiencia", "type": "main", "index": 0 },
+        { "node": "¿Es Premium (≥50)?", "type": "main", "index": 0 }
+      ]]
+    },
+    "Brevo — Agregar a Audiencia": {
+      "main": [[{ "node": "Email Bienvenida (Día 1)", "type": "main", "index": 0 }]]
+    },
+    "Email Bienvenida (Día 1)": {
+      "main": [[{ "node": "Esperar 3 días", "type": "main", "index": 0 }]]
+    },
+    "Esperar 3 días": {
+      "main": [[{ "node": "Email Check-in (Día 3)", "type": "main", "index": 0 }]]
+    },
+    "Email Check-in (Día 3)": {
+      "main": [[{ "node": "Esperar 4 días más", "type": "main", "index": 0 }]]
+    },
+    "Esperar 4 días más": {
+      "main": [[{ "node": "Email Urgencia (Día 7)", "type": "main", "index": 0 }]]
+    },
+    "¿Es Premium (≥50)?": {
+      "main": [
+        [{ "node": "Notion — Ticket Soporte Premium", "type": "main", "index": 0 }],
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "VMP-EDTECH" }]
+}

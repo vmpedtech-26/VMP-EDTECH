@@ -6,6 +6,7 @@ from prisma import Prisma
 import logging
 from core.security_utils import sanitize_data
 from middleware.security import rate_limit_public
+from services.webhook_service import emit, WebhookEvent
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -158,6 +159,22 @@ async def create_cotizacion(
         except Exception as email_error:
             # No fallar la creación si los emails fallan
             logger.error(f"Error enviando emails para cotización {new_cotizacion.id}: {str(email_error)}")
+        
+        # ── Disparar evento hacia n8n (no bloqueante) ──
+        await emit(WebhookEvent.LEAD_CREATED, {
+            "id":               new_cotizacion.id,
+            "empresa":          new_cotizacion.empresa,
+            "nombre":           new_cotizacion.nombre,
+            "email":            new_cotizacion.email,
+            "telefono":         new_cotizacion.telefono,
+            "quantity":         new_cotizacion.quantity,
+            "course":           new_cotizacion.course,
+            "modality":         new_cotizacion.modality,
+            "totalPrice":       new_cotizacion.totalPrice,
+            "pricePerStudent":  new_cotizacion.pricePerStudent,
+            "discount":         new_cotizacion.discount,
+            "priority":         "HIGH" if new_cotizacion.quantity >= 30 else "NORMAL",
+        })
         
         return new_cotizacion
         
@@ -503,6 +520,17 @@ async def convert_cotizacion_to_client(
             logger.error(f"Error enviando email de bienvenida: {str(email_error)}")
             # No fallar la conversión si el email falla
         
+        # ── Disparar evento company.onboarded hacia n8n ──
+        await emit(WebhookEvent.COMPANY_ONBOARDED, {
+            "empresa_id":       empresa.id,
+            "empresa_nombre":   empresa.nombre,
+            "empresa_email":    empresa.email,
+            "empresa_cuit":     empresa.cuit,
+            "cantidad_alumnos": cantidad_alumnos,
+            "curso":            curso.nombre,
+            "cotizacion_id":    cotizacion_id,
+        })
+
         # 9. Retornar resultado
         return {
             "empresa": {

@@ -64,6 +64,15 @@ class Settings(BaseSettings):
     EMAIL_VENTAS: str = "ventas@vmp-edtech.com"
     ADMIN_URL: str = "http://localhost:3000"
     
+    # ─── n8n Automation Engine ────────────────────────────────────────────────
+    # URL del webhook raíz de n8n (ej: https://n8n.railway.app/webhook/vmp)
+    # Si está vacío, todos los eventos se descartarán silenciosamente.
+    N8N_WEBHOOK_URL: str = os.environ.get("N8N_WEBHOOK_URL", "")
+    
+    # Secret compartido entre la API y n8n para firmar payloads con HMAC-SHA256.
+    # Generar con: python3 -c "import secrets; print(secrets.token_hex(32))"
+    N8N_WEBHOOK_SECRET: str = os.environ.get("N8N_WEBHOOK_SECRET", "vmp-n8n-default-secret-change-me")
+    
     # Monitoring
     SENTRY_DSN: str = ""
 

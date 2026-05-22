@@ -9,6 +9,7 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
 from services.credential_validator import credential_validator
+from services.webhook_service import emit, WebhookEvent
 from pydantic import BaseModel
 
 
@@ -137,13 +138,35 @@ async def generar_credencial_manual(
             emisor_id=current_user.id,
             force=False
         )
+        cred = result["credencial"]
+        already_existed = result.get("already_existed", False)
+
+        # ── Disparar evento credential.issued (solo si es nueva) ──
+        if not already_existed:
+            alumno = await prisma.user.find_unique(
+                where={"id": data.alumnoId},
+                include={"empresa": True}
+            )
+            await emit(WebhookEvent.CREDENTIAL_ISSUED, {
+                "credencial_id":     cred.id,
+                "credencial_numero": cred.numero,
+                "pdf_url":           result.get("pdfUrl", ""),
+                "alumno_id":         data.alumnoId,
+                "alumno_nombre":     f"{alumno.nombre} {alumno.apellido}" if alumno else "",
+                "alumno_email":      alumno.email if alumno else "",
+                "alumno_telefono":   alumno.telefono if alumno else "",
+                "empresa_nombre":    alumno.empresa.nombre if (alumno and alumno.empresa) else None,
+                "curso_id":          data.cursoId,
+                "emitida_por":       current_user.email,
+            })
+
         return {
-            "message": "Credencial ya existía" if result.get("already_existed") else "Credencial generada exitosamente",
+            "message": "Credencial ya existía" if already_existed else "Credencial generada exitosamente",
             "credencial": {
-                "id": result["credencial"].id,
-                "numero": result["credencial"].numero,
-                "pdfUrl": result["pdfUrl"],
-                "already_existed": result.get("already_existed", False)
+                "id":            cred.id,
+                "numero":        cred.numero,
+                "pdfUrl":        result["pdfUrl"],
+                "already_existed": already_existed
             }
         }
     except ValueError as e:

@@ -1,0 +1,132 @@
+{
+  "name": "VMP | Factura por Email → Contabilidad",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "limit": 10,
+        "filters": {
+          "q": "has:attachment filename:pdf newer_than:1d"
+        },
+        "options": {
+          "downloadAttachments": true,
+          "attachmentPrefix": "invoice_"
+        }
+      },
+      "id": "gmail-trigger",
+      "name": "Gmail — Buscar Facturas",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "__GMAIL_CREDENTIAL_ID__",
+          "name": "Gmail VMP Facturas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $binary ? Object.keys($binary).length : 0 }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "has-pdf",
+      "name": "¿Tiene PDF adjunto?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Convertir el PDF binario a base64\nconst items = [];\nfor (const item of $input.all()) {\n  const binaryKeys = Object.keys(item.binary || {});\n  for (const key of binaryKeys) {\n    if (item.binary[key].mimeType === 'application/pdf' || key.toLowerCase().includes('pdf')) {\n      const base64 = item.binary[key].data;\n      items.push({\n        json: {\n          pdf_base64: base64,\n          filename: item.binary[key].fileName || 'factura.pdf',\n          sender_email: item.json.from || '',\n          subject: item.json.subject || '',\n          received_at: item.json.date || new Date().toISOString()\n        }\n      });\n    }\n  }\n}\nreturn items.length > 0 ? items : $input.all();"
+      },
+      "id": "extract-pdf",
+      "name": "Extraer PDF como Base64",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [690, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Generar firma HMAC para el request hacia VMP API\nconst crypto = require('crypto');\nconst secret = $env.VMP_WEBHOOK_SECRET || 'vmp-n8n-default-secret-change-me';\nconst body = JSON.stringify($input.first().json);\nconst signature = 'sha256=' + crypto.createHmac('sha256', secret).update(body).digest('hex');\nreturn [{ json: { ...$input.first().json, _signature: signature } }];"
+      },
+      "id": "sign-request",
+      "name": "Firmar Request (HMAC)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [910, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://vmp-servicios-production.up.railway.app/api/automation/invoice-email",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-VMP-Signature", "value": "={{ $json._signature }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "pdf_base64", "value": "={{ $json.pdf_base64 }}" },
+            { "name": "filename", "value": "={{ $json.filename }}" },
+            { "name": "sender_email", "value": "={{ $json.sender_email }}" },
+            { "name": "subject", "value": "={{ $json.subject }}" },
+            { "name": "received_at", "value": "={{ $json.received_at }}" }
+          ]
+        }
+      },
+      "id": "call-vmp-api",
+      "name": "POST → VMP API /automation/invoice-email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1130, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@vmp-edtech.com",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "✅ Factura procesada automáticamente — {{ $json.filename }}",
+        "emailType": "html",
+        "message": "=<h3>Factura procesada por IA</h3><p><strong>Archivo:</strong> {{ $json.filename }}</p><p><strong>Remitente:</strong> {{ $json.sender_email }}</p><p>La factura fue procesada y registrada en el sistema de contabilidad de VMP EDTECH.</p><p><a href='https://vmp-edtech.vercel.app/dashboard/super/contabilidad'>Ver Contabilidad</a></p>"
+      },
+      "id": "notify-admin",
+      "name": "Notificar Admin",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1350, 200]
+    }
+  ],
+  "connections": {
+    "Gmail — Buscar Facturas": {
+      "main": [[{ "node": "¿Tiene PDF adjunto?", "type": "main", "index": 0 }]]
+    },
+    "¿Tiene PDF adjunto?": {
+      "main": [
+        [{ "node": "Extraer PDF como Base64", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Extraer PDF como Base64": {
+      "main": [[{ "node": "Firmar Request (HMAC)", "type": "main", "index": 0 }]]
+    },
+    "Firmar Request (HMAC)": {
+      "main": [[{ "node": "POST → VMP API /automation/invoice-email", "type": "main", "index": 0 }]]
+    },
+    "POST → VMP API /automation/invoice-email": {
+      "main": [[{ "node": "Notificar Admin", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "VMP-EDTECH" }]
+}

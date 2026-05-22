@@ -15,6 +15,7 @@ from schemas.accounting import (
 from auth.dependencies import get_current_user
 from core.database import prisma
 from datetime import datetime
+from services.webhook_service import emit, WebhookEvent
 
 router = APIRouter()
 
@@ -185,6 +186,17 @@ async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_c
                     }
                 }
             )
+            # ── Disparar evento invoice.processed hacia n8n ──
+            await emit(WebhookEvent.INVOICE_PROCESSED, {
+                "compra_id":   compra.id,
+                "proveedor":   data.proveedor,
+                "numero":      data.numero,
+                "total":       data.total,
+                "categoria":   data.categoria,
+                "metodoPago":  data.metodoPago,
+                "fecha":       data.fecha.isoformat() if data.fecha else None,
+                "registrado_por": current_user.email,
+            })
             return compra
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar compra: {str(e)}")
