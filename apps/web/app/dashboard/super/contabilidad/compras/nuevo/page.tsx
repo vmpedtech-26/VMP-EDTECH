@@ -133,7 +133,7 @@ export default function NuevaCompraPage() {
             }
         } catch (error) {
             console.error(error);
-            alert('No se pudo extraer los datos de la factura de forma automática. Por favor, completa los campos manualmente.');
+            alert(`Fallo en la lectura inteligente: ${error instanceof Error ? error.message : String(error)}`);
         } finally {
             setIsParsing(false);
         }
