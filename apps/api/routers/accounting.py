@@ -279,7 +279,10 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 if "proveedor" in data and "items" in data:
                     return data
             except Exception as e:
-                print(f"Error procesando con Gemini AI/MarkItDown, haciendo fallback tradicional: {e}")
+                import traceback
+                error_trace = traceback.format_exc()
+                print(f"Error procesando con Gemini AI/MarkItDown: {error_trace}")
+                raise HTTPException(status_code=500, detail=f"Error AI: {str(e)}")
         
         # --- OPCION B: EXTRACTION TRADICIONAL (FALLBACK) ---
         pdf_file = io.BytesIO(contents)
