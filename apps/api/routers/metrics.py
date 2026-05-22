@@ -4,7 +4,7 @@ Proporciona estadísticas y datos para visualización.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Any
 from core.database import prisma
 from auth.dependencies import get_current_user
 from schemas.models import UserResponse
@@ -205,13 +205,13 @@ async def get_instructor_metrics(current_user: UserResponse = Depends(get_curren
         empresa_id = current_user.empresaId
         
         # Evidencias pendientes de revisión (de su empresa)
-        where_pendientes = {"estado": "PENDIENTE"}
+        where_pendientes: dict[str, Any] = {"estado": "PENDIENTE"}
         if empresa_id:
             where_pendientes["alumno"] = {"empresaId": empresa_id}
         pending_evidencias = await prisma.evidencia.count(where=where_pendientes)
         
         # Alumnos activos de su empresa
-        where_alumnos = {"rol": "ALUMNO"}
+        where_alumnos: dict[str, Any] = {"rol": "ALUMNO"}
         if empresa_id:
             where_alumnos["empresaId"] = empresa_id
         active_alumnos = await prisma.user.count(where=where_alumnos)
@@ -233,7 +233,7 @@ async def get_instructor_metrics(current_user: UserResponse = Depends(get_curren
             credenciales_count = await prisma.credencial.count()
         
         # Inscripciones activas de la empresa
-        where_inscripciones = {"estado": "ACTIVO"}
+        where_inscripciones: dict[str, Any] = {"estado": "ACTIVO"}
         if empresa_id:
             where_inscripciones["alumno"] = {"empresaId": empresa_id}
         inscripciones_activas = await prisma.inscripcion.count(where=where_inscripciones)

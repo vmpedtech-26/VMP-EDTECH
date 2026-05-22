@@ -5,7 +5,6 @@ import os
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/vmp"
     
     # JWT
     JWT_SECRET: str = "your-super-secret-key-change-in-production-min-32-chars"

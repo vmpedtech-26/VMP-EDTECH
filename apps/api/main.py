@@ -13,7 +13,7 @@ from middleware.db_middleware import DatabaseConnectionMiddleware
 from slowapi.errors import RateLimitExceeded
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
-from core.logging import setup_logging
+from core.logger import setup_logging
 
 from core.database import connect_db, disconnect_db
 

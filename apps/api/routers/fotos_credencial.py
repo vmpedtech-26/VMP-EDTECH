@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 from schemas.fotos_credencial import (
     FotoCredencialResponse,
@@ -249,7 +249,7 @@ async def listar_fotos_por_empresa(
         raise HTTPException(status_code=403, detail="No tienes permisos para esta empresa")
     
     # Construir filtro
-    where_clause = {"alumno": {"empresaId": empresaId}}
+    where_clause: dict[str, Any] = {"alumno": {"empresaId": empresaId}}
     if estado:
         where_clause["estado"] = estado
     

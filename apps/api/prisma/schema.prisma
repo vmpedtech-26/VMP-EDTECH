@@ -292,6 +292,7 @@ model JournalEntry {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
+  @@index([date])
   @@map("journal_entries")
 }
 
@@ -308,6 +309,8 @@ model LedgerEntry {
   
   createdAt      DateTime @default(now()) @map("created_at")
 
+  @@index([journalId])
+  @@index([accountId])
   @@map("ledger_entries")
 }
 
@@ -330,6 +333,9 @@ model Venta {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  @@index([companyId])
+  @@index([estado])
+  @@index([fecha])
   @@map("ventas")
 }
 
@@ -364,6 +370,7 @@ model Compra {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  @@index([fecha])
   @@map("compras")
 }
 
@@ -391,5 +398,7 @@ model CajaMovimiento {
   
   createdAt   DateTime @default(now()) @map("created_at")
 
+  @@index([fecha])
+  @@index([tipo])
   @@map("caja_movimientos")
 }

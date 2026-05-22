@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, EmailStr, validator
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 from prisma import Prisma
 import logging
@@ -415,9 +415,9 @@ async def convert_cotizacion_to_client(
         # Nota: prisma-client-py soporta transacciones, pero para mayor compatibilidad
         # usamos un flujo secuencial con rollback manual o manejo de estado.
         
-        alumnos_creados = []
-        inscripciones_creadas = []
-        credenciales_alumnos = []
+        alumnos_creados: list[dict[str, Any]] = []
+        inscripciones_creadas: list[dict[str, Any]] = []
+        credenciales_alumnos: list[dict[str, Any]] = []
         
         try:
             # Creamos la empresa primero

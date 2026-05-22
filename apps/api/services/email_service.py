@@ -10,7 +10,7 @@ from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import aiosmtplib
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,10 @@ class EmailService:
         
         # Setup Jinja2 for templates
         template_dir = Path(__file__).parent.parent / "templates"
-        self.jinja_env = Environment(loader=FileSystemLoader(str(template_dir)))
+        self.jinja_env = Environment(
+            loader=FileSystemLoader(str(template_dir)),
+            autoescape=select_autoescape(['html', 'xml'])
+        )
         
     async def send_email(
         self,

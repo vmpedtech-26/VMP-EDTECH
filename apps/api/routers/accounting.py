@@ -452,7 +452,7 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
             }]
         else:
             # Reconcile subtotal if we extracted items
-            calc_subtotal = sum(i["subtotal"] for i in items_extraidos)
+            calc_subtotal = sum(float(i.get("subtotal", 0.0)) for i in items_extraidos)
             if subtotal == 0.0:
                 subtotal = calc_subtotal
             if total == 0.0:
