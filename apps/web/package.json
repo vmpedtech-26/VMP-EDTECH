@@ -11,7 +11,8 @@
         "type-check": "tsc --noEmit",
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
-        "test:e2e:headed": "playwright test --headed"
+        "test:e2e:headed": "playwright test --headed",
+        "upload-n8n": "node upload-n8n.js"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.1",

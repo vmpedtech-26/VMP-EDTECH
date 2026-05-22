@@ -255,8 +255,8 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                     os.unlink(tmp_path)
                 
                 genai.configure(api_key=gemini_key)
-                # Usar Gemini 1.5 Flash
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                # Usar Gemini 2.5 Flash
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 prompt = f"""
                 Extrae los datos de esta factura contable en formato JSON estricto, sin bloques de código markdown ni texto adicional.
                 Estructura exacta requerida:
