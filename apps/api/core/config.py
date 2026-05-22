@@ -33,24 +33,20 @@ class Settings(BaseSettings):
         if self.CORS_ORIGINS:
             return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
-        # 2. Configuración por defecto basada en entorno
-        if self.ENVIRONMENT == "production":
-            return [
-                "https://vmp-edtech-next-final.vercel.app",
-                "https://vmp-edtech-web.vercel.app",
-                "https://vmp-edtech.com",
-                "https://www.vmp-edtech.com",
-                "https://api.vmp-edtech.com",
-                "https://vmpservicios.com",
-                "https://www.vmpservicios.com",
-                "https://vmp-servicios-production.up.railway.app",
-            ]
-        
+        # 2. Unificar orígenes (siempre permitir localhost y producción)
         return [
             "http://localhost:3000",
             "http://localhost:3001",
             "http://127.0.0.1:3000",
             "http://127.0.0.1:3001",
+            "https://vmp-edtech-next-final.vercel.app",
+            "https://vmp-edtech-web.vercel.app",
+            "https://vmp-edtech.com",
+            "https://www.vmp-edtech.com",
+            "https://api.vmp-edtech.com",
+            "https://vmpservicios.com",
+            "https://www.vmpservicios.com",
+            "https://vmp-servicios-production.up.railway.app",
         ]
     
     # Storage — Railway Volume mount path (/app/storage or /data/storage in production)
@@ -72,9 +68,17 @@ class Settings(BaseSettings):
     # Monitoring
     SENTRY_DSN: str = ""
 
-    # Redis & Celery
-    REDIS_URL: str = "redis://localhost:6379/0"
+    # Railway PostgreSQL Defaults
+    DATABASE_URL: str = os.environ.get(
+        "DATABASE_URL",
+        "postgresql://postgres:IwcEOvwvqqrKORJeBLRVIJFJgHlJXAlv@postgres.railway.internal:5432/railway"
+    )
     
+    # Railway Redis Defaults
+    REDIS_URL: str = os.environ.get(
+        "REDIS_URL",
+        "redis://default:NaxeRKqQcmsoQkMfloNCbNPHhIhzilEA@redis.railway.internal:6379"
+    )
     class Config:
         env_file = ".env"
 
