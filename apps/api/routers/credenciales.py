@@ -106,6 +106,21 @@ async def listar_credenciales(
     return result
 
 
+@router.delete("/{id}")
+async def eliminar_credencial(id: str, current_user=Depends(get_current_user)):
+    """Eliminar una credencial (Solo SUPER_ADMIN)"""
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="Solo administradores pueden eliminar credenciales")
+
+    credencial = await prisma.credencial.find_unique(where={"id": id})
+    if not credencial:
+        raise HTTPException(status_code=404, detail="Credencial no encontrada")
+
+    await prisma.credencial.delete(where={"id": id})
+
+    return {"status": "success", "message": "Credencial eliminada correctamente"}
+
+
 @router.get("/validar/{numero}")
 async def validar_credencial_publica(numero: str):
     """

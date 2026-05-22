@@ -9,17 +9,21 @@ import { Modulo } from '@/types/training';
 import { cursosApi } from '@/lib/api/cursos';
 import Link from 'next/link';
 
+import { QuizEditor } from '@/components/admin/QuizEditor';
+import { PracticaEditor } from '@/components/admin/PracticaEditor';
+
 export default function ModuloConfigPage() {
     const { id: cursoId, moduloId } = useParams();
     const router = useRouter();
-    const [modulo, setModulo] = useState<Modulo | null>(null);
+    const [modulo, setModulo] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         const fetchModulo = async () => {
             try {
-                const data = await cursosApi.obtenerModulo(cursoId as string, moduloId as string);
+                // Usamos la versión de ADMIN para ver respuestas y tareas
+                const data = await cursosApi.obtenerModuloAdmin(cursoId as string, moduloId as string);
                 setModulo(data);
             } catch (error) {
                 console.error('Error fetching modulo:', error);
@@ -35,13 +39,18 @@ export default function ModuloConfigPage() {
         if (!modulo) return;
         setIsSaving(true);
         try {
-            // TODO: Implement updateModulo in API
-            // For now we'll just log
-            console.log('Saving modulo content:', modulo);
-            alert('Cambios guardados correctamente (Simulado)');
+            await cursosApi.actualizarModulo(cursoId as string, moduloId as string, {
+                titulo: modulo.titulo,
+                orden: modulo.orden,
+                videoUrl: modulo.videoUrl,
+                contenidoHtml: modulo.contenidoHtml,
+                preguntas: modulo.preguntas,
+                tareasPracticas: modulo.tareasPracticas
+            });
+            alert('Cambios guardados correctamente');
         } catch (error) {
             console.error('Error saving modulo:', error);
-            alert('Error al guardar: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al guardar los cambios: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsSaving(false);
         }
@@ -59,7 +68,7 @@ export default function ModuloConfigPage() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                 <div className="flex items-center gap-4">
                     <Button variant="outline" size="sm" asChild>
                         <Link href={`/dashboard/super/cursos/${cursoId}`}>
@@ -68,10 +77,10 @@ export default function ModuloConfigPage() {
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900">{modulo.titulo}</h1>
-                        <p className="text-sm text-slate-700">Configuración de contenido - {modulo.tipo}</p>
+                        <p className="text-sm text-slate-700">Configuración de contenido • {modulo.tipo}</p>
                     </div>
                 </div>
-                <Button onClick={handleSave} disabled={isSaving}>
+                <Button onClick={handleSave} disabled={isSaving} className="px-8 shadow-lg shadow-primary/20">
                     {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                         <>
                             <Save className="h-4 w-4 mr-2" />
@@ -83,13 +92,13 @@ export default function ModuloConfigPage() {
 
             {modulo.tipo === 'TEORIA' && (
                 <div className="grid grid-cols-1 gap-6">
-                    <Card className="p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-primary font-bold">
+                    <Card className="p-6 space-y-4 border-none shadow-sm ring-1 ring-gray-100">
+                        <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
                             <Video className="h-5 w-5" />
                             Contenido Audiovisual
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-600 uppercase">URL del Video (Youtube/Vimeo)</label>
+                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">URL del Video (Youtube/Vimeo)</label>
                             <input
                                 type="text"
                                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
@@ -100,15 +109,15 @@ export default function ModuloConfigPage() {
                         </div>
                     </Card>
 
-                    <Card className="p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-primary font-bold">
+                    <Card className="p-6 space-y-4 border-none shadow-sm ring-1 ring-gray-100">
+                        <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
                             <FileText className="h-5 w-5" />
                             Material de Lectura
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-600 uppercase">Contenido HTML / Texto</label>
+                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Contenido HTML / Texto</label>
                             <textarea
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 min-h-[300px] font-mono text-sm"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 min-h-[400px] font-mono text-sm leading-relaxed"
                                 placeholder="<p>Escribe aquí el contenido del módulo...</p>"
                                 value={modulo.contenidoHtml || ''}
                                 onChange={(e) => setModulo({ ...modulo, contenidoHtml: e.target.value })}
@@ -119,27 +128,17 @@ export default function ModuloConfigPage() {
             )}
 
             {modulo.tipo === 'QUIZ' && (
-                <Card className="p-8 text-center space-y-4">
-                    <div className="h-16 w-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mx-auto">
-                        <CheckCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold">Editor de Cuestionarios</h3>
-                        <p className="text-slate-700">Pronto podrás agregar y editar las preguntas de este examen.</p>
-                    </div>
-                </Card>
+                <QuizEditor
+                    preguntas={modulo.preguntas || []}
+                    onChange={(preguntas) => setModulo({ ...modulo, preguntas })}
+                />
             )}
 
             {modulo.tipo === 'PRACTICA' && (
-                <Card className="p-8 text-center space-y-4">
-                    <div className="h-16 w-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mx-auto">
-                        <CheckCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold">Tareas Prácticas</h3>
-                        <p className="text-slate-700">Define los requerimientos que el alumno debe subir como evidencia.</p>
-                    </div>
-                </Card>
+                <PracticaEditor
+                    tareas={modulo.tareasPracticas || []}
+                    onChange={(tareasPracticas) => setModulo({ ...modulo, tareasPracticas })}
+                />
             )}
         </div>
     );

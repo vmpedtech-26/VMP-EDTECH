@@ -23,56 +23,27 @@ async def calcular_progreso_curso(alumno_id: str, curso_id: str) -> int:
     if total_modulos == 0:
         return 0
     
-    modulos_completados = 0
+    # Calculate progress using modulosCompletados from Inscripcion
+    inscripcion = await prisma.inscripcion.find_first(
+        where={
+            "alumnoId": alumno_id,
+            "cursoId": curso_id
+        }
+    )
     
-    for modulo in modulos:
-        # Verificar según tipo de módulo
-        if modulo.tipo == "TEORIA":
-            # Para teoría, verificamos si hay un registro en tareas completadas
-            # o usamos otra lógica (por ahora simplificado)
-            # TODO: Implementar tracking de módulos completados
-            pass
-            
-        elif modulo.tipo == "QUIZ":
-            # Verificar si existe examen aprobado para este módulo
-            examen = await prisma.examen.find_first(
-                where={
-                    "alumnoId": alumno_id,
-                    "cursoId": curso_id,
-                    # Falta moduloId en el schema actual de Examen
-                    # Por ahora verificamos que haya aprobado
-                    "aprobado": True
-                }
-            )
-            if examen:
-                modulos_completados += 1
-                
-        elif modulo.tipo == "PRACTICA":
-            # Verificar que todas las tareas prácticas tengan evidencias
-            tareas = await prisma.tareapractica.find_many(
-                where={"moduloId": modulo.id}
-            )
-            
-            todas_completadas = True
-            for tarea in tareas:
-                if tarea.requiereFoto:
-                    # Verificar que exista evidencia
-                    evidencia = await prisma.evidencia.find_first(
-                        where={
-                            "tareaId": tarea.id,
-                            "alumnoId": alumno_id,
-                            "estado": "APROBADA"
-                        }
-                    )
-                    if not evidencia:
-                        todas_completadas = False
-                        break
-            
-            if todas_completadas and len(tareas) > 0:
-                modulos_completados += 1
+    if not inscripcion:
+        return 0
+        
+    import json
+    try:
+        completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
+    except:
+        completados = []
+        
+    modulos_completados = len(completados)
     
     # Calcular porcentaje
-    progreso = int((modulos_completados / total_modulos) * 100)
+    progreso = int((modulos_completados / total_modulos) * 100) if total_modulos > 0 else 0
     return progreso
 
 
@@ -109,41 +80,23 @@ async def obtener_proxima_actividad(alumno_id: str, curso_id: str) -> Optional[s
         order={"orden": "asc"}
     )
     
-    for modulo in modulos:
-        # Verificar si este módulo está completado
-        # (usando la misma lógica que calcular_progreso_curso)
-        # Si no está completado, retornarlo como próxima actividad
-        
-        if modulo.tipo == "TEORIA":
-            # Simplificado: retornar como próxima si es el primero no completado
-            return f"Módulo Teórico: {modulo.titulo}"
-            
-        elif modulo.tipo == "QUIZ":
-            examen = await prisma.examen.find_first(
-                where={
-                    "alumnoId": alumno_id,
-                    "cursoId": curso_id,
-                    "aprobado": True
-                }
-            )
-            if not examen:
-                return f"Quiz: {modulo.titulo}"
-                
-        elif modulo.tipo == "PRACTICA":
-            tareas = await prisma.tareapractica.find_many(
-                where={"moduloId": modulo.id}
-            )
-            
-            for tarea in tareas:
-                if tarea.requiereFoto:
-                    evidencia = await prisma.evidencia.find_first(
-                        where={
-                            "tareaId": tarea.id,
-                            "alumnoId": alumno_id,
-                            "estado": "APROBADA"
-                        }
-                    )
-                    if not evidencia:
-                        return f"Práctica (Pendiente Aprobación): {modulo.titulo}"
+    inscripcion = await prisma.inscripcion.find_first(
+        where={
+            "alumnoId": alumno_id,
+            "cursoId": curso_id
+        }
+    )
     
+    import json
+    completados = []
+    if inscripcion and inscripcion.modulosCompletados:
+        try:
+            completados = json.loads(inscripcion.modulosCompletados)
+        except:
+            pass
+
+    for modulo in modulos:
+        if modulo.id not in completados:
+            return f"Pendiente: Módulo {modulo.orden} - {modulo.titulo}"
+            
     return None

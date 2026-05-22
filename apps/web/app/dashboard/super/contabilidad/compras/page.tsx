@@ -10,7 +10,9 @@ import {
     TrendingDown,
     Truck,
     DollarSign,
-    MoreHorizontal
+    MoreHorizontal,
+    Loader2,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -18,10 +20,15 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { accountingApi } from '@/lib/api/accounting';
 
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { toast } from 'sonner';
+
 export default function ComprasPage() {
     const [compras, setCompras] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const fetchCompras = async () => {
         try {
@@ -38,10 +45,35 @@ export default function ComprasPage() {
         fetchCompras();
     }, []);
 
-    const filteredCompras = compras.filter(c =>
-        c.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (c.numero && c.numero.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('¿Estás seguro de que deseas eliminar esta compra? Esto también eliminará el asiento contable asociado.')) return;
+        setDeletingId(id);
+        try {
+            await accountingApi.deleteCompra(id);
+            toast.success('Compra eliminada exitosamente');
+            fetchCompras(); // Refresh
+        } catch (error) {
+            toast.error('Error al eliminar la compra');
+            console.error(error);
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const filteredCompras = React.useMemo(() => {
+        return compras.filter(c => 
+            c.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            (c.numero && c.numero.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    }, [compras, searchTerm]);
+
+    const totalGastos = React.useMemo(() => {
+        return compras.reduce((acc, c) => acc + c.total, 0);
+    }, [compras]);
+
+    const totalProveedores = React.useMemo(() => {
+        return new Set(compras.map(c => c.proveedor)).size;
+    }, [compras]);
 
     return (
         <div className="space-y-8 pb-20">
@@ -67,7 +99,7 @@ export default function ComprasPage() {
                         <div>
                             <p className="text-sm font-medium text-slate-600">Total en Gastos</p>
                             <h3 className="text-2xl font-black text-slate-900">
-                                ${compras.reduce((acc, c) => acc + c.total, 0).toLocaleString('es-AR')}
+                                ${totalGastos.toLocaleString('es-AR')}
                             </h3>
                         </div>
                     </div>
@@ -80,7 +112,7 @@ export default function ComprasPage() {
                         <div>
                             <p className="text-sm font-medium text-slate-600">Proveedores Activos</p>
                             <h3 className="text-2xl font-black text-slate-900">
-                                {new Set(compras.map(c => c.proveedor)).size}
+                                {totalProveedores}
                             </h3>
                         </div>
                     </div>
@@ -99,10 +131,6 @@ export default function ComprasPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <Button variant="outline" size="sm">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filtrar
-                    </Button>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -148,8 +176,14 @@ export default function ComprasPage() {
                                             <span className="text-sm font-black text-slate-900">${compra.total.toLocaleString('es-AR')}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
-                                                <MoreHorizontal className="h-4 w-4" />
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                className="h-8 w-8 p-0 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50" 
+                                                onClick={() => handleDelete(compra.id)}
+                                                disabled={deletingId === compra.id}
+                                            >
+                                                {deletingId === compra.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                             </Button>
                                         </td>
                                     </tr>

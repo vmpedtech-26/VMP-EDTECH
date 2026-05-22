@@ -104,27 +104,36 @@ async def enviar_quiz(
         }
     )
     
-    # Generar mensaje
+    # Generar mensaje y procesar credencial si aprueba
     credencial_info = None
     if aprobado:
         message = f"¡Felicitaciones! Aprobaste con {calificacion:.1f}%"
         
-        # ===== AUTO-GENERACIÓN DE CREDENCIAL =====
-        # Al aprobar el examen, generar credencial automáticamente
+        # 1. Agregar el módulo a modulosCompletados
         try:
-            result = await generate_credential_for_student(
-                alumno_id=current_user.id,
-                curso_id=data.cursoId,
-            )
-            if result.get("already_existed"):
-                message += " — Ya tenías una credencial para este curso."
-            else:
-                message += " — ¡Tu credencial ha sido generada!"
-                credencial_info = {
-                    "numero": result["credencial"].numero,
-                    "pdfUrl": result["pdfUrl"]
-                }
+            completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
+            if modulo.id not in completados:
+                completados.append(modulo.id)
+                await prisma.inscripcion.update(
+                    where={"id": inscripcion.id},
+                    data={"modulosCompletados": json.dumps(completados)}
+                )
+        except Exception as e:
+            print(f"[MODULOS COMPLETADOS] Error al actualizar: {e}")
             
+        # 2. Recalcular el progreso general del curso
+        from services.progreso_calculator import calcular_progreso_curso, verificar_curso_completado
+        nuevo_progreso = await calcular_progreso_curso(current_user.id, data.cursoId)
+        
+        # Actualizar el progreso en la DB
+        await prisma.inscripcion.update(
+            where={"id": inscripcion.id},
+            data={"progreso": nuevo_progreso}
+        )
+        
+        # 3. Si el curso está completado, emitir credencial
+        curso_completado = await verificar_curso_completado(current_user.id, data.cursoId)
+        if curso_completado:
             # Marcar inscripción como APROBADO
             await prisma.inscripcion.update_many(
                 where={
@@ -136,9 +145,24 @@ async def enviar_quiz(
                     "finDate": datetime.now()
                 }
             )
-        except Exception as e:
-            print(f"[CREDENCIAL AUTO-GEN] Error: {e}")
-            # No falla el quiz si falla la generación
+            
+            # ===== AUTO-GENERACIÓN DE CREDENCIAL =====
+            try:
+                result = await generate_credential_for_student(
+                    alumno_id=current_user.id,
+                    curso_id=data.cursoId,
+                )
+                if result.get("already_existed"):
+                    message += " — Ya tenías una credencial para este curso."
+                else:
+                    message += " — ¡Tu credencial ha sido generada!"
+                    credencial_info = {
+                        "numero": result["credencial"].numero,
+                        "pdfUrl": result["pdfUrl"]
+                    }
+            except Exception as e:
+                print(f"[CREDENCIAL AUTO-GEN] Error: {e}")
+                # No falla el quiz si falla la generación
     else:
         message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
     

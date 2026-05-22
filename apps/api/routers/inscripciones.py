@@ -121,7 +121,9 @@ async def inscribirse_en_curso(cursoId: str, current_user=Depends(get_current_us
         }
     )
     
-    return inscripcion
+    insc_dict = inscripcion.model_dump()
+    insc_dict["modulosCompletados"] = []
+    return insc_dict
 
 
 @router.get("/{cursoId}", response_model=InscripcionDetailResponse)
@@ -141,7 +143,14 @@ async def obtener_inscripcion(cursoId: str, current_user=Depends(get_current_use
             detail="No estás inscrito en este curso"
         )
     
-    return inscripcion
+    insc_dict = inscripcion.model_dump()
+    import json
+    try:
+        insc_dict["modulosCompletados"] = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
+    except:
+        insc_dict["modulosCompletados"] = []
+        
+    return insc_dict
 
 
 @router.post("/{cursoId}/modulos/{moduloId}/completar", response_model=CompletarModuloResponse)
@@ -170,19 +179,35 @@ async def completar_modulo(
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
     
     # Actualizar estado a EN_PROGRESO si es la primera vez
+    import json
+    
+    update_data = {}
     if inscripcion.estado == "NO_INICIADO":
+        update_data["estado"] = "EN_PROGRESO"
+        update_data["inicioDate"] = datetime.now()
+        
+    # Añadir a modulosCompletados
+    completados = []
+    try:
+        completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
+    except:
+        pass
+        
+    if moduloId not in completados:
+        completados.append(moduloId)
+        update_data["modulosCompletados"] = json.dumps(completados)
+        
+    # Guardar actualización parcial (estado y modulos)
+    if update_data:
         await prisma.inscripcion.update(
             where={"id": inscripcion.id},
-            data={
-                "estado": "EN_PROGRESO",
-                "inicioDate": datetime.now()
-            }
+            data=update_data
         )
     
-    # Calcular nuevo progreso
+    # Calcular nuevo progreso (ya leerá de la DB actualizada)
     nuevo_progreso = await calcular_progreso_curso(current_user.id, cursoId)
     
-    # Actualizar inscripción
+    # Actualizar progreso
     await prisma.inscripcion.update(
         where={"id": inscripcion.id},
         data={"progreso": nuevo_progreso}

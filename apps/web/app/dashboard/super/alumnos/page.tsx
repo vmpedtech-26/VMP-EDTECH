@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import {
     Plus,
     Users,
@@ -14,7 +15,8 @@ import {
     Loader2,
     UserCircle,
     Building2,
-    ShieldCheck
+    ShieldCheck,
+    Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -22,11 +24,15 @@ import { usersApi, UserAdmin } from '@/lib/api/users';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function AlumnosPage() {
     const [usuarios, setUsuarios] = useState<UserAdmin[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedEmpresa, setSelectedEmpresa] = useState('ALL');
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const fetchUsuarios = async () => {
         try {
@@ -46,20 +52,59 @@ export default function AlumnosPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Seguro que deseas eliminar/desactivar este alumno?')) return;
+        setDeletingId(id);
         try {
             await usersApi.eliminarUsuario(id);
+            toast.success('Alumno eliminado correctamente');
             fetchUsuarios();
         } catch (error) {
-            alert('Error al eliminar el usuario: ' + (error instanceof Error ? error.message : String(error)));
+            toast.error('Error al eliminar el usuario: ' + (error instanceof Error ? error.message : String(error)));
+        } finally {
+            setDeletingId(null);
         }
     };
 
-    const filteredUsuarios = usuarios.filter(u =>
-        u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.dni.includes(searchTerm) ||
-        u.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const uniqueEmpresas = useMemo(() => {
+        return Array.from(new Set(usuarios.map(u => u.empresa_nombre).filter(Boolean))) as string[];
+    }, [usuarios]);
+
+    const filteredUsuarios = useMemo(() => {
+        return usuarios.filter(u =>
+            (selectedEmpresa === 'ALL' || u.empresa_nombre === selectedEmpresa) &&
+            (
+                u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                u.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                u.dni.includes(searchTerm) ||
+                u.email.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        );
+    }, [usuarios, selectedEmpresa, searchTerm]);
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text('Reporte de Alumnos - VMP EDTECH', 14, 15);
+        doc.setFontSize(10);
+        doc.text(`Total de registros: ${filteredUsuarios.length}`, 14, 22);
+
+        const tableData = filteredUsuarios.map(u => [
+            `${u.nombre} ${u.apellido}`,
+            u.dni,
+            u.email,
+            u.empresa_nombre || 'Sin Empresa',
+            u.activo ? 'Activo' : 'Inactivo'
+        ]);
+
+        autoTable(doc, {
+            head: [['Alumno', 'DNI', 'Email', 'Empresa', 'Estado']],
+            body: tableData,
+            startY: 28,
+            theme: 'grid',
+            headStyles: { fillColor: [59, 130, 246] }, // primary blue
+        });
+
+        doc.save('alumnos_vmp.pdf');
+    };
 
     return (
         <div className="space-y-8 pb-20">
@@ -69,12 +114,18 @@ export default function AlumnosPage() {
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Alumnos</h1>
                     <p className="text-slate-700 text-sm">Administra los estudiantes registrados en todas las empresas.</p>
                 </div>
-                <Button className="w-full md:w-auto" asChild>
-                    <Link href="/dashboard/super/alumnos/nuevo">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nuevo Alumno
-                    </Link>
-                </Button>
+                <div className="flex w-full md:w-auto gap-3">
+                    <Button variant="outline" onClick={handleExportPDF} className="bg-white hover:bg-slate-50 flex-1 md:flex-none">
+                        <Download className="h-4 w-4 mr-2" />
+                        Exportar PDF
+                    </Button>
+                    <Button className="flex-1 md:flex-none" asChild>
+                        <Link href="/dashboard/super/alumnos/nuevo">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nuevo Alumno
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Search and filters */}
@@ -89,10 +140,21 @@ export default function AlumnosPage() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline" className="bg-white border-slate-200">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filtrar por Empresa
-                </Button>
+                <div className="relative min-w-[200px]">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">
+                        <Filter className="h-4 w-4" />
+                    </div>
+                    <select
+                        value={selectedEmpresa}
+                        onChange={(e) => setSelectedEmpresa(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 bg-white border-none rounded-xl shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-700 appearance-none cursor-pointer"
+                    >
+                        <option value="ALL">Todas las Empresas</option>
+                        {uniqueEmpresas.map(emp => (
+                            <option key={emp} value={emp}>{emp}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* List */}
@@ -152,10 +214,11 @@ export default function AlumnosPage() {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-gray-300 hover:text-red-500 h-9 w-9 p-0"
+                                    className="text-gray-300 hover:text-red-500 h-9 w-9 p-0 disabled:opacity-50"
                                     onClick={() => handleDelete(user.id)}
+                                    disabled={deletingId === user.id}
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin text-red-500" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>
                         </div>

@@ -18,14 +18,8 @@ export default function EditarAlumnoPage() {
     useEffect(() => {
         const fetchUsuario = async () => {
             try {
-                // Para simplificar, listamos y filtramos o implementamos obtenerUsuario
-                // Por ahora usamos listar con filtro de ID si el API no tiene getById directo
-                // Pero como implementé el router con GET /{id}, lo usamos.
-                // Nota: Mi router tiene @router.get("/{id}") pero el cliente api no.
-                // Vamos a agregarlo al cliente api primero.
-                const data = await usersApi.listarUsuarios({ rol: 'ALUMNO' });
-                const found = data.find(u => u.id === id);
-                if (found) setUsuario(found);
+                const found = await usersApi.obtenerUsuario(id as string);
+                setUsuario(found);
             } catch (error) {
                 console.error('Error fetching user:', error);
             } finally {

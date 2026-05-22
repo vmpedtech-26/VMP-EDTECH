@@ -30,6 +30,9 @@ export const accountingApi = {
   seedAccounts: async () => {
     return await api.post('/accounting/seed', {});
   },
+  createAccount: async (data: any) => {
+    return await api.post('/accounting/accounts', data);
+  },
   
   // Ventas
   getVentas: async () => {
@@ -38,6 +41,9 @@ export const accountingApi = {
   createVenta: async (data: Venta) => {
     return await api.post('/accounting/ventas', data);
   },
+  deleteVenta: async (id: string) => {
+    return await api.delete(`/accounting/ventas/${id}`);
+  },
   
   // Compras
   getCompras: async () => {
@@ -45,6 +51,9 @@ export const accountingApi = {
   },
   createCompra: async (data: any) => {
     return await api.post('/accounting/compras', data);
+  },
+  deleteCompra: async (id: string) => {
+    return await api.delete(`/accounting/compras/${id}`);
   },
   uploadPdf: async (file: File) => {
     const formData = new FormData();

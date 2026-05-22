@@ -14,6 +14,10 @@ import { Button } from '@/components/ui/Button';
 import { accountingApi } from '@/lib/api/accounting';
 import { Skeleton } from '@/components/ui/Skeleton';
 
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { toast } from 'sonner';
+
 export default function ReportesContablesPage() {
     const [balance, setBalance] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +37,41 @@ export default function ReportesContablesPage() {
         fetchBalance();
     }, []);
 
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text('Balance de Sumas y Saldos - VMP EDTECH', 14, 22);
+        doc.setFontSize(11);
+        doc.text(`Generado el: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}`, 14, 30);
+
+        const tableColumn = ["Código", "Cuenta", "Debe", "Haber", "Saldo"];
+        const tableRows: any[] = [];
+
+        balance.forEach(row => {
+            tableRows.push([
+                row.accountCode,
+                row.accountName,
+                `$${row.debit.toLocaleString(undefined, {minimumFractionDigits: 2})}`,
+                `$${row.credit.toLocaleString(undefined, {minimumFractionDigits: 2})}`,
+                `$${row.balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`
+            ]);
+        });
+
+        (doc as any).autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 40,
+            theme: 'grid',
+            styles: { fontSize: 9, cellPadding: 3 },
+            headStyles: { fillColor: [15, 23, 42] },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+        });
+
+        doc.save(`balance_${new Date().toISOString().split('T')[0]}.pdf`);
+        toast.success('Reporte exportado correctamente');
+    };
+
     return (
         <div className="space-y-8 pb-20">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -48,7 +87,7 @@ export default function ReportesContablesPage() {
                         { title: 'Estado de Resultados', icon: BarChart3, desc: 'Pérdidas y ganancias del período.' },
                         { title: 'Flujo de Caja', icon: TrendingUp, desc: 'Movimiento de efectivo proyectado.' },
                     ].map((rep, i) => (
-                        <Card key={i} className="p-4 border-none shadow-sm ring-1 ring-slate-100 hover:ring-primary/40 transition-all cursor-pointer group">
+                        <Card key={i} className="p-4 border-none shadow-sm ring-1 ring-slate-100 hover:ring-primary/40 transition-all cursor-pointer group" onClick={i === 0 ? handleExportPDF : undefined}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
@@ -72,8 +111,8 @@ export default function ReportesContablesPage() {
                             <ShieldCheck className="h-5 w-5 text-emerald-500" />
                             Balance de Sumas y Saldos
                         </h3>
-                        <Button variant="ghost" size="sm" className="text-xs font-bold text-primary">
-                            Ver reporte completo
+                        <Button variant="ghost" size="sm" className="text-xs font-bold text-primary" onClick={handleExportPDF} disabled={isLoading || balance.length === 0}>
+                            Descargar PDF
                         </Button>
                     </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -23,6 +24,8 @@ import { credencialesApi, CredencialListItem } from '@/lib/api/credenciales';
 import { usersApi, UserAdmin } from '@/lib/api/users';
 import { cursosApi } from '@/lib/api/cursos';
 import { useAuth } from '@/lib/auth-context';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Curso {
     id: string;
@@ -36,6 +39,7 @@ export default function SuperCredencialesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const fetchCredenciales = useCallback(async () => {
         try {
@@ -52,30 +56,66 @@ export default function SuperCredencialesPage() {
         fetchCredenciales();
     }, [fetchCredenciales]);
 
-    const vigentesCount = credenciales.filter(c => {
+    const vigentesCount = useMemo(() => credenciales.filter(c => {
         if (!c.fechaVencimiento) return true;
         return new Date(c.fechaVencimiento) > new Date();
-    }).length;
+    }).length, [credenciales]);
 
-    const filteredCredenciales = credenciales.filter(c => {
-        const term = searchTerm.toLowerCase();
-        return (
-            c.alumnoNombre.toLowerCase().includes(term) ||
-            c.alumnoApellido.toLowerCase().includes(term) ||
-            c.alumnoDni.includes(term) ||
-            c.cursoNombre.toLowerCase().includes(term) ||
-            c.numero.toLowerCase().includes(term) ||
-            (c.empresaNombre && c.empresaNombre.toLowerCase().includes(term))
-        );
-    });
+    const filteredCredenciales = useMemo(() => {
+        return credenciales.filter(c => {
+            const term = searchTerm.toLowerCase();
+            return (
+                c.alumnoNombre.toLowerCase().includes(term) ||
+                c.alumnoApellido.toLowerCase().includes(term) ||
+                c.alumnoDni.includes(term) ||
+                c.cursoNombre.toLowerCase().includes(term) ||
+                c.numero.toLowerCase().includes(term) ||
+                (c.empresaNombre && c.empresaNombre.toLowerCase().includes(term))
+            );
+        });
+    }, [credenciales, searchTerm]);
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text('Reporte de Credenciales - VMP EDTECH', 14, 15);
+        doc.setFontSize(10);
+        doc.text(`Total de registros: ${filteredCredenciales.length}`, 14, 22);
+
+        const tableData = filteredCredenciales.map(c => {
+            const isVigente = !c.fechaVencimiento || new Date(c.fechaVencimiento) > new Date();
+            return [
+                c.numero,
+                `${c.alumnoNombre} ${c.alumnoApellido}`,
+                c.alumnoDni,
+                c.cursoNombre,
+                new Date(c.fechaEmision).toLocaleDateString('es-AR'),
+                isVigente ? 'Vigente' : 'Vencida'
+            ];
+        });
+
+        autoTable(doc, {
+            head: [['Número', 'Alumno', 'DNI', 'Curso', 'Emisión', 'Estado']],
+            body: tableData,
+            startY: 28,
+            theme: 'grid',
+            headStyles: { fillColor: [59, 130, 246] },
+        });
+
+        doc.save('credenciales_vmp.pdf');
+    };
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Estás seguro de eliminar esta credencial?')) return;
+        setDeletingId(id);
         try {
             await credencialesApi.eliminar(id);
+            toast.success('Credencial eliminada exitosamente');
             fetchCredenciales();
         } catch (error: any) {
-            alert(error.message || 'Error al eliminar');
+            toast.error(error.message || 'Error al eliminar');
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -99,10 +139,16 @@ export default function SuperCredencialesPage() {
                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Todas las Credenciales</h1>
                     <p className="text-slate-600 mt-1">Gestión global de certificaciones emitidas</p>
                 </div>
-                <Button onClick={() => setShowModal(true)} className="gap-2 shadow-lg shadow-primary/25">
-                    <Plus className="h-4 w-4" />
-                    Generar Credencial
-                </Button>
+                <div className="flex gap-3 w-full sm:w-auto">
+                    <Button variant="outline" onClick={handleExportPDF} className="bg-white hover:bg-slate-50 flex-1 sm:flex-none">
+                        <Download className="h-4 w-4 mr-2" />
+                        Exportar PDF
+                    </Button>
+                    <Button onClick={() => setShowModal(true)} className="gap-2 shadow-lg shadow-primary/25 flex-1 sm:flex-none">
+                        <Plus className="h-4 w-4" />
+                        Generar Credencial
+                    </Button>
+                </div>
             </div>
 
             {/* Stats */}
@@ -216,9 +262,10 @@ export default function SuperCredencialesPage() {
                                                     </a>
                                                     <button
                                                         onClick={() => handleDelete(c.id)}
-                                                        className="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"
+                                                        disabled={deletingId === c.id}
+                                                        className="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-colors disabled:opacity-50"
                                                     >
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                        {deletingId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                                                     </button>
                                                 </div>
                                             </td>

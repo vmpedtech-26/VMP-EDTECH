@@ -13,6 +13,9 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { accountingApi } from '@/lib/api/accounting';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { toast } from 'sonner';
 
 export default function LibroDiarioPage() {
     const [entries, setEntries] = useState<any[]>([]);
@@ -33,6 +36,65 @@ export default function LibroDiarioPage() {
         fetchJournal();
     }, []);
 
+    const handleExportPDF = () => {
+        try {
+            const doc = new jsPDF();
+            
+            doc.setFontSize(18);
+            doc.text('Libro Diario - VMP EDTECH', 14, 22);
+            doc.setFontSize(11);
+            doc.text(`Generado el: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}`, 14, 30);
+
+            const tableColumn = ["Fecha", "Concepto / Cuenta", "Debe", "Haber"];
+            const tableRows: any[] = [];
+
+            const formatAmount = (val: any) => {
+                if (val === undefined || val === null || isNaN(Number(val)) || Number(val) <= 0) return '';
+                return `$${Number(val).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            };
+
+            entries.forEach(journal => {
+                // Main row
+                tableRows.push([
+                    new Date(journal.date).toLocaleDateString('es-AR'),
+                    journal.concept + (journal.reference ? ` (Ref: ${journal.reference})` : ''),
+                    '',
+                    ''
+                ]);
+
+                // Entry rows
+                if (journal.entries && Array.isArray(journal.entries)) {
+                    journal.entries.forEach((entry: any) => {
+                        tableRows.push([
+                            '',
+                            `  ${entry.accountId} ${entry.description ? '- ' + entry.description : ''}`,
+                            formatAmount(entry.debit),
+                            formatAmount(entry.credit)
+                        ]);
+                    });
+                }
+                // Blank row for separation
+                tableRows.push(['', '', '', '']);
+            });
+
+            (doc as any).autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 40,
+                theme: 'grid',
+                styles: { fontSize: 9, cellPadding: 2 },
+                headStyles: { fillColor: [15, 23, 42] },
+                alternateRowStyles: { fillColor: [248, 250, 252] },
+            });
+
+            doc.save(`libro_diario_${new Date().toISOString().split('T')[0]}.pdf`);
+            toast.success('Libro Diario exportado a PDF correctamente');
+        } catch (error) {
+            console.error('Error al exportar PDF:', error);
+            toast.error('Ocurrió un error al exportar el PDF. Por favor reintente.');
+        }
+    };
+
     return (
         <div className="space-y-8 pb-20">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -43,7 +105,7 @@ export default function LibroDiarioPage() {
                     </h1>
                     <p className="text-slate-700 text-sm">Registro cronológico de todos los asientos contables.</p>
                 </div>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleExportPDF} disabled={isLoading || entries.length === 0}>
                     <Download className="h-4 w-4 mr-2" />
                     Exportar PDF
                 </Button>

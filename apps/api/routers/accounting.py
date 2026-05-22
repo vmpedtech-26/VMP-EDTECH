@@ -270,17 +270,32 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
     try:
         contents = await file.read()
         
-        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI NATIVA ---
+        # --- EXTRACCIÓN DE TEXTO LOCAL (Ultra rápida) ---
+        pdf_file = io.BytesIO(contents)
+        full_text = ""
+        try:
+            import pdfplumber
+            with pdfplumber.open(pdf_file) as pdf:
+                for page in pdf.pages:
+                    text = page.extract_text(layout=True)
+                    if text:
+                        full_text += text + "\n"
+        except ImportError:
+            from pypdf import PdfReader
+            reader = PdfReader(pdf_file)
+            for page in reader.pages:
+                full_text += page.extract_text() or ""
+                
+        # --- OPCION A: EXTRACTION CON GOOGLE GEMINI AI ---
         gemini_key = os.environ.get("GEMINI_API_KEY")
         if gemini_key:
             try:
                 import google.generativeai as genai
                 
                 genai.configure(api_key=gemini_key)
-                # Usar Gemini 2.5 Flash
                 model = genai.GenerativeModel('gemini-2.5-flash')
                 prompt = f"""
-                Eres un auditor contable experto. Tu única tarea es extraer los datos reales de esta factura a partir del documento adjunto.
+                Eres un auditor contable experto. Tu única tarea es extraer los datos reales de esta factura a partir del documento adjunto o del texto proporcionado.
                 REGLA CRÍTICA DE ORO: ¡NO INVENTES NINGÚN DATO! Si un dato no está explícitamente en el documento, usa un string vacío "" (o 0 para números). NUNCA uses nombres genéricos como "Librería" o "Proveedor" si no aparecen.
                 
                 Extrae los datos en este formato JSON exacto:
@@ -306,12 +321,22 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 IMPORTANTE: Extrae TODOS los ítems detallados de la factura dentro del array 'items'. Si no hay ítems detallados, devuelve un array vacío [].
                 """
                 
-                # Pasar el archivo PDF directamente como blob a Gemini (soporta OCR nativo y layout visual)
-                response = model.generate_content(
-                    [
+                # OPTIMIZACIÓN DE VELOCIDAD: Si el PDF es digital (tiene texto), enviamos texto.
+                # Esto evita el costoso OCR multimodal de Gemini que demora 4-6 segundos extra.
+                if len(full_text.strip()) > 100:
+                    payload = [
+                        f"TEXTO EXTRAÍDO DE LA FACTURA:\n\n{full_text}",
+                        prompt
+                    ]
+                else:
+                    # Fallback para imágenes/facturas escaneadas (usa multimodal OCR)
+                    payload = [
                         {"mime_type": "application/pdf", "data": contents},
                         prompt
-                    ],
+                    ]
+                
+                response = model.generate_content(
+                    payload,
                     generation_config=genai.types.GenerationConfig(
                         response_mime_type="application/json"
                     )
@@ -327,26 +352,8 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 print(f"Error procesando con Gemini AI/MarkItDown: {error_trace}")
                 raise HTTPException(status_code=500, detail=f"Error AI: {str(e)}")
         
-        # --- OPCION B: EXTRACTION TRADICIONAL (FALLBACK) ---
-        pdf_file = io.BytesIO(contents)
-        
-        # Intentar importar pdfplumber, si no está disponible hacer fallback a pypdf
-        try:
-            import pdfplumber
-            with pdfplumber.open(pdf_file) as pdf:
-                full_text = ""
-                # layout=True mantiene las columnas y espacios visuales
-                for page in pdf.pages:
-                    text = page.extract_text(layout=True)
-                    if text:
-                        full_text += text + "\n"
-        except ImportError:
-            # Fallback
-            from pypdf import PdfReader
-            reader = PdfReader(pdf_file)
-            full_text = ""
-            for page in reader.pages:
-                full_text += page.extract_text() or ""
+        # --- OPCION B: EXTRACTION TRADICIONAL (FALLBACK LOCAL MANUAL) ---
+        # El PDF ya fue leído en full_text al inicio.
             
         # Parse CUIT
         cuit_match = re.search(r'\b(20|23|24|27|30|33)-?(\d{8})-?(\d)\b', full_text)

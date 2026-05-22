@@ -5,6 +5,7 @@ generator client {
   provider             = "prisma-client-py"
   interface            = "asyncio"
   recursive_type_depth = 5
+  output               = "../venv/lib/python3.14/site-packages/prisma"
 }
 
 datasource db {
@@ -136,9 +137,10 @@ model Inscripcion {
   estado    String             @default("NO_INICIADO")
   inicioDate DateTime?         @map("inicio_date")
   finDate    DateTime?         @map("fin_date")
+  modulosCompletados String    @default("[]") @map("modulos_completados") // JSON array de IDs
   
-  alumno User  @relation(fields: [alumnoId], references: [id])
-  curso  Curso @relation(fields: [cursoId], references: [id])
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -158,8 +160,8 @@ model Examen {
   calificacion Float?
   aprobado     Boolean?
   
-  alumno User  @relation(fields: [alumnoId], references: [id])
-  curso  Curso @relation(fields: [cursoId], references: [id])
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   
   realizadoAt DateTime @default(now()) @map("realizado_at")
 
@@ -197,8 +199,8 @@ model Credencial {
   fechaVencimiento DateTime? @map("fecha_vencimiento")
   puesto           String?   @map("puesto")
   
-  alumno User  @relation(fields: [alumnoId], references: [id])
-  curso  Curso @relation(fields: [cursoId], references: [id])
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now()) @map("created_at")
 

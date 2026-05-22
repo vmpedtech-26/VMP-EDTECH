@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import {
     Plus,
     Search,
@@ -20,11 +21,15 @@ import { Curso } from '@/types/training';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { Download } from 'lucide-react';
 
 export default function SuperCursosPage() {
     const [cursos, setCursos] = useState<Curso[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchCursos();
@@ -44,20 +49,49 @@ export default function SuperCursosPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Estás seguro de que deseas eliminar este curso?')) return;
-
+        setDeletingId(id);
         try {
             await cursosApi.eliminarCurso(id);
+            toast.success('Curso eliminado correctamente');
             fetchCursos();
         } catch (error) {
-            console.error('Error deleting curso:', error);
-            alert('Error al eliminar curso: ' + (error instanceof Error ? error.message : String(error)));
+            toast.error('Error al eliminar curso: ' + (error instanceof Error ? error.message : String(error)));
+        } finally {
+            setDeletingId(null);
         }
     };
 
-    const filteredCursos = cursos.filter(c =>
-        c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredCursos = useMemo(() => {
+        return cursos.filter(c =>
+            c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [cursos, searchTerm]);
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text('Catálogo de Cursos - VMP EDTECH', 14, 15);
+        doc.setFontSize(10);
+        doc.text(`Total de cursos: ${filteredCursos.length}`, 14, 22);
+
+        const tableData = filteredCursos.map(c => [
+            c.codigo,
+            c.nombre,
+            `${c.duracionHoras} horas`,
+            c.activo ? 'Activo' : 'Inactivo'
+        ]);
+
+        autoTable(doc, {
+            head: [['Código', 'Nombre', 'Duración', 'Estado']],
+            body: tableData,
+            startY: 28,
+            theme: 'grid',
+            headStyles: { fillColor: [59, 130, 246] },
+        });
+
+        doc.save('cursos_vmp.pdf');
+    };
 
     if (isLoading) {
         return (
@@ -97,12 +131,18 @@ export default function SuperCursosPage() {
                     <h1 className="text-2xl font-bold text-slate-900">Gestión de Cursos</h1>
                     <p className="text-slate-700">Administra el catálogo global de capacitaciones</p>
                 </div>
-                <Button asChild className="shadow-lg shadow-primary/20">
-                    <Link href="/dashboard/super/cursos/nuevo">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nuevo Curso
-                    </Link>
-                </Button>
+                <div className="flex gap-3 w-full md:w-auto">
+                    <Button variant="outline" onClick={handleExportPDF} className="bg-white hover:bg-slate-50 flex-1 md:flex-none">
+                        <Download className="h-4 w-4 mr-2" />
+                        Exportar PDF
+                    </Button>
+                    <Button asChild className="shadow-lg shadow-primary/20 flex-1 md:flex-none">
+                        <Link href="/dashboard/super/cursos/nuevo">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nuevo Curso
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <Card className="p-4 border-none shadow-sm ring-1 ring-gray-100">
@@ -163,10 +203,11 @@ export default function SuperCursosPage() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100"
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100 disabled:opacity-50"
                                     onClick={() => handleDelete(curso.id)}
+                                    disabled={deletingId === curso.id}
                                 >
-                                    <Trash2 className="h-3.5 w-3.5" />
+                                    {deletingId === curso.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                                 </Button>
                             </div>
                         </div>

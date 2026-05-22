@@ -63,11 +63,27 @@ async function request(path: string, options: RequestInit & { params?: Record<st
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const response = await fetch(url, {
+        let response = await fetch(url, {
             ...options,
             headers,
             signal: controller.signal,
         });
+
+        // Highly resilient retry mechanism for 503 (Database Connection / Lazy Setup)
+        let retries = 0;
+        const maxRetries = 2;
+        const retryDelay = 800;
+
+        while (response.status === 503 && retries < maxRetries) {
+            retries++;
+            console.warn(`[API-CLIENT] HTTP 503 received (Attempt ${retries}/${maxRetries}). Retrying in ${retryDelay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            response = await fetch(url, {
+                ...options,
+                headers,
+                signal: controller.signal,
+            });
+        }
 
         clearTimeout(id);
 
@@ -85,8 +101,12 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         }
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor' }));
-            throw new Error(error.detail || `Error ${response.status}: ${response.statusText}`);
+            const error = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor', request_id: undefined }));
+            let errMsg = error.detail || `Error ${response.status}: ${response.statusText}`;
+            if (error.request_id) {
+                errMsg += ` (ID de seguimiento: ${error.request_id})`;
+            }
+            throw new Error(errMsg);
         }
 
         return response.json();
@@ -95,7 +115,7 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         if (error.name === 'AbortError') {
             throw new Error('La petición tardó demasiado tiempo. Verifique su conexión.');
         }
-        if (error.message.includes('Failed to fetch')) {
+        if (error.message && error.message.includes('Failed to fetch')) {
             throw new Error('No se pudo conectar con el servidor. Verifique su conexión a internet.');
         }
         throw error;

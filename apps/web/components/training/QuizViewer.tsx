@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/Button';
 import { CheckCircle2, XCircle, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 import { Pregunta, QuizFeedbackResponse } from '@/types/training';
 import { toast } from 'sonner';
+import { examenesApi } from '@/lib/api/examenes';
 
 interface QuizViewerProps {
+    cursoId: string;
+    moduloId: string;
     preguntas: Pregunta[];
     onComplete: (data: { calificacion: number; aprobado: boolean }) => Promise<void>;
 }
 
-export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
+export function QuizViewer({ cursoId, moduloId, preguntas, onComplete }: QuizViewerProps) {
     const [currentStep, setCurrentStep] = useState(0);
     const [respuestas, setRespuestas] = useState<Record<string, number>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,20 +36,12 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
-            // In a real app, this would be validated by the backend
-            // For now, we simulate the logic or call the provided onComplete
-            const correctasCount = preguntas.filter((p, idx) => {
-                // Mock: correct answer is always index 0 for testing purposes 
-                // In production, we send selection to backend
-                return respuestas[p.id] === 0;
-            }).length;
+            // Llama al endpoint real de enviar-quiz que evalúa las respuestas y emite la credencial en el backend
+            const feedbackRes = await examenesApi.enviarQuiz(cursoId, moduloId, respuestas);
 
-            const calificacion = (correctasCount / preguntas.length) * 100;
-            const aprobado = calificacion >= 70;
+            await onComplete({ calificacion: feedbackRes.calificacion, aprobado: feedbackRes.aprobado });
 
-            await onComplete({ calificacion, aprobado });
-
-            if (aprobado) {
+            if (feedbackRes.aprobado) {
                 toast.success('¡Felicidades!', {
                     description: 'Has aprobado el examen y el módulo ha sido completado.',
                 });
@@ -56,16 +51,10 @@ export function QuizViewer({ preguntas, onComplete }: QuizViewerProps) {
                 });
             }
 
-            setFeedback({
-                calificacion,
-                aprobado,
-                respuestasCorrectas: correctasCount,
-                totalPreguntas: preguntas.length,
-                feedback: [], // Detailed feedback omitted for simplicity in mock
-                message: aprobado ? '¡Felicidades! Has aprobado el examen.' : 'Lo sentimos, no has alcanzado la nota mínima.'
-            });
+            setFeedback(feedbackRes);
         } catch (err) {
             console.error('Error submitting quiz:', err);
+            toast.error('Error al enviar el examen. Por favor intenta de nuevo.');
         } finally {
             setIsSubmitting(false);
         }

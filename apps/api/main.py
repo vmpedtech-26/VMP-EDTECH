@@ -13,7 +13,7 @@ from middleware.db_middleware import DatabaseConnectionMiddleware
 from slowapi.errors import RateLimitExceeded
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
-from core.logger import setup_logging
+from core.logger import setup_logging, logger
 
 from core.database import connect_db, disconnect_db
 
@@ -40,8 +40,53 @@ app.state.limiter = limiter
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+from fastapi.exceptions import RequestValidationError
+from fastapi import Request, HTTPException
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_unhandled_exception_handler(request: Request, exc: Exception):
+    request_id = getattr(request.state, "request_id", "N/A")
+    
+    if isinstance(exc, HTTPException):
+        logger.warning(
+            f"HTTPException [{exc.status_code}]: {exc.detail}",
+            extra={"extra_data": {"request_id": request_id, "status_code": exc.status_code, "path": request.url.path}}
+        )
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail, "request_id": request_id}
+        )
+        
+    if isinstance(exc, RequestValidationError):
+        logger.warning(
+            f"RequestValidationError: {exc.errors()}",
+            extra={"extra_data": {"request_id": request_id, "errors": exc.errors(), "path": request.url.path}}
+        )
+        return JSONResponse(
+            status_code=422,
+            content={"detail": "Error de validación en la solicitud.", "errors": exc.errors(), "request_id": request_id}
+        )
+    
+    # Log tracebacks via corporate structured logging
+    logger.error(
+        f"Unhandled exception occurred on path {request.url.path}: {str(exc)}",
+        exc_info=exc,
+        extra={"extra_data": {"request_id": request_id, "path": request.url.path}}
+    )
+    
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Ha ocurrido un error interno en el servidor. Por favor, contacte al soporte técnico.",
+            "request_id": request_id
+        }
+    )
+
 # Database & Security Middlewares
 app.add_middleware(DatabaseConnectionMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestIDMiddleware)
 
 # CORS (Keep this, it's essential)
 app.add_middleware(

@@ -119,6 +119,8 @@ export default function ModuloDetailPage() {
 
                 {modulo.tipo === 'QUIZ' && (
                     <QuizViewer
+                        cursoId={id as string}
+                        moduloId={moduloId as string}
                         preguntas={modulo.preguntas || []}
                         onComplete={handleComplete}
                     />

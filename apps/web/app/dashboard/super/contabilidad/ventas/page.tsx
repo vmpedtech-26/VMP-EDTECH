@@ -12,7 +12,9 @@ import {
     Calendar,
     Building2,
     DollarSign,
-    MoreHorizontal
+    MoreHorizontal,
+    Loader2,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -20,10 +22,15 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { accountingApi, Venta } from '@/lib/api/accounting';
 
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { toast } from 'sonner';
+
 export default function VentasPage() {
     const [ventas, setVentas] = useState<Venta[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const fetchVentas = async () => {
         try {
@@ -40,12 +47,65 @@ export default function VentasPage() {
         fetchVentas();
     }, []);
 
-    const filteredVentas = ventas.filter(v =>
-        v.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.companyId.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('¿Estás seguro de que deseas eliminar esta venta? Esto también eliminará el asiento contable asociado.')) return;
+        setDeletingId(id);
+        try {
+            await accountingApi.deleteVenta(id);
+            toast.success('Venta eliminada exitosamente');
+            fetchVentas(); // Refresh
+        } catch (error) {
+            toast.error('Error al eliminar la venta');
+            console.error(error);
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
-    const totalVentas = ventas.reduce((acc, v) => acc + v.total, 0);
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text('Registro de Ventas - VMP EDTECH', 14, 22);
+        doc.setFontSize(11);
+        doc.text(`Generado el: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}`, 14, 30);
+
+        const tableColumn = ["Fecha", "Número", "Empresa", "Estado", "Total"];
+        const tableRows: any[] = [];
+
+        filteredVentas.forEach(venta => {
+            tableRows.push([
+                new Date(venta.fecha).toLocaleDateString('es-AR'),
+                venta.numero,
+                venta.companyId,
+                venta.estado,
+                `$${venta.total.toLocaleString(undefined, {minimumFractionDigits: 2})}`
+            ]);
+        });
+
+        (doc as any).autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 40,
+            theme: 'grid',
+            styles: { fontSize: 9, cellPadding: 3 },
+            headStyles: { fillColor: [15, 23, 42] },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+        });
+
+        doc.save(`ventas_${new Date().toISOString().split('T')[0]}.pdf`);
+    };
+
+    const filteredVentas = React.useMemo(() => {
+        return ventas.filter(v =>
+            v.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            v.companyId.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [ventas, searchTerm]);
+
+    const totalVentas = React.useMemo(() => {
+        return ventas.reduce((acc, v) => acc + v.total, 0);
+    }, [ventas]);
 
     return (
         <div className="space-y-8 pb-20">
@@ -56,9 +116,9 @@ export default function VentasPage() {
                     <p className="text-slate-700 text-sm">Gestiona la facturación y cobranzas de clientes.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="hidden md:flex">
+                    <Button variant="outline" className="hidden md:flex" onClick={handleExportPDF} disabled={isLoading || filteredVentas.length === 0}>
                         <Download className="h-4 w-4 mr-2" />
-                        Exportar
+                        Exportar PDF
                     </Button>
                     <Button asChild>
                         <Link href="/dashboard/super/contabilidad/ventas/nuevo">
@@ -120,10 +180,6 @@ export default function VentasPage() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline" className="bg-white border-slate-200">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filtros
-                </Button>
             </div>
 
             {/* Table */}
@@ -178,8 +234,13 @@ export default function VentasPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
-                                                <MoreHorizontal className="h-4 w-4" />
+                                            <Button 
+                                                variant="ghost" 
+                                                className="h-8 w-8 p-0 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50" 
+                                                onClick={() => handleDelete(venta.id!)}
+                                                disabled={deletingId === venta.id}
+                                            >
+                                                {deletingId === venta.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                             </Button>
                                         </td>
                                     </tr>
