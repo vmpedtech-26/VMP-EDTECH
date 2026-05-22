@@ -219,12 +219,24 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
     try:
         contents = await file.read()
         pdf_file = io.BytesIO(contents)
-        reader = PdfReader(pdf_file)
         
-        # Extract text from all pages
-        full_text = ""
-        for page in reader.pages:
-            full_text += page.extract_text() or ""
+        # Intentar importar pdfplumber, si no está disponible hacer fallback a pypdf
+        try:
+            import pdfplumber
+            with pdfplumber.open(pdf_file) as pdf:
+                full_text = ""
+                # layout=True mantiene las columnas y espacios visuales
+                for page in pdf.pages:
+                    text = page.extract_text(layout=True)
+                    if text:
+                        full_text += text + "\n"
+        except ImportError:
+            # Fallback
+            from pypdf import PdfReader
+            reader = PdfReader(pdf_file)
+            full_text = ""
+            for page in reader.pages:
+                full_text += page.extract_text() or ""
             
         # Parse CUIT
         cuit_match = re.search(r'\b(20|23|24|27|30|33)-?(\d{8})-?(\d)\b', full_text)
@@ -236,11 +248,11 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
         num_match = re.search(r'(?:Punto de Venta|Pt\. Vta|Vta)[:\s]*(\d{4,5})\s*(?:Comp\.?\s*Nro|Nro|N°|Nro\.?|Comp\.?|Nro\. Comprobante)[:\s]*(\d{8})', full_text, re.IGNORECASE)
         numero = ""
         if num_match:
-            numero = f"{num_match.group(1)}-{num_match.group(2)}"
+            numero = f"{num_match.group(1).zfill(5)}-{num_match.group(2)}"
         else:
             num_match_fallback = re.search(r'\b(\d{4,5})[ -](\d{8})\b', full_text)
             if num_match_fallback:
-                numero = f"{num_match_fallback.group(1)}-{num_match_fallback.group(2)}"
+                numero = f"{num_match_fallback.group(1).zfill(5)}-{num_match_fallback.group(2)}"
             
         # Parse Date (DD/MM/YYYY)
         date_match = re.search(r'\b(\d{2})[/-](\d{2})[/-](\d{4})\b', full_text)
@@ -249,20 +261,80 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
             day, month, year = date_match.groups()
             fecha = f"{year}-{month}-{day}"
             
-        # Parse Totals
+        # Extract Items from Table (AFIP standard format)
+        # Usually looks like: Código  Producto/Servicio  Cantidad  U.Medida  Precio Unit.  % Bonf  Subtotal
+        items_extraidos = []
+        lines = [l.strip() for l in full_text.split('\n') if l.strip()]
+        
+        in_table = False
+        for i, line in enumerate(lines):
+            # Detectar el inicio de la tabla de items
+            line_lower = line.lower()
+            if "producto/servicio" in line_lower or "descripción" in line_lower or "codigo" in line_lower:
+                in_table = True
+                continue
+            
+            # Si estamos en la tabla y encontramos "Subtotal" o "Importe Otros Tributos", la tabla terminó
+            if in_table and ("subtotal" in line_lower and "importe" not in line_lower.replace(" ", "")):
+                # Algunos PDFs de AFIP dicen "Subtotal: $ xxx", pero si empieza con Subtotal, probablemente terminamos
+                if line_lower.startswith("subtotal"):
+                    in_table = False
+                    continue
+            if in_table and ("importe otros tributos" in line_lower or "importe neto gravado" in line_lower or "iva" in line_lower):
+                in_table = False
+                continue
+
+            if in_table:
+                # Buscar filas que tengan formato de ítem: texto largo seguido de varios números separados por espacios
+                # Ejemplo AFIP: 1  Limpieza oficina  1,00  unidades  1000,00  0,00  1000,00
+                # Regex busca: [Cantidad (opcional)] [Descripcion] [Cantidad] [Precio] [Subtotal]
+                # Por simplicidad, buscaremos una línea que termine con importes (números con decimales)
+                importes = re.findall(r'\b\d{1,3}(?:\.\d{3})*,\d{2}\b|\b\d+\.\d{2}\b', line)
+                
+                if len(importes) >= 2: # Al menos Precio Unitario y Subtotal
+                    # Extraer el último importe como subtotal, y el antepenúltimo o penúltimo como precio
+                    subt_str = importes[-1]
+                    precio_str = importes[-2] if len(importes) > 2 else importes[0]
+                    
+                    subt = clean_amount(subt_str)
+                    precio = clean_amount(precio_str)
+                    
+                    # Tratar de encontrar la cantidad (usualmente un número entero o decimal pequeño)
+                    cant_match = re.search(r'\b(\d+(?:[,.]\d{1,2})?)\s+(?:unidades|u|kg|lts|hs|horas)?\s+'+re.escape(precio_str), line, re.IGNORECASE)
+                    cantidad = 1.0
+                    if cant_match:
+                        cantidad = clean_amount(cant_match.group(1))
+                    else:
+                        # Si subtotal > precio, inferir cantidad
+                        if precio > 0 and subt > precio:
+                            cantidad = round(subt / precio, 2)
+
+                    # La descripción suele ser todo el texto al principio de la línea antes de los números
+                    # Quitamos todos los importes encontrados
+                    desc = line
+                    for imp in importes:
+                        desc = desc.replace(imp, "")
+                    # Limpiamos unidades y códigos de barras si existen
+                    desc = re.sub(r'\b(unidades|u|kg|lts|hs|horas)\b', '', desc, flags=re.IGNORECASE)
+                    desc = re.sub(r'^[A-Z0-9-]+\s+', '', desc) # Quitar código al inicio
+                    desc = re.sub(r'\d+(?:[,.]\d+)?', '', desc) # Quitar otros números sueltos
+                    desc = re.sub(r'\s+', ' ', desc).strip()
+                    
+                    if len(desc) < 3:
+                        desc = "Artículo/Servicio"
+
+                    items_extraidos.append({
+                        "descripcion": desc,
+                        "cantidad": cantidad,
+                        "precioUnit": precio,
+                        "subtotal": subt
+                    })
+
+        # Calculate Totals
         total = 0.0
         subtotal = 0.0
         iva = 0.0
         
-        # Smart candidates extraction for AFIP invoices with multi-column layout
-        amount_candidates = []
-        matches_comma = re.findall(r'\b\d+(?:\.\d{3})*,\d{2}\b', full_text)
-        for m in matches_comma:
-            amount_candidates.append(clean_amount(m))
-        matches_dot = re.findall(r'\b\d+\.\d{2}\b', full_text)
-        for m in matches_dot:
-            amount_candidates.append(clean_amount(m))
-            
         # Look for Total amount
         total_patterns = [
             r'(?:Importe Total|Total|TOTAL|Total Facturado)(?:\s*[:$]?\s*)(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
@@ -277,14 +349,6 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 total = clean_amount(matches[-1])
                 break
                 
-        # Fallback to max amount candidate if total matches are empty or zero
-        if total == 0.0 and amount_candidates:
-            filtered_candidates = [c for c in amount_candidates if c > 10.0]
-            if filtered_candidates:
-                total = max(filtered_candidates)
-            else:
-                total = max(amount_candidates)
-                    
         # Look for Subtotal (Net Amount)
         subtotal_patterns = [
             r'(?:Importe Neto Gravado|Neto Gravado|Neto|Subtotal)(?:\s*[:$]?\s*)(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
@@ -298,9 +362,6 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 subtotal = clean_amount(matches[-1])
                 break
                     
-        if subtotal == 0.0:
-            subtotal = total
-            
         # Calculate/find IVA
         iva_patterns = [
             r'(?:IVA\s*(?:21|10\.5|27)%\s*:?\s*\$?)\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2}))',
@@ -311,11 +372,27 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
             if matches:
                 iva = clean_amount(matches[-1])
                 break
-                    
+
+        # Check if items matched anything, if not fallback to subtotal
+        if not items_extraidos:
+            if subtotal == 0.0:
+                subtotal = total
+            items_extraidos = [{
+                "descripcion": "Carga rápida desde factura PDF",
+                "cantidad": 1,
+                "precioUnit": subtotal,
+                "subtotal": subtotal
+            }]
+        else:
+            # Reconcile subtotal if we extracted items
+            calc_subtotal = sum(i["subtotal"] for i in items_extraidos)
+            if subtotal == 0.0:
+                subtotal = calc_subtotal
+            if total == 0.0:
+                total = subtotal + iva
+
         # Parse Provider Name
         proveedor = ""
-        lines = [l.strip() for l in full_text.split('\n') if l.strip()]
-        
         for line in lines:
             if "Razón Social:" in line or "Razon Social:" in line:
                 proveedor = line.split(":", 1)[1].strip()
@@ -345,26 +422,14 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
         
         # Determine category based on keywords
         categoria = "OTROS"
-        if any(k in full_text.lower() for k in ["honorarios", "servicios", "abono", "asesoramiento", "mensual", "alquiler"]):
+        full_text_lower = full_text.lower()
+        if any(k in full_text_lower for k in ["honorarios", "servicios", "abono", "asesoramiento", "mensual", "alquiler", "limpieza", "seguridad"]):
             categoria = "SERVICIOS"
-        elif any(k in full_text.lower() for k in ["impuesto", "tasa", "afip", "rentas", "iibb", "municipalidad"]):
+        elif any(k in full_text_lower for k in ["impuesto", "tasa", "afip", "rentas", "iibb", "municipalidad"]):
             categoria = "IMPUESTOS"
-        elif any(k in full_text.lower() for k in ["sueldo", "recibo", "jornal", "sac", "vacaciones"]):
+        elif any(k in full_text_lower for k in ["sueldo", "recibo", "jornal", "sac", "vacaciones"]):
             categoria = "SUELDOS"
             
-        item_desc = "Carga rápida desde factura PDF"
-        if categoria == "SERVICIOS":
-            item_desc = "Servicios profesionales / honorarios"
-        elif categoria == "IMPUESTOS":
-            item_desc = "Tasa / Impuesto nacional o provincial"
-            
-        items = [{
-            "descripcion": item_desc,
-            "cantidad": 1,
-            "precioUnit": subtotal,
-            "subtotal": subtotal
-        }]
-        
         return {
             "proveedor": proveedor,
             "cuit": cuit,
@@ -375,7 +440,7 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
             "total": total,
             "categoria": categoria,
             "metodoPago": "TRANSFERENCIA" if categoria == "SERVICIOS" else "EFECTIVO",
-            "items": items
+            "items": items_extraidos
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar PDF de factura: {str(e)}")
