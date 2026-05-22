@@ -126,7 +126,44 @@ async def listar_ventas(current_user=Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="No tienes permisos")
     return await prisma.venta.find_many(include={"items": True}, order={"fecha": "desc"})
 
-# --- Compras ---
+        # --- Compras ---
+        
+@router.delete("/ventas/{id}")
+async def eliminar_venta(id: str, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    # 1. Buscar la venta
+    venta = await prisma.venta.find_unique(where={"id": id})
+    if not venta:
+        raise HTTPException(status_code=404, detail="Venta no encontrada")
+        
+    # 2. Eliminar el asiento contable asociado si existe (usamos el numero como referencia)
+    journal_entry = await prisma.journalentry.find_first(where={"reference": venta.numero})
+    if journal_entry:
+        await prisma.journalentry.delete(where={"id": journal_entry.id})
+        
+    # 3. Eliminar la venta (los items se borran en cascada)
+    await prisma.venta.delete(where={"id": id})
+    return {"message": "Venta eliminada exitosamente"}
+
+@router.delete("/compras/{id}")
+async def eliminar_compra(id: str, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    compra = await prisma.compra.find_unique(where={"id": id})
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra no encontrada")
+        
+    # Intentar eliminar el asiento usando el CUIT o Numero como referencia si existe
+    if compra.numero:
+        journal_entry = await prisma.journalentry.find_first(where={"reference": compra.numero})
+        if journal_entry:
+            await prisma.journalentry.delete(where={"id": journal_entry.id})
+            
+    await prisma.compra.delete(where={"id": id})
+    return {"message": "Compra eliminada exitosamente"}
 
 @router.post("/compras", response_model=CompraResponse)
 async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_current_user)):
