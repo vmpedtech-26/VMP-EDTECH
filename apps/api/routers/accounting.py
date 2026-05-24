@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request
 import re
 import io
 import os
@@ -16,6 +16,7 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from datetime import datetime
 from services.webhook_service import emit, WebhookEvent
+from services.audit_service import log_audit_action
 
 router = APIRouter()
 
@@ -44,7 +45,7 @@ async def listar_asientos(current_user=Depends(get_current_user)):
 # --- Ventas ---
 
 @router.post("/ventas", response_model=VentaResponse)
-async def registrar_venta(data: CreateVentaRequest, current_user=Depends(get_current_user)):
+async def registrar_venta(request: Request, data: CreateVentaRequest, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
@@ -116,6 +117,18 @@ async def registrar_venta(data: CreateVentaRequest, current_user=Depends(get_cur
                 }
             )
             
+            # Log audit
+            request_id = getattr(request.state, "request_id", "N/A")
+            ip_address = request.client.host if request.client else "N/A"
+            await log_audit_action(
+                action="INVOICE_SALE_CREATE",
+                user_id=current_user.id,
+                user_email=current_user.email,
+                details=f"Venta registrada: Nro {data.numero} por un total de ${data.total:.2f} ARS.",
+                ip_address=ip_address,
+                request_id=request_id
+            )
+            
             return venta
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar venta: {str(e)}")
@@ -129,7 +142,7 @@ async def listar_ventas(current_user=Depends(get_current_user)):
         # --- Compras ---
         
 @router.delete("/ventas/{id}")
-async def eliminar_venta(id: str, current_user=Depends(get_current_user)):
+async def eliminar_venta(request: Request, id: str, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
@@ -144,11 +157,23 @@ async def eliminar_venta(id: str, current_user=Depends(get_current_user)):
         await prisma.journalentry.delete(where={"id": journal_entry.id})
         
     # 3. Eliminar la venta (los items se borran en cascada)
+    # Log audit
+    request_id = getattr(request.state, "request_id", "N/A")
+    ip_address = request.client.host if request.client else "N/A"
+    await log_audit_action(
+        action="INVOICE_SALE_DELETE",
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details=f"Venta eliminada: Nro {venta.numero} por un total de ${venta.total:.2f} ARS.",
+        ip_address=ip_address,
+        request_id=request_id
+    )
+    
     await prisma.venta.delete(where={"id": id})
     return {"message": "Venta eliminada exitosamente"}
 
 @router.delete("/compras/{id}")
-async def eliminar_compra(id: str, current_user=Depends(get_current_user)):
+async def eliminar_compra(request: Request, id: str, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
@@ -162,11 +187,23 @@ async def eliminar_compra(id: str, current_user=Depends(get_current_user)):
         if journal_entry:
             await prisma.journalentry.delete(where={"id": journal_entry.id})
             
+    # Log audit
+    request_id = getattr(request.state, "request_id", "N/A")
+    ip_address = request.client.host if request.client else "N/A"
+    await log_audit_action(
+        action="INVOICE_PURCHASE_DELETE",
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details=f"Compra eliminada: {compra.proveedor} (Total: ${compra.total:.2f} ARS).",
+        ip_address=ip_address,
+        request_id=request_id
+    )
+    
     await prisma.compra.delete(where={"id": id})
     return {"message": "Compra eliminada exitosamente"}
 
 @router.post("/compras", response_model=CompraResponse)
-async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_current_user)):
+async def registrar_compra(request: Request, data: CreateCompraRequest, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
@@ -234,6 +271,18 @@ async def registrar_compra(data: CreateCompraRequest, current_user=Depends(get_c
                 "fecha":       data.fecha.isoformat() if data.fecha else None,
                 "registrado_por": current_user.email,
             })
+            # Log audit
+            request_id = getattr(request.state, "request_id", "N/A")
+            ip_address = request.client.host if request.client else "N/A"
+            await log_audit_action(
+                action="INVOICE_PURCHASE_CREATE",
+                user_id=current_user.id,
+                user_email=current_user.email,
+                details=f"Compra registrada: {data.proveedor} (Total: ${data.total:.2f} ARS).",
+                ip_address=ip_address,
+                request_id=request_id
+            )
+            
             return compra
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar compra: {str(e)}")

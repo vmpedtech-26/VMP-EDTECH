@@ -4,11 +4,12 @@ from auth.jwt import hash_password, verify_password, create_access_token
 from core.database import prisma
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
+from services.audit_service import log_audit_action
 
 router = APIRouter()
 
 @router.post("/register", response_model=TokenResponse)
-async def register(data: UserRegister):
+async def register(request: Request, data: UserRegister):
     """Registrar nuevo usuario"""
     
     # Verificar si email ya existe
@@ -42,6 +43,18 @@ async def register(data: UserRegister):
             "empresaId": data.empresaId,
             "rol": "ALUMNO",  # Default role
         }
+    )
+    
+    # Log audit
+    request_id = getattr(request.state, "request_id", "N/A")
+    ip_address = request.client.host if request.client else "N/A"
+    await log_audit_action(
+        action="USER_REGISTER",
+        user_id=user.id,
+        user_email=user.email,
+        details=f"Nuevo colaborador registrado: {user.nombre} {user.apellido} (DNI: {user.dni})",
+        ip_address=ip_address,
+        request_id=request_id
     )
     
     # Crear token
@@ -79,6 +92,18 @@ async def login(request: Request, data: UserLogin):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive",
         )
+    
+    # Log audit
+    request_id = getattr(request.state, "request_id", "N/A")
+    ip_address = request.client.host if request.client else "N/A"
+    await log_audit_action(
+        action="USER_LOGIN",
+        user_id=user.id,
+        user_email=user.email,
+        details="Inicio de sesión exitoso.",
+        ip_address=ip_address,
+        request_id=request_id
+    )
     
     # Crear token
     access_token = create_access_token(data={"sub": user.id})
@@ -180,7 +205,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
 
 
 @router.post("/reset-password")
-async def reset_password(data: ResetPasswordRequest):
+async def reset_password(request: Request, data: ResetPasswordRequest):
     """
     Restablecer contraseña usando token de recuperación.
     """
@@ -230,6 +255,22 @@ async def reset_password(data: ResetPasswordRequest):
         await prisma.passwordresettoken.update(
             where={"token": data.token},
             data={"used": True}
+        )
+        
+        # Obtener email para auditoría
+        user = await prisma.user.find_unique(where={"id": token_record.userId})
+        user_email = user.email if user else "N/A"
+        
+        # Log audit
+        request_id = getattr(request.state, "request_id", "N/A")
+        ip_address = request.client.host if request.client else "N/A"
+        await log_audit_action(
+            action="USER_PASSWORD_RESET",
+            user_id=token_record.userId,
+            user_email=user_email,
+            details="Restablecimiento de contraseña completado con éxito.",
+            ip_address=ip_address,
+            request_id=request_id
         )
         
         return {

@@ -113,6 +113,83 @@ export default function CursoDetailPage() {
                 </div>
             </div>
 
+            {/* Timeline de Hitos Interactivos */}
+            {isEnrolled && (
+                <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100/50 bg-white" hover={false}>
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Línea de Hitos y Logros</h3>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative">
+                        {/* Line connector */}
+                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 hidden md:block z-0" />
+                        <div 
+                            className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-primary to-emerald-500 -translate-y-1/2 hidden md:block z-0 transition-all duration-1000"
+                            style={{ 
+                                width: `${
+                                    inscripcion.progreso === 100 ? '100%' :
+                                    inscripcion.progreso > 50 ? '66%' :
+                                    inscripcion.progreso > 0 ? '33%' : '0%'
+                                }` 
+                            }}
+                        />
+                        
+                        {/* Hito 1 */}
+                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
+                            <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-bold ring-4 ring-primary/20 shadow-md">
+                                ✓
+                            </div>
+                            <div className="md:mt-2">
+                                <h4 className="font-bold text-slate-900 text-sm">Registro Inicial</h4>
+                                <p className="text-xs text-slate-700">Inscripción confirmada</p>
+                            </div>
+                        </div>
+
+                        {/* Hito 2 */}
+                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
+                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
+                                inscripcion.progreso > 0 
+                                    ? 'bg-primary text-white ring-4 ring-primary/20 shadow-md' 
+                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
+                            }`}>
+                                {inscripcion.progreso > 0 ? '✓' : '2'}
+                            </div>
+                            <div className="md:mt-2">
+                                <h4 className={`font-bold text-sm ${inscripcion.progreso > 0 ? 'text-slate-900' : 'text-slate-400'}`}>Módulos Activos</h4>
+                                <p className="text-xs text-slate-700">En progreso de lectura</p>
+                            </div>
+                        </div>
+
+                        {/* Hito 3 */}
+                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
+                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
+                                inscripcion.progreso >= 80 
+                                    ? 'bg-primary text-white ring-4 ring-primary/20 shadow-md' 
+                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
+                            }`}>
+                                {inscripcion.progreso >= 80 ? '✓' : '3'}
+                            </div>
+                            <div className="md:mt-2">
+                                <h4 className={`font-bold text-sm ${inscripcion.progreso >= 80 ? 'text-slate-900' : 'text-slate-400'}`}>Evaluación Final</h4>
+                                <p className="text-xs text-slate-700">Mínimo 70% requerido</p>
+                            </div>
+                        </div>
+
+                        {/* Hito 4 */}
+                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
+                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
+                                inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO'
+                                    ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 shadow-md' 
+                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
+                            }`}>
+                                {inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO' ? '🏆' : '4'}
+                            </div>
+                            <div className="md:mt-2">
+                                <h4 className={`font-bold text-sm ${inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO' ? 'text-emerald-600' : 'text-slate-400'}`}>Certificación</h4>
+                                <p className="text-xs text-slate-700">Credencial QR generada</p>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            )}
+
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Modules List */}
                 <div className="lg:col-span-2 space-y-6">

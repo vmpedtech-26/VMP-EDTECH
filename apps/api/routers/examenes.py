@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from datetime import datetime
 import json
 from schemas.models import (
@@ -9,12 +9,14 @@ from schemas.models import (
 from auth.dependencies import get_current_user
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
+from services.audit_service import log_audit_action
 
 router = APIRouter()
 
 
 @router.post("/enviar-quiz", response_model=QuizFeedbackResponse)
 async def enviar_quiz(
+    request: Request,
     data: EnviarQuizRequest,
     current_user = Depends(get_current_user)
 ):
@@ -165,6 +167,23 @@ async def enviar_quiz(
                 # No falla el quiz si falla la generación
     else:
         message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
+    
+    # Log audit
+    request_id = getattr(request.state, "request_id", "N/A")
+    ip_address = request.client.host if request.client else "N/A"
+    action_type = "EXAM_PASS" if aprobado else "EXAM_FAIL"
+    details_str = f"Examen del módulo {modulo.titulo} completado con calificación {calificacion:.1f}%."
+    if aprobado and credencial_info:
+        details_str += f" Credencial auto-generada: {credencial_info['numero']}."
+        
+    await log_audit_action(
+        action=action_type,
+        user_id=current_user.id,
+        user_email=current_user.email,
+        details=details_str,
+        ip_address=ip_address,
+        request_id=request_id
+    )
     
     return QuizFeedbackResponse(
         calificacion=calificacion,

@@ -404,3 +404,19 @@ model CajaMovimiento {
   @@index([tipo])
   @@map("caja_movimientos")
 }
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  userEmail String?  @map("user_email")
+  action    String
+  details   String?  // Descripción textual o formato JSON
+  ipAddress String?  @map("ip_address")
+  requestId String?  @map("request_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

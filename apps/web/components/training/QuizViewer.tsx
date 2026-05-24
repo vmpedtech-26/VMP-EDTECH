@@ -21,6 +21,20 @@ export function QuizViewer({ cursoId, moduloId, preguntas, onComplete }: QuizVie
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [feedback, setFeedback] = useState<QuizFeedbackResponse | null>(null);
 
+    // Cargar script de confeti dinámicamente de forma robusta
+    React.useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+        
+        return () => {
+            try {
+                document.body.removeChild(script);
+            } catch (e) {}
+        };
+    }, []);
+
     const handleSelect = (opcionIndex: number) => {
         setRespuestas({ ...respuestas, [preguntas[currentStep].id]: opcionIndex });
     };
@@ -45,6 +59,31 @@ export function QuizViewer({ cursoId, moduloId, preguntas, onComplete }: QuizVie
                 toast.success('¡Felicidades!', {
                     description: 'Has aprobado el examen y el módulo ha sido completado.',
                 });
+
+                // Lanzar confeti espectacular de doble ráfaga lateral
+                if (typeof window !== 'undefined' && (window as any).confetti) {
+                    const duration = 3.5 * 1000;
+                    const end = Date.now() + duration;
+
+                    (function frame() {
+                        (window as any).confetti({
+                            particleCount: 5,
+                            angle: 60,
+                            spread: 55,
+                            origin: { x: 0 }
+                        });
+                        (window as any).confetti({
+                            particleCount: 5,
+                            angle: 120,
+                            spread: 55,
+                            origin: { x: 1 }
+                        });
+
+                        if (Date.now() < end) {
+                            requestAnimationFrame(frame);
+                        }
+                    }());
+                }
             } else {
                 toast.error('Examen no aprobado', {
                     description: 'No has alcanzado la nota mínima. Puedes intentarlo de nuevo.',
