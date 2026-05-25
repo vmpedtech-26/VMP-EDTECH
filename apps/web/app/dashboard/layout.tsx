@@ -16,7 +16,7 @@ export default function DashboardLayout({
     const pathname = usePathname();
 
     useEffect(() => {
-        if (!isLoading && user) {
+        if (!isLoading && user && pathname) {
             // Si el rol es CONTADOR, blindar el panel de capacitación y redirigir
             if (user.rol === 'CONTADOR') {
                 const isContabilidad = pathname.startsWith('/dashboard/super/contabilidad');
@@ -39,8 +39,8 @@ export default function DashboardLayout({
 
     // Evitar parpadeos de rutas restringidas para el contador
     if (user?.rol === 'CONTADOR') {
-        const isContabilidad = pathname.startsWith('/dashboard/super/contabilidad');
-        const isPerfil = pathname.startsWith('/dashboard/perfil');
+        const isContabilidad = pathname ? pathname.startsWith('/dashboard/super/contabilidad') : false;
+        const isPerfil = pathname ? pathname.startsWith('/dashboard/perfil') : false;
         if (!isContabilidad && !isPerfil) {
             return (
                 <div className="flex items-center justify-center min-h-screen">

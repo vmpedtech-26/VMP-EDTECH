@@ -24,7 +24,7 @@ export default function SuperLayout({
 
             // Si es CONTADOR, solo puede acceder a la subruta de contabilidad
             if (user.rol === 'CONTADOR') {
-                const isContabilidadRoute = pathname.startsWith('/dashboard/super/contabilidad');
+                const isContabilidadRoute = pathname ? pathname.startsWith('/dashboard/super/contabilidad') : false;
                 if (!isContabilidadRoute) {
                     router.replace('/dashboard/super/contabilidad');
                 }
@@ -46,7 +46,7 @@ export default function SuperLayout({
         return null;
     }
 
-    if (user.rol === 'CONTADOR' && !pathname.startsWith('/dashboard/super/contabilidad')) {
+    if (user.rol === 'CONTADOR' && (!pathname || !pathname.startsWith('/dashboard/super/contabilidad'))) {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
                 <Loader2 className="h-8 w-8 text-primary animate-spin" />
