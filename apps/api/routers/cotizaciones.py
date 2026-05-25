@@ -7,6 +7,7 @@ import logging
 from core.security_utils import sanitize_data
 from middleware.security import rate_limit_public
 from services.webhook_service import emit, WebhookEvent
+from auth.dependencies import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -191,6 +192,7 @@ async def get_cotizaciones(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
+    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -225,6 +227,7 @@ async def get_cotizaciones(
 @router.get("/{cotizacion_id}", response_model=CotizacionResponse)
 async def get_cotizacion(
     cotizacion_id: int,
+    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -253,10 +256,15 @@ async def get_cotizacion(
         )
 
 
-@router.patch("/{cotizacion_id}/status")
+class UpdateStatusRequest(BaseModel):
+    status: str
+
+
+@router.patch("/{cotizacion_id}/status", response_model=CotizacionResponse)
 async def update_cotizacion_status(
     cotizacion_id: int,
-    status: str,
+    request_data: UpdateStatusRequest,
+    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -264,6 +272,7 @@ async def update_cotizacion_status(
     
     - **status**: Nuevo estado (pending, contacted, converted, rejected)
     """
+    status = request_data.status
     valid_statuses = ["pending", "contacted", "converted", "rejected"]
     if status not in valid_statuses:
         raise HTTPException(
@@ -279,7 +288,7 @@ async def update_cotizacion_status(
         
         logger.info(f"Cotización {cotizacion_id} actualizada a estado: {status}")
         
-        return {"message": "Estado actualizado correctamente", "cotizacion": cotizacion}
+        return cotizacion
         
     except Exception as e:
         logger.error(f"Error al actualizar cotización {cotizacion_id}: {str(e)}")
@@ -318,6 +327,7 @@ class ConvertCotizacionResponse(BaseModel):
 async def convert_cotizacion_to_client(
     cotizacion_id: int,
     data: ConvertCotizacionRequest,
+    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -437,18 +447,6 @@ async def convert_cotizacion_to_client(
         credenciales_alumnos: list[dict[str, Any]] = []
         
         try:
-            # Creamos la empresa primero
-            empresa = await db.company.create(
-                data={
-                    "nombre": empresa_nombre,
-                    "cuit": empresa_cuit,
-                    "direccion": empresa_direccion,
-                    "telefono": empresa_telefono,
-                    "email": cotizacion.email,
-                    "activa": True
-                }
-            )
-
             for i in range(1, cantidad_alumnos + 1):
                 # Generar datos del alumno
                 alumno_dni = f"{secrets.token_hex(4).upper()}-{i}"
@@ -478,6 +476,13 @@ async def convert_cotizacion_to_client(
                     }
                 )
                 
+                inscripciones_creadas.append({
+                    "id": inscripcion.id,
+                    "alumnoId": inscripcion.alumnoId,
+                    "cursoId": inscripcion.cursoId,
+                    "estado": inscripcion.estado
+                })
+                
                 alumnos_creados.append({
                     "id": alumno.id,
                     "nombre": alumno.nombre,
@@ -491,6 +496,11 @@ async def convert_cotizacion_to_client(
                 })
         except Exception as tx_error:
             logger.error(f"Error en transacción de conversión: {tx_error}")
+            # Rollback: borrar la empresa creada
+            try:
+                await db.company.delete(where={"id": empresa.id})
+            except Exception as rollback_err:
+                logger.error(f"Fallo en rollback de empresa: {rollback_err}")
             raise HTTPException(status_code=500, detail="Error al crear registros. Operación cancelada.")
         
         # 7. Actualizar cotización a 'converted'

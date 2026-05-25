@@ -13,8 +13,18 @@ import time
 from core.config import settings
 
 
+def safe_get_remote_address(request: Request) -> str:
+    """
+    Retorna la IP remota del cliente de forma de evitar crashes en entornos de test.
+    Si request.client es None (ej: AsyncClient en pytest), retorna '127.0.0.1'.
+    """
+    if not request.client or not request.client.host:
+        return "127.0.0.1"
+    return request.client.host
+
+
 # Configurar rate limiter
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=safe_get_remote_address, enabled=True)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -52,7 +62,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
     """
     
     async def dispatch(self, request: Request, call_next: Callable):
-        request_id = f"{int(time.time() * 1000)}-{get_remote_address(request)}"
+        request_id = f"{int(time.time() * 1000)}-{safe_get_remote_address(request)}"
         request.state.request_id = request_id
         
         response = await call_next(request)

@@ -131,7 +131,7 @@ async def get_current_user_info(current_user = Depends(get_current_user)):
 # ============= PASSWORD RESET =============
 
 from pydantic import BaseModel, EmailStr
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import os
 
@@ -163,7 +163,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
         reset_token = str(uuid.uuid4())
         
         # Calcular expiración (1 hora desde ahora)
-        expires_at = datetime.utcnow() + timedelta(hours=1)
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
         
         # Guardar token en base de datos
         await prisma.passwordresettoken.create(
@@ -229,7 +229,7 @@ async def reset_password(request: Request, data: ResetPasswordRequest):
             )
         
         # Verificar que no haya expirado
-        if datetime.utcnow() > token_record.expiresAt:
+        if datetime.now(timezone.utc) > token_record.expiresAt:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Este link de recuperación ha expirado. Solicita uno nuevo."

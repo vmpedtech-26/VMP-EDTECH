@@ -1,7 +1,7 @@
 """
 Servicio para validar credenciales públicamente.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from core.database import prisma
 
@@ -40,10 +40,10 @@ class CredentialValidator:
                 "message": "Credencial no encontrada"
             }
         
-        # Verificar expiración
         is_expired = False
         if credencial.fechaVencimiento:
-            is_expired = datetime.utcnow() > credencial.fechaVencimiento
+            # PostgreSQL datetimes from Prisma are timezone-aware (UTC), so we use timezone-aware now
+            is_expired = datetime.now(timezone.utc) > credencial.fechaVencimiento
         
         # Preparar respuesta con datos públicos
         return {

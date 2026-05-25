@@ -84,6 +84,8 @@ async def global_unhandled_exception_handler(request: Request, exc: Exception):
     )
 
 # Database & Security Middlewares
+from slowapi.middleware import SlowAPIMiddleware
+app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(DatabaseConnectionMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestIDMiddleware)

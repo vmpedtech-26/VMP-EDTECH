@@ -250,3 +250,95 @@ async def completar_modulo(
         message="Módulo completado exitosamente" if not curso_completado else "¡Felicitaciones! Has completado el curso"
     )
 
+
+# ============= ENDPOINTS ADMINISTRATIVOS ADICIONALES =============
+from pydantic import BaseModel
+from typing import Optional
+
+class InscripcionCreateRequest(BaseModel):
+    alumnoId: str
+    cursoId: str
+
+
+class UpdateProgresoRequest(BaseModel):
+    progreso: int
+    estado: Optional[str] = None
+
+
+@router.post("", response_model=dict)
+async def crear_inscripcion_manual(
+    data: InscripcionCreateRequest,
+    current_user=Depends(get_current_user)
+):
+    """Creación manual de inscripción por parte de un administrador"""
+    # Verificar si ya existe
+    existing = await prisma.inscripcion.find_first(
+        where={
+            "alumnoId": data.alumnoId,
+            "cursoId": data.cursoId
+        }
+    )
+    if existing:
+        return existing.model_dump()
+        
+    inscripcion = await prisma.inscripcion.create(
+        data={
+            "alumnoId": data.alumnoId,
+            "cursoId": data.cursoId,
+            "progreso": 0,
+            "estado": "NO_INICIADO"
+        }
+    )
+    return inscripcion.model_dump()
+
+
+@router.get("/alumno/{alumno_id}", response_model=List[dict])
+async def obtener_inscripciones_por_alumno(
+    alumno_id: str,
+    current_user=Depends(get_current_user)
+):
+    """Obtener todas las inscripciones asociadas a un alumno"""
+    inscripciones = await prisma.inscripcion.find_many(
+        where={"alumnoId": alumno_id}
+    )
+    return [i.model_dump() for i in inscripciones]
+
+
+@router.patch("/{id}/progreso", response_model=dict)
+async def actualizar_progreso_inscripcion(
+    id: str,
+    data: UpdateProgresoRequest,
+    current_user=Depends(get_current_user)
+):
+    """Actualización manual/administrativa del progreso y estado de una inscripción"""
+    estado = data.estado
+    if data.progreso >= 100 and not estado:
+        estado = "COMPLETADO"
+    elif data.progreso > 0 and not estado:
+        estado = "EN_PROGRESO"
+        
+    update_data = {
+        "progreso": data.progreso
+    }
+    if estado:
+        update_data["estado"] = estado
+        if estado == "COMPLETADO":
+            update_data["finDate"] = datetime.now()
+            
+    inscripcion = await prisma.inscripcion.update(
+        where={"id": id},
+        data=update_data
+    )
+    
+    # Si pasa a COMPLETADO, generar credencial si no existe
+    if estado == "COMPLETADO":
+        try:
+            await generate_credential_for_student(
+                alumno_id=inscripcion.alumnoId,
+                curso_id=inscripcion.cursoId
+            )
+        except Exception as e:
+            print(f"[CREDENCIAL MANUAL] Error al autogenerar al actualizar progreso: {e}")
+            
+    return inscripcion.model_dump()
+

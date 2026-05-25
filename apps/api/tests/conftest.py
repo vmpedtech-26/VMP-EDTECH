@@ -4,7 +4,7 @@ Configuración de pytest para tests de la API.
 import pytest
 import asyncio
 from typing import Generator, AsyncGenerator
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from fastapi.testclient import TestClient
 from main import app
 from core.database import prisma
@@ -18,14 +18,22 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def db():
     """
     Fixture para conectar a la base de datos de prueba.
     """
+    if prisma.is_connected():
+        try:
+            await prisma.disconnect()
+        except Exception:
+            pass
     await prisma.connect()
     yield prisma
-    await prisma.disconnect()
+    try:
+        await prisma.disconnect()
+    except Exception:
+        pass
 
 
 @pytest.fixture
@@ -33,7 +41,7 @@ async def client(db) -> AsyncGenerator:
     """
     Fixture para cliente HTTP de prueba.
     """
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
 
@@ -117,3 +125,26 @@ async def admin_token(test_admin):
     
     token = create_access_token(data={"sub": test_admin.id})
     return token
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def clean_database_session():
+    """
+    Fixture autouse de sesión para vaciar completamente la base de datos antes de iniciar los tests,
+    evitando conflictos de claves primarias/únicas por residuos de corridas previas.
+    """
+    await prisma.connect()
+    try:
+        await prisma.execute_raw(
+            "TRUNCATE TABLE "
+            "users, companies, cursos, modulos, preguntas, inscripciones, examenes, "
+            "fotos_credencial, credenciales, cotizaciones, password_reset_tokens, "
+            "accounts, journal_entries, ledger_entries, ventas, venta_items, "
+            "compras, compra_items, caja_movimientos, audit_logs "
+            "CASCADE;"
+        )
+        print("🧹 Base de datos de prueba limpiada con éxito al iniciar la sesión.")
+    except Exception as e:
+        print(f"⚠️ Error limpiando la base de datos de prueba: {e}")
+    finally:
+        await prisma.disconnect()

@@ -13,7 +13,7 @@ class TestCursos:
     async def test_create_curso(self, client: AsyncClient, admin_token, db):
         """Test de creación de curso"""
         response = await client.post(
-            "/api/cursos/",
+            "/api/cursos",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "nombre": "Curso de Prueba",
@@ -38,7 +38,7 @@ class TestCursos:
     async def test_get_cursos(self, client: AsyncClient, auth_token):
         """Test de obtener lista de cursos"""
         response = await client.get(
-            "/api/cursos/",
+            "/api/cursos",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         
@@ -155,7 +155,7 @@ class TestInscripciones:
         
         # Crear inscripción
         response = await client.post(
-            "/api/inscripciones/",
+            "/api/inscripciones",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "alumnoId": test_user.id,

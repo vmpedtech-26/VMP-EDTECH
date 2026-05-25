@@ -23,6 +23,8 @@ async def validate_credential(request: Request, numero: str):
     try:
         result = await credential_validator.validate_credential(numero)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error validating credential: {str(e)}")
         raise HTTPException(
