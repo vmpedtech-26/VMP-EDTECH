@@ -87,8 +87,12 @@ class Settings(BaseSettings):
         "REDIS_URL",
         "redis://default:NaxeRKqQcmsoQkMfloNCbNPHhIhzilEA@redis.railway.internal:6379"
     )
+    # Gemini AI
+    GEMINI_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = Settings()

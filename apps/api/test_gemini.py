@@ -3,7 +3,7 @@ import google.generativeai as genai
 import tempfile
 from markitdown import MarkItDown
 
-gemini_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBhyTW1eVmtD3JQByDHijOvAiP6_GcBzy0")
+gemini_key = os.environ.get("GEMINI_API_KEY", "AIzaSyD2cD22gGwIhkpejMClwobMugiDNnByYow")
 genai.configure(api_key=gemini_key)
 
 try:
