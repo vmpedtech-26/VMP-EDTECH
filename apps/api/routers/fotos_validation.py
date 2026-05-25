@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request
 import os
 import json
 from auth.dependencies import get_current_user
 from pydantic import BaseModel
+from middleware.security import rate_limit_ia
 
 router = APIRouter()
 
@@ -11,7 +12,9 @@ class ValidationResponse(BaseModel):
     feedback: str
 
 @router.post("/validate-ia", response_model=ValidationResponse)
+@rate_limit_ia()
 async def validar_foto_con_ia(
+    request: Request,
     file: UploadFile = File(...),
     current_user=Depends(get_current_user)
 ):
@@ -41,6 +44,13 @@ async def validar_foto_con_ia(
         # Leer el contenido del archivo
         contents = await file.read()
         
+        # Comprimir imagen en memoria para ahorrar red y tokens en Gemini Vision
+        try:
+            from services.file_upload import compress_image
+            contents = compress_image(contents, file_ext, quality=80, max_size=(600, 600))
+        except Exception as img_err:
+            print(f"Advertencia al pre-comprimir imagen para IA: {img_err}")
+            
         import google.generativeai as genai
         genai.configure(api_key=gemini_key)
         

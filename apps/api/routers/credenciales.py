@@ -2,10 +2,11 @@
 Router dedicado a la gestión de credenciales.
 Generación manual por instructores y listados.
 """
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from typing import Optional, List
 from datetime import datetime
 from auth.dependencies import get_current_user
+from middleware.security import rate_limit_public
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
 from services.credential_validator import credential_validator
@@ -122,7 +123,8 @@ async def eliminar_credencial(id: str, current_user=Depends(get_current_user)):
 
 
 @router.get("/validar/{numero}")
-async def validar_credencial_publica(numero: str):
+@rate_limit_public()
+async def validar_credencial_publica(numero: str, request: Request):
     """
     Validar una credencial por su número de forma pública (sin autenticación).
     Este endpoint es utilizado por la landing page /validar/{codigo}

@@ -3,10 +3,40 @@ import uuid
 from pathlib import Path
 from fastapi import UploadFile, HTTPException
 from typing import Optional
+from PIL import Image
+import io
 
 from core.config import settings
 
-# Configuración
+def compress_image(contents: bytes, file_ext: str, quality: int = 85, max_size: tuple = (800, 800)) -> bytes:
+    """
+    Comprime y redimensiona una imagen en memoria para ahorrar almacenamiento
+    y reducir el consumo de tokens en Gemini Vision.
+    Preserva transparencias en imágenes PNG (esencial para firmas).
+    """
+    try:
+        img = Image.open(io.BytesIO(contents))
+        
+        # Convertir a RGB si se guarda como JPEG
+        if file_ext.lower() in [".jpg", ".jpeg"] and img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+            
+        # Redimensionar manteniendo relación de aspecto
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        output_buffer = io.BytesIO()
+        # Determinar formato de salida
+        save_format = "PNG" if file_ext.lower() == ".png" else "JPEG"
+        
+        if save_format == "JPEG":
+            img.save(output_buffer, format=save_format, quality=quality, optimize=True)
+        else:
+            img.save(output_buffer, format=save_format, optimize=True)
+            
+        return output_buffer.getvalue()
+    except Exception as e:
+        print(f"Advertencia al procesar/comprimir imagen con Pillow: {e}")
+        return contents # Retornar imagen original si ocurre un fallo
 STORAGE_ROOT = Path(settings.STORAGE_PATH)
 UPLOAD_DIR = STORAGE_ROOT / "uploads" / "credenciales"
 EVIDENCIAS_DIR = STORAGE_ROOT / "uploads" / "evidencias"
@@ -49,6 +79,9 @@ async def save_credencial_photo(file: UploadFile) -> str:
         if len(content) > MAX_FILE_SIZE:
             raise HTTPException(status_code=400, detail="Archivo demasiado grande")
             
+        # Comprimir y optimizar imagen
+        content = compress_image(content, file_ext, quality=85, max_size=(800, 800))
+        
         with open(file_path, "wb") as buffer:
             buffer.write(content)
             
@@ -152,6 +185,9 @@ async def save_instructor_signature(file: UploadFile, instructor_id: str) -> str
         if len(content) > MAX_FILE_SIZE:
             raise HTTPException(status_code=400, detail="Archivo demasiado grande")
             
+        # Comprimir y optimizar firma (preservando formato PNG para transparencia)
+        content = compress_image(content, ".png", quality=85, max_size=(500, 500))
+        
         with open(file_path, "wb") as buffer:
             buffer.write(content)
             

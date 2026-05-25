@@ -72,6 +72,11 @@ def rate_limit_forgot_password():
     return limiter.limit("3/minute")
 
 
+def rate_limit_ia():
+    """Rate limit para validación de fotos con IA: 3 requests por minuto"""
+    return limiter.limit("3/minute")
+
+
 def rate_limit_public():
     """Rate limit para endpoints públicos: 20 requests por minuto"""
     return limiter.limit("20/minute")

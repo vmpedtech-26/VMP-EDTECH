@@ -69,7 +69,7 @@ async def listar_asientos(desde: Optional[str] = None, hasta: Optional[str] = No
     )
 
 @router.post("/journal", response_model=JournalEntryResponse)
-async def crear_asiento_manual(data: CreateManualJournalEntryRequest, current_user=Depends(get_current_user)):
+async def crear_asiento_manual(request: Request, data: CreateManualJournalEntryRequest, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
@@ -134,6 +134,19 @@ async def crear_asiento_manual(data: CreateManualJournalEntryRequest, current_us
                     }
                 }
             )
+            
+            # Log audit
+            request_id = getattr(request.state, "request_id", "N/A")
+            ip_address = request.client.host if request.client else "N/A"
+            await log_audit_action(
+                action="JOURNAL_MANUAL_ENTRY_CREATE",
+                user_id=current_user.id,
+                user_email=current_user.email,
+                details=f"Asiento manual registrado: '{data.concept}' (Ref: {data.reference or 'N/A'}). Partidas: {len(data.entries)}. Total: ${suma_debe:,.2f} ARS.",
+                ip_address=ip_address,
+                request_id=request_id
+            )
+            
             return asiento
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar el asiento contable: {str(e)}")
