@@ -8,7 +8,7 @@ interface User {
     email: string;
     nombre: string;
     apellido: string;
-    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'SUPERVISOR';
+    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'SUPERVISOR' | 'CONTADOR';
     dni: string;
     empresaId?: string;
 }
@@ -54,6 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.push('/dashboard/instructor');
         } else if (userData.rol === 'SUPER_ADMIN') {
             router.push('/dashboard/super');
+        } else if (userData.rol === 'CONTADOR') {
+            router.push('/dashboard/super/contabilidad');
         } else {
             router.push('/dashboard');
         }

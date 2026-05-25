@@ -13,13 +13,13 @@ from schemas.accounting import (
     CompraResponse, CreateCompraRequest,
     CajaMovimientoResponse, BalanceRow
 )
-from auth.dependencies import get_current_user
+from auth.dependencies import get_current_user, RequireRole
 from core.database import prisma
 from datetime import datetime
 from services.webhook_service import emit, WebhookEvent
 from services.audit_service import log_audit_action
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(RequireRole(["SUPER_ADMIN", "CONTADOR"]))])
 
 # --- Plan de Cuentas ---
 

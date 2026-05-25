@@ -216,7 +216,7 @@ export default function LibroDiarioPage() {
                             Limpiar
                         </Button>
                     )}
-                    <Button variant="ghost" size="icon" onClick={fetchJournal} className="h-8 w-8 hover:bg-slate-100">
+                    <Button variant="ghost" size="sm" onClick={fetchJournal} className="h-8 w-8 hover:bg-slate-100 p-0 flex items-center justify-center">
                         <RefreshCw className={`h-4 w-4 text-slate-500 ${isLoading ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>

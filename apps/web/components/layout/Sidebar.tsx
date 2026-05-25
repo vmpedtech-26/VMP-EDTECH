@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
 interface SidebarProps {
-    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'SUPERVISOR';
+    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'SUPERVISOR' | 'CONTADOR';
 }
 
 interface MenuItem {
@@ -68,6 +68,28 @@ const menuItems: Record<string, MenuItem[]> = {
             ]
         },
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
+    ],
+    CONTADOR: [
+        { icon: LayoutDashboard, label: 'Centro Contable', href: '/dashboard/super/contabilidad' },
+        {
+            icon: CircleDollarSign,
+            label: 'Operaciones',
+            submenu: [
+                { icon: Plus, label: 'Cargar Factura', href: '/dashboard/super/contabilidad/compras/nuevo' },
+                { icon: CircleDollarSign, label: 'Ventas', href: '/dashboard/super/contabilidad/ventas' },
+                { icon: CircleDollarSign, label: 'Compras', href: '/dashboard/super/contabilidad/compras' },
+            ]
+        },
+        {
+            icon: BookOpen,
+            label: 'Libros Contables',
+            submenu: [
+                { icon: LayoutDashboard, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+                { icon: BookOpen, label: 'Libro Mayor', href: '/dashboard/super/contabilidad/mayor' },
+                { icon: Sliders, label: 'Reportes', href: '/dashboard/super/contabilidad/reportes' },
+            ]
+        },
+        { icon: Settings, label: 'Mi Perfil', href: '/dashboard/perfil' },
     ],
     INSTRUCTOR: [
         { icon: LayoutDashboard, label: 'Inicio', href: '/dashboard/instructor' },
@@ -189,6 +211,8 @@ export function Sidebar({ userRole }: SidebarProps) {
                                     {userRole === 'ALUMNO' && 'Alumno'}
                                     {userRole === 'SUPER_ADMIN' && 'Super Admin'}
                                     {userRole === 'INSTRUCTOR' && 'Instructor'}
+                                    {userRole === 'SUPERVISOR' && 'Supervisor'}
+                                    {userRole === 'CONTADOR' && 'Contador'}
                                 </div>
                             </div>
                         </Link>
