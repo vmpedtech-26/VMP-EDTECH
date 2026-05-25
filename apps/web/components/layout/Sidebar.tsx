@@ -63,6 +63,7 @@ const menuItems: Record<string, MenuItem[]> = {
                 { icon: CircleDollarSign, label: 'Ventas', href: '/dashboard/super/contabilidad/ventas' },
                 { icon: CircleDollarSign, label: 'Compras', href: '/dashboard/super/contabilidad/compras' },
                 { icon: LayoutDashboard, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+                { icon: BookOpen, label: 'Libro Mayor', href: '/dashboard/super/contabilidad/mayor' },
                 { icon: Sliders, label: 'Reportes', href: '/dashboard/super/contabilidad/reportes' },
             ]
         },

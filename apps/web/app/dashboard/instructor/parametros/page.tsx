@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api-client';
 import { cursosApi } from '@/lib/api/cursos';
 import { Curso } from '@/types/training';
+import ProfileSignatureUpload from '@/components/instructor/ProfileSignatureUpload';
 
 export default function ParametrosPage() {
     const [claseUrl, setClaseUrl] = useState('');
@@ -208,6 +209,8 @@ export default function ParametrosPage() {
                             ))}
                         </ul>
                     </Card>
+
+                    <ProfileSignatureUpload />
                 </div>
             </div>
         </div>

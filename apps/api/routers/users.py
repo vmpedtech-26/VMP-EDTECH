@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
 from typing import List, Optional
 from schemas.users import UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse
 from auth.dependencies import get_current_user
 from core.database import prisma
 from auth.jwt import hash_password
+from services.file_upload import save_instructor_signature, get_instructor_signature_path
 
 router = APIRouter()
 
@@ -78,6 +79,32 @@ async def save_meet_link(data: MeetLinkRequest, current_user=Depends(get_current
     )
 
     return {"status": "ok", "link": link}
+
+
+@router.post("/me/signature")
+async def upload_signature(file: UploadFile = File(...), current_user=Depends(get_current_user)):
+    """Upload a signature image for the current instructor"""
+    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
+        raise HTTPException(status_code=403, detail="Solo instructores pueden subir firmas digitalizadas")
+        
+    try:
+        url = await save_instructor_signature(file, current_user.id)
+        return {"status": "ok", "url": url}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al subir la firma: {str(e)}")
+
+@router.get("/me/signature")
+async def get_signature(current_user=Depends(get_current_user)):
+    """Check if the current instructor has a signature uploaded"""
+    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
+        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
+        
+    path = get_instructor_signature_path(current_user.id)
+    if path:
+        return {"exists": True, "url": f"/uploads/firmas/signature_{current_user.id}.png"}
+    return {"exists": False}
 
 
 @router.get("/{id}", response_model=UserWithEmpresaResponse)

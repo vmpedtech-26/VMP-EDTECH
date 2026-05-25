@@ -83,6 +83,22 @@ export default function ParticipantesPage() {
     const handleFileUpload = async (alumnoId: string, file: File) => {
         setUploadingFor(alumnoId);
         try {
+            // 1. Pre-validación con IA (Gemini Vision)
+            const validationData = new FormData();
+            validationData.append('file', file);
+            
+            try {
+                const validation = await api.post('/fotos-credencial/validate-ia', validationData);
+                if (!validation.valid) {
+                    alert(`❌ Validación inteligente fallida:\n\n${validation.feedback}\n\nPor favor, sube otra foto que cumpla los requisitos.`);
+                    setUploadingFor(null);
+                    return;
+                }
+            } catch (err) {
+                console.warn("AI validation error, bypassing to manual approval:", err);
+            }
+
+            // 2. Subida real si es válida
             const formData = new FormData();
             formData.append('file', file);
             formData.append('alumnoId', alumnoId);
@@ -90,7 +106,7 @@ export default function ParticipantesPage() {
 
             await api.post('/fotos-credencial/upload', formData);
             await fetchAlumnos(); // Refresh list
-            alert('Foto subida exitosamente');
+            alert('¡Foto subida y validada con éxito!');
         } catch (error: any) {
             console.error('Error uploading foto:', error);
             alert(`Error: ${error.message || 'No se pudo subir la foto'}`);

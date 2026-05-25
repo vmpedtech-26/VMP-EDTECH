@@ -126,3 +126,44 @@ async def delete_evidence_photo(file_url: str) -> bool:
         return False
     except Exception:
         return False
+
+# --- Firmas de Instructores ---
+SIGNATURES_DIR = STORAGE_ROOT / "uploads" / "firmas"
+
+async def save_instructor_signature(file: UploadFile, instructor_id: str) -> str:
+    """
+    Guardar firma digitalizada del instructor
+    """
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Formato no permitido. Use: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+    
+    SIGNATURES_DIR.mkdir(parents=True, exist_ok=True)
+    
+    # Guardamos siempre como png para conservar transparencias
+    filename = f"signature_{instructor_id}.png"
+    file_path = SIGNATURES_DIR / filename
+    
+    try:
+        content = await file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail="Archivo demasiado grande")
+            
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+            
+        return f"/uploads/firmas/{filename}"
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Error al guardar firma: {str(e)}")
+
+def get_instructor_signature_path(instructor_id: str) -> Optional[Path]:
+    SIGNATURES_DIR.mkdir(parents=True, exist_ok=True)
+    file_path = SIGNATURES_DIR / f"signature_{instructor_id}.png"
+    if file_path.exists():
+        return file_path
+    return None

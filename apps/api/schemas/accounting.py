@@ -41,6 +41,12 @@ class JournalEntryBase(BaseModel):
 class CreateJournalEntryRequest(JournalEntryBase):
     entries: List[LedgerEntryBase]
 
+class CreateManualJournalEntryRequest(BaseModel):
+    date: Optional[datetime] = None
+    concept: str
+    reference: Optional[str] = None
+    entries: List[LedgerEntryBase]
+
 class JournalEntryResponse(JournalEntryBase):
     id: str
     entries: List[LedgerEntryResponse]

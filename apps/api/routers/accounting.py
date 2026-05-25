@@ -8,6 +8,7 @@ from typing import List, Optional
 from schemas.accounting import (
     AccountResponse, CreateAccountRequest, 
     JournalEntryResponse, CreateJournalEntryRequest,
+    CreateManualJournalEntryRequest,
     VentaResponse, CreateVentaRequest,
     CompraResponse, CreateCompraRequest,
     CajaMovimientoResponse, BalanceRow
@@ -37,10 +38,26 @@ async def crear_cuenta(data: CreateAccountRequest, current_user=Depends(get_curr
 # --- Libro Diario ---
 
 @router.get("/journal", response_model=List[JournalEntryResponse])
-async def listar_asientos(current_user=Depends(get_current_user)):
+async def listar_asientos(desde: Optional[str] = None, hasta: Optional[str] = None, current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    where_clause = {}
+    if desde or hasta:
+        where_clause["date"] = {}
+        if desde:
+            try:
+                where_clause["date"]["gte"] = datetime.strptime(f"{desde} 00:00:00", "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Formato 'desde' inválido. Debe ser YYYY-MM-DD")
+        if hasta:
+            try:
+                where_clause["date"]["lte"] = datetime.strptime(f"{hasta} 23:59:59", "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Formato 'hasta' inválido. Debe ser YYYY-MM-DD")
+
     return await prisma.journalentry.find_many(
+        where=where_clause,
         include={
             "entries": {
                 "include": {
@@ -50,6 +67,158 @@ async def listar_asientos(current_user=Depends(get_current_user)):
         }, 
         order={"date": "desc"}
     )
+
+@router.post("/journal", response_model=JournalEntryResponse)
+async def crear_asiento_manual(data: CreateManualJournalEntryRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    
+    # 1. Validar partida doble: Suma Debe == Suma Haber
+    suma_debe = sum(entry.debit for entry in data.entries)
+    suma_haber = sum(entry.credit for entry in data.entries)
+    
+    # Tolerancia de decimales (centavos)
+    if abs(suma_debe - suma_haber) > 0.01:
+        raise HTTPException(
+            status_code=400,
+            detail=f"El asiento contable no balancea. Suma Debe (${suma_debe:,.2f}) debe ser igual a Suma Haber (${suma_haber:,.2f}). Diferencia: ${abs(suma_debe - suma_haber):,.2f}"
+        )
+    
+    # 2. Validar que al menos haya 2 movimientos y que los montos sean válidos
+    if len(data.entries) < 2:
+        raise HTTPException(status_code=400, detail="Un asiento contable debe tener al menos dos movimientos (partidas).")
+        
+    for entry in data.entries:
+        if entry.debit < 0 or entry.credit < 0:
+            raise HTTPException(status_code=400, detail="Los importes del Debe y Haber no pueden ser negativos.")
+        if entry.debit > 0 and entry.credit > 0:
+            raise HTTPException(status_code=400, detail="Un movimiento individual no puede registrar Debe y Haber al mismo tiempo.")
+        if entry.debit == 0 and entry.credit == 0:
+            raise HTTPException(status_code=400, detail="Cada movimiento debe tener un importe mayor a cero en el Debe o en el Haber.")
+
+    # 3. Validar cuentas existentes
+    account_ids = [entry.accountId for entry in data.entries]
+    db_accounts = await prisma.account.find_many(where={"id": {"in": account_ids}})
+    db_account_ids = {acc.id for acc in db_accounts}
+    
+    missing_accounts = [acc_id for acc_id in account_ids if acc_id not in db_account_ids]
+    if missing_accounts:
+        raise HTTPException(status_code=400, detail=f"Las siguientes cuentas contables no existen: {', '.join(missing_accounts)}")
+
+    # 4. Crear Asiento dentro de una transacción robusta de Prisma
+    try:
+        asiento_date = data.date or datetime.now()
+        async with prisma.tx() as transaction:
+            asiento = await transaction.journalentry.create(
+                data={
+                    "concept": data.concept,
+                    "reference": data.reference,
+                    "type": "GENERAL",
+                    "date": asiento_date,
+                    "entries": {
+                        "create": [
+                            {
+                                "accountId": entry.accountId,
+                                "description": entry.description,
+                                "debit": entry.debit,
+                                "credit": entry.credit
+                            } for entry in data.entries
+                        ]
+                    }
+                },
+                include={
+                    "entries": {
+                        "include": {
+                            "account": True
+                        }
+                    }
+                }
+            )
+            return asiento
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al registrar el asiento contable: {str(e)}")
+
+@router.get("/journal/accounts/{code}")
+async def listar_mayor_cuenta(code: str, desde: Optional[str] = None, hasta: Optional[str] = None, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+        
+    # 1. Buscar la cuenta
+    account = await prisma.account.find_unique(where={"code": code})
+    if not account:
+        raise HTTPException(status_code=404, detail=f"Cuenta contable con código {code} no encontrada.")
+        
+    # 2. Filtrar movimientos
+    where_clause = {
+        "accountId": account.id
+    }
+    
+    # Filtrar por la fecha del asiento padre
+    date_filter = {}
+    if desde:
+        try:
+            date_filter["gte"] = datetime.strptime(f"{desde} 00:00:00", "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato 'desde' inválido. Debe ser YYYY-MM-DD")
+    if hasta:
+        try:
+            date_filter["lte"] = datetime.strptime(f"{hasta} 23:59:59", "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato 'hasta' inválido. Debe ser YYYY-MM-DD")
+            
+    if date_filter:
+        where_clause["journal"] = {
+            "is": {
+                "date": date_filter
+            }
+        }
+        
+    # 3. Consultar los movimientos en orden cronológico del asiento
+    ledger_entries = await prisma.ledgerentry.find_many(
+        where=where_clause,
+        include={
+            "journal": True,
+            "account": True
+        },
+        order=[
+            {"journal": {"date": "asc"}},
+            {"createdAt": "asc"}
+        ]
+    )
+    
+    # 4. Formatear la respuesta con balance dinámico
+    movimientos = []
+    saldo_acumulado = 0.0
+    
+    for entry in ledger_entries:
+        # Calcular según el tipo de cuenta
+        if account.type in ["ASSET", "EXPENSE"]:
+            saldo_acumulado += (entry.debit - entry.credit)
+        else:
+            saldo_acumulado += (entry.credit - entry.debit)
+            
+        movimientos.append({
+            "id": entry.id,
+            "date": entry.journal.date,
+            "concept": entry.journal.concept,
+            "reference": entry.journal.reference,
+            "type": entry.journal.type,
+            "description": entry.description or entry.journal.concept,
+            "debit": entry.debit,
+            "credit": entry.credit,
+            "balance": saldo_acumulado
+        })
+        
+    return {
+        "account": {
+            "id": account.id,
+            "code": account.code,
+            "name": account.name,
+            "type": account.type
+        },
+        "balance": saldo_acumulado,
+        "entries": movimientos
+    }
 
 # --- Ventas ---
 

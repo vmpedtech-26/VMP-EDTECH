@@ -102,6 +102,21 @@ async def generate_credential_for_student(
     frontend_url = os.getenv("ADMIN_URL", settings.FRONTEND_URL)
     qr_url = f"{frontend_url}/validar/{numero_credencial}"
     
+    # Obtener datos del instructor / emisor
+    instructor_nombre = "Pedro Orejas"
+    instructor_info = "Instructor VMP | Mat. N° 2206823"
+    instructor_id = emisor_id
+    
+    if emisor_id:
+        try:
+            instructor = await prisma.user.find_unique(where={"id": emisor_id})
+            if instructor:
+                instructor_nombre = f"{instructor.nombre} {instructor.apellido}"
+                instructor_info = f"Instructor VMP | Mat. N° {instructor.dni or '2206823'}"
+        except Exception as ex:
+            print(f"Error fetching instructor: {ex}")
+            pass
+
     # Preparar datos del PDF
     pdf_data = {
         "numero_credencial": numero_credencial,
@@ -112,7 +127,10 @@ async def generate_credential_for_student(
         "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
         "fecha_vencimiento": fecha_vencimiento.strftime("%d/%m/%Y") if fecha_vencimiento else None,
         "puesto": alumno.puesto,
-        "qr_url": qr_url
+        "qr_url": qr_url,
+        "instructor_nombre": instructor_nombre,
+        "instructor_info": instructor_info,
+        "instructor_id": instructor_id
     }
     
     # Generar PDF

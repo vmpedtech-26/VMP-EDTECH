@@ -67,7 +67,29 @@ export const accountingApi = {
   },
   
   // Journal
-  getJournal: async () => {
-    return await api.get('/accounting/journal');
+  getJournal: async (desde?: string, hasta?: string) => {
+    let url = '/accounting/journal';
+    const params = new URLSearchParams();
+    if (desde) params.append('desde', desde);
+    if (hasta) params.append('hasta', hasta);
+    const queryStr = params.toString();
+    if (queryStr) {
+      url += `?${queryStr}`;
+    }
+    return await api.get(url);
+  },
+  createManualEntry: async (data: any) => {
+    return await api.post('/accounting/journal', data);
+  },
+  getMayorCuenta: async (code: string, desde?: string, hasta?: string) => {
+    let url = `/accounting/journal/accounts/${code}`;
+    const params = new URLSearchParams();
+    if (desde) params.append('desde', desde);
+    if (hasta) params.append('hasta', hasta);
+    const queryStr = params.toString();
+    if (queryStr) {
+      url += `?${queryStr}`;
+    }
+    return await api.get(url);
   }
 };

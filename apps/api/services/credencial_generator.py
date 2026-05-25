@@ -161,16 +161,31 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     fechas = f"Realización: {credencial_data.get('fecha_emision')}   Vto: {credencial_data.get('fecha_vencimiento') or '---'}"
     c.drawString(230, box_y + 5, fechas)
 
+    instructor_nombre = credencial_data.get('instructor_nombre', 'Pedro Orejas')
+    instructor_info = credencial_data.get('instructor_info', 'Instructor VMP | Mat. N° 2206823')
+    instructor_id = credencial_data.get('instructor_id')
+
     # --- FOOTER ---
     c.setStrokeColorRGB(0.8, 0.8, 0.8)
     c.setLineWidth(1)
     c.line(35, 65, width - 35, 65)
+    
+    # Draw Instructor Signature if exists
+    if instructor_id:
+        try:
+            from services.file_upload import get_instructor_signature_path
+            sig_path = get_instructor_signature_path(instructor_id)
+            if sig_path and os.path.exists(str(sig_path)):
+                c.drawImage(ImageReader(str(sig_path)), 45, 50, width=90, height=35, mask='auto')
+        except Exception as ex:
+            print(f"Error drawing signature on front: {ex}")
+            
     c.setFont("Helvetica-Bold", 18)
     c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(40, 42, "Pedro Orejas")
+    c.drawString(40, 42, instructor_nombre)
     c.setFont("Helvetica", 11)
     c.setFillColorRGB(*GRAY_TEXT)
-    c.drawString(40, 28, "Instructor VMP | Mat. N° 2206823")
+    c.drawString(40, 28, instructor_info)
     
     badge_w, badge_h = 200, 35
     badge_x, badge_y = width - 35 - badge_w, 20
@@ -242,12 +257,23 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.setStrokeColorRGB(0.8, 0.8, 0.8)
     c.setLineWidth(1)
     c.line(35, 65, width - 35, 65)
+    
+    # Draw Instructor Signature if exists
+    if instructor_id:
+        try:
+            from services.file_upload import get_instructor_signature_path
+            sig_path = get_instructor_signature_path(instructor_id)
+            if sig_path and os.path.exists(str(sig_path)):
+                c.drawImage(ImageReader(str(sig_path)), 45, 50, width=90, height=35, mask='auto')
+        except Exception as ex:
+            print(f"Error drawing signature on back: {ex}")
+            
     c.setFont("Helvetica-Bold", 18)
     c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(40, 42, "Pedro Orejas")
+    c.drawString(40, 42, instructor_nombre)
     c.setFont("Helvetica", 11)
     c.setFillColorRGB(*GRAY_TEXT)
-    c.drawString(40, 28, "Instructor VMP | Mat. N° 2206823")
+    c.drawString(40, 28, instructor_info)
 
     c.save()
     buffer.seek(0)
