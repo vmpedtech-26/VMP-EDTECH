@@ -68,6 +68,7 @@ export default function EditarCursoPage() {
             <div className="max-w-4xl mx-auto">
                 <GestorModulos
                     cursoId={id as string}
+                    cursoNombre={curso.nombre}
                     modulos={curso.modulos}
                     onUpdate={fetchCurso}
                 />

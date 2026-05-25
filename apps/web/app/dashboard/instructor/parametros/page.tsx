@@ -11,6 +11,7 @@ import ProfileSignatureUpload from '@/components/instructor/ProfileSignatureUplo
 
 export default function ParametrosPage() {
     const [claseUrl, setClaseUrl] = useState('');
+    const [plataforma, setPlataforma] = useState<'google_meet' | 'teams'>('google_meet');
     const [selectedCursoId, setSelectedCursoId] = useState('');
     const [cursos, setCursos] = useState<Curso[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +33,15 @@ export default function ParametrosPage() {
         fetchData();
     }, []);
 
+    // Autodetectar plataforma si el link cambia
+    useEffect(() => {
+        if (claseUrl.includes('teams.microsoft.com') || claseUrl.includes('teams.live.com')) {
+            setPlataforma('teams');
+        } else if (claseUrl.includes('meet.google.com')) {
+            setPlataforma('google_meet');
+        }
+    }, [claseUrl]);
+
     const handleActivateClass = async () => {
         if (!claseUrl || !selectedCursoId) {
             alert('Por favor selecciona un curso y pega un enlace válido.');
@@ -46,10 +56,11 @@ export default function ParametrosPage() {
 
             if (firstModuloId) {
                 await api.put(`/cursos/${selectedCursoId}/modulos/${firstModuloId}`, {
-                    liveClassUrl: claseUrl
+                    liveClassUrl: claseUrl,
+                    liveClassPlatform: plataforma
                 });
                 alert('¡Aula Virtual activada con éxito! Los alumnos ya pueden ver el banner.');
-                setActiveSessions([{ id: selectedCursoId, url: claseUrl, nombre: cursoDetail.nombre }]);
+                setActiveSessions([{ id: selectedCursoId, url: claseUrl, nombre: cursoDetail.nombre, plataforma }]);
             }
         } catch (error) {
             console.error('Error activation class:', error);
@@ -66,7 +77,8 @@ export default function ParametrosPage() {
             const firstModuloId = cursoDetail.modulos[0]?.id;
             if (firstModuloId) {
                 await api.put(`/cursos/${cursoId}/modulos/${firstModuloId}`, {
-                    liveClassUrl: null
+                    liveClassUrl: null,
+                    liveClassPlatform: null
                 });
                 setActiveSessions([]);
             }
@@ -102,7 +114,7 @@ export default function ParametrosPage() {
                         <h3 className="text-lg font-bold">Activar Clase en Vivo</h3>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">Seleccionar Capacitación</label>
                             <select 
@@ -118,19 +130,49 @@ export default function ParametrosPage() {
                         </div>
 
                         <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Elegir Plataforma</label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setPlataforma('google_meet')}
+                                    className={`flex items-center justify-center gap-2 h-12 rounded-xl font-bold border transition-all text-xs ${
+                                        plataforma === 'google_meet'
+                                            ? 'bg-primary/10 border-primary text-primary shadow-sm'
+                                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <Video className="h-4.5 w-4.5" />
+                                    Google Meet
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPlataforma('teams')}
+                                    className={`flex items-center justify-center gap-2 h-12 rounded-xl font-bold border transition-all text-xs ${
+                                        plataforma === 'teams'
+                                            ? 'bg-[#4B53BC]/10 border-[#4B53BC] text-[#4B53BC] shadow-sm'
+                                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <Users className="h-4.5 w-4.5" />
+                                    Microsoft Teams
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">Enlace de la Videollamada</label>
                             <div className="relative">
                                 <input 
                                     type="text"
-                                    placeholder="https://meet.google.com/..."
-                                    className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                    placeholder={plataforma === 'google_meet' ? 'https://meet.google.com/...' : 'https://teams.microsoft.com/...'}
+                                    className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                                     value={claseUrl}
                                     onChange={(e) => setClaseUrl(e.target.value)}
                                 />
                                 <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                             </div>
                             <p className="text-[10px] text-slate-500 mt-2 leading-relaxed">
-                                Tip: Puedes usar links de Google Meet, Microsoft Teams o Zoom. Se recomienda Google Meet para mayor estabilidad en VMP.
+                                Tip: La plataforma seleccionada se mostrará en el panel del alumno de forma dinámica con un ícono oficial.
                             </p>
                         </div>
 

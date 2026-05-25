@@ -18,20 +18,26 @@ import Link from 'next/link';
 
 interface GestorModulosProps {
     cursoId: string;
+    cursoNombre: string;
     modulos: ModuloSummary[];
     onUpdate: () => void;
 }
 
-export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps) {
+export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: GestorModulosProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [newModulo, setNewModulo] = useState({
-        titulo: '',
+        titulo: cursoNombre || '',
         tipo: 'TEORIA',
         orden: modulos.length + 1,
         contenidoHtml: '',
         videoUrl: ''
     });
+
+    // Sincronizar el título con el nombre del curso al cargar o cambiar el curso
+    React.useEffect(() => {
+        setNewModulo(prev => ({ ...prev, titulo: cursoNombre || '' }));
+    }, [cursoNombre]);
 
     const handleAdd = async () => {
         if (!newModulo.titulo) return;
@@ -40,7 +46,7 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
             await cursosApi.crearModulo(cursoId, newModulo);
             setIsAdding(false);
             setNewModulo({
-                titulo: '',
+                titulo: cursoNombre || '',
                 tipo: 'TEORIA',
                 orden: modulos.length + 2,
                 contenidoHtml: '',

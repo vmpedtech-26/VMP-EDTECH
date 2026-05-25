@@ -16,8 +16,8 @@ interface LiveClassHubProps {
 export function LiveClassHub({ platform, url, date, isLive = true }: LiveClassHubProps) {
     if (!url) return null;
 
-    const isTeams = url.includes('teams.microsoft.com');
-    const isMeet = url.includes('meet.google.com');
+    const isTeams = platform === 'teams' || url.includes('teams.microsoft.com');
+    const isMeet = platform === 'google_meet' || url.includes('meet.google.com');
 
     return (
         <AnimatePresence>

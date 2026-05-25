@@ -74,7 +74,7 @@ export default function CursoDetailPage() {
             {/* Live Class Hub integration */}
             {isEnrolled && activeLiveModule && (
                 <LiveClassHub 
-                    platform={activeLiveModule.liveClassUrl?.includes('teams') ? 'teams' : 'google_meet'}
+                    platform={activeLiveModule.liveClassPlatform || (activeLiveModule.liveClassUrl?.includes('teams') ? 'teams' : 'google_meet')}
                     url={activeLiveModule.liveClassUrl || null}
                 />
             )}
