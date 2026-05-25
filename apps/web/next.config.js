@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
 const nextConfig = {
+    outputFileTracingRoot: path.join(__dirname, '../../'),
     eslint: {
         // Warning: This allows production builds to successfully complete even if
         // your project has ESLint errors.
