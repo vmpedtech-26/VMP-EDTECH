@@ -65,9 +65,12 @@ export default function LibroDiarioPage() {
                 // Entry rows
                 if (journal.entries && Array.isArray(journal.entries)) {
                     journal.entries.forEach((entry: any) => {
+                        const accountText = entry.account 
+                            ? `${entry.account.code} - ${entry.account.name}` 
+                            : entry.accountId;
                         tableRows.push([
                             '',
-                            `  ${entry.accountId} ${entry.description ? '- ' + entry.description : ''}`,
+                            `  ${accountText}${entry.description ? ' (' + entry.description + ')' : ''}`,
                             formatAmount(entry.debit),
                             formatAmount(entry.credit)
                         ]);
@@ -150,7 +153,7 @@ export default function LibroDiarioPage() {
                                                 <td className="px-6 py-2"></td>
                                                 <td className="px-6 py-2">
                                                     <div className={`text-sm ${entry.credit > 0 ? 'pl-8 text-slate-600' : 'font-bold text-slate-800'}`}>
-                                                        {entry.accountId} {/* Debería ser el nombre de la cuenta, pero por ahora ID */}
+                                                        {entry.account ? `${entry.account.code} - ${entry.account.name}` : entry.accountId}
                                                     </div>
                                                     {entry.description && <div className="text-[10px] text-slate-400 pl-8">{entry.description}</div>}
                                                 </td>

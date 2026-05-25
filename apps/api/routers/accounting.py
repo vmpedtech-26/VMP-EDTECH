@@ -40,7 +40,16 @@ async def crear_cuenta(data: CreateAccountRequest, current_user=Depends(get_curr
 async def listar_asientos(current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
-    return await prisma.journalentry.find_many(include={"entries": True}, order={"date": "desc"})
+    return await prisma.journalentry.find_many(
+        include={
+            "entries": {
+                "include": {
+                    "account": True
+                }
+            }
+        }, 
+        order={"date": "desc"}
+    )
 
 # --- Ventas ---
 

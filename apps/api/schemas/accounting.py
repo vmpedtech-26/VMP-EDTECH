@@ -30,6 +30,7 @@ class LedgerEntryResponse(LedgerEntryBase):
     id: str
     journalId: str
     createdAt: datetime
+    account: Optional[AccountResponse] = None
 
 class JournalEntryBase(BaseModel):
     date: datetime = Field(default_factory=datetime.now)
