@@ -87,7 +87,7 @@ async function request(path: string, options: RequestInit & { params?: Record<st
 
         clearTimeout(id);
 
-        if (response.status === 401) {
+        if (response.status === 401 && cleanPath !== '/auth/login') {
             // Manejar expiración de sesión
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('vmp_token');
