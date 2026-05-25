@@ -44,6 +44,7 @@ class ModuloSummary(BaseModel):
     orden: int
     tipo: str  # TEORIA, QUIZ, PRACTICA
     liveClassUrl: Optional[str] = None
+    liveClassPlatform: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -144,6 +145,9 @@ class CreateModuloRequest(BaseModel):
     tipo: str  # TEORIA, QUIZ, PRACTICA
     contenidoHtml: Optional[str] = None
     videoUrl: Optional[str] = None
+    # Live class support
+    liveClassUrl: Optional[str] = None
+    liveClassPlatform: Optional[str] = None
     # Solo si es QUIZ
     preguntas: Optional[List[PreguntaCreate]] = None
 
@@ -154,6 +158,7 @@ class UpdateModuloRequest(BaseModel):
     videoUrl: Optional[str] = None
     # Live class support
     liveClassUrl: Optional[str] = None
+    liveClassPlatform: Optional[str] = None
     # Optional sync for Quiz
     preguntas: Optional[List[PreguntaCreate]] = None
 

@@ -23,7 +23,26 @@ export default function ParametrosPage() {
             try {
                 const data = await cursosApi.listarCursos();
                 setCursos(data);
-                // En un sistema real, aquí cargaríamos las sesiones activas
+                
+                // Cargar sesiones activas analizando todos los cursos disponibles
+                const active: any[] = [];
+                await Promise.all(data.map(async (c: Curso) => {
+                    try {
+                        const detail = await cursosApi.obtenerCurso(c.id);
+                        const firstModulo = detail.modulos[0];
+                        if (firstModulo && firstModulo.liveClassUrl) {
+                            active.push({
+                                id: c.id,
+                                url: firstModulo.liveClassUrl,
+                                nombre: c.nombre,
+                                plataforma: firstModulo.liveClassPlatform || (firstModulo.liveClassUrl.includes('teams') ? 'teams' : 'google_meet')
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Error fetching course detail for active sessions:', err);
+                    }
+                }));
+                setActiveSessions(active);
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -32,6 +51,31 @@ export default function ParametrosPage() {
         };
         fetchData();
     }, []);
+
+    // Precargar clase activa al seleccionar un curso en el dropdown
+    useEffect(() => {
+        const loadCursoLiveClass = async () => {
+            if (!selectedCursoId) {
+                setClaseUrl('');
+                return;
+            }
+            try {
+                const detail = await cursosApi.obtenerCurso(selectedCursoId);
+                const firstModulo = detail.modulos[0];
+                if (firstModulo && firstModulo.liveClassUrl) {
+                    setClaseUrl(firstModulo.liveClassUrl);
+                    if (firstModulo.liveClassPlatform) {
+                        setPlataforma(firstModulo.liveClassPlatform as 'google_meet' | 'teams');
+                    }
+                } else {
+                    setClaseUrl('');
+                }
+            } catch (err) {
+                console.error('Error loading live class info for selected course:', err);
+            }
+        };
+        loadCursoLiveClass();
+    }, [selectedCursoId]);
 
     // Autodetectar plataforma si el link cambia
     useEffect(() => {
@@ -50,7 +94,6 @@ export default function ParametrosPage() {
 
         setIsSaving(true);
         try {
-            // Buscamos el primer módulo del curso para asignarle el link (Lógica simplificada estilo Blister)
             const cursoDetail = await cursosApi.obtenerCurso(selectedCursoId);
             const firstModuloId = cursoDetail.modulos[0]?.id;
 
@@ -60,10 +103,22 @@ export default function ParametrosPage() {
                     liveClassPlatform: plataforma
                 });
                 alert('¡Aula Virtual activada con éxito! Los alumnos ya pueden ver el banner.');
-                setActiveSessions([{ id: selectedCursoId, url: claseUrl, nombre: cursoDetail.nombre, plataforma }]);
+                
+                // Actualizar localmente la lista de sesiones activas
+                setActiveSessions(prev => {
+                    const filtered = prev.filter(s => s.id !== selectedCursoId);
+                    return [...filtered, { 
+                        id: selectedCursoId, 
+                        url: claseUrl, 
+                        nombre: cursoDetail.nombre, 
+                        plataforma 
+                    }];
+                });
+            } else {
+                alert('Este curso no tiene módulos creados. Debes crear al menos un módulo primero para poder activar el Aula Virtual.');
             }
         } catch (error) {
-            console.error('Error activation class:', error);
+            console.error('Error activating class:', error);
             alert('Hubo un error al activar el aula.');
         } finally {
             setIsSaving(false);
@@ -71,6 +126,7 @@ export default function ParametrosPage() {
     };
 
     const handleDeactivate = async (cursoId: string) => {
+        if (!confirm('¿Estás seguro de que deseas finalizar la sesión en vivo? Se removerá el banner para los alumnos.')) return;
         setIsSaving(true);
         try {
             const cursoDetail = await cursosApi.obtenerCurso(cursoId);
@@ -80,10 +136,15 @@ export default function ParametrosPage() {
                     liveClassUrl: null,
                     liveClassPlatform: null
                 });
-                setActiveSessions([]);
+                alert('Aula virtual finalizada con éxito.');
+                setActiveSessions(prev => prev.filter(s => s.id !== cursoId));
+                if (selectedCursoId === cursoId) {
+                    setClaseUrl('');
+                }
             }
         } catch (error) {
             console.error('Error deactivating:', error);
+            alert('Hubo un error al finalizar el aula.');
         } finally {
             setIsSaving(false);
         }

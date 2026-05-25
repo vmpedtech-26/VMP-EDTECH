@@ -236,7 +236,9 @@ async def crear_modulo(
         "tipo": data.tipo,
         "cursoId": cursoId,
         "contenidoHtml": data.contenidoHtml,
-        "videoUrl": data.videoUrl
+        "videoUrl": data.videoUrl,
+        "liveClassUrl": data.liveClassUrl,
+        "liveClassPlatform": data.liveClassPlatform
     }
     
     modulo = await prisma.modulo.create(data=modulo_data)
@@ -321,8 +323,13 @@ async def actualizar_modulo(
     if data.orden is not None: update_data["orden"] = data.orden
     if data.contenidoHtml is not None: update_data["contenidoHtml"] = data.contenidoHtml
     if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
-    if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
     
+    # Soporte seguro para liveClassUrl y liveClassPlatform (permitiendo valores nulos/null)
+    if "liveClassUrl" in data.model_fields_set:
+        update_data["liveClassUrl"] = data.liveClassUrl
+    if "liveClassPlatform" in data.model_fields_set:
+        update_data["liveClassPlatform"] = data.liveClassPlatform
+        
     await prisma.modulo.update(where={"id": moduloId}, data=update_data)
     
     # 2. Si se envían preguntas (Sincronización completa para este módulo)
