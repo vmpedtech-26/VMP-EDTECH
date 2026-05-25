@@ -11,7 +11,6 @@ const Benefits = dynamic(() => import('@/components/landing/Benefits').then(mod 
 const Alianzas = dynamic(() => import('@/components/landing/Alianzas').then(mod => mod.Alianzas));
 const ContactSection = dynamic(() => import('@/components/landing/ContactSection'));
 const Testimonials = dynamic(() => import('@/components/landing/Testimonials').then(mod => mod.Testimonials));
-const FAQ = dynamic(() => import('@/components/landing/FAQ'));
 const FinalCTA = dynamic(() => import('@/components/landing/FinalCTA'));
 const LegalSection = dynamic(() => import('@/components/landing/LegalSection'));
 
@@ -29,7 +28,6 @@ export default function LandingPage() {
             {/* <CredentialSection /> */}
             <ContactSection />
             <Testimonials />
-            <FAQ />
             <FinalCTA />
             <LegalSection />
             <Footer />

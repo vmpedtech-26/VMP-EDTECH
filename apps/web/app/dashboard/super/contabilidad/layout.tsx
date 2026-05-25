@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { BookOpen } from 'lucide-react';
@@ -12,14 +12,20 @@ export default function ContabilidadLayout({
 }) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!isLoading && (!user || (user.rol !== 'SUPER_ADMIN' && user.rol !== 'CONTADOR'))) {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && !isLoading && (!user || (user.rol !== 'SUPER_ADMIN' && user.rol !== 'CONTADOR'))) {
             router.replace('/dashboard');
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, mounted]);
 
-    if (isLoading) {
+    // Garantizar coherencia del lado del servidor y del cliente durante la hidratación inicial
+    if (!mounted || isLoading) {
         return (
             <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4">
                 <div className="h-8 w-8 rounded-full border-4 border-slate-200 border-t-primary animate-spin"></div>

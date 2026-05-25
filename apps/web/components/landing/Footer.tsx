@@ -76,11 +76,6 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/#faq" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    FAQ
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/validar" className="text-slate-300 hover:text-primary text-sm transition-colors">
                                     Validador de Certificaciones
                                 </Link>

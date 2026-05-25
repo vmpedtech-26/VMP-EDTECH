@@ -50,12 +50,6 @@ export default function Header() {
                             <Link href="/blog" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Blog
                             </Link>
-                            <Link href="/#validar" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
-                                Validar
-                            </Link>
-                            <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
-                                FAQ
-                            </Link>
                             <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Alianzas
                             </Link>
@@ -67,7 +61,7 @@ export default function Header() {
                                 href="/login"
                                 className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300"
                             >
-                                Área Alumnos
+                                Login
                             </Link>
                             <Link
                                 href="/#contacto"
@@ -99,12 +93,6 @@ export default function Header() {
                                 <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
                                     Blog
                                 </Link>
-                                <Link href="/#validar" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
-                                    Validar
-                                </Link>
-                                <Link href="/#faq" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
-                                    FAQ
-                                </Link>
                                 <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Alianzas
                                 </Link>
@@ -112,7 +100,7 @@ export default function Header() {
                                     href="/login"
                                     className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold text-center hover:bg-primary-50 transition-all"
                                 >
-                                    Área Alumnos
+                                    Login
                                 </Link>
                                 <Link
                                     href="/#contacto"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { useAuth } from '@/lib/auth-context';
@@ -14,9 +14,14 @@ export default function DashboardLayout({
     const { user, isLoading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!isLoading && user && pathname) {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && !isLoading && user && pathname) {
             // Si el rol es CONTADOR, blindar el panel de capacitación y redirigir
             if (user.rol === 'CONTADOR') {
                 const isContabilidad = pathname.startsWith('/dashboard/super/contabilidad');
@@ -27,9 +32,10 @@ export default function DashboardLayout({
                 }
             }
         }
-    }, [user, isLoading, pathname, router]);
+    }, [user, isLoading, pathname, router, mounted]);
 
-    if (isLoading) {
+    // Garantizar coherencia del lado del servidor y del cliente durante la hidratación inicial
+    if (!mounted || isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <Loader2 className="h-8 w-8 text-primary animate-spin" />

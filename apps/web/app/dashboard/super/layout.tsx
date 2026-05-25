@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Loader2 } from 'lucide-react';
@@ -13,9 +13,14 @@ export default function SuperLayout({
     const { user, isLoading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!isLoading) {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && !isLoading) {
             // Si no está autenticado o su rol no es SUPER_ADMIN ni CONTADOR, redirigir al dashboard general
             if (!user || (user.rol !== 'SUPER_ADMIN' && user.rol !== 'CONTADOR')) {
                 router.replace('/dashboard');
@@ -30,9 +35,10 @@ export default function SuperLayout({
                 }
             }
         }
-    }, [user, isLoading, pathname, router]);
+    }, [user, isLoading, pathname, router, mounted]);
 
-    if (isLoading) {
+    // Garantizar coherencia del lado del servidor y del cliente durante la hidratación inicial
+    if (!mounted || isLoading) {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
                 <Loader2 className="h-8 w-8 text-primary animate-spin" />
