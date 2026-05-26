@@ -19,7 +19,7 @@ export default function FAQ() {
         },
         {
             question: "¿Cuánto dura la vigencia de la certificación?",
-            answer: "La vigencia depende del curso: Conducción Preventiva tiene 12 meses de vigencia, Conducción Flota Liviana / Pesada 24 meses, y Conducción Doble Tracción 36 meses. Es obligatoria la renovación al vencimiento para mantener la certificación activa."
+            answer: "La validez de todas nuestras certificaciones de capacitación es de 24 meses a partir de la fecha de aprobación del examen. Es obligatoria la renovación periódica al vencimiento para mantener la certificación activa e informada en los registros institucionales de VMP."
         },
         {
             question: "¿Puedo hacer el curso completamente online?",

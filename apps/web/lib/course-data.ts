@@ -31,7 +31,7 @@ export const courseData: Record<string, CourseDetail> = {
         image: '/images/courses/conduccion-preventiva.png',
         duration: '8 horas',
         modality: '100% Online',
-        validity: '12 meses',
+        validity: '24 meses',
         minScore: '70%',
         priceFrom: 32000,
         description: 'Técnicas de conducción preventiva y manejo de situaciones de riesgo en ruta.',
@@ -78,7 +78,7 @@ export const courseData: Record<string, CourseDetail> = {
             'Licencia de conducir vigente',
             'Acceso a internet y dispositivo con navegador web',
         ],
-        certification: 'Certificación digital con código QR verificable, válida por 12 meses. Incluye nombre completo, DNI, fecha de emisión y vencimiento.',
+        certification: 'Certificación digital con código QR verificable, válida por 24 meses. Incluye nombre completo, DNI, fecha de emisión y vencimiento.',
     },
 
     'flota-liviana-pesada': {
@@ -159,7 +159,7 @@ export const courseData: Record<string, CourseDetail> = {
         image: '/images/courses/conduccion-2-traccion.png',
         duration: '16 horas',
         modality: 'Presencial',
-        validity: '36 meses',
+        validity: '24 meses',
         minScore: '80%',
         priceFrom: 68000,
         description: 'Manejo avanzado en terrenos difíciles, técnicas de tracción y recuperación de vehículos.',
@@ -168,7 +168,7 @@ export const courseData: Record<string, CourseDetail> = {
             'Dominio de técnicas off-road en terrenos extremos',
             'Capacidad de recuperación de vehículos varados',
             'Reducción de daños mecánicos por mal uso del 4x4',
-            'Certificación especializada con validez de 36 meses',
+            'Certificación especializada con validez de 24 meses',
             'Práctica intensiva en campo real',
             'Instrucción personalizada con ratio instructor:alumno reducido',
         ],
@@ -217,7 +217,7 @@ export const courseData: Record<string, CourseDetail> = {
             'Apto físico para actividades al aire libre',
             'Vestimenta adecuada para campo (botas, protección solar)',
         ],
-        certification: 'Certificación digital con código QR verificable, válida por 36 meses. Habilitación para conducción de vehículos doble tracción en terrenos no convencionales.',
+        certification: 'Certificación digital con código QR verificable, válida por 24 meses. Habilitación para conducción de vehículos doble tracción en terrenos no convencionales.',
     },
 
     'conduccion-invernal': {
@@ -229,7 +229,7 @@ export const courseData: Record<string, CourseDetail> = {
         image: '/images/courses/conduccion-invernal.png',
         duration: '12 horas',
         modality: 'Online/Presencial',
-        validity: '12 meses',
+        validity: '24 meses',
         minScore: '80%',
         priceFrom: 55000,
         description: 'Técnicas avanzadas para conducción segura en presencia de nieve, hielo y condiciones climáticas extremas.',
@@ -286,7 +286,7 @@ export const courseData: Record<string, CourseDetail> = {
             'Acceso a internet para módulos teóricos online',
             'Ropa de abrigo reglamentaria para práctica en campo',
         ],
-        certification: 'Certificación digital con código QR verificable, válida por 12 meses. Especialización en conducción segura bajo condiciones climáticas extremas e invernales.',
+        certification: 'Certificación digital con código QR verificable, válida por 24 meses. Especialización en conducción segura bajo condiciones climáticas extremas e invernales.',
     },
 };
 

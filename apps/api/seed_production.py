@@ -38,14 +38,14 @@ async def seed():
             "codigo": "MDL-001",
             "descripcion": "Curso teórico-práctico de manejo defensivo para vehículos livianos.",
             "duracionHoras": 20,
-            "vigenciaMeses": 12
+            "vigenciaMeses": 24
         },
         {
             "nombre": "Manejo Defensivo Pesados",
             "codigo": "MDP-001",
             "descripcion": "Curso teórico-práctico de manejo defensivo para vehículos pesados y transporte de carga.",
             "duracionHoras": 40,
-            "vigenciaMeses": 12
+            "vigenciaMeses": 24
         },
         {
             "nombre": "Primeros Auxilios y RCP",
