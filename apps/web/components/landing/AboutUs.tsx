@@ -49,17 +49,7 @@ export default function AboutUs() {
                         VMP-EDTECH <span className="gradient-text">Educación con Tecnología</span>
                     </motion.h2>
 
-                    <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
-                        <motion.p initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.2 }}>
-                            Somos una organización especializada en consultoría, capacitación y servicios técnicos en <strong>Seguridad, Ambiente, Calidad y Salud Ocupacional</strong>, orientada a empresas que operan en entornos productivos de alta exigencia.
-                        </motion.p>
-                        <motion.p initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}>
-                            La prevención constituye el pilar fundamental de nuestra gestión. Nuestro enfoque consiste en trabajar de manera conjunta con nuestros clientes para fortalecer sus procesos productivos, mejorar la seguridad operativa y promover una cultura organizacional basada en la protección de las personas, los bienes y el ambiente.
-                        </motion.p>
-                        <motion.p initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.4 }}>
-                            Desde el inicio de nuestras actividades en noviembre de 2013, hemos desarrollado soluciones técnicas aplicadas a diversos sectores productivos. El equipo técnico cuenta con <strong>más de veinte años de experiencia</strong> en la industria energética e industrial, participando en la implementación de sistemas de gestión, auditorías técnicas, capacitación de personal y optimización de procesos operativos.
-                        </motion.p>
-                    </div>
+                    {/* Textos descriptivos removidos a pedido del usuario para mayor limpieza */}
                 </div>
 
                 {/* 2. Misión y Visión */}
