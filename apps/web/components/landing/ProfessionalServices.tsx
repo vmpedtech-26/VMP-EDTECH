@@ -211,11 +211,6 @@ export function ProfessionalServices() {
                 >
                   {/* Image container */}
                   <div className="aspect-[4/3] relative overflow-hidden">
-                    {/* Badge normativo flotante */}
-                    <div className="absolute top-4 left-4 z-20 bg-slate-950/80 backdrop-blur-md text-white text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider border border-white/10 shadow-sm">
-                      {service.badge}
-                    </div>
-
                     <Image 
                       src={service.image} 
                       alt={service.title} 
