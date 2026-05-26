@@ -219,17 +219,10 @@ export function ProfessionalServices() {
                     />
                     {/* Dark gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Vector Icon float card */}
-                    <div className="absolute bottom-0 right-6 translate-y-1/2 w-14 h-14 rounded-2xl bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex items-center justify-center group-hover:scale-110 transition-all duration-300 z-20">
-                      <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        {getServiceIcon(index)}
-                      </div>
-                    </div>
                   </div>
 
                   {/* Card Content container */}
-                  <div className="p-6 pt-8 flex flex-col flex-1">
+                  <div className="p-6 flex flex-col flex-1">
                     {/* Tiny upper tag */}
                     <span className="text-[10px] font-black text-primary tracking-widest uppercase mb-1.5 block">
                       {service.tag}
