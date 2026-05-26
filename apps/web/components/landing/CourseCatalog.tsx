@@ -180,7 +180,7 @@ export default function CourseCatalog() {
                     <div>
                         <p className="text-teal-400 text-sm font-bold uppercase tracking-[0.2em] mb-2">Catálogo de Formación</p>
                         <h2 className="text-3xl md:text-4xl font-bold font-heading text-white">
-                            Nuestros Cursos de Capacitación
+                            Programas de Capacitación
                         </h2>
                     </div>
                     {/* Dot indicators */}
