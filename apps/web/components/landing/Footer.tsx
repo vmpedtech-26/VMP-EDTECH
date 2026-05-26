@@ -16,7 +16,7 @@ export default function Footer() {
                                 alt="VMP - EDTECH"
                                 width={120}
                                 height={40}
-                                className="h-auto w-auto max-h-12 brightness-0 invert"
+                                className="h-auto w-auto max-h-12"
                             />
                         </div>
                         <p className="text-slate-300 text-sm leading-relaxed mb-4">
