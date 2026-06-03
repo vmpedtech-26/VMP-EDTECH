@@ -115,11 +115,15 @@ export default function ContactSection() {
                                     <div className="space-y-2">
                                         <p className="font-semibold">Ubicación</p>
                                         <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇦🇷 Argentina:</span>
+                                            <span className="font-bold text-white block">🇦🇷 Sede Neuquén (Central):</span>
                                             Juan B. Justo 385, Piso 1, Neuquén (8300)
                                         </p>
                                         <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇪🇸 España:</span>
+                                            <span className="font-bold text-white block">🇦🇷 Sede Cipolletti:</span>
+                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
+                                        </p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇪🇸 Sede España:</span>
                                             Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
                                         </p>
                                     </div>

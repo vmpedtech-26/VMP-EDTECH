@@ -113,8 +113,12 @@ export default function Footer() {
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div className="space-y-1">
                                     <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇦🇷 Sede Argentina:</span>
+                                        <span className="font-bold text-white block">🇦🇷 Sede Neuquén (Central):</span>
                                         Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                    </p>
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">🇦🇷 Sede Cipolletti:</span>
+                                        25 de Mayo 623, Cipolletti, Río Negro (8324)
                                     </p>
                                     <p className="text-slate-300 text-sm">
                                         <span className="font-bold text-white block">🇪🇸 Sede España:</span>
