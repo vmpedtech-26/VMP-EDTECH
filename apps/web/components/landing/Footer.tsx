@@ -105,9 +105,26 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start space-x-3">
                                 <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="tel:+5492995370173" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    +54 9 299 537-0173
-                                </a>
+                                <div className="space-y-2">
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
+                                        <a href="tel:+5492995370173" className="hover:text-primary transition-colors">
+                                            +54 9 299 537-0173
+                                        </a>
+                                    </p>
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
+                                        <a href="tel:+5492996731487" className="hover:text-primary transition-colors">
+                                            +54 9 299 673-1487
+                                        </a>
+                                    </p>
+                                    <p className="text-slate-300 text-sm">
+                                        <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
+                                        <a href="tel:+34624536539" className="hover:text-primary transition-colors">
+                                            +34 624 536 539
+                                        </a>
+                                    </p>
+                                </div>
                             </li>
                             <li className="flex items-start space-x-3">
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />

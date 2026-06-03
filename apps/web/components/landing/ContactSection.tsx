@@ -91,10 +91,27 @@ export default function ContactSection() {
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-semibold">Teléfono</p>
-                                        <a href="tel:+5492995370173" className="text-white/80 hover:text-white transition-colors">
-                                            +54 9 299 537-0173
-                                        </a>
+                                        <p className="font-semibold mb-2">Teléfonos</p>
+                                        <div className="space-y-2">
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
+                                                <a href="tel:+5492995370173" className="hover:text-white transition-colors">
+                                                    +54 9 299 537-0173
+                                                </a>
+                                            </div>
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
+                                                <a href="tel:+5492996731487" className="hover:text-white transition-colors">
+                                                    +54 9 299 673-1487
+                                                </a>
+                                            </div>
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
+                                                <a href="tel:+34624536539" className="hover:text-white transition-colors">
+                                                    +34 624 536 539
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -133,15 +150,42 @@ export default function ContactSection() {
                                         <MessageSquare className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-semibold">WhatsApp</p>
-                                        <a
-                                            href="https://wa.me/5492995370173?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20y%20soluciones%20corporativas%20de%20VMP."
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-white/80 hover:text-white transition-colors"
-                                        >
-                                            Enviar mensaje →
-                                        </a>
+                                        <p className="font-semibold mb-2">WhatsApp</p>
+                                        <div className="space-y-2">
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
+                                                <a
+                                                    href="https://wa.me/5492995370173?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="hover:text-white transition-colors"
+                                                >
+                                                    Enviar mensaje →
+                                                </a>
+                                            </div>
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
+                                                <a
+                                                    href="https://wa.me/5492996731487?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="hover:text-white transition-colors"
+                                                >
+                                                    Enviar mensaje →
+                                                </a>
+                                            </div>
+                                            <div className="text-white/80 text-sm">
+                                                <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
+                                                <a
+                                                    href="https://wa.me/34624536539?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="hover:text-white transition-colors"
+                                                >
+                                                    Enviar mensaje →
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
