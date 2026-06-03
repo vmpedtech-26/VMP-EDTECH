@@ -15,8 +15,16 @@ export default function AboutUs() {
 
     return (
         <section id="sobre-nosotros" className="relative py-24 md:py-32 overflow-hidden bg-slate-50">
-            {/* Background elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            {/* Background Image & Grid Overlay */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <Image
+                    src="/images/vmp_prop_mining_sharp.png"
+                    alt="Background"
+                    fill
+                    className="object-cover opacity-[0.04] mix-blend-multiply"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-50/70 via-slate-100/50 to-slate-50/70" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)] bg-[size:50px_50px]" />
                 <div className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
                 <div className="absolute top-[30%] right-[-10%] w-[30%] h-[30%] rounded-full bg-secondary/5 blur-[120px]" />
                 <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />

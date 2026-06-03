@@ -155,15 +155,27 @@ export default function CourseCatalog() {
     return (
         <section
             id="cursos"
-            className="relative py-0 overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%)' }}
+            className="relative py-0 overflow-hidden bg-[#0a1628]"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
+            {/* Background Image & Grid Overlay */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <Image
+                    src="/images/vmp_hero_winter.png"
+                    alt="Background Grid"
+                    fill
+                    className="object-cover opacity-[0.06] mix-blend-overlay"
+                    priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/95 via-[#0d1f3c]/98 to-[#0a1628]/95" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.035)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            </div>
+
             {/* Ambient glow that changes with course */}
             <motion.div
                 key={`glow-${active}`}
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1 }}
@@ -175,7 +187,7 @@ export default function CourseCatalog() {
             </motion.div>
 
             {/* Section header */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-6 relative z-20">
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="text-teal-400 text-sm font-bold uppercase tracking-[0.2em] mb-2">Catálogo de Formación</p>
@@ -198,7 +210,7 @@ export default function CourseCatalog() {
             </div>
 
             {/* Main slider */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-20">
                 <div className="relative min-h-[460px] flex items-center">
                     <AnimatePresence mode="wait" custom={direction}>
                         <motion.div
