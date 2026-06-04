@@ -9,10 +9,52 @@ from typing import Optional, Dict, Any
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from html.parser import HTMLParser
 import aiosmtplib
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 logger = logging.getLogger(__name__)
+
+class HTMLToTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.fed = []
+        self.ignore_tags = {'style', 'script', 'head', 'title', 'meta', 'link'}
+        self.current_tag = None
+        
+    def handle_starttag(self, tag, attrs):
+        self.current_tag = tag
+        if tag in {'p', 'div', 'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'}:
+            self.fed.append('\n')
+        elif tag == 'br':
+            self.fed.append('\n')
+            
+    def handle_endtag(self, tag):
+        if self.current_tag == tag:
+            self.current_tag = None
+        if tag in {'p', 'div', 'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'}:
+            self.fed.append('\n')
+            
+    def handle_data(self, d):
+        if self.current_tag not in self.ignore_tags:
+            self.fed.append(d)
+            
+    def get_data(self):
+        text = ''.join(self.fed)
+        # Clean up excessive newlines
+        lines = [line.strip() for line in text.split('\n')]
+        return '\n'.join([line for line in lines if line])
+
+def html_to_text(html: str) -> str:
+    try:
+        parser = HTMLToTextParser()
+        parser.feed(html)
+        return parser.get_data()
+    except Exception as e:
+        logger.warning(f"Error converting HTML to text: {e}")
+        return "VMP - EDTECH Email"
+
 
 class EmailService:
     def __init__(self):
@@ -58,10 +100,18 @@ class EmailService:
                 message["To"] = to_email
                 message["Subject"] = subject
                 
-                # HTML Part
+                # HTML and Text Part (MIME Multipart Alternative)
                 msg_body = MIMEMultipart("alternative")
-                html_part = MIMEText(html_content, "html")
+                
+                # Plain Text fallback
+                plain_text = html_to_text(html_content)
+                text_part = MIMEText(plain_text, "plain", "utf-8")
+                msg_body.attach(text_part)
+                
+                # HTML content
+                html_part = MIMEText(html_content, "html", "utf-8")
                 msg_body.attach(html_part)
+                
                 message.attach(msg_body)
                 
                 # Attachments

@@ -398,7 +398,15 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
-    # 1. Validar cuentas
+    # Validaciones específicas de ARCA 2026
+    if data.tipoFactura == "A_CBU":
+        if not data.cbuProveedor or len(data.cbuProveedor) != 22 or not data.cbuProveedor.isdigit():
+            raise HTTPException(
+                status_code=400, 
+                detail="Para comprobantes Clase A con Pago en CBU Informada, debe proporcionar una CBU del proveedor válida de 22 dígitos."
+            )
+            
+    # 1. Validar y recuperar cuentas básicas
     account_iva_cf = await prisma.account.find_unique(where={"code": "1.1.05"}) # IVA Crédito Fiscal
     gasto_code = "5.1.01" # Otros Gastos por defecto
     if data.categoria == "SERVICIOS": gasto_code = "5.1.02"
@@ -406,11 +414,39 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
     elif data.categoria == "SUELDOS": gasto_code = "5.1.04"
     
     account_gasto = await prisma.account.find_unique(where={"code": gasto_code})
+    
+    # Si es Factura A Especial con Pago en CBU, forzar cuenta de Banco (1.1.02)
     pago_code = "1.1.01" if data.metodoPago == "EFECTIVO" else "1.1.02"
+    if data.tipoFactura == "A_CBU":
+        pago_code = "1.1.02"  # Banco obligatorio para CBU
+        
     account_pago = await prisma.account.find_unique(where={"code": pago_code})
     
     if not all([account_gasto, account_pago]):
-        raise HTTPException(status_code=400, detail="Faltan cuentas contables de egresos configuradas.")
+        raise HTTPException(status_code=400, detail="Faltan cuentas contables de egresos o caja/banco configuradas.")
+
+    # Si es Factura A con Retención, garantizar existencia de cuentas de retenciones (2.1.08 y 2.1.09)
+    account_ret_iva = None
+    account_ret_gan = None
+    if data.tipoFactura == "A_RETENCION":
+        account_ret_iva = await prisma.account.find_unique(where={"code": "2.1.08"})
+        if not account_ret_iva:
+            account_ret_iva = await prisma.account.create(data={
+                "code": "2.1.08",
+                "name": "Retenciones IVA a Pagar",
+                "type": "LIABILITY",
+                "parentCode": "2.1",
+                "level": 3
+            })
+        account_ret_gan = await prisma.account.find_unique(where={"code": "2.1.09"})
+        if not account_ret_gan:
+            account_ret_gan = await prisma.account.create(data={
+                "code": "2.1.09",
+                "name": "Retenciones Ganancias a Pagar",
+                "type": "LIABILITY",
+                "parentCode": "2.1",
+                "level": 3
+            })
 
     try:
         async with prisma.tx() as transaction:
@@ -426,6 +462,9 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
                     "total": data.total,
                     "metodoPago": data.metodoPago,
                     "categoria": data.categoria,
+                    "tipoFactura": data.tipoFactura,
+                    "cbuProveedor": data.cbuProveedor,
+                    "esImportacionServicio": data.esImportacionServicio,
                     "items": {
                         "create": [item.model_dump() for item in data.items]
                     }
@@ -433,10 +472,24 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
                 include={"items": True}
             )
             
-            entries = [
-                {"accountId": account_gasto.id, "debit": data.subtotal, "credit": 0, "description": f"Gasto {data.categoria} - {data.proveedor}"},
-                {"accountId": account_pago.id, "debit": 0, "credit": data.total, "description": f"Pago Compra {data.numero}"}
-            ]
+            # Generar asientos contables según regulaciones
+            if data.tipoFactura == "A_RETENCION" and account_ret_iva and account_ret_gan:
+                # 100% de IVA y 6% de Ganancias sobre subtotal
+                ret_iva_amt = data.iva
+                ret_gan_amt = round(data.subtotal * 0.06, 2)
+                neto_amt = round(data.total - ret_iva_amt - ret_gan_amt, 2)
+                
+                entries = [
+                    {"accountId": account_gasto.id, "debit": data.subtotal, "credit": 0, "description": f"Gasto {data.categoria} - {data.proveedor}"},
+                    {"accountId": account_pago.id, "debit": 0, "credit": neto_amt, "description": f"Pago Neto Compra {data.numero} (Retenciones aplicadas)"},
+                    {"accountId": account_ret_iva.id, "debit": 0, "credit": ret_iva_amt, "description": f"Retención IVA 100% - Compra {data.numero}"},
+                    {"accountId": account_ret_gan.id, "debit": 0, "credit": ret_gan_amt, "description": f"Retención Ganancias 6% - Compra {data.numero}"}
+                ]
+            else:
+                entries = [
+                    {"accountId": account_gasto.id, "debit": data.subtotal, "credit": 0, "description": f"Gasto {data.categoria} - {data.proveedor}"},
+                    {"accountId": account_pago.id, "debit": 0, "credit": data.total, "description": f"Pago Compra {data.numero}"}
+                ]
             
             if data.iva > 0 and account_iva_cf:
                 entries.append({"accountId": account_iva_cf.id, "debit": data.iva, "credit": 0, "description": f"IVA CF Compra {data.numero}"})
@@ -469,7 +522,7 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
                 action="INVOICE_PURCHASE_CREATE",
                 user_id=current_user.id,
                 user_email=current_user.email,
-                details=f"Compra registrada: {data.proveedor} (Total: ${data.total:.2f} ARS).",
+                details=f"Compra registrada ({data.tipoFactura}): {data.proveedor} (Total: ${data.total:.2f} ARS).",
                 ip_address=ip_address,
                 request_id=request_id
             )
@@ -852,10 +905,13 @@ async def seed_accounting(current_user=Depends(get_current_user)):
         {"code": "1.1.01", "name": "Caja", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.02", "name": "Banco", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.05", "name": "IVA Crédito Fiscal", "type": "ASSET", "parentCode": "1.1"},
+        {"code": "1.1.09", "name": "Retenciones a Conciliar", "type": "ASSET", "parentCode": "1.1"},
         {"code": "2", "name": "PASIVO", "type": "LIABILITY", "isSelectable": False},
         {"code": "2.1", "name": "PASIVO CORRIENTE", "type": "LIABILITY", "parentCode": "2", "isSelectable": False},
         {"code": "2.1.01", "name": "Proveedores", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "2.1.05", "name": "IVA Débito Fiscal", "type": "LIABILITY", "parentCode": "2.1"},
+        {"code": "2.1.08", "name": "Retenciones IVA a Pagar", "type": "LIABILITY", "parentCode": "2.1"},
+        {"code": "2.1.09", "name": "Retenciones Ganancias a Pagar", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "3", "name": "PATRIMONIO NETO", "type": "EQUITY", "isSelectable": False},
         {"code": "3.1.01", "name": "Capital Social", "type": "EQUITY", "parentCode": "3"},
         {"code": "4", "name": "INGRESOS", "type": "REVENUE", "isSelectable": False},

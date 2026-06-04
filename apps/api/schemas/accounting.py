@@ -97,6 +97,9 @@ class CompraBase(BaseModel):
     total: float
     metodoPago: str = "EFECTIVO"
     categoria: str = "OTROS"
+    tipoFactura: Optional[str] = "A"
+    cbuProveedor: Optional[str] = None
+    esImportacionServicio: Optional[bool] = False
 
 class CreateCompraRequest(CompraBase):
     items: List[CompraItemBase]

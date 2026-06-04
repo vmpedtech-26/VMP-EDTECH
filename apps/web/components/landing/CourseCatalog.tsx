@@ -161,15 +161,16 @@ export default function CourseCatalog() {
         >
             {/* Background Image & Grid Overlay */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute inset-0 bg-[#0a1628]" />
                 <Image
                     src="/images/vmp_hero_winter.png"
-                    alt="Background Grid"
+                    alt="Background Winter Road"
                     fill
-                    className="object-cover opacity-[0.06] mix-blend-overlay"
+                    className="object-cover opacity-[0.35]"
                     priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/95 via-[#0d1f3c]/98 to-[#0a1628]/95" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.035)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/70 via-[#0a1628]/50 to-[#0a1628]/90" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.06)_1px,transparent_1px)] bg-[size:50px_50px]" />
             </div>
 
             {/* Ambient glow that changes with course */}

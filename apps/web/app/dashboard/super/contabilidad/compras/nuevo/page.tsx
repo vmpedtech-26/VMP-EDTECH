@@ -33,6 +33,9 @@ export default function NuevaCompraPage() {
         fecha: new Date().toISOString().split('T')[0],
         metodoPago: 'EFECTIVO',
         categoria: 'OTROS',
+        tipoFactura: 'A', // A, A_RETENCION, A_CBU, B, C
+        cbuProveedor: '',
+        esImportacionServicio: false
     });
 
     const [items, setItems] = useState([
@@ -59,8 +62,13 @@ export default function NuevaCompraPage() {
     };
 
     const subtotalGral = items.reduce((acc, item) => acc + item.subtotal, 0);
-    const iva = formData.categoria === 'SERVICIOS' ? 0 : subtotalGral * 0.21; // Standard AFIP: Monotributo/Services can be 0 or 21%
+    const iva = (formData.categoria === 'SERVICIOS' && formData.tipoFactura !== 'A_RETENCION') ? 0 : subtotalGral * 0.21;
     const total = subtotalGral + iva;
+
+    // Retenciones 2026 para Factura A Especial
+    const retencionIva = formData.tipoFactura === 'A_RETENCION' ? iva : 0;
+    const retencionGanancias = formData.tipoFactura === 'A_RETENCION' ? subtotalGral * 0.06 : 0;
+    const netoAPagar = total - retencionIva - retencionGanancias;
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -371,6 +379,55 @@ export default function NuevaCompraPage() {
                                     <option value="TRANSFERENCIA">TRANSFERENCIA (BANCO)</option>
                                     <option value="TARJETA">TARJETA DE CRÉDITO / DÉBITO</option>
                                 </select>
+                            </div>
+
+                            {/* Tipo Factura / Comprobante */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Clase de Factura / Comprobante</label>
+                                <select
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-bold appearance-none cursor-pointer"
+                                    value={formData.tipoFactura}
+                                    onChange={(e) => setFormData({...formData, tipoFactura: e.target.value})}
+                                >
+                                    <option value="A">Factura A (Estándar)</option>
+                                    <option value="A_RETENCION">Factura A con Retención Obligatoria (IVA 100% / Gan 6%)</option>
+                                    <option value="A_CBU">Factura A con Pago en CBU Informada</option>
+                                    <option value="B">Factura B (Consumidor Final)</option>
+                                    <option value="C">Factura C (Monotributo)</option>
+                                </select>
+                            </div>
+
+                            {/* CBU del Proveedor (Conditional) */}
+                            {formData.tipoFactura === 'A_CBU' && (
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">CBU del Proveedor (22 dígitos)</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ingresa los 22 dígitos del CBU"
+                                        maxLength={22}
+                                        required
+                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-bold"
+                                        value={formData.cbuProveedor}
+                                        onChange={(e) => setFormData({...formData, cbuProveedor: e.target.value.replace(/\D/g, '')})}
+                                    />
+                                    <span className="text-[10px] font-bold text-emerald-600">
+                                        {/^\d{22}$/.test(formData.cbuProveedor) ? '✓ CBU válido' : '* CBU incompleto (debe ser numérico de 22 dígitos)'}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Checkbox Importación de Servicios */}
+                            <div className="flex items-center space-x-3 py-2 md:col-span-2">
+                                <input 
+                                    type="checkbox"
+                                    id="esImportacionServicio"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded"
+                                    checked={formData.esImportacionServicio}
+                                    onChange={(e) => setFormData({...formData, esImportacionServicio: e.target.checked})}
+                                />
+                                <label htmlFor="esImportacionServicio" className="text-xs font-bold text-slate-700 cursor-pointer">
+                                    ¿Es Importación de Servicios? <span className="text-slate-400 font-semibold">(Tratamiento impositivo especial F. 2051)</span>
+                                </label>
                             </div>
 
                         </div>

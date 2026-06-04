@@ -90,6 +90,8 @@ export default function ContabilidadDashboard() {
                             { title: 'Compras y Gastos', desc: 'Controla los pagos a proveedores.', href: '/dashboard/super/contabilidad/compras', icon: TrendingDown },
                             { title: 'Reportes Financieros', desc: 'Balances y estado de resultados.', href: '/dashboard/super/contabilidad/reportes', icon: PieChart },
                             { title: 'Plan de Cuentas', desc: 'Configura la estructura contable.', href: '/dashboard/super/contabilidad/cuentas', icon: Sliders },
+                            { title: 'Liquidación IVA (F. 2051)', desc: 'Agenda ARCA, CBU y exportación de retenciones.', href: '/dashboard/super/contabilidad/impuestos', icon: Calculator },
+                            { title: 'Simplificaciones RT 54', desc: 'Categoría PyME y valuación de bienes de cambio.', href: '/dashboard/super/contabilidad/rt54', icon: BookOpen },
                         ].map((action, i) => (
                             <Link key={i} href={action.href} className="group">
                                 <Card className="p-6 border-none shadow-sm ring-1 ring-slate-100 hover:ring-primary/40 transition-all flex items-center justify-between">

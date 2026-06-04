@@ -5,6 +5,7 @@ generator client {
   provider             = "prisma-client-py"
   interface            = "asyncio"
   recursive_type_depth = 5
+  output               = "/Users/matias/Desktop/SISTEMAS & APPS/VMP/01 - Desarrollo (EdTech)/vmp-abril/apps/api/venv/lib/python3.14/site-packages/prisma"
 }
 
 datasource db {
@@ -365,6 +366,10 @@ model Compra {
   total           Float
   metodoPago      String   @default("EFECTIVO") @map("metodo_pago")
   categoria       String   @default("OTROS") // SERVICIOS, IMPUESTOS, SUELDOS, etc
+  
+  tipoFactura     String?  @default("A") @map("tipo_factura")
+  cbuProveedor    String?  @map("cbu_proveedor")
+  esImportacionServicio Boolean? @default(false) @map("es_importacion_servicio")
   
   items           CompraItem[]
   

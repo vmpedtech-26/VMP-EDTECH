@@ -99,82 +99,18 @@ const getServiceIcon = (index: number) => {
 export function ProfessionalServices() {
   return (
     <>
-      {/* Soluciones Corporativas Section */}
-      <section id="servicios-profesionales" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">
-                Soluciones Corporativas
-              </h2>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-6">
-                Servicios de Consultoría y Gestión Integral
-              </h3>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                Brindamos soporte técnico y normativo de nivel experto para proteger el activo más valioso de su organización: su gente.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {SERVICES.map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex flex-col h-full">
-                  <div className="relative h-56 sm:h-64 overflow-hidden">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <h4 className="text-xl sm:text-2xl font-bold text-white leading-tight">
-                        {service.title}
-                      </h4>
-                    </div>
-                  </div>
-
-                  <div className="p-8 flex flex-col flex-1">
-                    <p className="text-slate-600 mb-8 leading-relaxed font-medium">
-                      {service.description}
-                    </p>
-
-                    <ul className="space-y-3 mt-auto">
-                      {service.items.map((item, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700 text-sm font-semibold">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Servicios Técnicos Section */}
-      <section id="servicios" className="py-28 bg-slate-50/40 relative overflow-hidden border-t border-slate-100">
-        {/* Background glow blobs */}
-        <div className="absolute top-0 left-1/4 w-[35rem] h-[35rem] bg-primary/10 rounded-full blur-3xl opacity-30 -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-primary/5 rounded-full blur-3xl opacity-20 translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      {/* Servicios Técnicos Section (Seguridad e Higiene) */}
+      <section id="servicios" className="py-28 bg-[#fafbfc] relative overflow-hidden border-b border-slate-100">
+        {/* Native High-Dither Radial Glow (No blur filter color banding or pixelation artifacts) */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: `radial-gradient(circle at 50% 35%, rgba(20, 184, 166, 0.05) 0%, transparent 60%)`
+        }} />
         
-        {/* Engineering technical grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+        {/* Engineering technical grid pattern (SVG Vector Sharp - 100% pixel-perfect on all screens) */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%23e2e8f0' stroke-width='0.85' stroke-opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
@@ -250,6 +186,74 @@ export function ProfessionalServices() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Soluciones Corporativas Section */}
+      <section id="servicios-profesionales" className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">
+                Soluciones Corporativas
+              </h2>
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-6">
+                Servicios de Consultoría y Gestión Integral
+              </h3>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                Brindamos soporte técnico y normativo de nivel experto para proteger el activo más valioso de su organización: su gente.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {SERVICES.map((service, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="relative h-56 sm:h-64 overflow-hidden">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <h4 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                        {service.title}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div className="p-8 flex flex-col flex-1">
+                    <p className="text-slate-600 mb-8 leading-relaxed font-medium">
+                      {service.description}
+                    </p>
+
+                    <ul className="space-y-3 mt-auto">
+                      {service.items.map((item, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-slate-700 text-sm font-semibold">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

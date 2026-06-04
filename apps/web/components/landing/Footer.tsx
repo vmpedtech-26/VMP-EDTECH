@@ -5,7 +5,7 @@ import { Facebook, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'luc
 export default function Footer() {
     return (
         <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}
@@ -130,15 +130,15 @@ export default function Footer() {
                                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div className="space-y-1">
                                     <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇦🇷 Sede Neuquén (Central):</span>
+                                        <span className="font-bold text-white block">🇦🇷 Neuquén (Central):</span>
                                         Juan B. Justo 385, Piso 1, Neuquén (8300)
                                     </p>
                                     <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇦🇷 Sede Cipolletti:</span>
+                                        <span className="font-bold text-white block">🇦🇷 Cipolletti:</span>
                                         25 de Mayo 623, Cipolletti, Río Negro (8324)
                                     </p>
                                     <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇪🇸 Sede España:</span>
+                                        <span className="font-bold text-white block">🇪🇸 España:</span>
                                         Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
                                     </p>
                                 </div>

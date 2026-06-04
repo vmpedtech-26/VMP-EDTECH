@@ -51,11 +51,11 @@ export default function ContactSection() {
     };
 
     return (
-        <section id="contacto" className="py-20 bg-gradient-to-b from-slate-50 to-white">
+        <section id="contacto" className="py-12 bg-gradient-to-b from-slate-50 to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
-                    className="text-center mb-16"
+                    className="text-center mb-10"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -88,6 +88,26 @@ export default function ContactSection() {
                             <div className="space-y-6">
                                 <div className="flex items-start space-x-4">
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <MapPin className="h-5 w-5" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="font-semibold">Ubicación</p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇦🇷 Neuquén (Central):</span>
+                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                        </p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇦🇷 Cipolletti:</span>
+                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
+                                        </p>
+                                        <p className="text-white/80 text-sm">
+                                            <span className="font-bold text-white block">🇪🇸 España:</span>
+                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-4">
+                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
@@ -112,37 +132,6 @@ export default function ContactSection() {
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <Mail className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Email</p>
-                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
-                                            administracion@vmp-edtech.com
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <MapPin className="h-5 w-5" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="font-semibold">Ubicación</p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇦🇷 Sede Neuquén (Central):</span>
-                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
-                                        </p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇦🇷 Sede Cipolletti:</span>
-                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
-                                        </p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇪🇸 Sede España:</span>
-                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
-                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
@@ -186,6 +175,17 @@ export default function ContactSection() {
                                                 </a>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-4">
+                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <Mail className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold">Email</p>
+                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
+                                            administracion@vmp-edtech.com
+                                        </a>
                                     </div>
                                 </div>
                             </div>
