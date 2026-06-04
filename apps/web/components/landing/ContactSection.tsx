@@ -87,103 +87,85 @@ export default function ContactSection() {
                             </h3>
                             <div className="space-y-6">
                                 <div className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                                         <MapPin className="h-5 w-5" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="font-semibold">Ubicación</p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇦🇷 Neuquén (Central):</span>
-                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
-                                        </p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇦🇷 Cipolletti:</span>
-                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
-                                        </p>
-                                        <p className="text-white/80 text-sm">
-                                            <span className="font-bold text-white block">🇪🇸 España:</span>
-                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <Phone className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold mb-2">Teléfonos</p>
-                                        <div className="space-y-2">
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
-                                                <a href="tel:+5492995370173" className="hover:text-white transition-colors">
+                                    <div className="space-y-5">
+                                        {/* Neuquén */}
+                                        <div className="text-sm">
+                                            <span className="font-bold text-white text-base block">🇦🇷 Neuquén (Central):</span>
+                                            <div className="flex items-center space-x-2 my-0.5">
+                                                <a href="tel:+5492995370173" className="text-white hover:text-emerald-100 font-semibold hover:underline">
                                                     +54 9 299 537-0173
                                                 </a>
-                                            </div>
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
-                                                <a href="tel:+5492996731487" className="hover:text-white transition-colors">
-                                                    +54 9 299 673-1487
-                                                </a>
-                                            </div>
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
-                                                <a href="tel:+34624536539" className="hover:text-white transition-colors">
-                                                    +34 624 536 539
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <MessageSquare className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold mb-2">WhatsApp</p>
-                                        <div className="space-y-2">
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
+                                                <span className="text-white/40">|</span>
                                                 <a
                                                     href="https://wa.me/5492995370173?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="hover:text-white transition-colors"
+                                                    className="text-emerald-300 hover:text-emerald-200 font-medium text-xs hover:underline flex items-center gap-0.5"
                                                 >
-                                                    Enviar mensaje →
+                                                    <MessageSquare className="h-3 w-3 inline" /> WhatsApp
                                                 </a>
                                             </div>
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
+                                            <p className="text-white/80 text-sm">
+                                                Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                            </p>
+                                        </div>
+
+                                        {/* Cipolletti */}
+                                        <div className="text-sm">
+                                            <span className="font-bold text-white text-base block">🇦🇷 Cipolletti:</span>
+                                            <div className="flex items-center space-x-2 my-0.5">
+                                                <a href="tel:+5492996731487" className="text-white hover:text-emerald-100 font-semibold hover:underline">
+                                                    +54 9 299 673-1487
+                                                </a>
+                                                <span className="text-white/40">|</span>
                                                 <a
                                                     href="https://wa.me/5492996731487?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="hover:text-white transition-colors"
+                                                    className="text-emerald-300 hover:text-emerald-200 font-medium text-xs hover:underline flex items-center gap-0.5"
                                                 >
-                                                    Enviar mensaje →
+                                                    <MessageSquare className="h-3 w-3 inline" /> WhatsApp
                                                 </a>
                                             </div>
-                                            <div className="text-white/80 text-sm">
-                                                <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
+                                            <p className="text-white/80 text-sm">
+                                                25 de Mayo 623, Cipolletti, Río Negro (8324)
+                                            </p>
+                                        </div>
+
+                                        {/* España */}
+                                        <div className="text-sm">
+                                            <span className="font-bold text-white text-base block">🇪🇸 España:</span>
+                                            <div className="flex items-center space-x-2 my-0.5">
+                                                <a href="tel:+34624536539" className="text-white hover:text-emerald-100 font-semibold hover:underline">
+                                                    +34 624 536 539
+                                                </a>
+                                                <span className="text-white/40">|</span>
                                                 <a
                                                     href="https://wa.me/34624536539?text=Hola%2C%20me%20interesa%20recibir%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20profesionales%20de%20VMP."
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="hover:text-white transition-colors"
+                                                    className="text-emerald-300 hover:text-emerald-200 font-medium text-xs hover:underline flex items-center gap-0.5"
                                                 >
-                                                    Enviar mensaje →
+                                                    <MessageSquare className="h-3 w-3 inline" /> WhatsApp
                                                 </a>
                                             </div>
+                                            <p className="text-white/80 text-sm">
+                                                Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-start space-x-4">
+
+                                <div className="flex items-center space-x-4 pt-2 border-t border-white/10">
                                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-semibold">Email</p>
-                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white/80 hover:text-white transition-colors">
+                                        <p className="font-semibold text-xs text-white/75">Email Administrativo</p>
+                                        <a href="mailto:administracion@vmp-edtech.com" className="text-white hover:text-emerald-100 font-semibold transition-colors text-sm hover:underline">
                                             administracion@vmp-edtech.com
                                         </a>
                                     </div>

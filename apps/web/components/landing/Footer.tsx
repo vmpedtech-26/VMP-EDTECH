@@ -96,51 +96,48 @@ export default function Footer() {
                     {/* Contacto Column */}
                     <div>
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">CONTACTO</h3>
-                        <ul className="space-y-3">
+                        <ul className="space-y-4">
                             <li className="flex items-start space-x-3">
                                 <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors hover:underline break-all">
                                     administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
-                                <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <div className="space-y-2">
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">Pedro Orejas (Socio):</span>
-                                        <a href="tel:+5492995370173" className="hover:text-primary transition-colors">
+                                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <div className="space-y-3">
+                                    {/* Neuquén */}
+                                    <div className="text-slate-300 text-xs">
+                                        <span className="font-bold text-white block text-sm">🇦🇷 Neuquén (Central):</span>
+                                        <a href="tel:+5492995370173" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
                                             +54 9 299 537-0173
                                         </a>
-                                    </p>
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">Matias Emmanuel (Socio):</span>
-                                        <a href="tel:+5492996731487" className="hover:text-primary transition-colors">
+                                        <p className="leading-relaxed">
+                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
+                                        </p>
+                                    </div>
+
+                                    {/* Cipolletti */}
+                                    <div className="text-slate-300 text-xs">
+                                        <span className="font-bold text-white block text-sm">🇦🇷 Cipolletti:</span>
+                                        <a href="tel:+5492996731487" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
                                             +54 9 299 673-1487
                                         </a>
-                                    </p>
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">Natalia Orejas (Rep. Comercial):</span>
-                                        <a href="tel:+34624536539" className="hover:text-primary transition-colors">
+                                        <p className="leading-relaxed">
+                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
+                                        </p>
+                                    </div>
+
+                                    {/* España */}
+                                    <div className="text-slate-300 text-xs">
+                                        <span className="font-bold text-white block text-sm">🇪🇸 España:</span>
+                                        <a href="tel:+34624536539" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
                                             +34 624 536 539
                                         </a>
-                                    </p>
-                                </div>
-                            </li>
-                            <li className="flex items-start space-x-3">
-                                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <div className="space-y-1">
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇦🇷 Neuquén (Central):</span>
-                                        Juan B. Justo 385, Piso 1, Neuquén (8300)
-                                    </p>
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇦🇷 Cipolletti:</span>
-                                        25 de Mayo 623, Cipolletti, Río Negro (8324)
-                                    </p>
-                                    <p className="text-slate-300 text-sm">
-                                        <span className="font-bold text-white block">🇪🇸 España:</span>
-                                        Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
-                                    </p>
+                                        <p className="leading-relaxed">
+                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
+                                        </p>
+                                    </div>
                                 </div>
                             </li>
                         </ul>
