@@ -135,130 +135,16 @@ export default function AboutUs() {
                     </div>
                 </motion.div>
 
-                {/* 4, 5, 6, 7, 8 Servicios y Programas Grid */}
-                <div className="relative py-12 px-5 md:px-8 rounded-[2.5rem] overflow-hidden border border-slate-200/60 shadow-xl shadow-slate-100 bg-[#fafbfc]">
-                    {/* Background image constrained within this container (avoids stretching and pixelation) */}
-                    <div className="absolute inset-0 z-0 pointer-events-none">
-                        <Image
-                            src="/images/vmp_prop_mining_sharp.png"
-                            alt="Background Operations Team"
-                            fill
-                            className="object-cover opacity-100 object-[50%_40%]"
-                        />
-                        {/* Sharp Vector Grid lines */}
-                        <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.035)_1px,transparent_1px)] bg-[size:50px_50px]" />
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="text-center max-w-4xl mx-auto mb-10">
-                            <h3 className="text-3xl font-bold text-slate-900 mb-4">Nuestros Servicios y Programas</h3>
-                            <p className="text-base text-slate-600">Diseñados para generar competencias reales en el personal operativo, combinando contenidos teóricos con ejercicios prácticos aplicados a situaciones reales de trabajo.</p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        
-                            {/* 4. Servicios Profesionales */}
-                            <motion.div 
-                                initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.1 }}
-                                className="p-6 transition-all duration-300 group hover:-translate-y-1"
-                            >
-                                <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
-                                    <Image src="/images/icons/consulting.png" fill className="object-cover" alt="Servicios" />
-                                </div>
-                                <h4 className="text-lg font-bold text-slate-900 mb-3">Servicios Profesionales</h4>
-                                <ul className="space-y-1.5 text-slate-600 text-[13px]">
-                                    <li>• Consultoría en Calidad, Ambiente, Seguridad y Salud Ocupacional.</li>
-                                    <li>• Implementación en Sistemas Integrados de Gestión (ISO 9001, 14001, 45001).</li>
-                                    <li>• Diagnósticos organizacionales y cumplimiento normativo.</li>
-                                    <li>• Auditorías de Seguridad, Ambiente y Calidad.</li>
-                                    <li>• Capacitación técnica y formación operativa.</li>
-                                    <li>• Inspección de redes contra incendio.</li>
-                                    <li>• Formación de brigadas y simulacros.</li>
-                                    <li>• Comercialización de equipamientos.</li>
-                                </ul>
-                            </motion.div>
-
-                            {/* 5. Capacitación Técnica Especializada */}
-                            <motion.div 
-                                initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.2 }}
-                                className="p-6 transition-all duration-300 group hover:-translate-y-1"
-                            >
-                                <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
-                                    <Image src="/images/icons/training.png" fill className="object-cover" alt="Capacitación" />
-                                </div>
-                                <h4 className="text-lg font-bold text-slate-900 mb-3">Capacitación Técnica Especializada</h4>
-                                <ul className="space-y-1.5 text-slate-600 text-[13px]">
-                                    <li>• Permisos de trabajo y control operacional.</li>
-                                    <li>• Bloqueo y etiquetado de energías (LOTO).</li>
-                                    <li>• Administración de peligros y riesgos.</li>
-                                    <li>• Prevención de lesiones en manos.</li>
-                                    <li>• Prevención ante gas sulfhídrico.</li>
-                                    <li>• Trabajo seguro en espacios confinados.</li>
-                                    <li>• Observaciones preventivas (STOP).</li>
-                                    <li>• Riesgos en trabajos en altura.</li>
-                                </ul>
-                            </motion.div>
-
-                            {/* 6. Formación para Operadores */}
-                            <motion.div 
-                                initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}
-                                className="p-6 transition-all duration-300 group lg:row-span-2 flex flex-col hover:-translate-y-1"
-                            >
-                                <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
-                                    <Image src="/images/icons/measurements.png" fill className="object-cover" alt="Operadores" />
-                                </div>
-                                <h4 className="text-lg font-bold text-slate-900 mb-3">Operadores de Equipos Industriales y Maquinaria Pesada</h4>
-                                <p className="text-[11px] text-slate-500 mb-3 block">Incluyen contenidos técnicos, análisis de riesgos y legislación vigente:</p>
-                                <ul className="space-y-1.5 text-slate-600 text-[13px] mb-4">
-                                    <li>• Izaje de cargas – Eslingador / Señalero (Rigger).</li>
-                                    <li>• Operación segura de hidrogrúas.</li>
-                                    <li>• Operación de autoelevadores.</li>
-                                    <li>• Operación de puente grúa.</li>
-                                    <li>• Operación de manipuladores telescópicos.</li>
-                                    <li>• Operación de platforms aéreas de elevación.</li>
-                                </ul>
-                                
-                                {/* 7. Programas de Conducción Segura */}
-                                <div className="mt-auto pt-6 border-t border-slate-100">
-                                    <div className="w-10 h-10 rounded-lg overflow-hidden mb-3 shadow-sm relative">
-                                        <Image src="/images/icons/time.png" fill className="object-cover" alt="Reloj" />
-                                    </div>
-                                    <h4 className="text-base font-bold text-slate-900 mb-3">Programas de Conducción Segura</h4>
-                                    <ul className="space-y-1.5 text-slate-600 text-[13px]">
-                                        <li>• Conducción defensiva (vehículos livianos).</li>
-                                        <li>• Conducción segura (vehículos pesados).</li>
-                                        <li>• Vehículos doble tracción (4x4).</li>
-                                        <li>• Conducción invernal y clima adverso.</li>
-                                    </ul>
-                                </div>
-                            </motion.div>
-
-                            {/* 8. Auditorías */}
-                            <motion.div 
-                                initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.4 }}
-                                className="p-6 transition-all duration-300 group md:col-span-2 lg:col-span-2 hover:-translate-y-1"
-                            >
-                                <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
-                                    <Image src="/images/icons/planning.png" fill className="object-cover" alt="Auditorías" />
-                                </div>
-                                <h4 className="text-lg font-bold text-slate-900 mb-3">Auditorías y Evaluaciones Técnicas</h4>
-                                <p className="text-xs text-slate-600 mb-4 font-medium">Las auditorías en calidad, ambiente y seguridad permiten evaluar el grado de cumplimiento de los sistemas de gestión y detectar oportunidades de mejora en las operaciones.</p>
-                                <div className="grid sm:grid-cols-2 gap-3">
-                                    <ul className="space-y-1.5 text-slate-600 text-[13px]">
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Evaluación de emisiones y efluentes.</li>
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Integridad de ductos, tanques y procesos.</li>
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Evaluación de gestión de emergencias.</li>
-                                    </ul>
-                                    <ul className="space-y-1.5 text-slate-600 text-[13px]">
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Verificación de cumplimiento normativo.</li>
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Control de programas de capacitación.</li>
-                                        <li className="flex gap-2"><div className="mt-0.5 w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 shadow-sm"><img src="/images/icons/compliance.png" className="w-full h-full object-cover" alt="Check" /></div> Análisis de no conformidades (incidentes).</li>
-                                    </ul>
-                                </div>
-                            </motion.div>
-
-                        </div>
-                    </div>
+                {/* Banner de Operaciones de Alta Resolución */}
+                <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-200/60 shadow-xl shadow-slate-100 bg-slate-100">
+                    <Image
+                        src="/images/vmp_prop_mining_sharp.png"
+                        alt="Operaciones de Seguridad Vial e Industrial VMP"
+                        fill
+                        className="object-cover object-[50%_35%] transition-transform duration-700 hover:scale-[1.02]"
+                        sizes="(max-width: 1280px) 100vw, 1280px"
+                        priority
+                    />
                 </div>
 
                 {/* 9 & 10. Fortalezas y Sectores */}
