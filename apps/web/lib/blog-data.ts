@@ -207,5 +207,161 @@ export const blogPosts: BlogPost[] = [
     image: '/images/blog/vmp-accounting.png',
     readTime: '5 min',
     tags: ['Fintech', 'EdTech', 'Innovación', 'Gestión']
+  },
+  {
+    slug: 'fatiga-al-volante-prevencion-accidentes',
+    title: 'Prevención de la Fatiga al Volante: El Asesino Invisible del Transporte de Cargas',
+    excerpt: 'La fatiga es una de las principales causas de siniestralidad vial en carreteras. Analizamos cómo detectarla a tiempo y qué pautas de descanso preventivo deben adoptar las flotas.',
+    content: `
+      <h2>El Impacto de la Fatiga en la Conducción Profesional</h2>
+      <p>En la industria del transporte y la logística, la fatiga al volante es conocida como el "asesino invisible". A diferencia de otros factores de riesgo, la fatiga suele pasar desapercibida hasta que es demasiado tarde. Estudios de la Agencia Nacional de Seguridad Vial (ANSV) sugieren que hasta un 30% de los incidentes viales graves en transporte de cargas están relacionados con el cansancio o la falta de descanso adecuado.</p>
+      
+      <h3>¿Cómo Afecta la Fatiga a la Capacidad de Manejo?</h3>
+      <p>La privación del sueño y la monotonía del viaje deterioran funciones cognitivas críticas:</p>
+      <ul>
+        <li><strong>Aumento en los Tiempos de Reacción:</strong> Un retraso de solo 1 segundo en el frenado a 90 km/h equivale a recorrer 25 metros más antes de detener el vehículo.</li>
+        <li><strong>Pérdida de Alerta y Micro-sueños:</strong> Breves lapsos de inconsciencia de 2 a 5 segundos donde el vehículo avanza sin control alguno.</li>
+        <li><strong>Errores de Juicio:</strong> Mayor propensión a tomar decisiones arriesgadas debido a la disminución de la autocrítica.</li>
+      </ul>
+
+      <h3>Medidas Preventivas Básicas para las Flotas</h3>
+      <p>Las empresas de logística eficientes implementan políticas estrictas de gestión de la fatiga:</p>
+      <ol>
+        <li><strong>Pausas Activas Obligatorias:</strong> Descansar al menos 15 minutos por cada 3 a 4 horas de conducción continua.</li>
+        <li><strong>Rotación de Turnos Respetando el Ciclo Circadiano:</strong> Evitar la alternancia constante de turnos diurnos y nocturnos.</li>
+        <li><strong>Alimentación y Confort en Cabina:</strong> Promover hábitos alimenticios saludables y asegurar que las cabinas cuenten con climatización óptima.</li>
+      </ol>
+      
+      <blockquote>
+        "Un conductor fatigado tiene el mismo nivel de riesgo que un conductor con un nivel de alcohol en sangre superior al límite permitido. El descanso no es un lujo, es una obligación de seguridad."
+      </blockquote>
+    `,
+    date: '22 de Mayo, 2026',
+    author: 'Dra. Elena Valenzuela',
+    category: 'Seguridad',
+    image: 'https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=800',
+    readTime: '5 min',
+    tags: ['Fatiga', 'Prevención', 'Salud Ocupacional', 'Conductores']
+  },
+  {
+    slug: 'operacion-segura-autoelevadores-srt',
+    title: 'Normativa SRT y Operación Segura de Autoelevadores en Centros Logísticos',
+    excerpt: 'El cumplimiento de la Resolución SRT 960/15 es clave para evitar sanciones e incidentes. Conocé las pautas obligatorias para operadores y supervisores en almacenes.',
+    content: `
+      <h2>Higiene y Seguridad en el Manejo de Autoelevadores</h2>
+      <p>En el ámbito del almacenamiento y la distribución, los autoelevadores son herramientas indispensables pero de alto riesgo. En Argentina, la Superintendencia de Riesgos del Trabajo (SRT) regula esta actividad mediante la <strong>Resolución 960/15</strong>, que establece condiciones mínimas de seguridad para la operación de vehículos autoelevadores.</p>
+      
+      <h3>Requisitos Exigidos por la Resolución SRT 960/15</h3>
+      <p>Toda empresa que cuente con autoelevadores debe garantizar los siguientes puntos:</p>
+      <ul>
+        <li><strong>Acreditación del Operador:</strong> Solo personal debidamente capacitado y autorizado por escrito puede operar la maquinaria. Deben poseer una credencial con vigencia anual.</li>
+        <li><strong>Chequeo Diario (Checklist Diario):</strong> El operador debe completar un registro del estado del vehículo antes del inicio de cada jornada (frenos, luces, dirección, pérdidas hidráulicas).</li>
+        <li><strong>Dispositivos de Seguridad Activa:</strong> Bocina, alarma de marcha atrás, cinturón de seguridad y jaula protectora (estructura anti-vuelco FOPS/ROPS) en perfecto funcionamiento.</li>
+      </ul>
+
+      <blockquote>
+        "El cumplimiento de la SRT 960/15 no solo evita multas del ente fiscalizador; su verdadero impacto radica en la disminución de accidentes por vuelco de carga y colisiones internas en depósitos."
+      </blockquote>
+
+      <h3>El Rol de la Formación Profesional</h3>
+      <p>Nuestra plataforma en VMP-EDTECH incluye simulaciones virtuales e instructivos para la aprobación del examen teórico exigido por la SRT, complementado por capacitaciones prácticas con instructores habilitados para la entrega del carnet habilitante oficial.</p>
+    `,
+    date: '28 de Mayo, 2026',
+    author: 'Ing. Carlos Rodriguez',
+    category: 'Normativa',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800',
+    readTime: '6 min',
+    tags: ['SRT 960/15', 'Autoelevadores', 'Seguridad Industrial', 'Logística']
+  },
+  {
+    slug: 'mantenimiento-preventivo-seguridad-flotas',
+    title: 'Mantenimiento Preventivo Enfocado en la Seguridad: Más Allá de los Frenos',
+    excerpt: 'Un plan de mantenimiento correcto salva vidas y ahorra dinero. Examinamos la lista de chequeo pre-operativo que todo chofer debe realizar antes de salir a la ruta.',
+    content: `
+      <h2>La Trazabilidad de la Seguridad de las Unidades</h2>
+      <p>Un neumático desgastado, un amortiguador deficiente o una luz de giro inactiva pueden marcar la diferencia entre un viaje seguro y un siniestro catastrófico. El mantenimiento preventivo no es simplemente cambiar el aceite según el kilometraje; es una cultura activa de inspección que involucra directamente al conductor profesional.</p>
+      
+      <h3>El Checklist Pre-Viaje: La Primera Línea de Defensa</h3>
+      <p>Antes de que las ruedas giren, el conductor debe realizar una inspección visual de 360 grados:</p>
+      <ul>
+        <li><strong>Inspección de Neumáticos:</strong> Verificar presión de inflado correcta, profundidad de dibujo adecuada y ausencia de grietas o cortes en los flancos.</li>
+        <li><strong>Sistemas de Acople e Izaje:</strong> En camiones articulados, controlar la quinta rueda, pernos de enganche y mangueras neumáticas y eléctricas de conexión.</li>
+        <li><strong>Fluidos y Fugas:</strong> Revisar niveles de aceite de motor, líquido refrigerante, líquido de frenos y buscar indicios de goteos en el suelo de la cochera.</li>
+      </ul>
+
+      <blockquote>
+        "Reportar una anomalía menor hoy en el legajo digital de la unidad previene una falla mayor mañana en medio de la ruta andina o patagónica."
+      </blockquote>
+
+      <h3>Digitalización del Reporte de Fallas</h3>
+      <p>El uso de aplicaciones móviles integradas con VMP-EDTECH permite que los choferes envíen el checklist de pre-embarque con fotos al instante, asegurando que el equipo de taller programe reparaciones prioritarias antes de que el vehículo inicie el despacho.</p>
+    `,
+    date: '01 de Junio, 2026',
+    author: 'Inst. Marcos Peña',
+    category: 'Eficiencia',
+    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=800',
+    readTime: '5 min',
+    tags: ['Mantenimiento', 'Checklist', 'Seguridad Vial', 'Flotas']
+  },
+  {
+    slug: 'conduccion-4x4-industria-minera-petrolera',
+    title: 'Técnicas de Conducción Doble Tracción (4x4) en la Industria Minera y Petrolera',
+    excerpt: 'Operar en yacimientos requiere entender la dinámica del terreno, el uso correcto de bloqueos de diferencial y la anticipación ante condiciones geográficas inestables.',
+    content: `
+      <h2>Conducción en Terrenos Hostiles de Alta Exigencia</h2>
+      <p>Los yacimientos petrolíferos de Vaca Muerta y los proyectos mineros en la alta cordillera andina exigen al personal técnico el manejo de vehículos doble tracción (4x4) en condiciones sumamente difíciles: pendientes pronunciadas, barro arcilloso, ripio suelto, hielo y cauces secos.</p>
+      
+      <h3>Conceptos Clave del Manejo Off-Road</h3>
+      <p>Conducir un vehículo 4x4 de tracción total requiere habilidades técnicas especializadas:</p>
+      <ul>
+        <li><strong>Uso Correcto de Modos (4H, 4L, 2H):</strong> Saber cuándo acoplar la tracción doble alta (4H) para superficies resbaladizas rápidas o la reductora (4L) para máxima fuerza en subidas empinadas o barriales profundos.</li>
+        <li><strong>Bloqueo de Diferencial:</strong> Técnica avanzada para garantizar que la potencia se transmita de igual forma a las ruedas con tracción, evitando que la energía se pierda en una rueda que gira libremente en el aire o barro.</li>
+        <li><strong>Dinámica de Pendientes:</strong> Técnicas de ascenso y descenso controlado, evitando el uso excesivo del pedal de freno y aprovechando el freno motor de la marcha baja acoplada.</li>
+      </ul>
+
+      <blockquote>
+        "El mayor error al operar una camioneta 4x4 es confiar ciegamente en la electrónica de seguridad. Sin la técnica de conducción adecuada del piloto, el vehículo puede quedar atascado o volcar fácilmente."
+      </blockquote>
+
+      <h3>Seguridad en Yacimiento</h3>
+      <p>Nuestros cursos certificados de Conducción Off-Road 4x4 en VMP-EDTECH brindan a las empresas de servicios petroleros y mineros las herramientas conceptuales y las pautas prácticas de seguridad para mitigar los riesgos y prolongar la vida útil de sus vehículos en campo.</p>
+    `,
+    date: '03 de Junio, 2026',
+    author: 'Inst. Marcos Peña',
+    category: 'Capacitación',
+    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
+    readTime: '7 min',
+    tags: ['4x4', 'Minería', 'Petróleo', 'Técnicas de Manejo']
+  },
+  {
+    slug: 'digitalizacion-capacitacion-vial-logistica',
+    title: 'El Impacto de la Digitalización en la Capacitación Vial de Empresas Logísticas',
+    excerpt: 'Cómo las plataformas e-learning interactivas logran tasas de retención de conocimientos del 80% frente al 25% de los cursos teóricos presenciales tradicionales.',
+    content: `
+      <h2>La Evolución del Aprendizaje en el Sector Logístico</h2>
+      <p>Tradicionalmente, las capacitaciones de seguridad vial consistían en largas jornadas presenciales en un salón, donde los choferes escuchaban pasivamente diapositivas teóricas. Hoy en día, la digitalización y el EdTech están revolucionando este esquema, adaptándolo a la dinámica de trabajo de los transportistas modernos.</p>
+      
+      <h3>Ventajas del E-learning Adaptativo en Flotas</h3>
+      <p>La adopción de plataformas digitales como VMP-EDTECH reporta beneficios inmediatos:</p>
+      <ul>
+        <li><strong>Flexibilidad Absoluta:</strong> Los choferes completan módulos breves (micro-learning) durante sus tiempos muertos en paradores, sin interrumpir los despachos programados.</li>
+        <li><strong>Mayor Retención Educativa:</strong> El uso de videos interactivos, casos prácticos interactivos y cuestionarios de validación eleva la retención de conocimientos a más del 80%.</li>
+        <li><strong>Monitoreo y Métricas en Campo:</strong> Los gerentes de seguridad pueden visualizar el progreso de toda la flota en un dashboard interactivo unificado, identificando qué áreas de conocimiento requieren refuerzo inmediato.</li>
+      </ul>
+
+      <blockquote>
+        "La digitalización educativa no elimina la práctica en campo; la complementa haciendo que el conductor llegue a la cabina con una sólida base conceptual ya aprendida."
+      </blockquote>
+
+      <h3>Trazabilidad y Cumplimiento de Normativa</h3>
+      <p>Gracias a los sistemas QR de verificación instantánea y base de datos integrada de VMP, las empresas asociadas pueden demostrar el cumplimiento de normativas SRT y auditorías corporativas con solo un clic, automatizando la burocracia administrativa.</p>
+    `,
+    date: '05 de Junio, 2026',
+    author: 'Lic. Sofía Méndez',
+    category: 'Tecnología',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800',
+    readTime: '6 min',
+    tags: ['EdTech', 'Digitalización', 'Capacitación', 'Logística']
   }
 ];
+
