@@ -138,7 +138,7 @@ export default function AboutUs() {
                 {/* Banner de Operaciones de Alta Resolución */}
                 <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-200/60 shadow-xl shadow-slate-100 bg-slate-100">
                     <Image
-                        src="/images/vmp_prop_mining_sharp.png"
+                        src="/images/vmp_prop_mining_sharp_v2.png"
                         alt="Operaciones de Seguridad Vial e Industrial VMP"
                         fill
                         className="object-cover object-[50%_35%] transition-transform duration-700 hover:scale-[1.02]"
