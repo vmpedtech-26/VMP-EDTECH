@@ -143,11 +143,11 @@ export default function AboutUs() {
                             src="/images/vmp_prop_mining_sharp.png"
                             alt="Background Operations Team"
                             fill
-                            className="object-cover opacity-[0.75] object-[50%_40%]"
+                            className="object-cover opacity-[0.85] object-[50%_40%]"
                         />
                         {/* Smooth vignette overlay to blend into card styling and keep text fully readable */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#fafbfc]/20 via-transparent to-[#fafbfc]/20" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#fafbfc]/55 via-[#fafbfc]/5 to-[#fafbfc]/55" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#fafbfc]/10 via-transparent to-[#fafbfc]/10" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#fafbfc]/30 via-transparent to-[#fafbfc]/30" />
                         {/* Sharp Vector Grid lines */}
                         <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.035)_1px,transparent_1px)] bg-[size:50px_50px]" />
                     </div>
@@ -163,7 +163,7 @@ export default function AboutUs() {
                             {/* 4. Servicios Profesionales */}
                             <motion.div 
                                 initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.1 }}
-                                className="bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1"
+                                className="bg-white/35 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1"
                             >
                                 <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
                                     <Image src="/images/icons/consulting.png" fill className="object-cover" alt="Servicios" />
@@ -184,7 +184,7 @@ export default function AboutUs() {
                             {/* 5. Capacitación Técnica Especializada */}
                             <motion.div 
                                 initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.2 }}
-                                className="bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1"
+                                className="bg-white/35 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group hover:-translate-y-1"
                             >
                                 <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
                                     <Image src="/images/icons/training.png" fill className="object-cover" alt="Capacitación" />
@@ -205,7 +205,7 @@ export default function AboutUs() {
                             {/* 6. Formación para Operadores */}
                             <motion.div 
                                 initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}
-                                className="bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group lg:row-span-2 flex flex-col hover:-translate-y-1"
+                                className="bg-white/35 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 hover:border-primary/40 transition-all duration-300 group lg:row-span-2 flex flex-col hover:-translate-y-1"
                             >
                                 <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-sm group-hover:scale-110 transition-transform relative">
                                     <Image src="/images/icons/measurements.png" fill className="object-cover" alt="Operadores" />
@@ -239,7 +239,7 @@ export default function AboutUs() {
                             {/* 8. Auditorías */}
                             <motion.div 
                                 initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.4 }}
-                                className="bg-slate-900/80 backdrop-blur-md border border-slate-800/80 text-white p-6 rounded-3xl shadow-xl transition-all duration-300 group md:col-span-2 lg:col-span-2 hover:-translate-y-1"
+                                className="bg-slate-950/60 backdrop-blur-md border border-white/10 text-white p-6 rounded-3xl shadow-xl transition-all duration-300 group md:col-span-2 lg:col-span-2 hover:-translate-y-1"
                             >
                                 <div className="w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-md ring-2 ring-white/20 relative">
                                     <Image src="/images/icons/planning.png" fill className="object-cover" alt="Auditorías" />
