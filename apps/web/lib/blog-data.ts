@@ -38,7 +38,7 @@ export const blogPosts: BlogPost[] = [
         date: '19 de Mayo, 2026',
         author: 'Equipo Editorial VMP',
         category: 'Seguridad',
-        image: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?auto=format&fit=crop&q=80&w=800',
+        image: '/images/blog/operativo-invierno.png',
         readTime: '4 min',
         tags: ['Operativo Invierno', 'Mayo Amarillo', 'Seguridad Vial', 'Argentina']
     },
@@ -239,7 +239,7 @@ export const blogPosts: BlogPost[] = [
     date: '22 de Mayo, 2026',
     author: 'Dra. Elena Valenzuela',
     category: 'Seguridad',
-    image: 'https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=800',
+    image: '/images/blog/fatiga-volante.png',
     readTime: '5 min',
     tags: ['Fatiga', 'Prevención', 'Salud Ocupacional', 'Conductores']
   },
@@ -269,7 +269,7 @@ export const blogPosts: BlogPost[] = [
     date: '28 de Mayo, 2026',
     author: 'Ing. Carlos Rodriguez',
     category: 'Normativa',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800',
+    image: '/images/blog/autoelevadores-srt.png',
     readTime: '6 min',
     tags: ['SRT 960/15', 'Autoelevadores', 'Seguridad Industrial', 'Logística']
   },
@@ -299,7 +299,7 @@ export const blogPosts: BlogPost[] = [
     date: '01 de Junio, 2026',
     author: 'Inst. Marcos Peña',
     category: 'Eficiencia',
-    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=800',
+    image: '/images/blog/mantenimiento-preventivo.png',
     readTime: '5 min',
     tags: ['Mantenimiento', 'Checklist', 'Seguridad Vial', 'Flotas']
   },
@@ -329,7 +329,7 @@ export const blogPosts: BlogPost[] = [
     date: '03 de Junio, 2026',
     author: 'Inst. Marcos Peña',
     category: 'Capacitación',
-    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
+    image: '/images/blog/conduccion-4x4.png',
     readTime: '7 min',
     tags: ['4x4', 'Minería', 'Petróleo', 'Técnicas de Manejo']
   },
@@ -359,7 +359,7 @@ export const blogPosts: BlogPost[] = [
     date: '05 de Junio, 2026',
     author: 'Lic. Sofía Méndez',
     category: 'Tecnología',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800',
+    image: '/images/blog/digitalizacion-capacitacion.png',
     readTime: '6 min',
     tags: ['EdTech', 'Digitalización', 'Capacitación', 'Logística']
   }
