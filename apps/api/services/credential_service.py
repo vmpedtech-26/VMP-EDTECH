@@ -3,6 +3,9 @@ Servicio centralizado de generación de credenciales.
 Reutilizado por examenes.py, inscripciones.py y credenciales.py
 """
 import os
+import hmac
+import hashlib
+import json
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from core.database import prisma
@@ -12,6 +15,14 @@ from services.credencial_generator import (
     create_credencial_pdf,
     save_credencial_pdf
 )
+
+
+def calculate_credential_signature(numero: str, alumno_id: str, curso_id: str, fecha_emision_str: str) -> str:
+    """Calcula la firma criptográfica HMAC-SHA256 para una credencial."""
+    message = f"{numero}:{alumno_id}:{curso_id}:{fecha_emision_str}"
+    key = settings.JWT_SECRET.encode()
+    return hmac.new(key, message.encode(), hashlib.sha256).hexdigest()
+
 
 
 async def generate_credential_for_student(
@@ -138,6 +149,17 @@ async def generate_credential_for_student(
     filename = f"{numero_credencial}.pdf"
     pdf_url = await save_credencial_pdf(pdf_bytes, filename)
     
+    # Calcular firma criptográfica
+    fecha_emision_now = datetime.now()
+    fecha_emision_str = fecha_emision_now.strftime("%Y-%m-%d")
+    firma = calculate_credential_signature(numero_credencial, alumno_id, curso_id, fecha_emision_str)
+    metadata = json.dumps({
+        "numero": numero_credencial,
+        "alumnoId": alumno_id,
+        "cursoId": curso_id,
+        "fechaEmision": fecha_emision_str
+    })
+
     # Crear registro en BD
     credencial = await prisma.credencial.create(
         data={
@@ -146,9 +168,11 @@ async def generate_credential_for_student(
             "cursoId": curso_id,
             "pdfUrl": pdf_url,
             "qrCodeUrl": qr_url,
-            "fechaEmision": datetime.now(),
+            "fechaEmision": fecha_emision_now,
             "fechaVencimiento": fecha_vencimiento,
-            "puesto": alumno.puesto
+            "puesto": alumno.puesto,
+            "firmaCriptografica": firma,
+            "metadataFirmada": metadata
         }
     )
     

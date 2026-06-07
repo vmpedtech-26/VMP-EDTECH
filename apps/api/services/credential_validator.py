@@ -4,6 +4,7 @@ Servicio para validar credenciales públicamente.
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from core.database import prisma
+from services.credential_service import calculate_credential_signature
 
 
 class CredentialValidator:
@@ -44,11 +45,31 @@ class CredentialValidator:
         if credencial.fechaVencimiento:
             # PostgreSQL datetimes from Prisma are timezone-aware (UTC), so we use timezone-aware now
             is_expired = datetime.now(timezone.utc) > credencial.fechaVencimiento
+            
+        # Verificar firma criptográfica
+        signature_valid = False
+        signature_status = "missing"
+        
+        if credencial.firmaCriptografica and credencial.fechaEmision:
+            fecha_emision_str = credencial.fechaEmision.strftime("%Y-%m-%d")
+            recalculated_sig = calculate_credential_signature(
+                credencial.numero,
+                credencial.alumnoId,
+                credencial.cursoId,
+                fecha_emision_str
+            )
+            if credencial.firmaCriptografica == recalculated_sig:
+                signature_valid = True
+                signature_status = "verified"
+            else:
+                signature_status = "invalid"
         
         # Preparar respuesta con datos públicos
         return {
-            "valid": not is_expired,
-            "status": "expired" if is_expired else "valid",
+            "valid": not is_expired and (signature_status != "invalid"),
+            "status": "expired" if is_expired else ("valid" if signature_valid or signature_status == "missing" else "invalid_signature"),
+            "signatureValid": signature_valid,
+            "signatureStatus": signature_status,
             "credential": {
                 "numero": credencial.numero,
                 "fechaEmision": credencial.fechaEmision.isoformat(),
@@ -74,3 +95,4 @@ class CredentialValidator:
 
 # Instancia global del validador
 credential_validator = CredentialValidator()
+

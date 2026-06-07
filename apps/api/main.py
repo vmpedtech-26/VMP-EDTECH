@@ -128,7 +128,7 @@ async def shutdown():
 
 
 
-from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit
+from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit, compliance
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -150,6 +150,7 @@ app.include_router(accounting.router, prefix="/api/accounting", tags=["accountin
 app.include_router(b2b.router, prefix="/api/b2b", tags=["b2b"])
 app.include_router(automation.router, prefix="/api/automation", tags=["automation"])
 app.include_router(audit.router, prefix="/api/admin", tags=["admin"])
+app.include_router(compliance.router, prefix="/api/compliance", tags=["compliance"])
 app.include_router(contact.router)
 
 

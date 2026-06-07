@@ -27,7 +27,9 @@ interface CredentialData {
 
 interface ValidationResult {
     valid: boolean;
-    status: 'valid' | 'expired' | 'not_found';
+    status: 'valid' | 'expired' | 'not_found' | 'invalid_signature';
+    signatureValid?: boolean;
+    signatureStatus?: 'verified' | 'missing' | 'invalid';
     message?: string;
     credential?: CredentialData;
 }
@@ -141,6 +143,15 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                     </div>
                                 </>
                             )}
+                            {result.status === 'invalid_signature' && (
+                                <>
+                                    <AlertCircle className="w-8 h-8 text-red-600" />
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-red-950">Firma Criptográfica Inválida</h2>
+                                        <p className="text-sm text-red-700 font-semibold">Este certificado ha sido alterado o manipulado de forma fraudulenta.</p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -249,13 +260,44 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                 )}
                             </div>
 
-                            {/* Footer de verificación */}
-                            <div className="bg-gradient-to-r from-primary to-primary-dark rounded-lg p-6 text-white text-center">
-                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP - EDTECH</p>
-                                <p className="text-xs opacity-90">
-                                    Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
-                                </p>
-                            </div>
+                             {/* Footer de verificación y firma criptográfica */}
+                             {result.signatureStatus === 'verified' && (
+                                 <div className="bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white rounded-2xl p-6 shadow-lg border border-emerald-500/20 text-center relative overflow-hidden animate-pulse-slow">
+                                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full transform translate-x-8 -translate-y-8 pointer-events-none" />
+                                     <p className="text-base font-bold mb-1 tracking-wider flex items-center justify-center gap-1.5">
+                                         🛡️ FIRMA CRIPTOGRÁFICA VERIFICADA
+                                     </p>
+                                     <p className="text-xs opacity-90 max-w-md mx-auto">
+                                         Integridad de registro auditada exitosamente mediante firma inmutable del servidor. El certificado coincide al 100% con los registros de VMP - EDTECH.
+                                     </p>
+                                     <p className="text-[10px] opacity-75 mt-3">
+                                         Validado el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
+                                     </p>
+                                 </div>
+                             )}
+                             
+                             {result.signatureStatus === 'missing' && (
+                                 <div className="bg-gradient-to-r from-primary to-primary-dark rounded-xl p-6 text-white text-center">
+                                     <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP - EDTECH</p>
+                                     <p className="text-xs opacity-95">
+                                         Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
+                                     </p>
+                                 </div>
+                             )}
+
+                             {result.signatureStatus === 'invalid' && (
+                                 <div className="bg-gradient-to-br from-red-900 to-red-950 text-white rounded-2xl p-6 shadow-lg border border-red-500/30 text-center">
+                                     <p className="text-base font-bold mb-1 tracking-wider">
+                                         ⚠️ ERROR DE INTEGRIDAD - ALERTA
+                                     </p>
+                                     <p className="text-xs opacity-90 max-w-md mx-auto">
+                                         La firma criptográfica calculada no coincide con el registro original. Esta credencial puede haber sido alterada externamente o deshabilitada.
+                                     </p>
+                                     <p className="text-[10px] opacity-75 mt-3">
+                                         Fecha de auditoría: {new Date().toLocaleDateString('es-AR')}
+                                     </p>
+                                 </div>
+                             )}
                         </div>
                     )}
                 </div>
