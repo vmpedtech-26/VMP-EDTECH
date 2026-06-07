@@ -56,6 +56,13 @@ model Company {
   email     String
   activa    Boolean  @default(true)
   
+  // Configuración de Single Sign-On (SSO)
+  ssoActive    Boolean  @default(false) @map("sso_active")
+  ssoDomain    String?  @unique @map("sso_domain")
+  ssoProvider  String?  @map("sso_provider") // "AZURE_AD", "OKTA", "GOOGLE"
+  ssoClientId  String?  @map("sso_client_id")
+  ssoTenantId  String?  @map("sso_tenant_id")
+  
   usuarios User[]
   cursos   Curso[]
   ventas   Venta[]

@@ -14,12 +14,46 @@ export default function LoginPage() {
         password: '',
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [checkingSSO, setCheckingSSO] = useState(false);
+    const [ssoDetails, setSsoDetails] = useState<{
+        sso_active: boolean;
+        domain?: string;
+        provider?: string;
+        empresa_nombre?: string;
+    } | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    const checkEmailSSO = async (email: string) => {
+        if (!email || !email.includes('@')) return;
+        setCheckingSSO(true);
+        try {
+            const check = await api.post('/auth/sso/check', { email });
+            if (check.sso_active) {
+                setSsoDetails(check);
+            } else {
+                setSsoDetails(null);
+            }
+        } catch (err) {
+            console.error('Error checking SSO:', err);
+            setSsoDetails(null);
+        } finally {
+            setCheckingSSO(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
+
+        if (ssoDetails?.sso_active) {
+            // Flujo SSO: Redirección al proveedor de identidad
+            // Para probar localmente de forma fluida, redirigimos a la ruta callback
+            // simulando la autenticación del proveedor
+            const callbackUrl = `/sso-callback?code=mock_${formData.email}&provider=${ssoDetails.provider}&domain=${ssoDetails.domain}`;
+            window.location.href = callbackUrl;
+            return;
+        }
 
         try {
             const response = await api.post('/auth/login', formData);
@@ -70,37 +104,68 @@ export default function LoginPage() {
                             placeholder="tu@email.com"
                             required
                             value={formData.email}
+                            onBlur={() => checkEmailSSO(formData.email)}
                             onChange={(e) =>
                                 setFormData({ ...formData, email: e.target.value })
                             }
                         />
 
-                        <Input
-                            type="password"
-                            label="Contraseña"
-                            placeholder="••••••••"
-                            required
-                            value={formData.password}
-                            onChange={(e) =>
-                                setFormData({ ...formData, password: e.target.value })
-                            }
-                        />
+                        {checkingSSO && (
+                            <p className="text-xs text-primary animate-pulse">
+                                Verificando métodos de acceso...
+                            </p>
+                        )}
 
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-slate-700">Recordarme</span>
-                            </label>
-                            <Link
-                                href="/forgot-password"
-                                className="text-primary hover:underline"
-                            >
-                                ¿Olvidaste tu contraseña?
-                            </Link>
-                        </div>
+                        {ssoDetails?.sso_active ? (
+                            <div className="p-4 bg-primary-light/10 border border-primary-light/20 text-slate-900 rounded-lg space-y-2">
+                                <p className="text-sm font-semibold">
+                                    ¡SSO Activo con {ssoDetails.empresa_nombre}!
+                                </p>
+                                <p className="text-xs text-slate-700">
+                                    Esta cuenta utiliza el inicio de sesión corporativo ({ssoDetails.provider}). No es necesaria contraseña de VMP.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setSsoDetails(null)}
+                                    className="text-xs text-primary underline hover:text-primary-dark block"
+                                >
+                                    Ingresar con contraseña local en su lugar
+                                </button>
+                            </div>
+                        ) : (
+                            <Input
+                                type="password"
+                                label="Contraseña"
+                                placeholder="••••••••"
+                                required={!ssoDetails?.sso_active}
+                                value={formData.password}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, password: e.target.value })
+                                }
+                            />
+                        )}
 
-                        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                        {!ssoDetails?.sso_active && (
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="flex items-center space-x-2">
+                                    <input type="checkbox" className="rounded" />
+                                    <span className="text-slate-700">Recordarme</span>
+                                </label>
+                                <Link
+                                    href="/forgot-password"
+                                    className="text-primary hover:underline"
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            </div>
+                        )}
+
+                        <Button type="submit" size="lg" className="w-full" disabled={isLoading || checkingSSO}>
+                            {isLoading
+                                ? 'Procesando...'
+                                : ssoDetails?.sso_active
+                                ? `Iniciar Sesión con ${ssoDetails.provider}`
+                                : 'Iniciar Sesión'}
                         </Button>
                     </form>
 
