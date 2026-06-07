@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from core.security_utils import SanitizedBaseModel
 from typing import List, Optional
 
 # ============= CURSO SCHEMAS =============
@@ -18,7 +19,7 @@ class CursoListItem(BaseModel):
     class Config:
         from_attributes = True
 
-class CreateCursoRequest(BaseModel):
+class CreateCursoRequest(SanitizedBaseModel):
     nombre: str
     descripcion: str
     codigo: str
@@ -27,7 +28,7 @@ class CreateCursoRequest(BaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
 
-class UpdateCursoRequest(BaseModel):
+class UpdateCursoRequest(SanitizedBaseModel):
     nombre: Optional[str] = None
     descripcion: Optional[str] = None
     codigo: Optional[str] = None
@@ -129,17 +130,17 @@ class ModuloDetailAdmin(BaseModel):
 
 # ============= GESTOR DE CONTENIDOS (REQUESTS) =============
 
-class PreguntaCreate(BaseModel):
+class PreguntaCreate(SanitizedBaseModel):
     pregunta: str
     opciones: List[str]
     respuestaCorrecta: int
     explicacion: Optional[str] = None
 
-class TareaCreate(BaseModel):
+class TareaCreate(SanitizedBaseModel):
     descripcion: str
     requiereFoto: bool = True
 
-class CreateModuloRequest(BaseModel):
+class CreateModuloRequest(SanitizedBaseModel):
     titulo: str
     orden: int
     tipo: str  # TEORIA, QUIZ, PRACTICA
@@ -151,7 +152,7 @@ class CreateModuloRequest(BaseModel):
     # Solo si es QUIZ
     preguntas: Optional[List[PreguntaCreate]] = None
 
-class UpdateModuloRequest(BaseModel):
+class UpdateModuloRequest(SanitizedBaseModel):
     titulo: Optional[str] = None
     orden: Optional[int] = None
     contenidoHtml: Optional[str] = None
@@ -162,12 +163,12 @@ class UpdateModuloRequest(BaseModel):
     # Optional sync for Quiz
     preguntas: Optional[List[PreguntaCreate]] = None
 
-class UpdatePreguntaRequest(BaseModel):
+class UpdatePreguntaRequest(SanitizedBaseModel):
     pregunta: Optional[str] = None
     opciones: Optional[List[str]] = None
     respuestaCorrecta: Optional[int] = None
     explicacion: Optional[str] = None
 
-class UpdateTareaRequest(BaseModel):
+class UpdateTareaRequest(SanitizedBaseModel):
     descripcion: Optional[str] = None
     requiereFoto: Optional[bool] = None

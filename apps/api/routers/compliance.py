@@ -10,6 +10,7 @@ import string
 import json
 
 from pydantic import BaseModel
+from core.security_utils import SanitizedBaseModel
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_public
 from core.database import prisma
@@ -22,7 +23,7 @@ email_service = EmailService()
 
 # ============= SCHEMAS =============
 
-class DenunciaCreateRequest(BaseModel):
+class DenunciaCreateRequest(SanitizedBaseModel):
     titulo: str
     descripcion: str
     categoria: str  # FRAUDE, ACOSO, SEGURIDAD, CORRUPCION, OTROS
@@ -33,7 +34,7 @@ class DenunciaCreateRequest(BaseModel):
     telefono: Optional[str] = None
 
 
-class DenunciaUpdateRequest(BaseModel):
+class DenunciaUpdateRequest(SanitizedBaseModel):
     estado: str  # NUEVA, EN_INVESTIGACION, RESUELTA, DESESTIMADA
     comentariosOficial: Optional[str] = None
 

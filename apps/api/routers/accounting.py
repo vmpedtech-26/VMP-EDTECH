@@ -134,8 +134,9 @@ async def crear_asiento_manual(request: Request, data: CreateManualJournalEntryR
                     }
                 }
             )
-            
-            # Log audit
+        
+        # Log audit (fuera del bloque transaccional para evitar bloquear conexiones de base de datos)
+        try:
             request_id = getattr(request.state, "request_id", "N/A")
             ip_address = request.client.host if request.client else "N/A"
             await log_audit_action(
@@ -146,8 +147,10 @@ async def crear_asiento_manual(request: Request, data: CreateManualJournalEntryR
                 ip_address=ip_address,
                 request_id=request_id
             )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria contable: {audit_err}")
             
-            return asiento
+        return asiento
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar el asiento contable: {str(e)}")
 
@@ -307,8 +310,9 @@ async def registrar_venta(request: Request, data: CreateVentaRequest, current_us
                     }
                 }
             )
-            
-            # Log audit
+        
+        # Log audit (fuera del bloque transaccional para evitar bloquear conexiones de base de datos)
+        try:
             request_id = getattr(request.state, "request_id", "N/A")
             ip_address = request.client.host if request.client else "N/A"
             await log_audit_action(
@@ -319,8 +323,10 @@ async def registrar_venta(request: Request, data: CreateVentaRequest, current_us
                 ip_address=ip_address,
                 request_id=request_id
             )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria de ventas: {audit_err}")
             
-            return venta
+        return venta
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar venta: {str(e)}")
 
@@ -515,7 +521,9 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
                 "fecha":       data.fecha.isoformat() if data.fecha else None,
                 "registrado_por": current_user.email,
             })
-            # Log audit
+        
+        # Log audit (fuera del bloque transaccional para evitar bloquear conexiones de base de datos)
+        try:
             request_id = getattr(request.state, "request_id", "N/A")
             ip_address = request.client.host if request.client else "N/A"
             await log_audit_action(
@@ -526,8 +534,10 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
                 ip_address=ip_address,
                 request_id=request_id
             )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria de compras: {audit_err}")
             
-            return compra
+        return compra
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al registrar compra: {str(e)}")
 

@@ -1,9 +1,10 @@
 from pydantic import BaseModel, Field
+from core.security_utils import SanitizedBaseModel
 from typing import List, Optional
 from datetime import datetime
 
 # --- Plan de Cuentas ---
-class AccountBase(BaseModel):
+class AccountBase(SanitizedBaseModel):
     code: str
     name: str
     type: str # ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
@@ -20,7 +21,7 @@ class CreateAccountRequest(AccountBase):
     pass
 
 # --- Libro Diario / Mayor ---
-class LedgerEntryBase(BaseModel):
+class LedgerEntryBase(SanitizedBaseModel):
     accountId: str
     description: Optional[str] = None
     debit: float = 0.0
@@ -32,7 +33,7 @@ class LedgerEntryResponse(LedgerEntryBase):
     createdAt: datetime
     account: Optional[AccountResponse] = None
 
-class JournalEntryBase(BaseModel):
+class JournalEntryBase(SanitizedBaseModel):
     date: datetime = Field(default_factory=datetime.now)
     concept: str
     reference: Optional[str] = None
@@ -41,7 +42,7 @@ class JournalEntryBase(BaseModel):
 class CreateJournalEntryRequest(JournalEntryBase):
     entries: List[LedgerEntryBase]
 
-class CreateManualJournalEntryRequest(BaseModel):
+class CreateManualJournalEntryRequest(SanitizedBaseModel):
     date: Optional[datetime] = None
     concept: str
     reference: Optional[str] = None
@@ -53,13 +54,13 @@ class JournalEntryResponse(JournalEntryBase):
     createdAt: datetime
 
 # --- Ventas ---
-class VentaItemBase(BaseModel):
+class VentaItemBase(SanitizedBaseModel):
     descripcion: str
     cantidad: int
     precioUnit: float
     subtotal: float
 
-class VentaBase(BaseModel):
+class VentaBase(SanitizedBaseModel):
     numero: str
     fecha: datetime = Field(default_factory=datetime.now)
     companyId: str
@@ -80,13 +81,13 @@ class VentaResponse(VentaBase):
     createdAt: datetime
 
 # --- Compras ---
-class CompraItemBase(BaseModel):
+class CompraItemBase(SanitizedBaseModel):
     descripcion: str
     cantidad: int
     precioUnit: float
     subtotal: float
 
-class CompraBase(BaseModel):
+class CompraBase(SanitizedBaseModel):
     proveedor: str
     cuit: Optional[str] = None
     numero: Optional[str] = None
@@ -110,7 +111,7 @@ class CompraResponse(CompraBase):
     createdAt: datetime
 
 # --- Caja ---
-class CajaMovimientoBase(BaseModel):
+class CajaMovimientoBase(SanitizedBaseModel):
     tipo: str # INGRESO, EGRESO
     monto: float
     concepto: str
@@ -123,7 +124,7 @@ class CajaMovimientoResponse(CajaMovimientoBase):
     createdAt: datetime
 
 # --- Reportes ---
-class BalanceRow(BaseModel):
+class BalanceRow(SanitizedBaseModel):
     accountCode: str
     accountName: str
     debit: float

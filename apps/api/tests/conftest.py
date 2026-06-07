@@ -1,6 +1,16 @@
 """
 Configuración de pytest para tests de la API.
 """
+import os
+
+# Forzar base de datos de pruebas para no vaciar la base de datos de desarrollo
+db_url = os.environ.get("DATABASE_URL", "")
+if db_url and "localhost" in db_url:
+    parts = db_url.rsplit("/", 1)
+    if len(parts) == 2 and not parts[1].endswith("_test"):
+        os.environ["DATABASE_URL"] = f"{parts[0]}/{parts[1]}_test"
+        print(f"🔧 Testing database URL redirected dynamically to: {os.environ['DATABASE_URL']}")
+
 import pytest
 import asyncio
 from typing import Generator, AsyncGenerator

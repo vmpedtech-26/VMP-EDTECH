@@ -1,8 +1,14 @@
 export const API_URL = (() => {
-    // 1. Get from env or default to localhost
-    let url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // 1. Prioritize environment variable if defined and not pointing to localhost
+    const envUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+        return envUrl;
+    }
+
+    // 2. Default fallback or local development url
+    let url = envUrl || 'http://localhost:8000';
     
-    // 2. Browser-side adjustments
+    // 3. Browser-side adjustments for dynamic environments if envUrl is local or not defined
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
         

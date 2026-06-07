@@ -204,3 +204,39 @@ async def test_admin_gestion_denuncias(client, admin_user, regular_user):
     
     # Limpiar
     await prisma.compliancereport.delete(where={"id": report.id})
+
+
+@pytest.mark.asyncio
+async def test_compliance_xss_sanitization(client):
+    """Prueba que los inputs del canal de denuncias se sanitizan contra XSS."""
+    xss_title = "Intento <script>alert('XSS')</script> de inyeccion"
+    xss_desc = "Cuerpo con html <img src=x onerror=alert(1)> y safe tags"
+    
+    response = await client.post(
+        "/api/compliance/report",
+        json={
+            "titulo": xss_title,
+            "descripcion": xss_desc,
+            "categoria": "FRAUDE",
+            "relacionEmpresa": "ANONIMO",
+            "esAnonima": True
+        }
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "codigoSeguimiento" in data
+    
+    # Obtener el reporte de la base de datos
+    report = await prisma.compliancereport.find_unique(where={"codigoSeguimiento": data["codigoSeguimiento"]})
+    assert report is not None
+    
+    # Verificar sanitización
+    assert "<script>" not in report.titulo
+    assert "alert('XSS')" in report.titulo
+    assert "<img" not in report.descripcion
+    assert "onerror" not in report.descripcion
+    assert "alert(1)" not in report.descripcion
+    
+    # Limpiar
+    await prisma.compliancereport.delete(where={"id": report.id})

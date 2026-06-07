@@ -1,9 +1,9 @@
-from pydantic import BaseModel, EmailStr, validator
-from core.security_utils import sanitize_data
+from pydantic import BaseModel, EmailStr
+from core.security_utils import SanitizedBaseModel
 from typing import Optional, List
 from datetime import datetime
 
-class UserAdminBase(BaseModel):
+class UserAdminBase(SanitizedBaseModel):
     email: EmailStr
     nombre: str
     apellido: str
@@ -14,16 +14,10 @@ class UserAdminBase(BaseModel):
     puesto: Optional[str] = None
     activo: bool = True
 
-    @validator('nombre', 'apellido', 'dni', 'telefono', 'puesto', pre=True)
-    def sanitize_text(cls, v):
-        if isinstance(v, str):
-            return sanitize_data(v)
-        return v
-
 class CreateUserRequest(UserAdminBase):
     password: str
 
-class UpdateUserRequest(BaseModel):
+class UpdateUserRequest(SanitizedBaseModel):
     email: Optional[EmailStr] = None
     nombre: Optional[str] = None
     apellido: Optional[str] = None
@@ -34,12 +28,6 @@ class UpdateUserRequest(BaseModel):
     puesto: Optional[str] = None
     activo: Optional[bool] = None
     password: Optional[str] = None
-
-    @validator('nombre', 'apellido', 'dni', 'telefono', 'puesto', pre=True)
-    def sanitize_text(cls, v):
-        if isinstance(v, str):
-            return sanitize_data(v)
-        return v
 
 class UserAdminResponse(UserAdminBase):
     id: str
