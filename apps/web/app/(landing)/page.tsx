@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import { CredentialSection } from '@/components/landing/CredentialSection';
 import Header from '@/components/landing/Header';
+import HeroSection from '@/components/landing/HeroSection';
 import CourseCatalog from '@/components/landing/CourseCatalog';
 import Footer from '@/components/landing/Footer';
 const ProfessionalServices = dynamic(() => import('@/components/landing/ProfessionalServices').then(mod => mod.ProfessionalServices));
@@ -17,13 +18,14 @@ export default function LandingPage() {
     return (
         <main className="min-h-screen">
             <Header />
+            <HeroSection />
             <CourseCatalog />
             <ProfessionalServices />
             <ValueProposition />
             <AboutUs />
             <Benefits />
             <Alianzas />
-            {/* <CredentialSection /> */}
+            <CredentialSection />
             <ContactSection />
             <Testimonials />
             <FinalCTA />
