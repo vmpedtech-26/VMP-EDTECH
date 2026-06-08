@@ -133,8 +133,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # --- LEFT COLUMN ---
     # Photo Frame (Portrait)
-    photo_x, photo_y = 24, 184
-    photo_w, photo_h = 96, 120
+    photo_x, photo_y = 24, 172
+    photo_w, photo_h = 96, 132
     c.setFillColorRGB(*LIGHT_GRAY)
     c.setStrokeColorRGB(*DARK_BLUE)
     c.setLineWidth(1.5)
@@ -177,16 +177,16 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         # Silhouette Placeholder
         c.setFillColorRGB(180/255, 190/255, 200/255)
         c.circle(photo_x + photo_w/2, photo_y + photo_h/2 + 10, 14, fill=1, stroke=0)
-        c.roundRect(photo_x + 18, photo_y + 35, photo_w - 36, 26, 8, fill=1, stroke=0)
+        c.roundRect(photo_x + 18, photo_y + 40, photo_w - 36, 26, 8, fill=1, stroke=0)
         c.setFont("Helvetica-Bold", 8)
         c.setFillColorRGB(140/255, 150/255, 160/255)
         c.drawCentredString(photo_x + photo_w/2, photo_y + 18, "FOTO")
         
     # Vertical Industry Badges
     badges = [
-        ("🔥 GAS & OIL", 158),
-        ("🚚 TRANSPORTE", 136),
-        ("⛰️ MINERÍA", 114)
+        ("🔥 GAS & OIL", 148),
+        ("🚚 TRANSPORTE", 126),
+        ("⛰️ MINERÍA", 104)
     ]
     for label, by in badges:
         c.setFillColorRGB(*DARK_BLUE)
@@ -197,16 +197,16 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         
     # --- RIGHT COLUMN ---
     # Titular Container
-    titular_x, titular_y = 134, 184
+    titular_x, titular_y = 134, 202
     titular_w, titular_w_total = 437, 437
-    titular_h = 120
+    titular_h = 102
     c.setFillColorRGB(*DARK_BLUE)
     c.roundRect(titular_x, titular_y, titular_w_total, titular_h, 8, fill=1, stroke=0)
     
     # Inside Titular
     c.setFont("Helvetica-Bold", 8)
     c.setFillColorRGB(*TEAL)
-    c.drawString(titular_x + 20, titular_y + 92, "TITULAR")
+    c.drawString(titular_x + 20, titular_y + 80, "TITULAR")
     
     nombre_completo = credencial_data.get('alumno_nombre') or '--- ---'
     partes = nombre_completo.split(' ', 1)
@@ -215,14 +215,14 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     c.setFont("Helvetica-Bold", 32)
     c.setFillColorRGB(1, 1, 1)
-    c.drawString(titular_x + 20, titular_y + 54, (apellido or '').upper())
+    c.drawString(titular_x + 20, titular_y + 44, (apellido or '').upper())
     
     c.setFont("Helvetica-Bold", 20)
     c.setFillColorRGB(1, 1, 1)
-    c.drawString(titular_x + 20, titular_y + 24, nombre)
+    c.drawString(titular_x + 20, titular_y + 18, nombre)
     
     # Grid Row 1 (DNI / PSP & PUESTO)
-    box_y = 138
+    box_y = 150
     box_h = 42
     
     # DNI / PSP Box
@@ -249,7 +249,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.drawString(369, box_y + 10, credencial_data.get('puesto') or 'Conductor Profesional')
     
     # Grid Row 2 (EMPRESA)
-    emp_y = 94
+    emp_y = 102
     emp_h = 40
     c.setFillColorRGB(1, 1, 1)
     c.setStrokeColorRGB(*GRAY_BORDER)
@@ -285,7 +285,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # --- COURSE APPROVED PANEL ---
     course_panel_x = 24
-    course_panel_y = 42
+    course_panel_y = 48
     course_panel_w = 547
     course_panel_h = 48
     
