@@ -43,11 +43,21 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
+    # Detect if it's the winter driving course to apply the organic mountain theme
+    curso_nombre = credencial_data.get('curso_nombre', '').lower()
+    is_invernal = 'invernal' in curso_nombre or 'invierno' in curso_nombre
+    
     # Colors
-    DARK_BLUE = (13/255, 27/255, 62/255)
-    TEAL = (0/255, 173/255, 181/255)
+    if is_invernal:
+        DARK_BLUE = (27/255, 54/255, 47/255)      # Forest Green `#1B362F`
+        TEAL = (91/255, 140/255, 122/255)       # Moss Green `#5B8C7A`
+        TEXT_DARK = (20/255, 35/255, 32/255)     # Deep Slate Green `#142320`
+    else:
+        DARK_BLUE = (13/255, 27/255, 62/255)      # Classic VMP Dark Blue
+        TEAL = (0/255, 173/255, 181/255)          # Classic VMP Teal
+        TEXT_DARK = (15/255, 28/255, 52/255)      # Classic VMP Text Dark
+        
     LIGHT_GRAY = (240/255, 245/255, 250/255)
-    TEXT_DARK = (15/255, 28/255, 52/255)
     GRAY_TEXT = (100/255, 116/255, 139/255)
     
     # ================= PAGE 1: FRONT =================
