@@ -35,7 +35,7 @@ def generate_qr_code(data: str) -> BytesIO:
 
 async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) -> bytes:
     """
-    Create Credencial PDF based on the Official VMP Format (Front & Back - 595x400 pts)
+    Create Credencial PDF matching the Premium Redesigned Layout (Front & Back - 595x400 pts)
     """
     buffer = BytesIO()
     
@@ -46,277 +46,487 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
     # Detect if it's the winter driving course to apply the organic mountain theme
-    curso_nombre = credencial_data.get('curso_nombre', '').lower()
+    curso_nombre = (credencial_data.get('curso_nombre') or '').lower()
     is_invernal = 'invernal' in curso_nombre or 'invierno' in curso_nombre
     
     # Colors (Maintain classic VMP-EDTECH branding colors)
-    DARK_BLUE = (13/255, 27/255, 62/255)      # Classic VMP Dark Blue
-    TEAL = (0/255, 173/255, 181/255)          # Classic VMP Teal
-    TEXT_DARK = (15/255, 28/255, 52/255)      # Classic VMP Text Dark
-        
+    DARK_BLUE = (10/255, 17/255, 32/255)      # Navy `#0A1120`
+    TEAL = (0/255, 173/255, 181/255)          # Teal `#00ADB5`
+    TEXT_DARK = (15/255, 23/255, 42/255)      # Slate Dark `#0F172A`
+    GRAY_LIGHT = (248/255, 250/255, 252/255)   # Slate Light `#F8FAFC`
+    GRAY_BORDER = (226/255, 232/255, 240/255) # Border Slate `#E2E8F0`
+    GRAY_TEXT = (100/255, 116/255, 139/255)   # Muted Gray `#64748B`
     LIGHT_GRAY = (240/255, 245/255, 250/255)
-    GRAY_TEXT = (100/255, 116/255, 139/255)
     
     # ================= PAGE 1: FRONT =================
-    # Draw winter driving background if applicable (subtle watermark)
+    
+    # 1. Base Card Container (Rounded PVC Style with clip path to prevent image bleed)
+    c.saveState()
+    card_clip = c.beginPath()
+    card_clip.roundRect(12, 12, width - 24, height - 24, 12)
+    c.clipPath(card_clip, stroke=0, fill=0)
+    
+    # Draw card white background
+    c.setFillColorRGB(1, 1, 1)
+    c.rect(12, 12, width - 24, height - 24, fill=1, stroke=0)
+    
+    # Draw winter driving background if applicable (subtle watermark at 18% opacity)
     if is_invernal:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
         if os.path.exists(bg_path):
             try:
-                # Dibujar imagen de fondo suave al 18% de opacidad
+                c.saveState()
                 c.setFillAlpha(0.18)
-                c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
-                c.setFillAlpha(1.0)
+                c.drawImage(ImageReader(bg_path), 12, 12, width=width-24, height=height-24)
+                c.restoreState()
             except Exception as e:
                 print(f"Error drawing winter background on page 1: {e}")
-
+                
     # --- HEADER ---
     c.setFillColorRGB(*DARK_BLUE)
-    c.rect(0, height - 70, width, 70, fill=1, stroke=0)
+    c.rect(12, 312, width - 24, 76, fill=1, stroke=0)
     
-    c.setFont("Helvetica-Bold", 32)
+    # Bottom teal accent line in header
+    c.setFillColorRGB(*TEAL)
+    c.rect(12, 306, width - 24, 6, fill=1, stroke=0)
+    
+    # Shield Icon Container
+    c.setFillColorRGB(*TEAL)
+    c.roundRect(26, 332, 28, 28, 6, fill=1, stroke=0)
+    
+    # Draw Shield Vector inside icon container
+    c.setStrokeColorRGB(1, 1, 1)
+    c.setLineWidth(1.5)
+    shield_path = c.beginPath()
+    shield_path.moveTo(35, 350)
+    shield_path.lineTo(45, 350)
+    shield_path.lineTo(45, 344)
+    shield_path.lineTo(40, 338)
+    shield_path.lineTo(35, 344)
+    shield_path.close()
+    c.drawPath(shield_path, fill=0, stroke=1)
+    
+    # Logo Text
+    c.setFont("Helvetica-Bold", 15)
     c.setFillColorRGB(1, 1, 1)
-    c.drawString(35, height - 45, "VMP")
-    c.setFont("Helvetica", 32)
-    c.setFillColorRGB(*TEAL)
-    c.drawString(108, height - 45, "| EDTECH")
+    c.drawString(64, 348, "VMP")
+    c.setFont("Helvetica", 15)
+    c.drawString(102, 348, "|")
+    c.setFont("Helvetica-Bold", 15)
+    c.drawString(112, 348, "EDTECH")
     
-    c.setFont("Helvetica-Bold", 14)
-    c.setFillColorRGB(*TEAL)
-    c.drawRightString(width - 35, height - 35, "CREDENCIAL OFICIAL")
-    c.setFont("Helvetica", 11)
-    c.setFillColorRGB(1, 1, 1)
-    c.drawRightString(width - 35, height - 52, "Capacitación Vial Profesional")
+    c.setFont("Helvetica-Bold", 7.5)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    c.drawString(64, 336, "VIALIDAD Y MANEJO PROFESIONAL")
     
+    # Right Side Header Text
+    c.setFont("Helvetica-Bold", 9.5)
     c.setFillColorRGB(*TEAL)
-    c.rect(0, height - 78, width, 8, fill=1, stroke=0)
+    c.drawRightString(width - 24, 350, "CREDENCIAL OFICIAL")
     
-    # Photo with Border (Fill/Cover mode using PIL for perfect cropping)
-    photo_x, photo_y = 35, height - 235
-    photo_w, photo_h = 145, 145
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    numero_credencial = credencial_data.get('numero_credencial') or ''
+    cred_num_str = numero_credencial.replace('VMP-', 'CR-')
+    c.drawRightString(width - 24, 338, f"N° {cred_num_str}")
+    
+    # --- LEFT COLUMN ---
+    # Photo Frame (Portrait)
+    photo_x, photo_y = 24, 184
+    photo_w, photo_h = 96, 120
+    c.setFillColorRGB(*LIGHT_GRAY)
+    c.setStrokeColorRGB(*DARK_BLUE)
+    c.setLineWidth(1.5)
+    c.roundRect(photo_x, photo_y, photo_w, photo_h, 8, fill=1, stroke=1)
     
     if foto_path and os.path.exists(foto_path):
         try:
             from PIL import Image
             img = Image.open(foto_path)
-            
-            # Center Crop to Square
             w, h = img.size
-            size = min(w, h)
-            left = (w - size) / 2
-            top = (h - size) / 2
-            right = (w + size) / 2
-            bottom = (h + size) / 2
-            
+            target_ratio = photo_w / photo_h
+            current_ratio = w / h
+            if current_ratio > target_ratio:
+                new_w = int(h * target_ratio)
+                left = (w - new_w) // 2
+                top = 0
+                right = left + new_w
+                bottom = h
+            else:
+                new_h = int(w / target_ratio)
+                left = 0
+                top = (h - new_h) // 2
+                right = w
+                bottom = top + new_h
             img_cropped = img.crop((left, top, right, bottom))
             
-            # Save to temporary buffer
             img_buffer = BytesIO()
             img_cropped.save(img_buffer, format="JPEG", quality=95)
             img_buffer.seek(0)
             
-            # Draw the square image
-            c.drawImage(ImageReader(img_buffer), photo_x, photo_y, width=photo_w, height=photo_h, mask='auto')
+            c.saveState()
+            photo_clip = c.beginPath()
+            photo_clip.roundRect(photo_x + 3, photo_y + 3, photo_w - 6, photo_h - 6, 6)
+            c.clipPath(photo_clip, stroke=0, fill=0)
+            c.drawImage(ImageReader(img_buffer), photo_x + 3, photo_y + 3, width=photo_w - 6, height=photo_h - 6, mask='auto')
+            c.restoreState()
         except Exception as e:
-            print(f"Error processing/drawing photo: {e}")
-            
-    # Photo Border (Drawn on top)
-    c.setStrokeColorRGB(*DARK_BLUE)
-    c.setLineWidth(3)
-    c.rect(photo_x, photo_y, photo_w, photo_h, fill=0, stroke=1)
-            
-    info_x = 210
-    col2_x = 390
-    
-    def draw_field(x, y, label, value, line_w=150):
-        c.setFont("Helvetica-Bold", 9)
-        c.setFillColorRGB(*TEAL)
-        c.drawString(x, y + 22, label)
-        c.setFont("Helvetica-Bold", 20)
-        c.setFillColorRGB(*TEXT_DARK)
+            print(f"Error drawing photo: {e}")
+    else:
+        # Silhouette Placeholder
+        c.setFillColorRGB(180/255, 190/255, 200/255)
+        c.circle(photo_x + photo_w/2, photo_y + photo_h/2 + 10, 14, fill=1, stroke=0)
+        c.roundRect(photo_x + 18, photo_y + 35, photo_w - 36, 26, 8, fill=1, stroke=0)
+        c.setFont("Helvetica-Bold", 8)
+        c.setFillColorRGB(140/255, 150/255, 160/255)
+        c.drawCentredString(photo_x + photo_w/2, photo_y + 18, "FOTO")
         
-        # Don't use .title() for PUESTO to preserve acronyms like HSE
-        display_value = str(value)
-        if label != "PUESTO" and label != "DNI / PSP" and isinstance(value, str):
-            display_value = display_value.title()
-            
-        c.drawString(x, y + 2, display_value)
-        c.setStrokeColorRGB(0.8, 0.8, 0.8)
-        c.setLineWidth(1)
-        c.line(x, y - 5, x + line_w, y - 5)
-
-    nombre_completo = credencial_data.get('alumno_nombre', '--- ---')
+    # Vertical Industry Badges
+    badges = [
+        ("🔥 GAS & OIL", 158),
+        ("🚚 TRANSPORTE", 136),
+        ("⛰️ MINERÍA", 114)
+    ]
+    for label, by in badges:
+        c.setFillColorRGB(*DARK_BLUE)
+        c.roundRect(photo_x, by, photo_w, 18, 4, fill=1, stroke=0)
+        c.setFont("Helvetica-Bold", 7)
+        c.setFillColorRGB(1, 1, 1)
+        c.drawCentredString(photo_x + photo_w/2, by + 5.5, label)
+        
+    # --- RIGHT COLUMN ---
+    # Titular Container
+    titular_x, titular_y = 134, 184
+    titular_w, titular_w_total = 437, 437
+    titular_h = 120
+    c.setFillColorRGB(*DARK_BLUE)
+    c.roundRect(titular_x, titular_y, titular_w_total, titular_h, 8, fill=1, stroke=0)
+    
+    # Inside Titular
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColorRGB(*TEAL)
+    c.drawString(titular_x + 20, titular_y + 92, "TITULAR")
+    
+    nombre_completo = credencial_data.get('alumno_nombre') or '--- ---'
     partes = nombre_completo.split(' ', 1)
     nombre = partes[0]
     apellido = partes[1] if len(partes) > 1 else ""
-
-    draw_field(info_x, height - 135, "APELLIDO", apellido, 160)
-    draw_field(col2_x, height - 135, "NOMBRE", nombre, 140)
-    draw_field(info_x, height - 185, "DNI / PSP", credencial_data.get('dni', ''), 160)
-    draw_field(col2_x, height - 185, "PUESTO", credencial_data.get('puesto', 'Tecnico HSE'), 140)
     
-    c.setFont("Helvetica-Bold", 9)
-    c.setFillColorRGB(*TEAL)
-    c.drawString(info_x, height - 215, "EMPRESA")
-    c.setFont("Helvetica-Bold", 22)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(info_x, height - 238, (credencial_data.get('empresa_nombre') or "Aguas Const. Forken UTE"))
-    c.setStrokeColorRGB(0.8, 0.8, 0.8)
-    c.line(info_x, height - 245, width - 35, height - 245)
-
-    box_y = 85
-    c.setFillColorRGB(*LIGHT_GRAY)
-    c.rect(210, box_y, width - 245, 55, fill=1, stroke=0)
-    c.setFillColorRGB(*TEAL)
-    c.rect(210, box_y, 8, 55, fill=1, stroke=0)
-    c.setFont("Helvetica-Bold", 10)
-    c.setFillColorRGB(*TEAL)
-    c.drawString(230, box_y + 38, "CURSO APROBADO")
-    c.setFont("Helvetica-Bold", 18)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(230, box_y + 20, credencial_data.get('curso_nombre', 'Conducción Segura: Flota Liviana'))
-    c.setFont("Helvetica", 11)
-    c.setFillColorRGB(*GRAY_TEXT)
-    fechas = f"Realización: {credencial_data.get('fecha_emision')}   Vto: {credencial_data.get('fecha_vencimiento') or '---'}"
-    c.drawString(230, box_y + 5, fechas)
-
-    instructor_nombre = credencial_data.get('instructor_nombre', 'Pedro Orejas')
-    instructor_info = credencial_data.get('instructor_info', 'Instructor VMP | Mat. N° 2206823')
-    instructor_id = credencial_data.get('instructor_id')
-
-    # --- FOOTER ---
-    c.setStrokeColorRGB(0.8, 0.8, 0.8)
-    c.setLineWidth(1)
-    c.line(35, 65, width - 35, 65)
-    
-    # Draw Instructor Signature if exists
-    if instructor_id:
-        try:
-            from services.file_upload import get_instructor_signature_path
-            sig_path = get_instructor_signature_path(instructor_id)
-            if sig_path and os.path.exists(str(sig_path)):
-                c.drawImage(ImageReader(str(sig_path)), 45, 50, width=90, height=35, mask='auto')
-        except Exception as ex:
-            print(f"Error drawing signature on front: {ex}")
-            
-    c.setFont("Helvetica-Bold", 18)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(40, 42, instructor_nombre)
-    c.setFont("Helvetica", 11)
-    c.setFillColorRGB(*GRAY_TEXT)
-    c.drawString(40, 28, instructor_info)
-    
-    badge_w, badge_h = 200, 35
-    badge_x, badge_y = width - 35 - badge_w, 20
-    c.setFillColorRGB(*DARK_BLUE)
-    c.roundRect(badge_x, badge_y, badge_w, badge_h, 5, fill=1, stroke=0)
-    c.setFillColorRGB(*TEAL)
-    c.setFont("Helvetica-Bold", 24)
-    c.drawString(badge_x + 12, badge_y + 10, "•")
-    c.setFillColorRGB(1, 1, 1)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(badge_x + 28, badge_y + 13, "CAPACITACIÓN APROBADA")
-    
-    c.showPage() # ================= PAGE 2: BACK =================
-    
-    # Draw winter driving background if applicable (subtle watermark)
-    if is_invernal:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
-        if os.path.exists(bg_path):
-            try:
-                # Dibujar imagen de fondo suave al 18% de opacidad
-                c.setFillAlpha(0.18)
-                c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
-                c.setFillAlpha(1.0)
-            except Exception as e:
-                print(f"Error drawing winter background on page 2: {e}")
-
-    # --- HEADER (Back) ---
-    c.setFillColorRGB(*DARK_BLUE)
-    c.rect(0, height - 70, width, 70, fill=1, stroke=0)
     c.setFont("Helvetica-Bold", 32)
     c.setFillColorRGB(1, 1, 1)
-    c.drawString(35, height - 45, "VMP")
-    c.setFont("Helvetica", 32)
+    c.drawString(titular_x + 20, titular_y + 54, (apellido or '').upper())
+    
+    c.setFont("Helvetica-Bold", 20)
+    c.setFillColorRGB(1, 1, 1)
+    c.drawString(titular_x + 20, titular_y + 24, nombre)
+    
+    # Grid Row 1 (DNI / PSP & PUESTO)
+    box_y = 138
+    box_h = 42
+    
+    # DNI / PSP Box
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.setLineWidth(1)
+    c.roundRect(134, box_y, 213, box_h, 6, fill=1, stroke=1)
+    c.setFont("Helvetica-Bold", 7.5)
     c.setFillColorRGB(*TEAL)
-    c.drawString(108, height - 45, "| EDTECH")
+    c.drawString(146, box_y + 26, "DNI / PSP")
+    c.setFont("Helvetica-Bold", 12.5)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(146, box_y + 10, credencial_data.get('dni') or '')
+    
+    # PUESTO Box
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(357, box_y, 214, box_h, 6, fill=1, stroke=1)
+    c.setFont("Helvetica-Bold", 7.5)
+    c.setFillColorRGB(*TEAL)
+    c.drawString(369, box_y + 26, "PUESTO")
+    c.setFont("Helvetica-Bold", 11.5)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(369, box_y + 10, credencial_data.get('puesto') or 'Conductor Profesional')
+    
+    # Grid Row 2 (EMPRESA)
+    emp_y = 94
+    emp_h = 40
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(134, emp_y, 437, emp_h, 6, fill=1, stroke=1)
+    
+    # Factory Icon
+    c.setStrokeColorRGB(*TEAL)
+    c.setLineWidth(1.5)
+    icon_path = c.beginPath()
+    icon_path.moveTo(148, emp_y + 12)
+    icon_path.lineTo(148, emp_y + 26)
+    icon_path.lineTo(153, emp_y + 26)
+    icon_path.lineTo(153, emp_y + 20)
+    icon_path.lineTo(158, emp_y + 20)
+    icon_path.lineTo(158, emp_y + 26)
+    icon_path.lineTo(163, emp_y + 26)
+    icon_path.lineTo(163, emp_y + 12)
+    icon_path.close()
+    c.drawPath(icon_path, fill=0, stroke=1)
+    
+    c.setFillColorRGB(*TEAL)
+    c.rect(150, emp_y + 15, 2, 2, fill=1, stroke=0)
+    c.rect(160, emp_y + 15, 2, 2, fill=1, stroke=0)
+    
+    c.setFont("Helvetica-Bold", 7.5)
+    c.setFillColorRGB(*TEAL)
+    c.drawString(172, emp_y + 25, "EMPRESA")
+    
+    empresa_nombre = credencial_data.get('empresa_nombre') or "VMP - EDTECH"
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(172, emp_y + 9, empresa_nombre.upper())
+    
+    # --- COURSE APPROVED PANEL ---
+    course_panel_x = 24
+    course_panel_y = 42
+    course_panel_w = 547
+    course_panel_h = 48
+    
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(course_panel_x, course_panel_y, course_panel_w, course_panel_h, 6, fill=1, stroke=1)
+    
+    # Teal side indicator
+    c.setFillColorRGB(*TEAL)
+    c.roundRect(course_panel_x, course_panel_y, 6, course_panel_h, 2, fill=1, stroke=0)
+    
+    # Course Info Text
+    c.setFont("Helvetica-Bold", 7.5)
+    c.setFillColorRGB(*TEAL)
+    c.drawString(40, course_panel_y + 34, "CURSO APROBADO")
+    c.setFont("Helvetica-Bold", 13)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(40, course_panel_y + 19, (credencial_data.get('curso_nombre') or 'Conducción Segura').upper())
+    
+    c.setFont("Helvetica", 8)
+    c.setFillColorRGB(*GRAY_TEXT)
+    realizacion_str = f"Realización: {credencial_data.get('fecha_emision') or ''}   ·   8 horas"
+    c.drawString(40, course_panel_y + 7, realizacion_str)
+    
+    # Vigente Pill
+    pill_x, pill_y = width - 24 - 80, course_panel_y + 24
+    c.setStrokeColorRGB(*TEAL)
+    c.setFillColorRGB(240/255, 250/255, 250/255) # Light Teal background
+    c.roundRect(pill_x, pill_y, 80, 16, 8, fill=1, stroke=1)
+    
+    c.setFillColorRGB(*TEAL)
+    c.setFont("Helvetica-Bold", 8)
+    c.drawCentredString(pill_x + 40, pill_y + 4.5, "• VIGENTE")
+    
+    # Expiration Date below pill
+    c.setFont("Helvetica", 8.5)
+    c.setFillColorRGB(*GRAY_TEXT)
+    c.drawRightString(width - 84, course_panel_y + 8, "Vto: ")
+    
+    c.setFont("Helvetica-Bold", 8.5)
+    c.setFillColorRGB(220/255, 38/255, 38/255) # Red-600
+    vencimiento_str = credencial_data.get('fecha_vencimiento') or '---'
+    c.drawRightString(width - 24, course_panel_y + 8, vencimiento_str)
+    
+    # --- FOOTER BAR ---
+    c.setFillColorRGB(*DARK_BLUE)
+    c.rect(12, 12, width - 24, 26, fill=1, stroke=0)
+    
+    instructor_nombre = credencial_data.get('instructor_nombre') or 'Pedro Orejas'
+    instructor_info = credencial_data.get('instructor_info') or 'Instructor VMP | Mat. N° 2206823'
+    instructor_id = credencial_data.get('instructor_id')
+    
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColorRGB(1, 1, 1)
+    c.drawString(24, 21, instructor_nombre)
+    
+    c.setFont("Helvetica", 7.5)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    c.drawString(110, 21, instructor_info)
+    
+    # Teal Status Pill Button in Footer
+    btn_x, btn_y = width - 24 - 170, 15
+    c.setFillColorRGB(*TEAL)
+    c.roundRect(btn_x, btn_y, 170, 20, 4, fill=1, stroke=0)
+    c.setFillColorRGB(1, 1, 1)
+    c.setFont("Helvetica-Bold", 8.5)
+    c.drawCentredString(btn_x + 85, btn_y + 6, "✓ CAPACITACIÓN APROBADA")
+    
+    c.restoreState() # Restore original canvas state
+    
+    # ================= PAGE 2: BACK =================
+    c.showPage()
+    
+    # Card Border and Clip Path
+    c.saveState()
+    c.clipPath(card_clip, stroke=0, fill=0)
+    
+    # Draw card white background
+    c.setFillColorRGB(1, 1, 1)
+    c.rect(12, 12, width - 24, height - 24, fill=1, stroke=0)
+    
+    # Background watermark
+    if is_invernal:
+        if os.path.exists(bg_path):
+            try:
+                c.saveState()
+                c.setFillAlpha(0.18)
+                c.drawImage(ImageReader(bg_path), 12, 12, width=width-24, height=height-24)
+                c.restoreState()
+            except Exception as e:
+                print(f"Error drawing winter background on page 2: {e}")
+                
+    # --- HEADER (Back) ---
+    c.setFillColorRGB(*DARK_BLUE)
+    c.rect(12, 312, width - 24, 76, fill=1, stroke=0)
+    
+    c.setFillColorRGB(*TEAL)
+    c.rect(12, 306, width - 24, 6, fill=1, stroke=0)
+    
+    # Shield Icon Container
+    c.roundRect(26, 332, 28, 28, 6, fill=1, stroke=0)
+    c.setStrokeColorRGB(1, 1, 1)
+    c.setLineWidth(1.5)
+    c.drawPath(shield_path, fill=0, stroke=1)
+    
+    # Logo Text
+    c.setFont("Helvetica-Bold", 15)
+    c.setFillColorRGB(1, 1, 1)
+    c.drawString(64, 348, "VMP")
+    c.setFont("Helvetica", 15)
+    c.drawString(102, 348, "|")
+    c.setFont("Helvetica-Bold", 15)
+    c.drawString(112, 348, "EDTECH")
+    
+    c.setFont("Helvetica-Bold", 7.5)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    c.drawString(64, 336, "CAPACITACIÓN VIAL PROFESIONAL")
+    
+    c.setFont("Helvetica-Bold", 9.5)
+    c.setFillColorRGB(*TEAL)
+    c.drawRightString(width - 24, 345, "CREDENCIAL OFICIAL")
+    
+    # --- BODY CONTENT (Back) ---
+    c.setFont("Helvetica", 10.5)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(24, 284, "Esta credencial certifica que su titular ha aprobado satisfactoriamente el curso de:")
+    
+    # Course Name Box (Back)
+    c.setFillColorRGB(*DARK_BLUE)
+    c.roundRect(24, 222, 384, 52, 6, fill=1, stroke=0)
+    c.setFillColorRGB(1, 1, 1)
     c.setFont("Helvetica-Bold", 14)
-    c.setFillColorRGB(*TEAL)
-    c.drawRightString(width - 35, height - 35, "CREDENCIAL OFICIAL")
-    c.setFillColorRGB(*TEAL)
-    c.rect(0, height - 78, width, 8, fill=1, stroke=0)
-
-    # --- BODY (Back) ---
-    c.setFont("Helvetica", 14)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(35, height - 130, "Esta credencial certifica que su titular ha aprobado el curso de:")
+    c.drawString(39, 241, (credencial_data.get('curso_nombre') or 'Conducción Segura').upper())
     
-    c.setFont("Helvetica-Bold", 22)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(35, height - 170, credencial_data.get('curso_nombre', 'Conducción Segura: Flota Liviana'))
-    
-    # Disclaimer wrap fix to avoid overlapping the QR code
-    disclaimer_style = ParagraphStyle(
-        name="DisclaimerStyleBack",
+    # Disclaimers / Bullets
+    disc_style = ParagraphStyle(
+        name="DiscStyleBack",
         fontName="Helvetica",
-        fontSize=10,
-        leading=13,
+        fontSize=7.5,
+        leading=10.5,
         textColor=GRAY_TEXT,
     )
-    disclaimer = "• Este comprobante no reemplaza a la licencia de conducir, único documento habilitante y con validez a los efectos legales."
-    p_disc = Paragraph(disclaimer, disclaimer_style)
-    # Left width: QR starts at width - 110 (which is 485), so text area is 485 - 35 - 20 = 430
-    w_disc, h_disc = p_disc.wrap(430, 40)
-    p_disc.drawOn(c, 35, height - 210 - h_disc + 10)
+    disc_text = (
+        "• Este comprobante no reemplaza a la licencia de conducir, único documento habilitante con validez legal.<br/>"
+        "• Válido exclusivamente para actividades en las industrias habilitadas por VMP EDTECH."
+    )
+    p_disc = Paragraph(disc_text, disc_style)
+    p_disc.wrap(384, 50)
+    p_disc.drawOn(c, 24, 168)
     
-    # Carga Horaria Box
-    c.setFillColorRGB(*LIGHT_GRAY)
-    c.roundRect(35, height - 280, 150, 45, 5, fill=1, stroke=0)
-    c.setFont("Helvetica-Bold", 10)
+    # Grid of 3 boxes
+    grid_y = 110
+    grid_h = 40
+    
+    # Carga Horaria
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.setLineWidth(1)
+    c.roundRect(24, grid_y, 115, grid_h, 6, fill=1, stroke=1)
+    c.setFont("Helvetica-Bold", 7)
     c.setFillColorRGB(*TEAL)
-    c.drawString(45, height - 250, "CARGA HORARIA")
-    c.setFont("Helvetica-Bold", 16)
+    c.drawString(34, grid_y + 25, "CARGA HORARIA")
+    c.setFont("Helvetica-Bold", 11.5)
     c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(45, height - 272, "8 HORAS")
+    c.drawString(34, grid_y + 9, "8 hs")
     
-    # Accreditation
-    c.setFont("Helvetica-Bold", 10)
+    # Acreditado por
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(149, grid_y, 115, grid_h, 6, fill=1, stroke=1)
+    c.setFont("Helvetica-Bold", 7)
     c.setFillColorRGB(*TEAL)
-    c.drawString(210, height - 250, "Acreditado por")
-    c.setFont("Helvetica-Bold", 16)
+    c.drawString(159, grid_y + 25, "ACREDITADO POR")
+    c.setFont("Helvetica-Bold", 10)
     c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(210, height - 272, "VMP - EDTECH")
+    c.drawString(159, grid_y + 9, "VMP - EDTECH")
     
-    # QR Code on the back
-    qr_url = credencial_data.get('qr_url', '')
+    # CUIT
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(274, grid_y, 134, grid_h, 6, fill=1, stroke=1)
+    c.setFont("Helvetica-Bold", 7)
+    c.setFillColorRGB(*TEAL)
+    c.drawString(284, grid_y + 25, "CUIT")
+    c.setFont("Helvetica-Bold", 10)
+    c.setFillColorRGB(*TEXT_DARK)
+    c.drawString(284, grid_y + 9, "30-71936908-8")
+    
+    # QR Code Container Panel (Right)
+    qr_box_x, qr_box_y = 418, 110
+    qr_box_w, qr_box_h = 153, 218
+    
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(*GRAY_BORDER)
+    c.roundRect(qr_box_x, qr_box_y, qr_box_w, qr_box_h, 8, fill=1, stroke=1)
+    
+    # QR Code
+    qr_url = credencial_data.get('qr_url') or ''
     if qr_url:
         qr_buffer = generate_qr_code(qr_url)
-        c.drawImage(ImageReader(qr_buffer), width - 110, height - 285, 75, 75, mask='auto')
-
-    # --- FOOTER (Back) ---
-    c.setStrokeColorRGB(0.8, 0.8, 0.8)
-    c.setLineWidth(1)
-    c.line(35, 65, width - 35, 65)
+        c.drawImage(ImageReader(qr_buffer), qr_box_x + (qr_box_w - 110)/2, qr_box_y + 60, 110, 110, mask='auto')
+        
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColorRGB(*GRAY_TEXT)
+    c.drawCentredString(qr_box_x + qr_box_w/2, qr_box_y + 34, "VERIFICAR EN")
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColorRGB(*DARK_BLUE)
+    c.drawCentredString(qr_box_x + qr_box_w/2, qr_box_y + 18, "vmp-edtech.com/validar")
     
-    # Draw Instructor Signature if exists
+    # Instructor Signature on the back
     if instructor_id:
         try:
             from services.file_upload import get_instructor_signature_path
             sig_path = get_instructor_signature_path(instructor_id)
             if sig_path and os.path.exists(str(sig_path)):
-                c.drawImage(ImageReader(str(sig_path)), 45, 50, width=90, height=35, mask='auto')
+                c.drawImage(ImageReader(str(sig_path)), 24, 52, width=90, height=35, mask='auto')
         except Exception as ex:
             print(f"Error drawing signature on back: {ex}")
             
-    c.setFont("Helvetica-Bold", 18)
-    c.setFillColorRGB(*TEXT_DARK)
-    c.drawString(40, 42, instructor_nombre)
-    c.setFont("Helvetica", 11)
-    c.setFillColorRGB(*GRAY_TEXT)
-    c.drawString(40, 28, instructor_info)
-
+    # --- FOOTER BAR (Back) ---
+    c.setFillColorRGB(*DARK_BLUE)
+    c.rect(12, 12, width - 24, 26, fill=1, stroke=0)
+    
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColorRGB(1, 1, 1)
+    c.drawString(24, 21, instructor_nombre)
+    
+    c.setFont("Helvetica", 7.5)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    c.drawString(110, 21, instructor_info)
+    
+    # Right-aligned footer details (Back page)
+    c.setFont("Helvetica-Bold", 8.5)
+    c.setFillColorRGB(200/255, 210/255, 220/255)
+    c.drawRightString(width - 24, 25, cred_num_str)
+    
+    c.setFont("Helvetica", 7)
+    c.setFillColorRGB(170/255, 180/255, 190/255)
+    c.drawRightString(width - 24, 15, "administracion@vmp-edtech.com")
+    
+    c.restoreState() # Restore original canvas state
     c.save()
     buffer.seek(0)
     return buffer.getvalue()
