@@ -47,32 +47,24 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     curso_nombre = credencial_data.get('curso_nombre', '').lower()
     is_invernal = 'invernal' in curso_nombre or 'invierno' in curso_nombre
     
-    # Colors
-    if is_invernal:
-        DARK_BLUE = (27/255, 54/255, 47/255)      # Forest Green `#1B362F`
-        TEAL = (91/255, 140/255, 122/255)       # Moss Green `#5B8C7A`
-        TEXT_DARK = (20/255, 35/255, 32/255)     # Deep Slate Green `#142320`
-    else:
-        DARK_BLUE = (13/255, 27/255, 62/255)      # Classic VMP Dark Blue
-        TEAL = (0/255, 173/255, 181/255)          # Classic VMP Teal
-        TEXT_DARK = (15/255, 28/255, 52/255)      # Classic VMP Text Dark
+    # Colors (Maintain classic VMP-EDTECH branding colors)
+    DARK_BLUE = (13/255, 27/255, 62/255)      # Classic VMP Dark Blue
+    TEAL = (0/255, 173/255, 181/255)          # Classic VMP Teal
+    TEXT_DARK = (15/255, 28/255, 52/255)      # Classic VMP Text Dark
         
     LIGHT_GRAY = (240/255, 245/255, 250/255)
     GRAY_TEXT = (100/255, 116/255, 139/255)
     
     # ================= PAGE 1: FRONT =================
-    # Draw winter driving background if applicable
+    # Draw winter driving background if applicable (subtle watermark)
     if is_invernal:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
         if os.path.exists(bg_path):
             try:
-                # Dibujar imagen de fondo de la Patagonia
+                # Dibujar imagen de fondo muy suave al 6% de opacidad para que no interfiera en la lectura
+                c.setFillAlpha(0.06)
                 c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
-                # Capa de claridad semi-transparente para legibilidad de textos
-                c.setFillColorRGB(248/255, 249/255, 250/255)
-                c.setFillAlpha(0.85)
-                c.rect(0, 0, width, height, fill=1, stroke=0)
                 c.setFillAlpha(1.0)
             except Exception as e:
                 print(f"Error drawing winter background on page 1: {e}")
@@ -227,17 +219,15 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.showPage() # ================= PAGE 2: BACK =================
     
     # Draw winter driving background if applicable
+    # Draw winter driving background if applicable (subtle watermark)
     if is_invernal:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
         if os.path.exists(bg_path):
             try:
-                # Dibujar imagen de fondo de la Patagonia
+                # Dibujar imagen de fondo muy suave al 6% de opacidad para que no interfiera en la lectura
+                c.setFillAlpha(0.06)
                 c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
-                # Capa de claridad semi-transparente
-                c.setFillColorRGB(248/255, 249/255, 250/255)
-                c.setFillAlpha(0.85)
-                c.rect(0, 0, width, height, fill=1, stroke=0)
                 c.setFillAlpha(1.0)
             except Exception as e:
                 print(f"Error drawing winter background on page 2: {e}")
