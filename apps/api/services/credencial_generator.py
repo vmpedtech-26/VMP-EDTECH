@@ -77,7 +77,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         if os.path.exists(bg_path):
             try:
                 c.saveState()
-                c.setFillAlpha(0.18)
+                c.setFillAlpha(0.28)
                 c.drawImage(ImageReader(bg_path), 12, 12, width=width-24, height=height-24)
                 c.restoreState()
             except Exception as e:
@@ -372,7 +372,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         if os.path.exists(bg_path):
             try:
                 c.saveState()
-                c.setFillAlpha(0.18)
+                c.setFillAlpha(0.28)
                 c.drawImage(ImageReader(bg_path), 12, 12, width=width-24, height=height-24)
                 c.restoreState()
             except Exception as e:
