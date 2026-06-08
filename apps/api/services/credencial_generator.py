@@ -61,6 +61,22 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     GRAY_TEXT = (100/255, 116/255, 139/255)
     
     # ================= PAGE 1: FRONT =================
+    # Draw winter driving background if applicable
+    if is_invernal:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
+        if os.path.exists(bg_path):
+            try:
+                # Dibujar imagen de fondo de la Patagonia
+                c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
+                # Capa de claridad semi-transparente para legibilidad de textos
+                c.setFillColorRGB(248/255, 249/255, 250/255)
+                c.setFillAlpha(0.85)
+                c.rect(0, 0, width, height, fill=1, stroke=0)
+                c.setFillAlpha(1.0)
+            except Exception as e:
+                print(f"Error drawing winter background on page 1: {e}")
+
     # --- HEADER ---
     c.setFillColorRGB(*DARK_BLUE)
     c.rect(0, height - 70, width, 70, fill=1, stroke=0)
@@ -210,6 +226,22 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     c.showPage() # ================= PAGE 2: BACK =================
     
+    # Draw winter driving background if applicable
+    if is_invernal:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
+        if os.path.exists(bg_path):
+            try:
+                # Dibujar imagen de fondo de la Patagonia
+                c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
+                # Capa de claridad semi-transparente
+                c.setFillColorRGB(248/255, 249/255, 250/255)
+                c.setFillAlpha(0.85)
+                c.rect(0, 0, width, height, fill=1, stroke=0)
+                c.setFillAlpha(1.0)
+            except Exception as e:
+                print(f"Error drawing winter background on page 2: {e}")
+
     # --- HEADER (Back) ---
     c.setFillColorRGB(*DARK_BLUE)
     c.rect(0, height - 70, width, 70, fill=1, stroke=0)
