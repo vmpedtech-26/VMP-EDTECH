@@ -311,7 +311,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.drawString(40, course_panel_y + 7, realizacion_str)
     
     # Vigente Pill
-    pill_x, pill_y = width - 24 - 80, course_panel_y + 24
+    pill_x, pill_y = width - 24 - 80 - 12, course_panel_y + 24
     c.setStrokeColorRGB(*TEAL)
     c.setFillColorRGB(240/255, 250/255, 250/255) # Light Teal background
     c.roundRect(pill_x, pill_y, 80, 16, 8, fill=1, stroke=1)
@@ -323,12 +323,12 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     # Expiration Date below pill
     c.setFont("Helvetica", 8.5)
     c.setFillColorRGB(*GRAY_TEXT)
-    c.drawRightString(width - 84, course_panel_y + 8, "Vto: ")
+    c.drawRightString(width - 84 - 12, course_panel_y + 8, "Vto: ")
     
     c.setFont("Helvetica-Bold", 8.5)
     c.setFillColorRGB(220/255, 38/255, 38/255) # Red-600
     vencimiento_str = credencial_data.get('fecha_vencimiento') or '---'
-    c.drawRightString(width - 24, course_panel_y + 8, vencimiento_str)
+    c.drawRightString(width - 24 - 12, course_panel_y + 8, vencimiento_str)
     
     # --- FOOTER BAR ---
     c.setFillColorRGB(*DARK_BLUE)
