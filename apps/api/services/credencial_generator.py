@@ -64,8 +64,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
         if os.path.exists(bg_path):
             try:
-                # Dibujar imagen de fondo muy suave al 6% de opacidad para que no interfiera en la lectura
-                c.setFillAlpha(0.06)
+                # Dibujar imagen de fondo suave al 18% de opacidad
+                c.setFillAlpha(0.18)
                 c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
                 c.setFillAlpha(1.0)
             except Exception as e:
@@ -226,8 +226,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
         bg_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "images", "winter_bg.png"))
         if os.path.exists(bg_path):
             try:
-                # Dibujar imagen de fondo muy suave al 6% de opacidad para que no interfiera en la lectura
-                c.setFillAlpha(0.06)
+                # Dibujar imagen de fondo suave al 18% de opacidad
+                c.setFillAlpha(0.18)
                 c.drawImage(ImageReader(bg_path), 0, 0, width=width, height=height)
                 c.setFillAlpha(1.0)
             except Exception as e:
