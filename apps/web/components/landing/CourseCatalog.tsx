@@ -1,95 +1,72 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Truck, Shield, Mountain, Snowflake, Clock, Monitor, CalendarCheck, CheckCircle, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Truck, Shield, Mountain, Snowflake, Clock, Monitor, CalendarCheck, CheckCircle, ArrowRight, ChevronLeft, ChevronRight, RefreshCw, X, FileText, Target, Users, BookOpen, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { courseData, type CourseDetail } from '@/lib/course-data';
 
-const courses = [
-    {
-        id: 'preventivo',
-        slug: 'conduccion-preventiva',
-        icon: Shield,
-        title: 'Conducción Preventiva',
-        category: 'PREVENTIVO',
-        duration: '8 horas',
-        modality: '100% Online',
-        validity: '24 meses',
-        minScore: '70%',
-        longDescription: 'Curso integral diseñado para formar conductores capaces de anticipar y prevenir situaciones de riesgo en la vía pública. Combina fundamentos teóricos de seguridad vial con técnicas prácticas de conducción defensiva, preparando al conductor para tomar decisiones seguras en todo tipo de escenarios.',
-        image: '/images/courses/conduccion-preventiva.png',
+const courseStyles: Record<string, { accentColor: string; glowColor: string; icon: any }> = {
+    'conduccion-preventiva': {
         accentColor: 'from-teal-500 to-cyan-400',
         glowColor: 'rgba(20, 184, 166, 0.25)',
+        icon: Shield,
     },
-    {
-        id: 'carga-pesada',
-        slug: 'flota-liviana-pesada',
-        icon: Truck,
-        title: 'Conducción Flota Liviana / Pesada',
-        category: 'TRANSPORTE',
-        duration: '12 horas',
-        modality: 'Online/Presencial',
-        validity: '24 meses',
-        minScore: '75%',
-        longDescription: 'Programa de capacitación diseñado específicamente para conductores de vehículos de flota liviana y pesada. Abarca inspección pre-operacional, técnicas avanzadas de maniobra con carga y normativas de tránsito pesado vigentes.',
-        image: '/images/courses/carga-pesada.png',
-        accentColor: 'from-blue-500 to-indigo-400',
-        glowColor: 'rgba(99, 102, 241, 0.25)',
+    'conduccion-renovacion': {
+        accentColor: 'from-violet-500 to-indigo-400',
+        glowColor: 'rgba(139, 92, 246, 0.25)',
+        icon: RefreshCw,
     },
-    {
-        id: '2-traccion',
-        slug: 'doble-traccion',
-        icon: Mountain,
-        title: 'Conducción Doble Tracción',
-        category: 'ESPECIALIZADO',
-        duration: '16 horas',
-        modality: 'Presencial',
-        validity: '24 meses',
-        minScore: '80%',
-        longDescription: 'Manejo avanzado en terrenos difíciles con técnicas de tracción diferencial, recuperación vehicular en campo y protocolos de seguridad en zonas remotas de alta montaña y acceso petrolero.',
-        image: '/images/courses/conduccion-2-traccion.png',
-        accentColor: 'from-orange-500 to-amber-400',
-        glowColor: 'rgba(249, 115, 22, 0.25)',
-    },
-    {
-        id: 'invernal',
-        slug: 'conduccion-invernal',
-        icon: Snowflake,
-        title: 'Conducción Invernal',
-        category: 'CORDILLERANO',
-        duration: '12 horas',
-        modality: 'Online/Presencial',
-        validity: '24 meses',
-        minScore: '80%',
-        longDescription: 'Técnicas avanzadas para conducción segura en presencia de nieve, hielo y condiciones climáticas extremas. Indispensable para rutas cordilleranas y zonas patagónicas con temporada invernal severa.',
-        image: '/images/courses/conduccion-invernal.png',
+    'conduccion-invernal': {
         accentColor: 'from-sky-400 to-blue-300',
         glowColor: 'rgba(56, 189, 248, 0.25)',
+        icon: Snowflake,
     },
-    {
-        id: 'altura',
-        slug: 'trabajo-en-altura',
+    'conduccion-segura': {
+        accentColor: 'from-amber-500 to-yellow-400',
+        glowColor: 'rgba(245, 158, 11, 0.25)',
+        icon: Shield,
+    },
+    'flota-liviana-pesada': {
+        accentColor: 'from-blue-500 to-indigo-400',
+        glowColor: 'rgba(99, 102, 241, 0.25)',
+        icon: Truck,
+    },
+    'doble-traccion': {
+        accentColor: 'from-orange-500 to-amber-400',
+        glowColor: 'rgba(249, 115, 22, 0.25)',
         icon: Mountain,
-        title: 'Trabajo en Altura',
-        category: 'SEGURIDAD INDUSTRIAL',
-        duration: '8 horas',
-        modality: 'Presencial',
-        validity: '24 meses',
-        minScore: '80%',
-        longDescription: 'Capacitación especializada en técnicas seguras, uso de arnés y prevención de caídas.',
-        image: '/images/courses/curso-altura.png',
+    },
+    'trabajo-en-altura': {
         accentColor: 'from-red-500 to-rose-400',
         glowColor: 'rgba(239, 68, 68, 0.25)',
+        icon: Mountain,
     },
-];
+};
 
-const AUTOPLAY_INTERVAL = 5000;
+const courses = Object.keys(courseData).map((key) => {
+    const data = courseData[key];
+    const style = courseStyles[key] || {
+        accentColor: 'from-teal-500 to-cyan-400',
+        glowColor: 'rgba(20, 184, 166, 0.25)',
+        icon: Shield,
+    };
+    return {
+        ...data,
+        id: key,
+        ...style,
+    };
+});
+
+const AUTOPLAY_INTERVAL = 6000;
 
 export default function CourseCatalog() {
     const [active, setActive] = useState(0);
     const [direction, setDirection] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(null);
+    const [activeTab, setActiveTab] = useState<'resumen' | 'temario' | 'evaluaciones' | 'requisitos'>('resumen');
 
     const goTo = useCallback((index: number, dir?: number) => {
         setDirection(dir ?? (index > active ? 1 : -1));
@@ -107,10 +84,22 @@ export default function CourseCatalog() {
     }, [active, goTo]);
 
     useEffect(() => {
-        if (isPaused) return;
+        if (isPaused || selectedCourse) return;
         const timer = setInterval(next, AUTOPLAY_INTERVAL);
         return () => clearInterval(timer);
-    }, [next, isPaused]);
+    }, [next, isPaused, selectedCourse]);
+
+    // Prevent body scroll when drawer is open
+    useEffect(() => {
+        if (selectedCourse) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [selectedCourse]);
 
     const course = courses[active];
     const Icon = course.icon;
@@ -212,7 +201,7 @@ export default function CourseCatalog() {
 
             {/* Main slider */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-20">
-                <div className="relative min-h-[460px] flex items-center">
+                <div className="relative min-h-[490px] flex items-center">
                     <AnimatePresence mode="wait" custom={direction}>
                         <motion.div
                             key={active}
@@ -224,7 +213,7 @@ export default function CourseCatalog() {
                             className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center"
                         >
                             {/* Left: Content */}
-                            <div className="flex flex-col justify-center space-y-6 py-8">
+                            <div className="flex flex-col justify-center space-y-5 py-8">
                                 {/* Category badge */}
                                 <div className="flex items-center gap-3">
                                     <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${course.accentColor} flex items-center justify-center`}>
@@ -236,13 +225,13 @@ export default function CourseCatalog() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-4xl md:text-5xl font-bold font-heading text-white leading-tight">
+                                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white leading-tight">
                                     {course.title}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="text-slate-300 text-base leading-relaxed max-w-xl">
-                                    {course.longDescription}
+                                <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl">
+                                    {course.description}
                                 </p>
 
                                 {/* Stats row */}
@@ -263,18 +252,21 @@ export default function CourseCatalog() {
 
                                 {/* CTA buttons */}
                                 <div className="flex flex-wrap gap-3 pt-2">
-                                    <Link
-                                        href="/#contacto"
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCourse(course);
+                                            setActiveTab('resumen');
+                                        }}
                                         className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${course.accentColor} text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
                                     >
-                                        Consultar por este Curso
+                                        Ver Ficha Técnica
                                         <ArrowRight className="w-4 h-4" />
-                                    </Link>
+                                    </button>
                                     <Link
                                         href={`/cursos/${course.slug}`}
                                         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white font-semibold text-sm hover:bg-white/10 transition-all duration-300"
                                     >
-                                        Ver todos los cursos
+                                        Ver Detalle Completo
                                     </Link>
                                 </div>
                             </div>
@@ -309,7 +301,7 @@ export default function CourseCatalog() {
                                         {/* VMP badge */}
                                         <div className="absolute top-4 left-4">
                                             <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r ${course.accentColor} text-white shadow`}>
-                                                VMP Certificado
+                                                Certificación IAPG / VMP
                                             </span>
                                         </div>
                                     </div>
@@ -363,6 +355,261 @@ export default function CourseCatalog() {
                     </div>
                 </div>
             </div>
+
+            {/* Interactive Ficha Técnica Drawer (Slide-over) */}
+            <AnimatePresence>
+                {selectedCourse && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedCourse(null)}
+                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 pointer-events-auto"
+                        />
+
+                        {/* Drawer */}
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 26, stiffness: 220 }}
+                            className="fixed top-0 right-0 h-full w-full sm:max-w-2xl bg-[#0b1629] border-l border-white/10 shadow-2xl z-50 flex flex-col pointer-events-auto"
+                        >
+                            {/* Drawer Header */}
+                            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
+                                <div>
+                                    <span className={`text-[10px] font-bold tracking-[0.2em] px-2 py-0.5 rounded bg-gradient-to-r ${selectedCourse.accentColor} text-white`}>
+                                        {selectedCourse.category}
+                                    </span>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mt-2 font-heading">
+                                        {selectedCourse.title}
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedCourse(null)}
+                                    className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-all"
+                                    aria-label="Cerrar"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            {/* Drawer Content Tabs Navigation */}
+                            <div className="border-b border-white/10 bg-slate-950/20 px-6 flex overflow-x-auto gap-6 scrollbar-hide">
+                                {([
+                                    { id: 'resumen', label: 'Resumen' },
+                                    { id: 'temario', label: 'Programa' },
+                                    { id: 'evaluaciones', label: 'Evaluaciones' },
+                                    { id: 'requisitos', label: 'Requisitos' }
+                                ] as const).map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`py-4 text-sm font-semibold transition-all relative shrink-0 ${activeTab === tab.id ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+                                    >
+                                        {tab.label}
+                                        {activeTab === tab.id && (
+                                            <motion.div
+                                                layoutId="activeTabUnderline"
+                                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-400"
+                                            />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Drawer Body (Scrollable) */}
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                                {/* Tab: Resumen */}
+                                {activeTab === 'resumen' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6"
+                                    >
+                                        <div>
+                                            <h4 className="text-sm font-bold text-teal-400 uppercase tracking-wider mb-2">Descripción General</h4>
+                                            <p className="text-slate-300 text-sm sm:text-base leading-relaxed bg-white/5 border border-white/5 rounded-2xl p-4">
+                                                {selectedCourse.longDescription}
+                                            </p>
+                                        </div>
+
+                                        {selectedCourse.objectives && (
+                                            <div>
+                                                <h4 className="text-sm font-bold text-teal-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <Target className="w-4 h-4" /> Objetivo del Programa
+                                                </h4>
+                                                <p className="text-slate-300 text-sm leading-relaxed bg-white/5 border border-white/5 rounded-2xl p-4">
+                                                    {selectedCourse.objectives}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {selectedCourse.scope && (
+                                            <div>
+                                                <h4 className="text-sm font-bold text-teal-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <Users className="w-4 h-4" /> Alcance
+                                                </h4>
+                                                <p className="text-slate-300 text-sm leading-relaxed bg-white/5 border border-white/5 rounded-2xl p-4">
+                                                    {selectedCourse.scope}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
+                                {/* Tab: Temario */}
+                                {activeTab === 'temario' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-4"
+                                    >
+                                        {selectedCourse.temario.map((modulo, i) => (
+                                            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                                                <div className="bg-slate-900/60 px-5 py-3.5 border-b border-white/10 flex items-center gap-3">
+                                                    <div className="h-6 w-6 rounded-full bg-teal-400/20 flex items-center justify-center text-teal-400 font-bold text-xs">
+                                                        {i + 1}
+                                                    </div>
+                                                    <h5 className="font-bold text-white text-sm">
+                                                        {modulo.title}
+                                                    </h5>
+                                                </div>
+                                                <div className="p-5">
+                                                    <ul className="space-y-3">
+                                                        {modulo.topics.map((tema, j) => (
+                                                            <li key={j} className="flex items-start gap-2.5">
+                                                                <BookOpen className="w-4 h-4 text-teal-400/70 shrink-0 mt-0.5" />
+                                                                <span className="text-slate-300 text-sm">{tema}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+
+                                {/* Tab: Evaluaciones */}
+                                {activeTab === 'evaluaciones' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-4"
+                                    >
+                                        <div className="bg-teal-950/10 border border-teal-500/20 rounded-2xl p-4 mb-2 flex gap-3">
+                                            <AlertCircle className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
+                                            <p className="text-xs text-slate-300 leading-relaxed">
+                                                Nuestros programas siguen los lineamientos de acreditación de la Escuela de Conducción Defensiva del IAPG para habilitaciones en yacimiento.
+                                            </p>
+                                        </div>
+
+                                        {selectedCourse.evaluacionesInfo ? (
+                                            <div className="grid gap-4">
+                                                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                                                    <h5 className="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                                                        <span className="h-2 w-2 rounded-full bg-teal-400" /> Examen Teórico
+                                                    </h5>
+                                                    <p className="text-slate-300 text-sm leading-relaxed">
+                                                        {selectedCourse.evaluacionesInfo.teorico}
+                                                    </p>
+                                                </div>
+
+                                                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                                                    <h5 className="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                                                        <span className="h-2 w-2 rounded-full bg-teal-400" /> Examen Práctico
+                                                    </h5>
+                                                    <p className="text-slate-300 text-sm leading-relaxed">
+                                                        {selectedCourse.evaluacionesInfo.practico}
+                                                    </p>
+                                                </div>
+
+                                                {selectedCourse.evaluacionesInfo.psicosensometrico && (
+                                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                                                        <h5 className="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                                                            <span className="h-2 w-2 rounded-full bg-teal-400" /> Evaluación Psicosensométrica / Psicotécnica
+                                                        </h5>
+                                                        <p className="text-slate-300 text-sm leading-relaxed">
+                                                            {selectedCourse.evaluacionesInfo.psicosensometrico}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                                                <p className="text-slate-400 text-sm">
+                                                    Evaluación continua de carácter teórico-práctico en campo y aprobación mediante cuestionario virtual final. Nota mínima: {selectedCourse.minScore}.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
+                                {/* Tab: Requisitos */}
+                                {activeTab === 'requisitos' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-6"
+                                    >
+                                        <div>
+                                            <h4 className="text-sm font-bold text-teal-400 uppercase tracking-wider mb-3">Requisitos de Ingreso</h4>
+                                            <ul className="space-y-3 bg-white/5 border border-white/5 rounded-2xl p-5">
+                                                {selectedCourse.requirements.map((req, i) => (
+                                                    <li key={i} className="flex items-start gap-3">
+                                                        <div className="h-2 w-2 rounded-full bg-teal-400 mt-2 shrink-0" />
+                                                        <span className="text-slate-300 text-sm sm:text-base">{req}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/20 rounded-2xl p-5">
+                                            <h4 className="text-sm font-bold text-white mb-2">Certificado e Integración QR</h4>
+                                            <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                                                {selectedCourse.certification}
+                                            </p>
+                                            <div className="flex items-center gap-3 bg-slate-950/30 rounded-xl p-3 border border-white/5">
+                                                <Award className="h-6 w-6 text-teal-400 shrink-0" />
+                                                <div>
+                                                    <p className="font-bold text-white text-xs">Vigencia Certificación: {selectedCourse.validity}</p>
+                                                    <p className="text-slate-400 text-[10px]">Verificación instantánea corporativa mediante código QR oficial</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+
+                            {/* Drawer Footer */}
+                            <div className="p-6 border-t border-white/10 bg-slate-950/60 flex flex-col sm:flex-row gap-3">
+                                <Link
+                                    href="/#contacto"
+                                    onClick={() => setSelectedCourse(null)}
+                                    className={`flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r ${selectedCourse.accentColor} text-white font-bold text-sm shadow hover:scale-[1.02] transition-transform`}
+                                >
+                                    Consultar por este Curso
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+
+                                {selectedCourse.pdfProgramaUrl && (
+                                    <a
+                                        href={selectedCourse.pdfProgramaUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white/20 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+                                    >
+                                        <FileText className="w-4 h-4 text-teal-400" />
+                                        Programa PDF
+                                    </a>
+                                )}
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

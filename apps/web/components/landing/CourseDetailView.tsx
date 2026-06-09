@@ -3,13 +3,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Clock, Award, Monitor, CheckCircle, Users, ArrowRight, BookOpen, Target, FileCheck, Shield, Truck, Mountain } from 'lucide-react';
+import { Clock, Award, Monitor, CheckCircle, Users, ArrowRight, BookOpen, Target, FileCheck, Shield, Truck, Mountain, RefreshCw, Snowflake, FileText } from 'lucide-react';
 import type { CourseDetail } from '@/lib/course-data';
 
 const courseIcons: Record<string, any> = {
     'conduccion-preventiva': Shield,
+    'conduccion-renovacion': RefreshCw,
+    'conduccion-invernal': Snowflake,
+    'conduccion-segura': Shield,
     'flota-liviana-pesada': Truck,
     'doble-traccion': Mountain,
+    'trabajo-en-altura': Mountain,
 };
 
 interface CourseDetailPageProps {
@@ -70,17 +74,28 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                 ))}
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-wrap gap-4">
                                 <Link
                                     href="/#contacto"
-                                    className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25"
+                                    className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25 text-sm"
                                 >
                                     Consultar por este Curso
                                     <ArrowRight className="h-5 w-5" />
                                 </Link>
+                                {course.pdfProgramaUrl && (
+                                    <a
+                                        href={course.pdfProgramaUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-4 rounded-xl transition-all border border-white/10 shadow-sm text-sm"
+                                    >
+                                        <FileText className="h-5 w-5 text-teal-400" />
+                                        Descargar Programa PDF
+                                    </a>
+                                )}
                                 <Link
                                     href="/cursos"
-                                    className="inline-flex items-center justify-center gap-2 border border-white/20 text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-xl transition-all"
+                                    className="inline-flex items-center justify-center gap-2 border border-white/20 text-white hover:bg-white/10 font-semibold px-6 py-4 rounded-xl transition-all text-sm"
                                 >
                                     Ver todos los cursos
                                 </Link>
@@ -108,6 +123,53 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                     </div>
                 </div>
             </section>
+
+            {/* Objectives & Scope (New Section) */}
+            {(course.objectives || course.scope) && (
+                <section className="py-16 bg-slate-50 border-y border-slate-200/50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {course.objectives && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                                            <Target className="h-5 w-5 text-teal-500" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-900">Objetivo del Programa</h3>
+                                    </div>
+                                    <p className="text-slate-600 leading-relaxed text-sm">
+                                        {course.objectives}
+                                    </p>
+                                </motion.div>
+                            )}
+
+                            {course.scope && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                                            <Users className="h-5 w-5 text-cyan-500" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-900">Alcance de la Acreditación</h3>
+                                    </div>
+                                    <p className="text-slate-600 leading-relaxed text-sm">
+                                        {course.scope}
+                                    </p>
+                                </motion.div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Benefits */}
             <section className="py-16 bg-white">
@@ -157,7 +219,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">
                             Temario del Curso
                         </h2>
-                        <p className="text-slate-600">Contenido completo organizado por módulos</p>
+                        <p className="text-slate-600">Contenido completo organizado por módulos de aprendizaje</p>
                     </motion.div>
 
                     <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -195,6 +257,56 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                     </div>
                 </div>
             </section>
+
+            {/* Metodología de Evaluaciones (New Section) */}
+            {course.evaluacionesInfo && (
+                <section className="py-16 bg-white border-b border-slate-100">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-10"
+                        >
+                            <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                                Metodología de Evaluación
+                            </h2>
+                            <p className="text-slate-600">Procedimiento exigido para la acreditación en yacimiento</p>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:border-teal-500/25 transition-all">
+                                <h4 className="font-bold text-slate-900 mb-3 text-sm flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-teal-500" /> Examen Teórico
+                                </h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">
+                                    {course.evaluacionesInfo.teorico}
+                                </p>
+                            </div>
+
+                            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:border-teal-500/25 transition-all">
+                                <h4 className="font-bold text-slate-900 mb-3 text-sm flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-teal-500" /> Examen Práctico
+                                </h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">
+                                    {course.evaluacionesInfo.practico}
+                                </p>
+                            </div>
+
+                            {course.evaluacionesInfo.psicosensometrico && (
+                                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:border-teal-500/25 transition-all">
+                                    <h4 className="font-bold text-slate-900 mb-3 text-sm flex items-center gap-2">
+                                        <span className="h-2 w-2 rounded-full bg-teal-500" /> Psicosensométrico
+                                    </h4>
+                                    <p className="text-slate-600 text-xs leading-relaxed">
+                                        {course.evaluacionesInfo.psicosensometrico}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Requirements + Certification */}
             <section className="py-16 bg-white">

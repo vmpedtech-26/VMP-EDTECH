@@ -476,7 +476,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # QR Code Container Panel (Right)
     qr_box_x, qr_box_y = 418, 110
-    qr_box_w, qr_box_h = 153, 218
+    qr_box_w, qr_box_h = 153, 190
     
     c.setFillColorRGB(1, 1, 1)
     c.setStrokeColorRGB(*GRAY_BORDER)
@@ -486,7 +486,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     qr_url = credencial_data.get('qr_url') or ''
     if qr_url:
         qr_buffer = generate_qr_code(qr_url)
-        c.drawImage(ImageReader(qr_buffer), qr_box_x + (qr_box_w - 110)/2, qr_box_y + 60, 110, 110, mask='auto')
+        c.drawImage(ImageReader(qr_buffer), qr_box_x + (qr_box_w - 110)/2, qr_box_y + 54, 110, 110, mask='auto')
         
     c.setFont("Helvetica-Bold", 8)
     c.setFillColorRGB(*GRAY_TEXT)
