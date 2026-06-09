@@ -16,7 +16,7 @@ export interface CourseDetail {
     temario: { title: string; topics: string[] }[];
     requirements: string[];
     certification: string;
-    // Campos extendidos del estándar IAPG
+    // Campos de ficha técnica extendidos
     objectives?: string;
     scope?: string;
     evaluacionesInfo?: {
@@ -94,7 +94,7 @@ export const courseData: Record<string, CourseDetail> = {
             psicosensometrico: 'Evaluación psicosensométrica obligatoria: exámenes psicofísicos de tiempos de reacción simple y complejo, agudeza visual, visión nocturna y audición.',
         },
         certification: 'Certificación digital con código QR verificable con validez de 24 meses, habilitando la conducción en yacimientos petroleros y faenas industriales.',
-        pdfProgramaUrl: 'https://drive.google.com/file/d/1_BgF1w2IW4UnnHKBV8_BFRz41H4BO8di/view?usp=drive_link',
+        pdfProgramaUrl: '/programas/conduccion-preventiva.pdf',
     },
 
     'conduccion-renovacion': {
@@ -159,7 +159,7 @@ export const courseData: Record<string, CourseDetail> = {
             psicosensometrico: 'Evaluación psicotécnica completa (coordinación bimanual, tiempo de reacción y test visual/auditivo) exigida por las operadoras.',
         },
         certification: 'Renovación de certificación digital con código QR con validez nacional por 24 meses.',
-        pdfProgramaUrl: 'https://drive.google.com/file/d/1du-ermYqlEyVhSp-W9NwIP_a9xSJxzW1/view?usp=sharing',
+        pdfProgramaUrl: '/programas/conduccion-renovacion.pdf',
     },
 
     'conduccion-invernal': {
@@ -232,7 +232,7 @@ export const courseData: Record<string, CourseDetail> = {
             practico: 'Práctica de colocación de cadenas sobre neumático real en campo. No posee evaluación cuantitativa (aprobado por cumplimiento de procedimiento).',
         },
         certification: 'Especialización en conducción segura invernal con código QR verificable, válida por 24 meses.',
-        pdfProgramaUrl: 'https://drive.google.com/file/d/1xLbMDxsd6fFxI95eknCPZY7ZQD9whbV7/view?usp=sharing',
+        pdfProgramaUrl: '/programas/conduccion-invernal.pdf',
     },
 
     'conduccion-segura': {
@@ -295,7 +295,7 @@ export const courseData: Record<string, CourseDetail> = {
             practico: 'Práctica técnica de check-list de vehículo en campo (no evaluativo cuantitativo, aprobado/desaprobado por cumplimiento de ítems).',
         },
         certification: 'Certificación de especialización técnica con código QR válida por 24 meses.',
-        pdfProgramaUrl: 'https://drive.google.com/file/d/1_BgF1w2IW4UnnHKBV8_BFRz41H4BO8di/view?usp=sharing',
+        pdfProgramaUrl: '/programas/conduccion-segura.pdf',
     },
 
     'flota-liviana-pesada': {
@@ -369,6 +369,7 @@ export const courseData: Record<string, CourseDetail> = {
             psicosensometrico: 'Examen psicosensométrica profesional completo obligatorio (visión, audición, velocidad de reacción).',
         },
         certification: 'Certificación oficial de habilitación para conducción de flotas livianas/pesadas con código QR y validez de 24 meses.',
+        pdfProgramaUrl: '/programas/flota-liviana-pesada.pdf',
     },
 
     'doble-traccion': {
@@ -441,6 +442,7 @@ export const courseData: Record<string, CourseDetail> = {
             practico: 'Prueba práctica de superación de obstáculos en circuito off-road supervisado por instructores senior.',
         },
         certification: 'Certificación digital de Conducción Especializada Doble Tracción 4x4 con código QR y validez de 24 meses.',
+        pdfProgramaUrl: '/programas/doble-traccion.pdf',
     },
 
     'trabajo-en-altura': {
@@ -501,6 +503,7 @@ export const courseData: Record<string, CourseDetail> = {
             practico: 'Prueba práctica de ascenso y posicionamiento seguro en torre de entrenamiento supervisada.',
         },
         certification: 'Certificación oficial de Trabajo en Altura con validez nacional por 24 meses.',
+        pdfProgramaUrl: '/programas/trabajo-en-altura.pdf',
     },
 };
 

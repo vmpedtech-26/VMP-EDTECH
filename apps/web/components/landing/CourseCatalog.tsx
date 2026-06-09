@@ -301,7 +301,7 @@ export default function CourseCatalog() {
                                         {/* VMP badge */}
                                         <div className="absolute top-4 left-4">
                                             <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r ${course.accentColor} text-white shadow`}>
-                                                Certificación IAPG / VMP
+                                                Certificación Oficial VMP
                                             </span>
                                         </div>
                                     </div>
@@ -501,7 +501,7 @@ export default function CourseCatalog() {
                                         <div className="bg-teal-950/10 border border-teal-500/20 rounded-2xl p-4 mb-2 flex gap-3">
                                             <AlertCircle className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
                                             <p className="text-xs text-slate-300 leading-relaxed">
-                                                Nuestros programas siguen los lineamientos de acreditación de la Escuela de Conducción Defensiva del IAPG para habilitaciones en yacimiento.
+                                                Nuestros programas siguen los lineamientos y normativas nacionales de conducción defensiva para habilitaciones en yacimiento.
                                             </p>
                                         </div>
 
