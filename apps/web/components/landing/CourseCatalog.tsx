@@ -66,7 +66,7 @@ export default function CourseCatalog() {
     const [direction, setDirection] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(null);
-    const [activeTab, setActiveTab] = useState<'resumen' | 'temario' | 'evaluaciones' | 'requisitos'>('resumen');
+    const [activeTab, setActiveTab] = useState<'resumen' | 'temario' | 'evaluaciones'>('resumen');
 
     const goTo = useCallback((index: number, dir?: number) => {
         setDirection(dir ?? (index > active ? 1 : -1));
@@ -401,8 +401,7 @@ export default function CourseCatalog() {
                                 {([
                                     { id: 'resumen', label: 'Resumen' },
                                     { id: 'temario', label: 'Programa' },
-                                    { id: 'evaluaciones', label: 'Evaluaciones' },
-                                    { id: 'requisitos', label: 'Requisitos' }
+                                    { id: 'evaluaciones', label: 'Evaluaciones' }
                                 ] as const).map((tab) => (
                                     <button
                                         key={tab.id}
@@ -547,40 +546,7 @@ export default function CourseCatalog() {
                                     </motion.div>
                                 )}
 
-                                {/* Tab: Requisitos */}
-                                {activeTab === 'requisitos' && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="space-y-6"
-                                    >
-                                        <div>
-                                            <h4 className="text-sm font-bold text-teal-400 uppercase tracking-wider mb-3">Requisitos de Ingreso</h4>
-                                            <ul className="space-y-3 bg-white/5 border border-white/5 rounded-2xl p-5">
-                                                {selectedCourse.requirements.map((req, i) => (
-                                                    <li key={i} className="flex items-start gap-3">
-                                                        <div className="h-2 w-2 rounded-full bg-teal-400 mt-2 shrink-0" />
-                                                        <span className="text-slate-300 text-sm sm:text-base">{req}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
 
-                                        <div className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/20 rounded-2xl p-5">
-                                            <h4 className="text-sm font-bold text-white mb-2">Certificado e Integración QR</h4>
-                                            <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                                                {selectedCourse.certification}
-                                            </p>
-                                            <div className="flex items-center gap-3 bg-slate-950/30 rounded-xl p-3 border border-white/5">
-                                                <Award className="h-6 w-6 text-teal-400 shrink-0" />
-                                                <div>
-                                                    <p className="font-bold text-white text-xs">Vigencia Certificación: {selectedCourse.validity}</p>
-                                                    <p className="text-slate-400 text-[10px]">Verificación instantánea corporativa mediante código QR oficial</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
                             </div>
 
                             {/* Drawer Footer */}
