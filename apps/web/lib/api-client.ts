@@ -1,11 +1,19 @@
 export const API_URL = (() => {
-    // 1. Prioritize environment variable if defined and not pointing to localhost
+    // 1. Check if we are on the production domain (browser side) first to allow immediate routing
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
+            return 'https://vmp-edtech-production.up.railway.app';
+        }
+    }
+
+    // 2. Prioritize environment variable if defined and not pointing to localhost
     const envUrl = process.env.NEXT_PUBLIC_API_URL;
     if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
         return envUrl;
     }
 
-    // 2. Default fallback or local development url
+    // 3. Default fallback or local development url
     let url = envUrl || 'http://localhost:8000';
     
     // 3. Browser-side adjustments for dynamic environments if envUrl is local or not defined
