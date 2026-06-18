@@ -16,7 +16,7 @@ interface CursoFormProps {
 }
 
 export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoFormProps) {
-    const [formData, setFormData] = useState<Partial<Curso>>(initialData || {
+    const [formData, setFormData] = useState<Partial<Curso>>({
         nombre: '',
         descripcion: '',
         codigo: '',
@@ -25,6 +25,9 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         empresaId: '',
         alumnosEsperados: 0,
         activo: true,
+        meetingLink: '',
+        meetingPlatform: '',
+        ...initialData
     });
 
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -215,6 +218,39 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 required
                                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 value={formData.vigenciaMeses}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Configuración de Reunión Virtual */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                Plataforma de Reunión
+                            </label>
+                            <select
+                                name="meetingPlatform"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none font-medium text-slate-750"
+                                value={formData.meetingPlatform || ''}
+                                onChange={handleChange}
+                            >
+                                <option value="">Ninguna / Presencial</option>
+                                <option value="zoom">Zoom Meeting</option>
+                                <option value="meet">Google Meet</option>
+                                <option value="teams">Microsoft Teams</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                Enlace de la Reunión (URL)
+                            </label>
+                            <input
+                                type="url"
+                                name="meetingLink"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                placeholder="https://zoom.us/j/... o https://meet.google.com/..."
+                                value={formData.meetingLink || ''}
                                 onChange={handleChange}
                             />
                         </div>

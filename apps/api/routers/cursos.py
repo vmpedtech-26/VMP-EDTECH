@@ -62,6 +62,8 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "vigenciaMeses": data.vigenciaMeses,
             "empresaId": data.empresaId,
             "alumnosEsperados": data.alumnosEsperados,
+            "meetingLink": data.meetingLink,
+            "meetingPlatform": data.meetingPlatform,
             "activo": True
         }
     )
@@ -117,6 +119,8 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     if data.empresaId is not None: update_data["empresaId"] = data.empresaId
     if data.alumnosEsperados is not None: update_data["alumnosEsperados"] = data.alumnosEsperados
     if data.activo is not None: update_data["activo"] = data.activo
+    if data.meetingLink is not None: update_data["meetingLink"] = data.meetingLink
+    if data.meetingPlatform is not None: update_data["meetingPlatform"] = data.meetingPlatform
     
     curso = await prisma.curso.update(
         where={"id": id},

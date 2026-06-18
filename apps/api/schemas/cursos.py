@@ -15,6 +15,8 @@ class CursoListItem(BaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
     activo: bool
+    meetingLink: Optional[str] = None
+    meetingPlatform: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -27,6 +29,8 @@ class CreateCursoRequest(SanitizedBaseModel):
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
+    meetingLink: Optional[str] = None
+    meetingPlatform: Optional[str] = None
 
 class UpdateCursoRequest(SanitizedBaseModel):
     nombre: Optional[str] = None
@@ -37,6 +41,8 @@ class UpdateCursoRequest(SanitizedBaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: Optional[int] = None
     activo: Optional[bool] = None
+    meetingLink: Optional[str] = None
+    meetingPlatform: Optional[str] = None
 
 class ModuloSummary(BaseModel):
     """Resumen de módulo para detalle de curso"""
@@ -61,6 +67,8 @@ class CursoDetail(BaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
     activo: bool
+    meetingLink: Optional[str] = None
+    meetingPlatform: Optional[str] = None
     modulos: List[ModuloSummary]
     
     class Config:

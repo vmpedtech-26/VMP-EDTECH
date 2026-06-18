@@ -156,8 +156,10 @@ export default function EmpresasPage() {
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </div>
-                                <Button variant="outline" size="sm" className="rounded-xl border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-bold">
-                                    Administrar
+                                <Button variant="outline" size="sm" className="rounded-xl border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-bold" asChild>
+                                    <Link href={`/dashboard/super/empresas/${empresa.id}`}>
+                                        Administrar
+                                    </Link>
                                 </Button>
                             </div>
                         </div>

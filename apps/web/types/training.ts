@@ -19,6 +19,8 @@ export interface Curso {
     empresaId?: string;
     alumnosEsperados: number;
     activo: boolean;
+    meetingLink?: string;
+    meetingPlatform?: string;
 }
 
 export interface ModuloSummary {

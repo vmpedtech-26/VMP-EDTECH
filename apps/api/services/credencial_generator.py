@@ -47,7 +47,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # Detect if it's the winter driving course to apply the organic mountain theme
     curso_nombre = (credencial_data.get('curso_nombre') or '').lower()
-    is_invernal = 'invernal' in curso_nombre or 'invierno' in curso_nombre
+    is_invernal = 'invernal' in curso_nombre or 'invierno' in curso_nombre or 'preventiva' in curso_nombre
     
     # Colors (Maintain classic VMP-EDTECH branding colors)
     DARK_BLUE = (10/255, 17/255, 32/255)      # Navy `#0A1120`
@@ -118,7 +118,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     c.setFont("Helvetica-Bold", 7.5)
     c.setFillColorRGB(200/255, 210/255, 220/255)
-    c.drawString(64, 336, "VIALIDAD Y MANEJO PROFESIONAL")
+    # c.drawString(64, 336, "VIALIDAD Y MANEJO PROFESIONAL")
     
     # Right Side Header Text
     c.setFont("Helvetica-Bold", 9.5)
@@ -162,6 +162,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
             img_cropped = img.crop((left, top, right, bottom))
             
             img_buffer = BytesIO()
+            if img_cropped.mode in ('RGBA', 'LA') or (img_cropped.mode == 'P' and 'transparency' in img_cropped.info):
+                img_cropped = img_cropped.convert('RGB')
             img_cropped.save(img_buffer, format="JPEG", quality=95)
             img_buffer.seek(0)
             
@@ -402,7 +404,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     c.setFont("Helvetica-Bold", 7.5)
     c.setFillColorRGB(200/255, 210/255, 220/255)
-    c.drawString(64, 336, "CAPACITACIÓN VIAL PROFESIONAL")
+    # c.drawString(64, 336, "CAPACITACIÓN VIAL PROFESIONAL")
     
     c.setFont("Helvetica-Bold", 9.5)
     c.setFillColorRGB(*TEAL)

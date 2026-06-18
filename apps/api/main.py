@@ -129,7 +129,7 @@ async def shutdown():
 
 
 
-from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit, compliance
+from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit, compliance, obd2
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -153,6 +153,7 @@ app.include_router(automation.router, prefix="/api/automation", tags=["automatio
 app.include_router(audit.router, prefix="/api/admin", tags=["admin"])
 app.include_router(compliance.router, prefix="/api/compliance", tags=["compliance"])
 app.include_router(contact.router)
+app.include_router(obd2.router, prefix="/api/v1", tags=["obd2"])
 
 
 # Serve static files with caching
