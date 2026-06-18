@@ -24,6 +24,7 @@ model User {
   createdAt                                 DateTime            @default(now()) @map("created_at")
   updatedAt                                 DateTime            @updatedAt @map("updated_at")
   meetLink                                  String?             @map("meet_link")
+  puesto                                    String?             @map("puesto")
   asistencias_clase                         asistencias_clase[]
   credenciales                              Credencial[]
   evidencias_evidencias_alumno_idTousers    evidencias[]        @relation("evidencias_alumno_idTousers")
@@ -47,6 +48,11 @@ model Company {
   telefono  String?
   email     String
   activa    Boolean  @default(true)
+  ssoActive    Boolean  @default(false) @map("sso_active")
+  ssoDomain    String?  @unique @map("sso_domain")
+  ssoProvider  String?  @map("sso_provider") // "AZURE_AD", "OKTA", "GOOGLE"
+  ssoClientId  String?  @map("sso_client_id")
+  ssoTenantId  String?  @map("sso_tenant_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   cursos    Curso[]
@@ -124,6 +130,7 @@ model Inscripcion {
   updatedAt  DateTime          @updatedAt @map("updated_at")
   alumno     User              @relation(fields: [alumnoId], references: [id])
   curso      Curso             @relation(fields: [cursoId], references: [id])
+  obd2Sessions Obd2Session[]
 
   @@unique([alumnoId, cursoId])
   @@index([estado])
@@ -420,4 +427,56 @@ enum UserRole {
   SUPER_ADMIN
   INSTRUCTOR
   ALUMNO
+}
+
+model Obd2Session {
+  id            String      @id @default(uuid())
+  inscripcionId String      @map("inscripcion_id")
+  fecha         DateTime    @default(now())
+  fuerzaFrenado Float?      @map("fuerza_frenado")
+  aceleracion   Float?
+  curvasScore   Float?      @map("curvas_score")
+  esquivoAlce   Boolean?    @map("esquivo_alce")
+  rawData       String?     @map("raw_data")
+  inscripcion   Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
+
+  @@index([inscripcionId])
+  @@map("obd2_sessions")
+}
+
+model ComplianceReport {
+  id                 String   @id @default(uuid())
+  codigoSeguimiento  String   @unique @map("codigo_seguimiento")
+  titulo             String
+  descripcion        String
+  categoria          String
+  relacionEmpresa    String
+  esAnonima          Boolean  @default(true) @map("es_anonima")
+  nombreDenunciante  String?  @map("nombre_denunciante")
+  emailDenunciante   String?  @map("email_denunciante")
+  telefono           String?
+  estado             String   @default("NUEVA")
+  comentariosOficial String?  @map("comentarios_oficial")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([codigoSeguimiento])
+  @@index([estado])
+  @@map("compliance_reports")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  userEmail String?  @map("user_email")
+  action    String
+  details   String?
+  ipAddress String?  @map("ip_address")
+  requestId String?  @map("request_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
