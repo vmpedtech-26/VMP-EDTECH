@@ -72,39 +72,3 @@ async def detailed_health_check():
     
     return health_status
 
-
-@router.get("/health/db-inspect")
-async def db_inspect():
-    """Temporary database catalog inspection endpoint"""
-    try:
-        tables = await prisma.query_raw("""
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public'
-            ORDER BY table_name;
-        """)
-        
-        company_columns = await prisma.query_raw("""
-            SELECT column_name, data_type 
-            FROM information_schema.columns 
-            WHERE table_name = 'companies';
-        """)
-        
-        user_columns = await prisma.query_raw("""
-            SELECT column_name, data_type 
-            FROM information_schema.columns 
-            WHERE table_name = 'users';
-        """)
-        
-        return {
-            "status": "success",
-            "tables": [t["table_name"] for t in tables] if tables else [],
-            "company_columns": {c["column_name"]: c["data_type"] for c in company_columns} if company_columns else {},
-            "user_columns": {c["column_name"]: c["data_type"] for c in user_columns} if user_columns else {}
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e)
-        }
-

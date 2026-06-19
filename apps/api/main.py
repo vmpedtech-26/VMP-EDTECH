@@ -187,3 +187,40 @@ async def root():
 async def health_check():
     return {"status": "ok"}
 
+
+@app.get("/health/db-inspect")
+async def db_inspect():
+    from core.database import prisma
+    try:
+        tables = await prisma.query_raw("""
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+            ORDER BY table_name;
+        """)
+        
+        company_columns = await prisma.query_raw("""
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'companies';
+        """)
+        
+        user_columns = await prisma.query_raw("""
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'users';
+        """)
+        
+        return {
+            "status": "success",
+            "tables": [t["table_name"] for t in tables] if tables else [],
+            "company_columns": {c["column_name"]: c["data_type"] for c in company_columns} if company_columns else {},
+            "user_columns": {c["column_name"]: c["data_type"] for c in user_columns} if user_columns else {}
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
