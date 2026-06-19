@@ -189,10 +189,32 @@ async def health_check():
 
 
 @app.get("/health/db-inspect")
-async def db_inspect():
+async def db_inspect(migrate: bool = False):
     from core.database import prisma, ensure_db_connected
     try:
         await ensure_db_connected()
+        
+        migration_status = "Not requested"
+        if migrate:
+            print("⚙️ Running manual migrations...")
+            await prisma.execute_raw("""
+                CREATE TABLE IF NOT EXISTS obd2_sessions (
+                    id TEXT PRIMARY KEY,
+                    inscripcion_id TEXT NOT NULL REFERENCES inscripciones(id) ON DELETE CASCADE,
+                    fecha TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    fuerza_frenado DOUBLE PRECISION,
+                    aceleracion DOUBLE PRECISION,
+                    curvas_score DOUBLE PRECISION,
+                    esquivo_alce BOOLEAN,
+                    raw_data TEXT
+                );
+            """)
+            await prisma.execute_raw("""
+                CREATE INDEX IF NOT EXISTS obd2_sessions_inscripcion_id_idx ON obd2_sessions(inscripcion_id);
+            """)
+            migration_status = "Successfully executed"
+            print("✅ Manual migrations completed!")
+
         tables = await prisma.query_raw("""
             SELECT table_name 
             FROM information_schema.tables 
@@ -214,6 +236,7 @@ async def db_inspect():
         
         return {
             "status": "success",
+            "migration": migration_status,
             "tables": [t["table_name"] for t in tables] if tables else [],
             "company_columns": {c["column_name"]: c["data_type"] for c in company_columns} if company_columns else {},
             "user_columns": {c["column_name"]: c["data_type"] for c in user_columns} if user_columns else {}
