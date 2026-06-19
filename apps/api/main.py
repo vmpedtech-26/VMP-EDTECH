@@ -190,8 +190,9 @@ async def health_check():
 
 @app.get("/health/db-inspect")
 async def db_inspect():
-    from core.database import prisma
+    from core.database import prisma, ensure_db_connected
     try:
+        await ensure_db_connected()
         tables = await prisma.query_raw("""
             SELECT table_name 
             FROM information_schema.tables 
