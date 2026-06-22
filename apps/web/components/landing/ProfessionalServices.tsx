@@ -174,7 +174,7 @@ export function ProfessionalServices() {
 
                     {/* Footer Button action block */}
                     <Link 
-                      href="#contacto" 
+                      href="/#contacto" 
                       className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center group/btn text-xs font-bold text-slate-500 hover:text-primary transition-colors duration-300"
                     >
                       <span>MÁS INFORMACIÓN</span>

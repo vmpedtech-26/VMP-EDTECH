@@ -21,7 +21,7 @@ export default function FinalCTA() {
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link
-                        href="/contacto"
+                        href="/#contacto"
                         className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-[#0A192F] text-[#0A192F] rounded-lg font-bold text-lg hover:bg-[#0A192F] hover:text-white transition-all"
                     >
                         Hablar con Asesor
