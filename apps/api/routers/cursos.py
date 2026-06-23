@@ -20,25 +20,50 @@ router = APIRouter()
 @router.get("", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """
-    Listar todos los cursos activos
-    Si el usuario es ALUMNO, filtra por su empresa
-    Si el usuario es SUPER_ADMIN o INSTRUCTOR, ve todos los disponibles para su rol
+    Listar todos los cursos activos.
+    - ALUMNO: filtra por su empresa
+    - INSTRUCTOR: filtra solo por sus cursos asignados (instructorId)
+    - SUPER_ADMIN: ve todos
     """
     
     where_clause = {}
     if current_user.rol != "SUPER_ADMIN":
         where_clause["activo"] = True
     
+    # Mejora #4: INSTRUCTOR solo ve sus cursos asignados
+    if current_user.rol == "INSTRUCTOR":
+        where_clause["instructorId"] = current_user.id
+    
     # Si es alumno, filtrar por empresa
-    if current_user.rol == "ALUMNO" and current_user.empresaId:
+    elif current_user.rol == "ALUMNO" and current_user.empresaId:
         where_clause["empresaId"] = current_user.empresaId
     
     cursos = await prisma.curso.find_many(
         where=where_clause,
+        include={"instructor": True},
         order={"nombre": "asc"}
     )
     
-    return cursos
+    result = []
+    for c in cursos:
+        item = CursoListItem(
+            id=c.id,
+            nombre=c.nombre,
+            descripcion=c.descripcion,
+            codigo=c.codigo,
+            duracionHoras=c.duracionHoras,
+            vigenciaMeses=c.vigenciaMeses,
+            empresaId=c.empresaId,
+            alumnosEsperados=c.alumnosEsperados,
+            modalidad=c.modalidad,
+            instructorId=c.instructorId,
+            instructorNombre=f"{c.instructor.nombre} {c.instructor.apellido}" if c.instructor else None,
+            activo=c.activo,
+            meetingLink=c.meetingLink,
+            meetingPlatform=c.meetingPlatform,
+        )
+        result.append(item)
+    return result
 
 
 @router.post("", response_model=CursoListItem)
@@ -53,6 +78,12 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
     if existing:
         raise HTTPException(status_code=400, detail="El código de curso ya existe")
     
+    # Validar instructor si se provee
+    if data.instructorId:
+        instructor = await prisma.user.find_unique(where={"id": data.instructorId})
+        if not instructor or instructor.rol != "INSTRUCTOR":
+            raise HTTPException(status_code=400, detail="El instructor especificado no existe o no tiene el rol correcto")
+    
     curso = await prisma.curso.create(
         data={
             "nombre": data.nombre,
@@ -62,13 +93,31 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "vigenciaMeses": data.vigenciaMeses,
             "empresaId": data.empresaId,
             "alumnosEsperados": data.alumnosEsperados,
+            "modalidad": data.modalidad or "ONLINE",
+            "instructorId": data.instructorId,
             "meetingLink": data.meetingLink,
             "meetingPlatform": data.meetingPlatform,
             "activo": True
-        }
+        },
+        include={"instructor": True}
     )
     
-    return curso
+    return CursoListItem(
+        id=curso.id,
+        nombre=curso.nombre,
+        descripcion=curso.descripcion,
+        codigo=curso.codigo,
+        duracionHoras=curso.duracionHoras,
+        vigenciaMeses=curso.vigenciaMeses,
+        empresaId=curso.empresaId,
+        alumnosEsperados=curso.alumnosEsperados,
+        modalidad=curso.modalidad,
+        instructorId=curso.instructorId,
+        instructorNombre=f"{curso.instructor.nombre} {curso.instructor.apellido}" if curso.instructor else None,
+        activo=curso.activo,
+        meetingLink=curso.meetingLink,
+        meetingPlatform=curso.meetingPlatform,
+    )
 
 
 @router.get("/{id}", response_model=CursoDetail)
@@ -77,7 +126,7 @@ async def obtener_curso(id: str, current_user=Depends(get_current_user)):
     
     curso = await prisma.curso.find_unique(
         where={"id": id},
-        include={"modulos": True}
+        include={"modulos": True, "instructor": True}
     )
     
     if not curso:
@@ -91,10 +140,30 @@ async def obtener_curso(id: str, current_user=Depends(get_current_user)):
                 detail="No tienes acceso a este curso"
             )
     
+    # INSTRUCTOR solo puede ver cursos que le pertenecen
+    if current_user.rol == "INSTRUCTOR" and curso.instructorId != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a este curso")
+    
     # Ordenar módulos por orden
     curso.modulos.sort(key=lambda m: m.orden)
     
-    return curso
+    return CursoDetail(
+        id=curso.id,
+        nombre=curso.nombre,
+        descripcion=curso.descripcion,
+        codigo=curso.codigo,
+        duracionHoras=curso.duracionHoras,
+        vigenciaMeses=curso.vigenciaMeses,
+        empresaId=curso.empresaId,
+        alumnosEsperados=curso.alumnosEsperados,
+        activo=curso.activo,
+        modalidad=curso.modalidad,
+        instructorId=curso.instructorId,
+        instructorNombre=f"{curso.instructor.nombre} {curso.instructor.apellido}" if curso.instructor else None,
+        meetingLink=curso.meetingLink,
+        meetingPlatform=curso.meetingPlatform,
+        modulos=curso.modulos,
+    )
 
 
 @router.put("/{id}", response_model=CursoListItem)

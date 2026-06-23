@@ -18,7 +18,10 @@ import {
     Sliders,
     CircleDollarSign,
     Plus,
-    Shield
+    Shield,
+    CalendarDays,
+    GraduationCap,
+    ClipboardList
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -53,6 +56,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Users, label: 'Empresas', href: '/dashboard/super/empresas' },
         { icon: Users, label: 'Alumnos', href: '/dashboard/super/alumnos' },
         { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
+        { icon: CalendarDays, label: 'Sesiones', href: '/dashboard/super/sesiones' },
         { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
         { icon: Sliders, label: 'Centro de Control', href: '/dashboard/super/control' },
         {
@@ -95,6 +99,8 @@ const menuItems: Record<string, MenuItem[]> = {
     ],
     INSTRUCTOR: [
         { icon: LayoutDashboard, label: 'Inicio', href: '/dashboard/instructor' },
+        { icon: GraduationCap, label: 'Mis Cursos', href: '/dashboard/instructor/cursos' },
+        { icon: CalendarDays, label: 'Sesiones Programadas', href: '/dashboard/instructor/sesiones' },
         {
             icon: BookOpen,
             label: 'Capacitaciones',
@@ -102,6 +108,7 @@ const menuItems: Record<string, MenuItem[]> = {
                 { icon: ClipboardCheck, label: 'Evaluaciones', href: '/dashboard/instructor/evaluaciones' },
                 { icon: Users, label: 'Participantes', href: '/dashboard/instructor/participantes' },
                 { icon: Award, label: 'Credenciales', href: '/dashboard/instructor/credenciales' },
+                { icon: ClipboardList, label: 'Tareas Prácticas', href: '/dashboard/instructor/tareas' },
                 { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },
             ]
         },

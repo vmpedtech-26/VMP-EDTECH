@@ -10,30 +10,34 @@ datasource db {
 }
 
 model User {
-  id                                        String              @id @default(uuid())
-  email                                     String              @unique
-  passwordHash                              String              @map("password_hash")
+  id                                        String               @id @default(uuid())
+  email                                     String               @unique
+  passwordHash                              String               @map("password_hash")
   nombre                                    String
   apellido                                  String
-  dni                                       String              @unique
+  dni                                       String               @unique
   telefono                                  String?
-  rol                                       UserRole            @default(ALUMNO)
-  empresaId                                 String?             @map("empresa_id")
+  rol                                       UserRole             @default(ALUMNO)
+  empresaId                                 String?              @map("empresa_id")
   avatar                                    String?
-  activo                                    Boolean             @default(true)
-  createdAt                                 DateTime            @default(now()) @map("created_at")
-  updatedAt                                 DateTime            @updatedAt @map("updated_at")
-  meetLink                                  String?             @map("meet_link")
-  puesto                                    String?             @map("puesto")
+  activo                                    Boolean              @default(true)
+  createdAt                                 DateTime             @default(now()) @map("created_at")
+  updatedAt                                 DateTime             @updatedAt @map("updated_at")
+  meetLink                                  String?              @map("meet_link")
+  puesto                                    String?              @map("puesto")
   asistencias_clase                         asistencias_clase[]
   credenciales                              Credencial[]
-  evidencias_evidencias_alumno_idTousers    evidencias[]        @relation("evidencias_alumno_idTousers")
-  evidencias_evidencias_evaluador_idTousers evidencias[]        @relation("evidencias_evaluador_idTousers")
+  evidencias_evidencias_alumno_idTousers    evidencias[]         @relation("evidencias_alumno_idTousers")
+  evidencias_evidencias_evaluador_idTousers evidencias[]         @relation("evidencias_evaluador_idTousers")
   examenes                                  Examen[]
-  fotoCredencial                            FotoCredencial?     @relation("AlumnoFoto")
-  fotosEvaluadas                            FotoCredencial[]    @relation("EvaluadorFoto")
+  fotoCredencial                            FotoCredencial?      @relation("AlumnoFoto")
+  fotosEvaluadas                            FotoCredencial[]     @relation("EvaluadorFoto")
   inscripciones                             Inscripcion[]
-  empresa                                   Company?            @relation(fields: [empresaId], references: [id])
+  empresa                                   Company?             @relation(fields: [empresaId], references: [id])
+  // Mejora #4: cursos asignados como instructor
+  cursosComoInstructor                      Curso[]              @relation("InstructorCursos")
+  // Mejora #5: asistencias a sesiones de capacitación
+  asistenciasSesion                         AsistenciaSesion[]
 
   @@index([rol])
   @@index([empresaId])
@@ -63,24 +67,35 @@ model Company {
 }
 
 model Curso {
-  id            String        @id @default(uuid())
-  nombre        String
-  descripcion   String
-  codigo        String        @unique
-  duracionHoras Int           @map("duracion_horas")
-  vigenciaMeses Int?          @map("vigencia_meses")
-  empresaId     String?       @map("empresa_id")
-  activo        Boolean       @default(true)
-  meetingLink     String?       @map("meeting_link")
-  meetingPlatform String?       @map("meeting_platform") // "zoom", "teams", "meet"
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  credenciales  Credencial[]
-  empresa       Company?      @relation(fields: [empresaId], references: [id])
-  examenes      Examen[]
-  inscripciones Inscripcion[]
-  modulos       Modulo[]
+  id               String              @id @default(uuid())
+  nombre           String
+  descripcion      String
+  codigo           String              @unique
+  duracionHoras    Int                 @map("duracion_horas")
+  vigenciaMeses    Int?                @map("vigencia_meses")
+  empresaId        String?             @map("empresa_id")
+  activo           Boolean             @default(true)
+  // Fix Bug #1: campo faltante en schema
+  alumnosEsperados Int                 @default(0) @map("alumnos_esperados")
+  // Mejora #3: modalidad de capacitación
+  modalidad        ModalidadCurso      @default(ONLINE)
+  // Mejora #4: instructor asignado al curso
+  instructorId     String?             @map("instructor_id")
+  meetingLink      String?             @map("meeting_link")
+  meetingPlatform  String?             @map("meeting_platform") // "zoom", "teams", "meet"
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+  credenciales     Credencial[]
+  empresa          Company?            @relation(fields: [empresaId], references: [id])
+  instructor       User?               @relation("InstructorCursos", fields: [instructorId], references: [id])
+  examenes         Examen[]
+  inscripciones    Inscripcion[]
+  modulos          Modulo[]
+  // Mejora #5: sesiones de capacitación programadas
+  sesiones         SesionCapacitacion[]
 
+  @@index([instructorId])
+  @@index([modalidad])
   @@map("cursos")
 }
 
@@ -101,6 +116,8 @@ model Modulo {
   curso             Curso               @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   preguntas         Pregunta[]
   tareas_practicas  tareas_practicas[]
+  // Fix Mejora #6: relación formal con Examen
+  examenes          Examen[]
 
   @@map("modulos")
 }
@@ -144,17 +161,19 @@ model Examen {
   id           String   @id @default(uuid())
   alumnoId     String   @map("alumno_id")
   cursoId      String   @map("curso_id")
+  // Fix Mejora #6: relación formal a Modulo (era String suelto)
+  moduloId     String?  @map("modulo_id")
   respuestas   Json
   calificacion Float?
   aprobado     Boolean?
   realizadoAt  DateTime @default(now()) @map("realizado_at")
-  modulo_id    String?
   alumno       User     @relation(fields: [alumnoId], references: [id])
   curso        Curso    @relation(fields: [cursoId], references: [id])
+  modulo       Modulo?  @relation(fields: [moduloId], references: [id])
 
   @@index([alumnoId])
   @@index([cursoId])
-  @@index([modulo_id])
+  @@index([moduloId])
   @@map("examenes")
 }
 
@@ -382,16 +401,8 @@ model evidencias {
   @@index([tarea_id])
 }
 
-model modulos_completados {
-  id         String   @id
-  alumno_id  String
-  modulo_id  String
-  curso_id   String
-  created_at DateTime @default(now())
-
-  @@unique([alumno_id, modulo_id])
-  @@index([alumno_id, curso_id])
-}
+// Fix Bug #2: modelo modulos_completados eliminado (era huérfano).
+// La lógica de progreso usa inscripciones.modulosCompletados (JSON) de forma centralizada.
 
 model tareas_practicas {
   id            String       @id
@@ -403,6 +414,48 @@ model tareas_practicas {
   evidencias    evidencias[]
   modulos       Modulo       @relation(fields: [modulo_id], references: [id], onDelete: Cascade)
 }
+
+// ============ MEJORA #5: Sesiones de Capacitación ============
+
+model SesionCapacitacion {
+  id          String             @id @default(uuid())
+  cursoId     String             @map("curso_id")
+  titulo      String
+  descripcion String?
+  fechaInicio DateTime           @map("fecha_inicio")
+  fechaFin    DateTime           @map("fecha_fin")
+  lugar       String?
+  plataforma  String?            // zoom, teams, meet, presencial
+  meetLink    String?            @map("meet_link")
+  estado      EstadoSesion       @default(PROGRAMADA)
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  curso       Curso              @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  asistencias AsistenciaSesion[]
+
+  @@index([cursoId])
+  @@index([fechaInicio])
+  @@index([estado])
+  @@map("sesiones_capacitacion")
+}
+
+model AsistenciaSesion {
+  id        String             @id @default(uuid())
+  sesionId  String             @map("sesion_id")
+  alumnoId  String             @map("alumno_id")
+  presente  Boolean            @default(false)
+  checkIn   DateTime?          @map("check_in")
+  notas     String?
+  createdAt DateTime           @default(now()) @map("created_at")
+  sesion    SesionCapacitacion @relation(fields: [sesionId], references: [id], onDelete: Cascade)
+  alumno    User               @relation(fields: [alumnoId], references: [id])
+
+  @@unique([sesionId, alumnoId])
+  @@index([alumnoId])
+  @@map("asistencias_sesion")
+}
+
+// ============ ENUMS ============
 
 enum EstadoEvidencia {
   PENDIENTE
@@ -424,10 +477,26 @@ enum TipoModulo {
   PRACTICA
 }
 
+// Mejora #8: SUPERVISOR y CONTADOR ahora existen formalmente en la BD
 enum UserRole {
   SUPER_ADMIN
   INSTRUCTOR
   ALUMNO
+  SUPERVISOR
+  CONTADOR
+}
+
+enum ModalidadCurso {
+  ONLINE
+  IN_COMPANY
+  HYBRID
+}
+
+enum EstadoSesion {
+  PROGRAMADA
+  EN_CURSO
+  FINALIZADA
+  CANCELADA
 }
 
 model Obd2Session {

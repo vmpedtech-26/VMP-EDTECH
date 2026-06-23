@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Loader2, Save, ArrowLeft, Building2, Users } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Building2, Users, GraduationCap, Monitor } from 'lucide-react';
 import { Curso } from '@/types/training';
 import { empresasApi, Empresa } from '@/lib/api/empresas';
+import { api } from '@/lib/api-client';
 import Link from 'next/link';
 
 interface CursoFormProps {
@@ -25,12 +26,15 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         empresaId: '',
         alumnosEsperados: 0,
         activo: true,
+        modalidad: 'ONLINE',
+        instructorId: '',
         meetingLink: '',
         meetingPlatform: '',
         ...initialData
     });
 
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
+    const [instructores, setInstructores] = useState<{ id: string; nombre: string; apellido: string }[]>([]);
     const [isLoadingEmpresas, setIsLoadingEmpresas] = useState(false);
 
     useEffect(() => {
@@ -45,7 +49,16 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                 setIsLoadingEmpresas(false);
             }
         };
+        const fetchInstructores = async () => {
+            try {
+                const res = await api.get('/users?rol=INSTRUCTOR');
+                setInstructores(Array.isArray(res) ? res : []);
+            } catch (e) {
+                console.error('Error fetching instructores:', e);
+            }
+        };
         fetchEmpresas();
+        fetchInstructores();
     }, []);
 
     const generateCodeFromName = (name: string): string => {
@@ -119,6 +132,45 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                             value={formData.nombre}
                             onChange={handleChange}
                         />
+                    </div>
+
+                    {/* Modalidad + Instructor */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                                <Monitor className="h-4 w-4 text-slate-400" />
+                                Modalidad
+                            </label>
+                            <select
+                                name="modalidad"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
+                                value={(formData as any).modalidad || 'ONLINE'}
+                                onChange={handleChange}
+                            >
+                                <option value="ONLINE">🌐 Online</option>
+                                <option value="IN_COMPANY">🏢 In Company (Presencial)</option>
+                                <option value="HYBRID">⚡ Híbrido</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                                <GraduationCap className="h-4 w-4 text-slate-400" />
+                                Instructor Asignado
+                            </label>
+                            <select
+                                name="instructorId"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
+                                value={(formData as any).instructorId || ''}
+                                onChange={handleChange}
+                            >
+                                <option value="">Sin instructor asignado</option>
+                                {instructores.map(inst => (
+                                    <option key={inst.id} value={inst.id}>
+                                        {inst.nombre} {inst.apellido}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     {/* Empresa y Alumnos */}
