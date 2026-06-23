@@ -299,7 +299,8 @@ async def obtener_inscripciones_por_alumno(
 ):
     """Obtener todas las inscripciones asociadas a un alumno"""
     inscripciones = await prisma.inscripcion.find_many(
-        where={"alumnoId": alumno_id}
+        where={"alumnoId": alumno_id},
+        include={"curso": True}
     )
     return [i.model_dump() for i in inscripciones]
 

@@ -130,6 +130,7 @@ model Inscripcion {
   updatedAt  DateTime          @updatedAt @map("updated_at")
   alumno     User              @relation(fields: [alumnoId], references: [id])
   curso      Curso             @relation(fields: [cursoId], references: [id])
+  modulosCompletados String    @default("[]") @map("modulos_completados")
   obd2Sessions Obd2Session[]
 
   @@unique([alumnoId, cursoId])
