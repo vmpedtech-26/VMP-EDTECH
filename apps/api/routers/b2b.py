@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel
 from auth.dependencies import get_current_user
 from core.database import prisma
+from services.asistencia_service import sincronizar_asistencia_alumno
 
 router = APIRouter()
 
@@ -190,6 +191,8 @@ async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_
                     "estado": "NO_INICIADO"
                 }
             )
+            # Sincronizar asistencia en sesiones programadas
+            await sincronizar_asistencia_alumno(al.id, curso.id)
             asignados += 1
         else:
             ya_existian += 1

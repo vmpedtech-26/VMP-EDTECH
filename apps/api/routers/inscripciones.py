@@ -17,6 +17,7 @@ from services.progreso_calculator import (
     obtener_proxima_actividad
 )
 from services.credential_service import generate_credential_for_student
+from services.asistencia_service import sincronizar_asistencia_alumno
 
 router = APIRouter()
 
@@ -120,6 +121,9 @@ async def inscribirse_en_curso(cursoId: str, current_user=Depends(get_current_us
             "estado": "NO_INICIADO"
         }
     )
+    
+    # Sincronizar asistencia en sesiones programadas
+    await sincronizar_asistencia_alumno(current_user.id, cursoId)
     
     insc_dict = inscripcion.model_dump()
     insc_dict["modulosCompletados"] = []
@@ -289,6 +293,10 @@ async def crear_inscripcion_manual(
             "estado": "NO_INICIADO"
         }
     )
+    
+    # Sincronizar asistencia en sesiones programadas
+    await sincronizar_asistencia_alumno(data.alumnoId, data.cursoId)
+    
     return inscripcion.model_dump()
 
 
