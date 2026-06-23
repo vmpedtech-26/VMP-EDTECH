@@ -95,3 +95,24 @@ def rate_limit_public():
 def rate_limit_api():
     """Rate limit general para API: 60 requests por minuto"""
     return limiter.limit("60/minute")
+
+
+async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    """
+    Handler personalizado para capturar bloqueos de Rate Limit, 
+    registrarlos en la auditoría de seguridad y responder al cliente.
+    """
+    from services.security_service import security_service
+    ip = safe_get_remote_address(request)
+    request_id = getattr(request.state, "request_id", None)
+    endpoint = request.url.path
+    
+    # Registrar evento asíncronamente
+    await security_service.log_rate_limit_exceeded(
+        ip_address=ip,
+        endpoint=endpoint,
+        request_id=request_id
+    )
+    
+    return _rate_limit_exceeded_handler(request, exc)
+

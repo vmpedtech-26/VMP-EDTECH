@@ -1,2 +1,5 @@
 [phases.setup]
 nixPkgs = ["...", "nodejs", "openssl"]
+
+[phases.build]
+cmds = ["...", "python -m prisma generate"]

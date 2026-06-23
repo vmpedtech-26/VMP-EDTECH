@@ -7,7 +7,7 @@ from middleware.security import (
     SecurityHeadersMiddleware,
     RequestIDMiddleware,
     limiter,
-    _rate_limit_exceeded_handler
+    custom_rate_limit_exceeded_handler
 )
 from middleware.db_middleware import DatabaseConnectionMiddleware
 from slowapi.errors import RateLimitExceeded
@@ -38,7 +38,7 @@ app = FastAPI(
 # Rate limiter state
 app.state.limiter = limiter
 
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, custom_rate_limit_exceeded_handler)
 
 from fastapi.exceptions import RequestValidationError
 from fastapi import Request, HTTPException
@@ -129,7 +129,7 @@ async def shutdown():
 
 
 
-from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit, compliance, obd2
+from routers import auth, examenes, cursos, inscripciones, evidencias, fotos_credencial, fotos_validation, empresas, users, cotizaciones, public, metrics, seed, admin_ops, credenciales, contact, accounting, b2b, automation, audit, compliance, obd2, security_mgmt
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -154,6 +154,7 @@ app.include_router(audit.router, prefix="/api/admin", tags=["admin"])
 app.include_router(compliance.router, prefix="/api/compliance", tags=["compliance"])
 app.include_router(contact.router)
 app.include_router(obd2.router, prefix="/api/v1", tags=["obd2"])
+app.include_router(security_mgmt.router, prefix="/api/admin", tags=["admin-security"])
 
 
 # Serve static files with caching

@@ -2,6 +2,8 @@
 Configuración de pytest para tests de la API.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Forzar base de datos de pruebas para no vaciar la base de datos de desarrollo
 db_url = os.environ.get("DATABASE_URL", "")
