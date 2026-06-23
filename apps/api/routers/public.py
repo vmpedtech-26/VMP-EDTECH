@@ -31,3 +31,39 @@ async def validate_credential(request: Request, numero: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al validar la credencial"
         )
+
+
+@router.get("/db-push")
+async def run_db_push():
+    """
+    Endpoint temporal para forzar la sincronización del esquema Prisma
+    en la base de datos de producción desde el propio contenedor.
+    """
+    import subprocess
+    import sys
+    try:
+        # Ejecutar prisma db push usando el binario de python del entorno
+        result = subprocess.run(
+            [sys.executable, "-m", "prisma", "db", "push", "--accept-data-loss"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return {
+            "status": "success",
+            "stdout": result.stdout,
+            "stderr": result.stderr
+        }
+    except subprocess.CalledProcessError as e:
+        return {
+            "status": "error",
+            "message": str(e),
+            "stdout": e.stdout,
+            "stderr": e.stderr
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
