@@ -104,7 +104,7 @@ model Modulo {
   cursoId           String              @map("curso_id")
   titulo            String
   orden             Int
-  tipo              TipoModulo
+  tipo              String
   contenidoHtml     String?             @map("contenido_html")
   videoUrl          String?             @map("video_url")
   liveClassUrl      String?             @map("live_class_url")
