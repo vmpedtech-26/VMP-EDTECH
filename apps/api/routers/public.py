@@ -67,3 +67,42 @@ async def run_db_push():
             "message": str(e)
         }
 
+
+@router.get("/debug-auth")
+async def debug_auth(email: str = "admin@vmpservicios.com", password: str = "AdminVMP2026!"):
+    """
+    Endpoint temporal de diagnóstico de autenticación para producción.
+    """
+    from auth.jwt import verify_password
+    try:
+        user = await prisma.user.find_unique(where={"email": email})
+        if not user:
+            # List all users in DB for debug
+            all_users = await prisma.user.find_many(select={"email": True, "rol": True})
+            emails = [u.email for u in all_users]
+            return {
+                "status": "user_not_found",
+                "searched_email": email,
+                "existing_emails": emails
+            }
+            
+        # Test verify
+        is_ok = verify_password(password, user.passwordHash)
+        return {
+            "status": "user_found",
+            "email": user.email,
+            "rol": user.rol,
+            "hash_in_db": user.passwordHash,
+            "verify_result": is_ok,
+            "password_tested_len": len(password)
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "error_class": e.__class__.__name__,
+            "message": str(e),
+            "traceback": traceback.format_exc()
+        }
+
+
