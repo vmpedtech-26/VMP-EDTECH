@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 
-export default function Obd2MetricsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function Obd2MetricsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [metrics, setMetrics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

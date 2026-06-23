@@ -17,7 +17,8 @@ import {
     UserCog,
     Sliders,
     CircleDollarSign,
-    Plus
+    Plus,
+    Shield
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -67,6 +68,7 @@ const menuItems: Record<string, MenuItem[]> = {
                 { icon: Sliders, label: 'Reportes', href: '/dashboard/super/contabilidad/reportes' },
             ]
         },
+        { icon: Shield, label: 'Ciberseguridad y SOC', href: '/dashboard/super/seguridad' },
         { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
     ],
     CONTADOR: [

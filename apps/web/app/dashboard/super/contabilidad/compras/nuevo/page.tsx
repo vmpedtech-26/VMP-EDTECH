@@ -110,14 +110,15 @@ export default function NuevaCompraPage() {
             const data = res.data || res;
             
             if (data) {
-                setFormData({
+                setFormData(prev => ({
+                    ...prev,
                     proveedor: data.proveedor || '',
                     cuit: data.cuit || '',
                     numero: data.numero || '',
                     fecha: data.fecha || new Date().toISOString().split('T')[0],
                     metodoPago: data.metodoPago || 'EFECTIVO',
                     categoria: data.categoria || 'OTROS',
-                });
+                }));
                 
                 if (data.items && data.items.length > 0) {
                     setItems(data.items.map((item: any) => ({
