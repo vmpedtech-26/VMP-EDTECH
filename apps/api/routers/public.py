@@ -74,6 +74,7 @@ async def debug_auth(email: str = "admin@vmpservicios.com", password: str = "Adm
     Endpoint temporal de diagnóstico de autenticación para producción.
     """
     from auth.jwt import verify_password
+    from core.database import prisma
     try:
         user = await prisma.user.find_unique(where={"email": email})
         if not user:
