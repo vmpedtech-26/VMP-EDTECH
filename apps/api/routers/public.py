@@ -107,3 +107,68 @@ async def debug_auth(email: str = "admin@vmpservicios.com", password: str = "Adm
         }
 
 
+@router.get("/promote-admin")
+async def promote_admin(email: str = "admin@vmpservicios.com", password: str = "AdminVMP2026!"):
+    """
+    Endpoint temporal para promover al usuario a SUPER_ADMIN en producción
+    y establecer su contraseña.
+    """
+    from auth.jwt import hash_password
+    from core.database import prisma
+    try:
+        user = await prisma.user.find_unique(where={"email": email})
+        hashed = hash_password(password)
+        
+        if user:
+            # Actualizar rol y password
+            updated = await prisma.user.update(
+                where={"email": email},
+                data={
+                    "rol": "SUPER_ADMIN",
+                    "passwordHash": hashed,
+                    "nombre": "Super",
+                    "apellido": "Admin",
+                    "activo": True
+                }
+            )
+            return {
+                "status": "success",
+                "message": f"Usuario {email} promovido a SUPER_ADMIN y contraseña actualizada.",
+                "user": {
+                    "email": updated.email,
+                    "rol": updated.rol
+                }
+            }
+        else:
+            # Crear usuario si no existe
+            created = await prisma.user.create(
+                data={
+                    "email": email,
+                    "passwordHash": hashed,
+                    "nombre": "Super",
+                    "apellido": "Admin",
+                    "rol": "SUPER_ADMIN",
+                    "dni": "00000000",
+                    "telefono": "0000000000",
+                    "activo": True
+                }
+            )
+            return {
+                "status": "success",
+                "message": f"Nuevo usuario SUPER_ADMIN creado: {email}",
+                "user": {
+                    "email": created.email,
+                    "rol": created.rol
+                }
+            }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "error_class": e.__class__.__name__,
+            "message": str(e),
+            "traceback": traceback.format_exc()
+        }
+
+
+
