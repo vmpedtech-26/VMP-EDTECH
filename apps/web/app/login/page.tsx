@@ -105,9 +105,10 @@ export default function LoginPage() {
                             required
                             value={formData.email}
                             onBlur={() => checkEmailSSO(formData.email)}
-                            onChange={(e) =>
-                                setFormData({ ...formData, email: e.target.value })
-                            }
+                            onChange={(e) => {
+                                setError(null);
+                                setFormData({ ...formData, email: e.target.value });
+                            }}
                         />
 
                         {checkingSSO && (
