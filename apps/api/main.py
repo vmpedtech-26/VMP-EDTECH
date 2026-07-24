@@ -102,7 +102,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    print("🚀 API STARTUP INITIATED (INSTANT MODE)")
+    print("🚀 API STARTUP INITIATED")
     
     # 1. Ensure storage dirs
     _storage_path = settings.STORAGE_PATH
@@ -112,9 +112,13 @@ async def startup():
     except Exception as e:
         print(f"⚠️ Storage directory error: {e}")
     
-    # 2. Database will connect lazily on the first request 
-    # to avoid blocking the startup process and causing 502s
-    print("ℹ️ Database connection deferred to first request (Lazy Mode)")
+    # 2. Connect Database on startup
+    try:
+        from core.database import connect_db
+        await connect_db()
+        print("✅ Database connected on startup")
+    except Exception as e:
+        print(f"⚠️ Startup DB connect error: {e}")
     
     print("✅ STARTUP COMPLETED")
 
