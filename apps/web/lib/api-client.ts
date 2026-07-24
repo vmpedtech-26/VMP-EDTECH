@@ -1,7 +1,7 @@
 export const API_URL = (() => {
     const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    // Ignore localhost, 127.0.0.1, and legacy railway.app URLs
-    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1') && !envUrl.includes('railway.app')) {
+    // Ignore localhost, 127.0.0.1, legacy railway.app URLs, and dead CNAME api.vmp-edtech.com
+    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1') && !envUrl.includes('railway.app') && !envUrl.includes('api.vmp-edtech.com')) {
         return envUrl;
     }
 
