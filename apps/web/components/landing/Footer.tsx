@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Instagram, Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -23,17 +23,8 @@ export default function Footer() {
                             Capacitación Vial Profesional
                         </p>
                         <div className="flex space-x-3">
-                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                <Facebook className="h-5 w-5" />
-                            </a>
-                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
+                            <a href="https://www.instagram.com/vmpservicios" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
                                 <Instagram className="h-5 w-5" />
-                            </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                <Linkedin className="h-5 w-5" />
-                            </a>
-                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                <Youtube className="h-5 w-5" />
                             </a>
                         </div>
 
@@ -147,11 +138,8 @@ export default function Footer() {
                 {/* Divider */}
                 <div className="border-t border-slate-700 pt-8">
                     <div className="text-center text-slate-400 text-sm">
-                        <p className="mb-2">
+                        <p>
                             © 2026 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 30-71936908-8
-                        </p>
-                        <p className="text-xs">
-                            Instructor Certificado - Matrícula 12345/2025
                         </p>
                     </div>
                 </div>

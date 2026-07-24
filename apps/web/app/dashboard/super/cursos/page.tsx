@@ -19,6 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { cursosApi } from '@/lib/api/cursos';
 import { Curso } from '@/types/training';
 import Link from 'next/link';
+import { api } from '@/lib/api-client';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import jsPDF from 'jspdf';
@@ -61,6 +62,16 @@ export default function SuperCursosPage() {
         }
     };
 
+    const handlePublish = async (id: string) => {
+        try {
+            await api.post(`/cursos/${id}/publicar`, {});
+            toast.success('Curso publicado con éxito');
+            fetchCursos();
+        } catch (error) {
+            toast.error('Error al publicar curso: ' + (error instanceof Error ? error.message : String(error)));
+        }
+    };
+
     const filteredCursos = useMemo(() => {
         return cursos.filter(c =>
             c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,7 +90,7 @@ export default function SuperCursosPage() {
             c.codigo,
             c.nombre,
             `${c.duracionHoras} horas`,
-            c.activo ? 'Activo' : 'Inactivo'
+            c.estado || 'BORRADOR'
         ]);
 
         autoTable(doc, {
@@ -166,9 +177,14 @@ export default function SuperCursosPage() {
                                 <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                                     <BookOpen className="h-6 w-6" />
                                 </div>
-                                <div className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${curso.activo ? 'bg-success/10 text-success' : 'bg-slate-100 text-slate-700'
+                                <div className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                    curso.estado === 'PUBLICADO' 
+                                        ? 'bg-emerald-100 text-emerald-800' 
+                                        : curso.estado === 'PENDIENTE' 
+                                            ? 'bg-amber-100 text-amber-800' 
+                                            : 'bg-slate-100 text-slate-700'
                                     }`}>
-                                    {curso.activo ? 'Activo' : 'Inactivo'}
+                                    {curso.estado || 'BORRADOR'}
                                 </div>
                             </div>
 
@@ -187,7 +203,7 @@ export default function SuperCursosPage() {
                             <div className="flex items-center gap-4 text-xs font-medium text-slate-700 pt-2">
                                 <span className="flex items-center">
                                     <Eye className="h-3 w-3 mr-1" />
-                                    6 modulos
+                                    Mín. Aprobación: {curso.minimoAprobacion ?? 70}%
                                 </span>
                                 <span>•</span>
                                 <span>{curso.duracionHoras} horas</span>
@@ -200,6 +216,16 @@ export default function SuperCursosPage() {
                                         Editar
                                     </Link>
                                 </Button>
+                                {curso.estado !== 'PUBLICADO' && (
+                                    <Button 
+                                        variant="primary" 
+                                        size="sm" 
+                                        className="bg-emerald-600 hover:bg-emerald-700 hover:text-white text-white border-none shadow-sm flex-1"
+                                        onClick={() => handlePublish(curso.id)}
+                                    >
+                                        Publicar
+                                    </Button>
+                                )}
                                 <Button
                                     variant="outline"
                                     size="sm"

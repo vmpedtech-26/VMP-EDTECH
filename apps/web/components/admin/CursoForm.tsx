@@ -30,6 +30,8 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         instructorId: '',
         meetingLink: '',
         meetingPlatform: '',
+        minimoAprobacion: 70,
+        materialDescargableUrl: '',
         ...initialData
     });
 
@@ -258,8 +260,8 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                         />
                     </div>
 
-                    {/* Vigencia */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Vigencia, Mínimo Aprobación y Material de lectura */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
                                 Vigencia (Meses)
@@ -270,6 +272,34 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 required
                                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 value={formData.vigenciaMeses}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                Mínimo Aprobación (%)
+                            </label>
+                            <input
+                                type="number"
+                                name="minimoAprobacion"
+                                required
+                                min="0"
+                                max="100"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                value={formData.minimoAprobacion ?? 70}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                Material URL (Descarga)
+                            </label>
+                            <input
+                                type="url"
+                                name="materialDescargableUrl"
+                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                placeholder="https://..."
+                                value={formData.materialDescargableUrl || ''}
                                 onChange={handleChange}
                             />
                         </div>

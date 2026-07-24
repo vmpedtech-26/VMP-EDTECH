@@ -40,6 +40,10 @@ async def enviar_quiz(
     if modulo.cursoId != data.cursoId:
         raise HTTPException(status_code=400, detail="Módulo no pertenece a este curso")
     
+    # Cargar el curso para obtener minimoAprobacion real
+    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
+    minimo_aprobacion = curso.minimoAprobacion if curso and curso.minimoAprobacion is not None else 70
+    
     # Verificar inscripción
     inscripcion = await prisma.inscripcion.find_first(
         where={
@@ -92,14 +96,15 @@ async def enviar_quiz(
     # Calcular calificación (0-100)
     calificacion = (respuestas_correctas / total_preguntas) * 100 if total_preguntas > 0 else 0
     
-    # Determinar si aprobó (70% mínimo)
-    aprobado = calificacion >= 70
+    # Determinar si aprobó usando el mínimo del curso
+    aprobado = calificacion >= minimo_aprobacion
     
     # Guardar examen en base de datos
     await prisma.examen.create(
         data={
             "alumnoId": current_user.id,
             "cursoId": data.cursoId,
+            "moduloId": data.moduloId,
             "respuestas": json.dumps(data.respuestas),
             "calificacion": calificacion,
             "aprobado": aprobado
@@ -166,7 +171,7 @@ async def enviar_quiz(
                 print(f"[CREDENCIAL AUTO-GEN] Error: {e}")
                 # No falla el quiz si falla la generación
     else:
-        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
+        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas {minimo_aprobacion}% para aprobar. Puedes intentarlo nuevamente."
     
     # Log audit
     request_id = getattr(request.state, "request_id", "N/A")
@@ -194,3 +199,71 @@ async def enviar_quiz(
         message=message,
         credencialInfo=credencial_info
     )
+
+
+@router.get("")
+async def listar_examenes(
+    estado: str = "COMPLETADO",
+    current_user = Depends(get_current_user)
+):
+    """
+    Listar exámenes realizados.
+    Instructores ven los de sus cursos; Super admins ven todos.
+    """
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        raise HTTPException(status_code=403, detail="No tienes permiso para ver las evaluaciones")
+        
+    # Construir filtro por rol
+    where_clause = {}
+    if current_user.rol == "INSTRUCTOR":
+        # Solo exámenes de cursos asignados al instructor
+        cursos = await prisma.curso.find_many(
+            where={"instructorId": current_user.id}
+        )
+        curso_ids = [c.id for c in cursos]
+        where_clause["cursoId"] = {"in": curso_ids}
+        
+    # Obtener exámenes de la base de datos
+    examenes = await prisma.examen.find_many(
+        where=where_clause,
+        include={
+            "alumno": True,
+            "modulo": {
+                "include": {
+                    "curso": True
+                }
+            }
+        },
+        order={"realizadoAt": "desc"}
+    )
+    
+    # Formatear la respuesta para el frontend
+    result = []
+    for ex in examenes:
+        modulo_nombre = ex.modulo.titulo if ex.modulo else "Módulo General"
+        curso_nombre = ex.modulo.curso.nombre if (ex.modulo and ex.modulo.curso) else "Curso General"
+        
+        result.append({
+            "id": ex.id,
+            "moduloId": ex.moduloId or "",
+            "alumnoId": ex.alumnoId,
+            "puntaje": int(ex.calificacion) if ex.calificacion is not None else None,
+            "aprobado": ex.aprobado,
+            "estado": "COMPLETADO",
+            "createdAt": ex.realizadoAt.isoformat(),
+            "completedAt": ex.realizadoAt.isoformat(),
+            "alumno": {
+                "nombre": ex.alumno.nombre or "",
+                "apellido": ex.alumno.apellido or "",
+                "dni": ex.alumno.dni or "",
+                "email": ex.alumno.email
+            },
+            "modulo": {
+                "nombre": modulo_nombre,
+                "curso": {
+                    "nombre": curso_nombre
+                }
+            }
+        })
+        
+    return result

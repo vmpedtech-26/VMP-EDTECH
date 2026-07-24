@@ -111,6 +111,18 @@ export default function InstructorSesionesPage() {
     }
   }
 
+  async function cambiarEstado(sesionId: string, nuevoEstado: string) {
+    try {
+      await api.patch(`/sesiones/${sesionId}`, { estado: nuevoEstado });
+      fetchSesiones();
+      if (sesionSeleccionada === sesionId) {
+        fetchAsistencia(sesionId);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   const sesionActual = sesiones.find(s => s.id === sesionSeleccionada);
   const presentesCount = asistencias.filter(a => a.presente).length;
 
@@ -152,7 +164,7 @@ export default function InstructorSesionesPage() {
                       : 'bg-white border-slate-100 hover:border-slate-200 hover:shadow-sm'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${ESTADO_BADGE[sesion.estado] || 'bg-slate-100 text-slate-600'}`}>
@@ -191,8 +203,42 @@ export default function InstructorSesionesPage() {
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
               {/* Header del panel */}
               <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                <h3 className="font-bold text-slate-900">{sesionActual?.titulo}</h3>
-                <p className="text-sm text-slate-500">{sesionActual?.cursoNombre}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900">{sesionActual?.titulo}</h3>
+                    <p className="text-sm text-slate-500">{sesionActual?.cursoNombre}</p>
+                  </div>
+                  {/* Controles de estado para instructor */}
+                  <div className="flex gap-2 shrink-0">
+                    {sesionActual?.meetLink && (
+                      <a
+                        href={sesionActual.meetLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        🎥 Unirse
+                      </a>
+                    )}
+                    {sesionActual?.estado === 'PROGRAMADA' && (
+                      <button
+                        onClick={() => cambiarEstado(sesionActual.id, 'EN_CURSO')}
+                        className="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 font-bold transition-colors"
+                      >
+                        ▶ Iniciar
+                      </button>
+                    )}
+                    {sesionActual?.estado === 'EN_CURSO' && (
+                      <button
+                        onClick={() => cambiarEstado(sesionActual.id, 'FINALIZADA')}
+                        className="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 font-bold transition-colors"
+                      >
+                        ⬛ Finalizar
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <div className="flex gap-4 mt-3 text-sm text-slate-600">
                   {sesionActual?.lugar && (
                     <span className="flex items-center gap-1.5">

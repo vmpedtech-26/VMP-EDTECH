@@ -38,6 +38,7 @@ model User {
   cursosComoInstructor                      Curso[]              @relation("InstructorCursos")
   // Mejora #5: asistencias a sesiones de capacitación
   asistenciasSesion                         AsistenciaSesion[]
+  sesionesComoInstructor                    SesionCapacitacion[] @relation("InstructorSesiones")
 
   @@index([rol])
   @@index([empresaId])
@@ -62,6 +63,7 @@ model Company {
   cursos    Curso[]
   usuarios  User[]
   ventas    Venta[]
+  sesiones  SesionCapacitacion[]
 
   @@map("companies")
 }
@@ -83,6 +85,9 @@ model Curso {
   instructorId     String?             @map("instructor_id")
   meetingLink      String?             @map("meeting_link")
   meetingPlatform  String?             @map("meeting_platform") // "zoom", "teams", "meet"
+  estado           EstadoCurso         @default(BORRADOR)
+  minimoAprobacion Int                 @default(70) @map("minimo_aprobacion")
+  materialDescargableUrl String?       @map("material_descargable_url")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
   credenciales     Credencial[]
@@ -418,20 +423,24 @@ model tareas_practicas {
 // ============ MEJORA #5: Sesiones de Capacitación ============
 
 model SesionCapacitacion {
-  id          String             @id @default(uuid())
-  cursoId     String             @map("curso_id")
-  titulo      String
-  descripcion String?
-  fechaInicio DateTime           @map("fecha_inicio")
-  fechaFin    DateTime           @map("fecha_fin")
-  lugar       String?
-  plataforma  String?            // zoom, teams, meet, presencial
-  meetLink    String?            @map("meet_link")
-  estado      EstadoSesion       @default(PROGRAMADA)
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
-  curso       Curso              @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  asistencias AsistenciaSesion[]
+  id           String             @id @default(uuid())
+  cursoId      String             @map("curso_id")
+  empresaId    String?            @map("empresa_id")
+  instructorId String?            @map("instructor_id")
+  titulo       String
+  descripcion  String?
+  fechaInicio  DateTime           @map("fecha_inicio")
+  fechaFin     DateTime           @map("fecha_fin")
+  lugar        String?
+  plataforma   String?            // zoom, teams, meet, presencial
+  meetLink     String?            @map("meet_link")
+  estado       EstadoSesion       @default(PROGRAMADA)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  curso        Curso              @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  empresa      Company?           @relation(fields: [empresaId], references: [id])
+  instructor   User?              @relation("InstructorSesiones", fields: [instructorId], references: [id])
+  asistencias  AsistenciaSesion[]
 
   @@index([cursoId])
   @@index([fechaInicio])
@@ -497,6 +506,12 @@ enum EstadoSesion {
   EN_CURSO
   FINALIZADA
   CANCELADA
+}
+
+enum EstadoCurso {
+  BORRADOR
+  PENDIENTE
+  PUBLICADO
 }
 
 model Obd2Session {

@@ -41,7 +41,14 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
         
         # Inscripciones por estado
         enrollments_active = await prisma.inscripcion.count(where={"estado": "EN_PROGRESO"})
-        enrollments_completed = await prisma.inscripcion.count(where={"estado": "COMPLETADO"})
+        enrollments_completed = await prisma.inscripcion.count(
+            where={
+                "OR": [
+                    {"estado": "COMPLETADO"},
+                    {"estado": "APROBADO"}
+                ]
+            }
+        )
         
         # Calcular tasa de conversión
         conversion_rate = (quotes_converted / total_quotes * 100) if total_quotes > 0 else 0
@@ -163,7 +170,10 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
             completed = await prisma.inscripcion.count(
                 where={
                     "cursoId": course.id,
-                    "estado": "COMPLETADO"
+                    "OR": [
+                        {"estado": "COMPLETADO"},
+                        {"estado": "APROBADO"}
+                    ]
                 }
             )
             

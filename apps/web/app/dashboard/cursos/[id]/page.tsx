@@ -19,24 +19,38 @@ import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { CursoDetail, Inscripcion } from '@/types/training';
 import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
+import { api } from '@/lib/api-client';
+import { toast } from 'sonner';
 import Link from 'next/link';
+
+interface Sesion {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  estado: string;
+  fechaInicio: string;
+  meetLink?: string;
+}
 
 export default function CursoDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const [curso, setCurso] = useState<CursoDetail | null>(null);
     const [inscripcion, setInscripcion] = useState<Inscripcion | null>(null);
+    const [sesiones, setSesiones] = useState<Sesion[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [cursoData, inscripcionData] = await Promise.all([
+                const [cursoData, inscripcionData, sesionesData] = await Promise.all([
                     cursosApi.obtenerCurso(id as string),
-                    inscripcionesApi.obtenerInscripcion(id as string).catch(() => null)
+                    inscripcionesApi.obtenerInscripcion(id as string).catch(() => null),
+                    api.get(`/sesiones?cursoId=${id}`).catch(() => [])
                 ]);
                 setCurso(cursoData);
                 setInscripcion(inscripcionData);
+                setSesiones(Array.isArray(sesionesData) ? sesionesData : []);
             } catch (error) {
                 console.error('Error fetching course detail:', error);
             } finally {
@@ -68,6 +82,10 @@ export default function CursoDetailPage() {
 
     const isEnrolled = !!inscripcion;
     const activeLiveModule = curso.modulos?.find(m => m.liveClassUrl);
+    
+    // Sesiones del curso
+    const sesionActiva = sesiones.find(s => s.estado === 'EN_CURSO');
+    const proximaSesion = sesiones.find(s => s.estado === 'PROGRAMADA');
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
@@ -76,8 +94,69 @@ export default function CursoDetailPage() {
                 <LiveClassHub 
                     platform={activeLiveModule.liveClassPlatform || (activeLiveModule.liveClassUrl?.includes('teams') ? 'teams' : 'google_meet')}
                     url={activeLiveModule.liveClassUrl || null}
+                    courseName={curso.nombre}
                 />
             )}
+
+            {/* Clase en Vivo Activa */}
+            {isEnrolled && sesionActiva && (
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-3 w-3 bg-red-600 rounded-full animate-ping shrink-0" />
+                        <div>
+                            <h3 className="font-bold text-red-950 flex items-center gap-2">
+                                🔴 CLASE EN VIVO EN CURSO
+                            </h3>
+                            <p className="text-sm text-red-700 font-semibold">{sesionActiva.titulo}</p>
+                            {sesionActiva.descripcion && (
+                                <p className="text-xs text-red-600 line-clamp-1">{sesionActiva.descripcion}</p>
+                            )}
+                        </div>
+                    </div>
+                    {sesionActiva.meetLink && (
+                        <Button 
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl border-none shadow-sm"
+                            onClick={async () => {
+                                try {
+                                    await api.post(`/sesiones/${sesionActiva.id}/checkin`, {});
+                                    toast.success('¡Asistencia registrada con éxito!');
+                                } catch (e) {
+                                    console.error('Error auto check-in:', e);
+                                }
+                                window.open(sesionActiva.meetLink, '_blank');
+                            }}
+                        >
+                            Ingresar a Clase Virtual
+                        </Button>
+                    )}
+                </div>
+            )}
+
+            {/* Próxima clase programada */}
+            {isEnrolled && !sesionActiva && proximaSesion && (
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <Video className="h-5 w-5 text-blue-600 shrink-0" />
+                        <div>
+                            <h3 className="font-bold text-blue-950">Próxima Sesión Programada</h3>
+                            <p className="text-sm text-blue-800 font-medium">{proximaSesion.titulo}</p>
+                            <p className="text-xs text-blue-750">
+                                {new Date(proximaSesion.fechaInicio).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })} hs
+                            </p>
+                        </div>
+                    </div>
+                    {proximaSesion.meetLink && (
+                        <Button 
+                            variant="outline"
+                            className="border-blue-200 text-blue-800 hover:bg-blue-100 font-semibold px-5 py-2 rounded-xl"
+                            onClick={() => window.open(proximaSesion.meetLink, '_blank')}
+                        >
+                            Ver Enlace
+                        </Button>
+                    )}
+                </div>
+            )}
+
             {/* Header / Hero */}
             <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
                 <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -274,6 +353,16 @@ export default function CursoDetailPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {curso.materialDescargableUrl && (
+                            <Button 
+                                variant="outline"
+                                className="w-full mt-4 border-primary text-primary hover:bg-primary/5"
+                                onClick={() => window.open(curso.materialDescargableUrl, '_blank')}
+                            >
+                                Descargar Material de Lectura
+                            </Button>
+                        )}
 
                         {!isEnrolled && (
                             <Button

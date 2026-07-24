@@ -299,10 +299,14 @@ export default function ContactSection() {
                                             className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none bg-white"
                                         >
                                             <option value="">Seleccionar curso...</option>
-                                            <option value="conduccion_preventiva">Conducción Preventiva</option>
-                                            <option value="carga_pesada">Conducción Flota Liviana / Pesada</option>
-                                            <option value="conduccion_2_traccion">Conducción Doble Tracción</option>
-                                            <option value="varios">Varios cursos</option>
+                                            <option value="conduccion-preventiva">Conducción Preventiva (Inicial)</option>
+                                            <option value="conduccion-renovacion">Curso Intensivo de Renovación</option>
+                                            <option value="conduccion-invernal">Conducción Invernal</option>
+                                            <option value="conduccion-segura">Conducción Segura e Implementos Técnicos</option>
+                                            <option value="flota-liviana-pesada">Conducción Flota Liviana / Pesada</option>
+                                            <option value="doble-traccion">Conducción Doble Tracción (4x4)</option>
+                                            <option value="trabajo-en-altura">Trabajo en Altura (Seguridad Industrial)</option>
+                                            <option value="varios">Varios cursos / Consultas generales</option>
                                         </select>
                                     </div>
 

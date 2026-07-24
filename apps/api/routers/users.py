@@ -166,6 +166,26 @@ async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_curren
         }
     )
     
+    # Enviar email de bienvenida si el usuario es de tipo ALUMNO
+    if data.rol == "ALUMNO":
+        try:
+            from services.email_service import email_service
+            import logging
+            logger_user = logging.getLogger(__name__)
+            
+            user_info = {
+                "email": user.email,
+                "nombre": user.nombre,
+                "apellido": user.apellido
+            }
+            # Enviar el mail pasándole la contraseña en texto plano ingresada en el form
+            await email_service.send_bienvenida(user_info, data.password)
+            logger_user.info(f"Email de bienvenida enviado con éxito a {user.email}")
+        except Exception as email_err:
+            import logging
+            logger_user = logging.getLogger(__name__)
+            logger_user.error(f"Error al enviar email de bienvenida a {data.email}: {str(email_err)}")
+            
     return user
 
 
@@ -188,6 +208,16 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
         raise HTTPException(status_code=403, detail="No tienes permisos")
         
     update_data = {k: v for k, v in data.dict().items() if v is not None}
+    
+    if "email" in update_data and update_data["email"] != existing.email:
+        email_dup = await prisma.user.find_unique(where={"email": update_data["email"]})
+        if email_dup:
+            raise HTTPException(status_code=400, detail="El email ya está registrado")
+            
+    if "dni" in update_data and update_data["dni"] != existing.dni:
+        dni_dup = await prisma.user.find_unique(where={"dni": update_data["dni"]})
+        if dni_dup:
+            raise HTTPException(status_code=400, detail="El DNI ya está registrado")
     
     if "password" in update_data:
         update_data["passwordHash"] = hash_password(update_data.pop("password"))

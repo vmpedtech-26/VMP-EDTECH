@@ -24,9 +24,17 @@ class ContactFormRequest(BaseModel):
 
 
 COURSE_LABELS = {
-    "conduccion_preventiva": "Conducción Preventiva",
+    "conduccion-preventiva": "Conducción Preventiva (Inicial)",
+    "conduccion-renovacion": "Curso Intensivo de Renovación",
+    "conduccion-invernal": "Conducción Invernal",
+    "conduccion-segura": "Conducción Segura e Implementos Técnicos",
+    "flota-liviana-pesada": "Conducción Flota Liviana / Pesada",
+    "doble-traccion": "Conducción Doble Tracción (4x4)",
+    "trabajo-en-altura": "Trabajo en Altura (Seguridad Industrial)",
+    # Soporte para claves antiguas
+    "conduccion_preventiva": "Conducción Preventiva (Inicial)",
     "carga_pesada": "Conducción Flota Liviana / Pesada",
-    "conduccion_2_traccion": "Conducción Doble Tracción",
+    "conduccion_2_traccion": "Conducción Doble Tracción (4x4)",
     "varios": "Varios cursos",
 }
 
@@ -34,9 +42,11 @@ COURSE_LABELS = {
 @router.post("/contact")
 async def submit_contact_form(data: ContactFormRequest):
     """
-    Receive a contact form submission and send notification email to sales team.
+    Receive a contact form submission, store it in the database as a Cotizacion,
+    and send notification email to the sales team.
     """
     try:
+        from core.database import prisma
         curso_label = COURSE_LABELS.get(data.curso_interes, data.curso_interes or "No especificado")
 
         html_content = f"""
@@ -75,8 +85,30 @@ async def submit_contact_form(data: ContactFormRequest):
         </div>
         """
 
+        # Guardar en la base de datos como una Cotización para que llegue al panel del LMS
+        await prisma.cotizacion.create(
+            data={
+                "empresa": data.empresa,
+                "nombre": data.nombre,
+                "email": data.email,
+                "telefono": data.telefono or "",
+                "comentarios": data.mensaje,
+                "quantity": 1,
+                "course": curso_label,
+                "modality": "a-definir",
+                "totalPrice": 0.0,
+                "pricePerStudent": 0.0,
+                "discount": 0,
+                "acceptMarketing": False,
+                "acceptTerms": True,
+                "status": "pending",
+            }
+        )
+        logger.info(f"Cotización guardada en base de datos para {data.empresa} ({data.email})")
+
+        # Notificación por email al equipo administrativo
         await email_service.send_email(
-            to_email=email_service.email_ventas,
+            to_email="administracion@vmp-edtech.com",
             subject=f"Nueva consulta web: {data.empresa} - {data.nombre}",
             html_content=html_content,
         )
@@ -94,17 +126,17 @@ async def submit_contact_form(data: ContactFormRequest):
                     capacitación vial para <strong>{data.empresa}</strong>.
                 </p>
                 <p style="color: #475569; line-height: 1.6;">
-                    Nuestro equipo de ventas se pondrá en contacto con vos dentro de las próximas
+                    Nuestro equipo se pondrá en contacto con vos dentro de las próximas
                     <strong>24 horas hábiles</strong> para ofrecerte una propuesta personalizada.
                 </p>
                 <div style="margin-top: 20px; padding: 16px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
                     <p style="margin: 0; color: #166534; font-size: 14px;">
-                        <strong>¿Urgente?</strong> Llamanos al +54 9 11 2345-6789 o escribinos por
-                        <a href="https://wa.me/5491123456789" style="color: #166534;">WhatsApp</a>
+                        <strong>¿Urgente?</strong> Escribinos por
+                        <a href="https://wa.me/5492995370173" style="color: #166534;">WhatsApp</a>
                     </p>
                 </div>
                 <p style="margin-top: 24px; color: #94a3b8; font-size: 13px;">
-                    — Equipo VMP Servicios
+                    — Equipo VMP
                 </p>
             </div>
         </div>
@@ -112,11 +144,11 @@ async def submit_contact_form(data: ContactFormRequest):
 
         await email_service.send_email(
             to_email=data.email,
-            subject="Recibimos tu consulta - VMP Servicios",
+            subject="Recibimos tu consulta - VMP",
             html_content=auto_reply,
         )
 
-        logger.info(f"Contact form submitted: {data.nombre} ({data.empresa}) - {data.email}")
+        logger.info(f"Contact form submitted and auto-replied: {data.nombre} ({data.empresa}) - {data.email}")
 
         return {"status": "ok", "message": "Consulta enviada correctamente"}
 

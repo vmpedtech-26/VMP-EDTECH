@@ -19,13 +19,14 @@ export interface Curso {
     empresaId?: string;
     alumnosEsperados: number;
     activo: boolean;
-    // Mejora #3: modalidad de capacitación
     modalidad?: 'ONLINE' | 'IN_COMPANY' | 'HYBRID';
-    // Mejora #4: instructor asignado
     instructorId?: string;
     instructorNombre?: string;
     meetingLink?: string;
     meetingPlatform?: string;
+    estado?: 'BORRADOR' | 'PENDIENTE' | 'PUBLICADO';
+    minimoAprobacion?: number;
+    materialDescargableUrl?: string;
 }
 
 export interface ModuloSummary {

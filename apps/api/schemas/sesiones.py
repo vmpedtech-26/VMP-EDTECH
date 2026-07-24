@@ -16,6 +16,9 @@ class CreateSesionRequest(SanitizedBaseModel):
     lugar: Optional[str] = None
     plataforma: Optional[str] = None  # zoom, teams, meet, presencial
     meetLink: Optional[str] = None
+    empresaId: Optional[str] = None
+    instructorId: Optional[str] = None
+    alumnosIds: Optional[List[str]] = None
 
 
 class UpdateSesionRequest(SanitizedBaseModel):
@@ -28,6 +31,9 @@ class UpdateSesionRequest(SanitizedBaseModel):
     plataforma: Optional[str] = None
     meetLink: Optional[str] = None
     estado: Optional[str] = None  # PROGRAMADA, EN_CURSO, FINALIZADA, CANCELADA
+    empresaId: Optional[str] = None
+    instructorId: Optional[str] = None
+    alumnosIds: Optional[List[str]] = None
 
 
 class SesionListItem(BaseModel):
@@ -43,9 +49,13 @@ class SesionListItem(BaseModel):
     meetLink: Optional[str] = None
     estado: str
     createdAt: datetime
-    # Info extra del curso (join)
+    # Info extra del curso / empresa / instructor (join)
     cursoNombre: Optional[str] = None
     cursoModalidad: Optional[str] = None
+    empresaId: Optional[str] = None
+    empresaNombre: Optional[str] = None
+    instructorId: Optional[str] = None
+    instructorNombre: Optional[str] = None
     totalAlumnos: Optional[int] = None
     alumnosPresentes: Optional[int] = None
 
@@ -82,6 +92,10 @@ class SesionDetail(BaseModel):
     createdAt: datetime
     cursoNombre: Optional[str] = None
     cursoModalidad: Optional[str] = None
+    empresaId: Optional[str] = None
+    empresaNombre: Optional[str] = None
+    instructorId: Optional[str] = None
+    instructorNombre: Optional[str] = None
     asistencias: List[AsistenciaItem] = []
 
     class Config:

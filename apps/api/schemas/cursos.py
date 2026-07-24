@@ -14,14 +14,15 @@ class CursoListItem(BaseModel):
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
-    # Mejora #3: modalidad
     modalidad: Optional[str] = "ONLINE"
-    # Mejora #4: instructor asignado
     instructorId: Optional[str] = None
     instructorNombre: Optional[str] = None
     activo: bool
     meetingLink: Optional[str] = None
     meetingPlatform: Optional[str] = None
+    estado: str = "BORRADOR"
+    minimoAprobacion: int = 70
+    materialDescargableUrl: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -34,12 +35,13 @@ class CreateCursoRequest(SanitizedBaseModel):
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
-    # Mejora #3: modalidad de capacitación
     modalidad: Optional[str] = "ONLINE"
-    # Mejora #4: instructor asignado
     instructorId: Optional[str] = None
     meetingLink: Optional[str] = None
     meetingPlatform: Optional[str] = None
+    estado: Optional[str] = "BORRADOR"
+    minimoAprobacion: Optional[int] = 70
+    materialDescargableUrl: Optional[str] = None
 
 class UpdateCursoRequest(SanitizedBaseModel):
     nombre: Optional[str] = None
@@ -50,11 +52,13 @@ class UpdateCursoRequest(SanitizedBaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: Optional[int] = None
     activo: Optional[bool] = None
-    # Mejora #3 y #4: modalidad e instructor
     modalidad: Optional[str] = None
     instructorId: Optional[str] = None
     meetingLink: Optional[str] = None
     meetingPlatform: Optional[str] = None
+    estado: Optional[str] = None
+    minimoAprobacion: Optional[int] = None
+    materialDescargableUrl: Optional[str] = None
 
 class ModuloSummary(BaseModel):
     """Resumen de módulo para detalle de curso"""
@@ -79,12 +83,14 @@ class CursoDetail(BaseModel):
     empresaId: Optional[str] = None
     alumnosEsperados: int = 0
     activo: bool
-    # Mejora #3 y #4
     modalidad: Optional[str] = "ONLINE"
     instructorId: Optional[str] = None
     instructorNombre: Optional[str] = None
     meetingLink: Optional[str] = None
     meetingPlatform: Optional[str] = None
+    estado: str = "BORRADOR"
+    minimoAprobacion: int = 70
+    materialDescargableUrl: Optional[str] = None
     modulos: List[ModuloSummary]
     
     class Config:

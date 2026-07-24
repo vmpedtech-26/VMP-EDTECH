@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CalendarDays, Plus, Clock, MapPin, Video, Users, CheckCircle, XCircle, AlertCircle, ChevronRight, X } from 'lucide-react';
 import { api } from '@/lib/api-client';
+import { toast } from 'sonner';
 
 interface Sesion {
   id: string;
@@ -17,6 +18,10 @@ interface Sesion {
   estado: string;
   cursoNombre?: string;
   cursoModalidad?: string;
+  empresaId?: string;
+  empresaNombre?: string;
+  instructorId?: string;
+  instructorNombre?: string;
   totalAlumnos?: number;
   alumnosPresentes?: number;
 }
@@ -25,6 +30,21 @@ interface Curso {
   id: string;
   nombre: string;
   modalidad: string;
+  estado: string;
+}
+
+interface Empresa {
+  id: string;
+  nombre: string;
+}
+
+interface User {
+  id: string;
+  nombre: string;
+  apellido: string;
+  dni: string;
+  rol: string;
+  empresaId?: string;
 }
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
@@ -43,6 +63,9 @@ const MODALIDAD_CONFIG: Record<string, { label: string; color: string }> = {
 export default function SesionesPage() {
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [instructores, setInstructores] = useState<User[]>([]);
+  const [allAlumnos, setAllAlumnos] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [filtroEstado, setFiltroEstado] = useState('');
@@ -57,6 +80,9 @@ export default function SesionesPage() {
     lugar: '',
     plataforma: 'presencial',
     meetLink: '',
+    empresaId: '',
+    instructorId: '',
+    alumnosIds: [] as string[],
   });
   const [saving, setSaving] = useState(false);
 
@@ -66,12 +92,20 @@ export default function SesionesPage() {
 
   async function fetchData() {
     try {
-      const [sesRes, curRes] = await Promise.all([
+      const [sesRes, curRes, empRes, instRes, alRes] = await Promise.all([
         api.get('/sesiones'),
         api.get('/cursos'),
+        api.get('/empresas'),
+        api.get('/users?rol=INSTRUCTOR'),
+        api.get('/users?rol=ALUMNO'),
       ]);
       setSesiones(Array.isArray(sesRes) ? sesRes : []);
-      setCursos(Array.isArray(curRes) ? curRes : []);
+      // Mostrar solo cursos publicados en la programación de sesiones
+      const allCuts = Array.isArray(curRes) ? curRes : [];
+      setCursos(allCuts.filter(c => c.estado === 'PUBLICADO'));
+      setEmpresas(Array.isArray(empRes) ? empRes : []);
+      setInstructores(Array.isArray(instRes) ? instRes : []);
+      setAllAlumnos(Array.isArray(alRes) ? alRes : []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -89,10 +123,24 @@ export default function SesionesPage() {
         fechaFin: new Date(form.fechaFin).toISOString(),
       });
       setShowModal(false);
-      setForm({ cursoId: '', titulo: '', descripcion: '', fechaInicio: '', fechaFin: '', lugar: '', plataforma: 'presencial', meetLink: '' });
+      setForm({ 
+        cursoId: '', 
+        titulo: '', 
+        descripcion: '', 
+        fechaInicio: '', 
+        fechaFin: '', 
+        lugar: '', 
+        plataforma: 'presencial', 
+        meetLink: '',
+        empresaId: '',
+        instructorId: '',
+        alumnosIds: [],
+      });
+      toast.success('Sesión programada con éxito');
       fetchData();
     } catch (e) {
       console.error(e);
+      toast.error('Error al crear sesión');
     } finally {
       setSaving(false);
     }
@@ -101,9 +149,11 @@ export default function SesionesPage() {
   async function cambiarEstado(id: string, estado: string) {
     try {
       await api.patch(`/sesiones/${id}`, { estado });
+      toast.success(`Estado de la sesión actualizado a ${estado}`);
       fetchData();
     } catch (e) {
       console.error(e);
+      toast.error('Error al actualizar estado');
     }
   }
 
@@ -119,6 +169,8 @@ export default function SesionesPage() {
     finalizadas: sesiones.filter(s => s.estado === 'FINALIZADA').length,
     totalAlumnos: sesiones.reduce((acc, s) => acc + (s.totalAlumnos || 0), 0),
   };
+
+  const filteredAlumnos = allAlumnos.filter(a => !form.empresaId || a.empresaId === form.empresaId);
 
   if (loading) {
     return (
@@ -216,7 +268,17 @@ export default function SesionesPage() {
                         </span>
                       )}
                       {sesion.cursoNombre && (
-                        <span className="text-xs text-slate-400 font-medium truncate">{sesion.cursoNombre}</span>
+                        <span className="text-xs text-slate-400 font-medium truncate">| Curso: {sesion.cursoNombre}</span>
+                      )}
+                      {sesion.empresaNombre && (
+                        <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">
+                          🏢 {sesion.empresaNombre}
+                        </span>
+                      )}
+                      {sesion.instructorNombre && (
+                        <span className="bg-slate-50 text-slate-700 px-2 py-0.5 rounded text-[10px] font-medium">
+                          👤 Instructor: {sesion.instructorNombre}
+                        </span>
                       )}
                     </div>
                     <h3 className="font-bold text-slate-900 text-lg truncate">{sesion.titulo}</h3>
@@ -296,7 +358,7 @@ export default function SesionesPage() {
       {/* Modal Nueva Sesión */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-slate-100">
               <h2 className="text-xl font-bold text-slate-900">Nueva Sesión de Capacitación</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -309,7 +371,7 @@ export default function SesionesPage() {
                 <select
                   value={form.cursoId}
                   onChange={e => setForm(f => ({ ...f, cursoId: e.target.value }))}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
                 >
                   <option value="">Seleccioná un curso</option>
                   {cursos.map(c => (
@@ -317,6 +379,69 @@ export default function SesionesPage() {
                   ))}
                 </select>
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-semibold text-slate-700 block mb-1.5">Empresa Cliente (Opcional)</label>
+                  <select
+                    value={form.empresaId}
+                    onChange={e => {
+                      const empId = e.target.value;
+                      setForm(f => ({ ...f, empresaId: empId, alumnosIds: [] }));
+                    }}
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
+                  >
+                    <option value="">Todas / Particular</option>
+                    {empresas.map(emp => (
+                      <option key={emp.id} value={emp.id}>{emp.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-slate-700 block mb-1.5">Instructor a cargo</label>
+                  <select
+                    value={form.instructorId}
+                    onChange={e => setForm(f => ({ ...f, instructorId: e.target.value }))}
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
+                  >
+                    <option value="">Usar instructor del curso</option>
+                    {instructores.map(inst => (
+                      <option key={inst.id} value={inst.id}>{inst.nombre} {inst.apellido}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-slate-700 block mb-1.5">Inscribir Alumnos ({filteredAlumnos.length})</label>
+                <div className="border border-slate-200 rounded-xl p-3 max-h-40 overflow-y-auto space-y-2 bg-slate-50">
+                  {filteredAlumnos.map(al => {
+                    const isChecked = form.alumnosIds.includes(al.id);
+                    return (
+                      <label key={al.id} className="flex items-center gap-2 text-sm text-slate-750 font-medium cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            setForm(f => {
+                              const ids = isChecked 
+                                ? f.alumnosIds.filter(id => id !== al.id)
+                                : [...f.alumnosIds, al.id];
+                              return { ...f, alumnosIds: ids };
+                            });
+                          }}
+                          className="rounded text-primary focus:ring-primary/30"
+                        />
+                        <span>{al.nombre} {al.apellido} ({al.dni})</span>
+                      </label>
+                    );
+                  })}
+                  {filteredAlumnos.length === 0 && (
+                    <span className="text-xs text-slate-400 block py-2">No hay alumnos registrados para esta empresa</span>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <label className="text-sm font-semibold text-slate-700 block mb-1.5">Título de la sesión *</label>
                 <input
@@ -362,7 +487,7 @@ export default function SesionesPage() {
                   <select
                     value={form.plataforma}
                     onChange={e => setForm(f => ({ ...f, plataforma: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
                   >
                     <option value="presencial">Presencial</option>
                     <option value="zoom">Zoom</option>

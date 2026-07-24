@@ -84,13 +84,13 @@ export default function Header() {
                     {mobileMenuOpen && (
                         <div className="md:hidden py-4 border-t border-slate-200 animate-slideDown">
                             <div className="flex flex-col space-y-4">
-                                <Link href="/#servicios-profesionales" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Servicios
                                 </Link>
-                                <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Cursos
                                 </Link>
-                                <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors">
+                                <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Blog
                                 </Link>
                                 <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
@@ -98,12 +98,14 @@ export default function Header() {
                                 </Link>
                                 <Link
                                     href="/login"
+                                    onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold text-center hover:bg-primary-50 transition-all"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href="/#contacto"
+                                    onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-center hover:scale-105 transition-all"
                                 >
                                     Contacto
