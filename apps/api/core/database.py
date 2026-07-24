@@ -2,21 +2,17 @@ import os
 import asyncio
 from prisma import Prisma
 
+# Singleton Prisma client instance referenced by all routers
 prisma = Prisma()
 _db_lock = asyncio.Lock()
 
 async def connect_db():
-    global prisma
     async with _db_lock:
         if not prisma.is_connected():
             db_url = os.environ.get("DATABASE_URL", "")
-            clean_url = db_url.strip().strip('"').strip("'")
-            if clean_url:
+            if db_url:
+                clean_url = db_url.strip().strip('"').strip("'")
                 os.environ["DATABASE_URL"] = clean_url
-                try:
-                    prisma = Prisma(datasource={"url": clean_url})
-                except Exception as ex:
-                    print(f"⚠️ Prisma re-init notice: {ex}")
             try:
                 await prisma.connect(timeout=10000)
                 print("✅ Database connected successfully")
