@@ -78,7 +78,7 @@ async def global_unhandled_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Ha ocurrido un error interno en el servidor. Por favor, contacte al soporte técnico.",
+            "detail": f"Error interno: {str(exc)}",
             "request_id": request_id
         }
     )
