@@ -5,8 +5,9 @@ echo "🚀 Starting VMP API Service..."
 
 PYTHON_BIN=$(which python3 || which python)
 
-# 1. Generate Prisma Client
-echo "📦 Generating Prisma Client..."
+# 1. Fetch Prisma Query Engine Binary & Generate Client
+echo "📦 Fetching Prisma Query Engine & Generating Client..."
+$PYTHON_BIN -m prisma py fetch || true
 $PYTHON_BIN -m prisma generate || true
 
 # 2. Start Uvicorn Server
