@@ -1,10 +1,14 @@
+import os
 from prisma import Prisma
 
-# Prisma instance
 prisma = Prisma()
 
 async def connect_db():
     if not prisma.is_connected():
+        db_url = os.environ.get("DATABASE_URL", "")
+        if db_url:
+            clean_url = db_url.strip().strip('"').strip("'")
+            os.environ["DATABASE_URL"] = clean_url
         await prisma.connect()
         print("✅ Database connected")
 
