@@ -1,23 +1,12 @@
 export const API_URL = (() => {
-    // 1. Prioritize environment variable if defined and not pointing to localhost
     const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    // Ignore localhost, 127.0.0.1, and legacy railway.app URLs
+    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1') && !envUrl.includes('railway.app')) {
         return envUrl;
     }
 
-    // 2. Browser-side adjustments when envUrl is missing or local
-    if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        
-        // Production domain or Vercel preview fallback
-        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com') || hostname.includes('vercel.app')) {
-            const fallbackUrl = process.env.NEXT_PUBLIC_RENDER_URL || 'https://vmp-edtech-6wgw.onrender.com';
-            console.log(`[API-CLIENT] Using Production API URL: ${fallbackUrl}`);
-            return fallbackUrl;
-        }
-    }
-    
-    return envUrl || 'https://vmp-edtech-6wgw.onrender.com';
+    // Always fallback to active Render production backend
+    return 'https://vmp-edtech-6wgw.onrender.com';
 })();
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
