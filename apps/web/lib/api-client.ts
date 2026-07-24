@@ -1,45 +1,23 @@
 export const API_URL = (() => {
-    // 1. Check if we are on the production domain (browser side) first to allow immediate routing
-    if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
-            return 'https://vmp-edtech-production.up.railway.app';
-        }
-    }
-
-    // 2. Prioritize environment variable if defined and not pointing to localhost
+    // 1. Prioritize environment variable if defined and not pointing to localhost
     const envUrl = process.env.NEXT_PUBLIC_API_URL;
     if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
         return envUrl;
     }
 
-    // 3. Default fallback or local development url
-    let url = envUrl || 'http://localhost:8000';
-    
-    // 3. Browser-side adjustments for dynamic environments if envUrl is local or not defined
+    // 2. Browser-side adjustments when envUrl is missing or local
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
         
-        // LOG the current URL for debugging in production
-        console.log(`[API-CLIENT] Current Hostname: ${hostname}`);
-        console.log(`[API-CLIENT] Initial API URL: ${url}`);
-        
-        // If we are on the production domain
-        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com')) {
-            url = 'https://vmp-edtech-production.up.railway.app';
-            console.log(`[API-CLIENT] FORCED Production API URL: ${url}`);
-        } else if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
-            // Other cloud environments (Vercel previews, etc)
-            if (url.includes('localhost') || url.includes('127.0.0.1')) {
-                url = 'https://vmp-edtech-production.up.railway.app';
-                console.log(`[API-CLIENT] AUTO-DETECTED Production API URL: ${url}`);
-            } else {
-                url = url.replace('http://', 'https://');
-            }
+        // Production domain or Vercel preview fallback
+        if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com') || hostname.includes('vercel.app')) {
+            const fallbackUrl = process.env.NEXT_PUBLIC_RAILWAY_URL || 'https://vmp-servicios-production.up.railway.app';
+            console.log(`[API-CLIENT] Using Production API URL: ${fallbackUrl}`);
+            return fallbackUrl;
         }
     }
     
-    return url;
+    return envUrl || 'http://localhost:8000';
 })();
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
