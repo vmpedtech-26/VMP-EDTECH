@@ -84,13 +84,16 @@ async def login(request: Request, data: UserLogin):
     if not user or not verify_password(data.password, user.passwordHash):
         request_id = getattr(request.state, "request_id", "N/A")
         ip_address = request.client.host if request.client else "N/A"
-        await log_audit_action(
-            action="AUTH_FAILURE",
-            user_email=data.email,
-            details="Intento de inicio de sesión con contraseña incorrecta o usuario inexistente.",
-            ip_address=ip_address,
-            request_id=request_id
-        )
+        try:
+            await log_audit_action(
+                action="AUTH_FAILURE",
+                user_email=data.email,
+                details="Intento de inicio de sesión con contraseña incorrecta o usuario inexistente.",
+                ip_address=ip_address,
+                request_id=request_id
+            )
+        except Exception as ae:
+            print(f"⚠️ Audit log failure notice: {ae}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -99,14 +102,17 @@ async def login(request: Request, data: UserLogin):
     if not user.activo:
         request_id = getattr(request.state, "request_id", "N/A")
         ip_address = request.client.host if request.client else "N/A"
-        await log_audit_action(
-            action="AUTH_FAILURE",
-            user_id=user.id,
-            user_email=user.email,
-            details="Intento de inicio de sesión para cuenta inactiva.",
-            ip_address=ip_address,
-            request_id=request_id
-        )
+        try:
+            await log_audit_action(
+                action="AUTH_FAILURE",
+                user_id=user.id,
+                user_email=user.email,
+                details="Intento de inicio de sesión para cuenta inactiva.",
+                ip_address=ip_address,
+                request_id=request_id
+            )
+        except Exception as ae:
+            print(f"⚠️ Audit log failure notice: {ae}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive",
@@ -115,14 +121,17 @@ async def login(request: Request, data: UserLogin):
     # Log audit
     request_id = getattr(request.state, "request_id", "N/A")
     ip_address = request.client.host if request.client else "N/A"
-    await log_audit_action(
-        action="USER_LOGIN",
-        user_id=user.id,
-        user_email=user.email,
-        details="Inicio de sesión exitoso.",
-        ip_address=ip_address,
-        request_id=request_id
-    )
+    try:
+        await log_audit_action(
+            action="USER_LOGIN",
+            user_id=user.id,
+            user_email=user.email,
+            details="Inicio de sesión exitoso.",
+            ip_address=ip_address,
+            request_id=request_id
+        )
+    except Exception as ae:
+        print(f"⚠️ Audit log failure notice: {ae}")
     
     # Crear token
     access_token = create_access_token(data={"sub": user.id})
