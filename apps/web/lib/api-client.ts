@@ -104,11 +104,22 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         return response.json();
     } catch (error: any) {
         clearTimeout(id);
+        
+        // Automatic retry for Render cold starts / transient connection drops
+        const isRetryable = error.name === 'AbortError' || (error.message && error.message.includes('Failed to fetch'));
+        const currentAttempt = (options as any)._attempt || 1;
+        
+        if (isRetryable && currentAttempt < 2) {
+            console.warn(`[API-CLIENT] Fetch failed (attempt ${currentAttempt}). Retrying connection...`);
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            return request(path, { ...options, _attempt: currentAttempt + 1 } as any);
+        }
+
         if (error.name === 'AbortError') {
-            throw new Error('La petición tardó demasiado tiempo. Verifique su conexión.');
+            throw new Error('El servidor está iniciando. Por favor, reintente en 10 segundos.');
         }
         if (error.message && error.message.includes('Failed to fetch')) {
-            throw new Error('No se pudo conectar con el servidor. Verifique su conexión a internet.');
+            throw new Error('El servidor está iniciando. Por favor, intente nuevamente en unos segundos.');
         }
         throw error;
     }
