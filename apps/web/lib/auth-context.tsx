@@ -48,17 +48,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = (token: string, userData: User) => {
         localStorage.setItem('vmp_token', token);
         localStorage.setItem('vmp_user', JSON.stringify(userData));
+        document.cookie = `vmp_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         setUser(userData);
 
+        let targetUrl = '/dashboard';
         if (userData.rol === 'INSTRUCTOR') {
-            router.push('/dashboard/instructor');
+            targetUrl = '/dashboard/instructor';
         } else if (userData.rol === 'SUPER_ADMIN') {
-            router.push('/dashboard/super');
+            targetUrl = '/dashboard/super';
         } else if (userData.rol === 'CONTADOR') {
-            router.push('/dashboard/super/contabilidad');
-        } else {
-            router.push('/dashboard');
+            targetUrl = '/dashboard/super/contabilidad';
         }
+
+        window.location.href = targetUrl;
     };
 
     const logout = () => {
