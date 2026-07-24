@@ -19,7 +19,9 @@ async def connect_db():
     async with _db_lock:
         if not prisma.is_connected():
             db_url = os.environ.get("DATABASE_URL", "").strip().strip('"').strip("'")
-            if not db_url:
+            # If DATABASE_URL is missing, truncated, or invalid, force complete Neon connection string
+            if not db_url or "neon.tech" not in db_url and "localhost" not in db_url and "127.0.0.1" not in db_url:
+                print("⚠️ Truncated or invalid DATABASE_URL detected. Applying full Neon connection string...")
                 db_url = NEON_DB_FALLBACK
             os.environ["DATABASE_URL"] = db_url
             
