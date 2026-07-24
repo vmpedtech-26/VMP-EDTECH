@@ -11,13 +11,13 @@ export const API_URL = (() => {
         
         // Production domain or Vercel preview fallback
         if (hostname.includes('vmp-edtech.com') || hostname.includes('vmpservicios.com') || hostname.includes('vercel.app')) {
-            const fallbackUrl = process.env.NEXT_PUBLIC_RAILWAY_URL || 'https://vmp-servicios-production.up.railway.app';
+            const fallbackUrl = process.env.NEXT_PUBLIC_RENDER_URL || 'https://vmp-edtech-6wgw.onrender.com';
             console.log(`[API-CLIENT] Using Production API URL: ${fallbackUrl}`);
             return fallbackUrl;
         }
     }
     
-    return envUrl || 'http://localhost:8000';
+    return envUrl || 'https://vmp-edtech-6wgw.onrender.com';
 })();
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
