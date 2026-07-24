@@ -3,6 +3,9 @@
 
 echo "🚀 Starting VMP API Service..."
 
+export PRISMA_PY_CACHE_DIR="$(pwd)/.prisma-cache"
+mkdir -p "$PRISMA_PY_CACHE_DIR"
+
 PYTHON_BIN=$(which python3 || which python)
 
 # 1. Fetch Prisma Query Engine Binary & Generate Client

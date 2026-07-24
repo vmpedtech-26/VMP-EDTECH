@@ -1,5 +1,12 @@
 import os
 import asyncio
+
+# Set cache dir to project directory so Render includes downloaded query engine binaries in deploy bundle
+_base_dir = os.path.abspath(os.path.dirname(__file__) + "/..")
+_cache_dir = os.path.join(_base_dir, ".prisma-cache")
+os.environ["PRISMA_PY_CACHE_DIR"] = _cache_dir
+os.makedirs(_cache_dir, exist_ok=True)
+
 from prisma import Prisma
 
 # Singleton Prisma client instance referenced by all routers
