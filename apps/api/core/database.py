@@ -6,18 +6,24 @@ from prisma import Prisma
 prisma = Prisma()
 _db_lock = asyncio.Lock()
 
+NEON_DB_FALLBACK = "postgresql://neondb_owner:npg_r3ATep2kCBGc@ep-snowy-river-axaapsnr-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
+
 async def connect_db():
     async with _db_lock:
         if not prisma.is_connected():
-            db_url = os.environ.get("DATABASE_URL", "")
-            if db_url:
-                clean_url = db_url.strip().strip('"').strip("'")
-                os.environ["DATABASE_URL"] = clean_url
+            db_url = os.environ.get("DATABASE_URL", "").strip().strip('"').strip("'")
+            if not db_url:
+                db_url = NEON_DB_FALLBACK
+            os.environ["DATABASE_URL"] = db_url
             try:
-                await prisma.connect(timeout=10000)
-                print("✅ Database connected successfully")
+                await prisma.connect(timeout=15000)
+                print("✅ Database connected successfully to Neon PostgreSQL")
             except Exception as e:
                 print(f"❌ Error during prisma.connect(): {e}")
+                try:
+                    await prisma.disconnect()
+                except Exception:
+                    pass
                 raise e
 
 async def ensure_db_connected():
