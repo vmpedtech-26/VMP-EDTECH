@@ -6,14 +6,19 @@ prisma = Prisma()
 _db_lock = asyncio.Lock()
 
 async def connect_db():
+    global prisma
     async with _db_lock:
         if not prisma.is_connected():
             db_url = os.environ.get("DATABASE_URL", "")
-            if db_url:
-                clean_url = db_url.strip().strip('"').strip("'")
+            clean_url = db_url.strip().strip('"').strip("'")
+            if clean_url:
                 os.environ["DATABASE_URL"] = clean_url
+                try:
+                    prisma = Prisma(datasource={"url": clean_url})
+                except Exception as ex:
+                    print(f"⚠️ Prisma re-init notice: {ex}")
             try:
-                await prisma.connect()
+                await prisma.connect(timeout=10000)
                 print("✅ Database connected successfully")
             except Exception as e:
                 print(f"❌ Error during prisma.connect(): {e}")
