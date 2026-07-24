@@ -109,14 +109,14 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         const isRetryable = error.name === 'AbortError' || (error.message && error.message.includes('Failed to fetch'));
         const currentAttempt = (options as any)._attempt || 1;
         
-        if (isRetryable && currentAttempt < 2) {
-            console.warn(`[API-CLIENT] Fetch failed (attempt ${currentAttempt}). Retrying connection...`);
+        if (isRetryable && currentAttempt < 4) {
+            console.warn(`[API-CLIENT] Fetch failed (attempt ${currentAttempt}/4). Retrying connection...`);
             await new Promise((resolve) => setTimeout(resolve, 2000));
             return request(path, { ...options, _attempt: currentAttempt + 1 } as any);
         }
 
         if (error.name === 'AbortError') {
-            throw new Error('El servidor está iniciando. Por favor, reintente en 10 segundos.');
+            throw new Error('El servidor está iniciando. Por favor, intente nuevamente en unos segundos.');
         }
         if (error.message && error.message.includes('Failed to fetch')) {
             throw new Error('El servidor está iniciando. Por favor, intente nuevamente en unos segundos.');
