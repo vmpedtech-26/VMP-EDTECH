@@ -193,4 +193,28 @@ async def root():
 async def health_check():
     return {"status": "ok"}
 
+@app.get("/api/db-test")
+async def db_test():
+    import os, traceback
+    db_url = os.environ.get("DATABASE_URL", "NOT_SET")
+    safe_url = db_url[:25] + "..." + db_url[-25:] if len(db_url) > 50 else db_url
+    try:
+        from core.database import prisma, connect_db
+        if not prisma.is_connected():
+            await connect_db()
+        user_count = await prisma.user.count()
+        return {
+            "status": "ok",
+            "connected": prisma.is_connected(),
+            "users_count": user_count,
+            "db_url_sample": safe_url
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "db_url_sample": safe_url
+        }
+
 
