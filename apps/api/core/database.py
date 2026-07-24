@@ -1,6 +1,4 @@
 import os
-import sys
-import subprocess
 import asyncio
 from prisma import Prisma
 
@@ -22,19 +20,8 @@ async def connect_db():
                 await prisma.connect(timeout=15000)
                 print("✅ Database connected successfully to Neon PostgreSQL")
             except Exception as e:
-                print(f"⚠️ Initial prisma.connect() notice: {e}. Running self-healing binary fetch...")
-                try:
-                    subprocess.run([sys.executable, "-m", "prisma", "py", "fetch"], check=False)
-                    subprocess.run([sys.executable, "-m", "prisma", "generate"], check=False)
-                    await prisma.connect(timeout=15000)
-                    print("✅ Database connected successfully on self-healing retry")
-                except Exception as e2:
-                    print(f"❌ Critical DB connect error: {e2}")
-                    try:
-                        await prisma.disconnect()
-                    except Exception:
-                        pass
-                    raise e2
+                print(f"❌ Error during prisma.connect(): {e}")
+                raise e
 
 async def ensure_db_connected():
     """Ensure DB is connected, call this before queries if needed"""
