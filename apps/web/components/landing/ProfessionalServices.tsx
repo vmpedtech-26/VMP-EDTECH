@@ -107,7 +107,9 @@ export function ProfessionalServices() {
             src="/images/servicios_tecnicos_bg.jpg"
             alt="Inspección Técnica de Seguridad e Higiene en Terreno"
             fill
-            className="object-cover object-center scale-105"
+            sizes="100vw"
+            quality={95}
+            className="object-cover object-center"
             priority
           />
           {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}
@@ -211,7 +213,9 @@ export function ProfessionalServices() {
             src="/images/soluciones_corporativas_bg.jpg"
             alt="Consultoría Corporativa de Seguridad e Higiene"
             fill
-            className="object-cover object-center scale-105"
+            sizes="100vw"
+            quality={95}
+            className="object-cover object-center"
             priority
           />
           {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}

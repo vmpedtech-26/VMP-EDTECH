@@ -41,7 +41,9 @@ export default function ValueProposition() {
                     src="/images/porque_elegir_vmp_bg.jpg"
                     alt="Capacitación Vial Práctica en Terreno"
                     fill
-                    className="object-cover object-center scale-105"
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}

@@ -20,7 +20,9 @@ export default function AboutUs() {
                     src="/images/sobre_la_empresa_bg.jpg"
                     alt="Centro de Operaciones y Control VMP EDTECH"
                     fill
-                    className="object-cover object-center scale-105"
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}

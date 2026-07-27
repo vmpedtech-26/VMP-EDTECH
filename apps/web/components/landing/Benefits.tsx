@@ -50,10 +50,12 @@ export function Benefits() {
             {/* Background Image: Realistic Industrial Transport Scene */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/images/ventaja_competitiva_bg.png"
+                    src="/images/ventaja_competitiva_bg.jpg"
                     alt="Transporte Pesado y Operaciones VMP en Terreno"
                     fill
-                    className="object-cover object-center scale-105"
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}
