@@ -18,7 +18,7 @@ export default function AboutUs() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/sobre_la_empresa_bg.jpg"
-                    alt="Centro de Operaciones y Control VMP EDTECH"
+                    alt="Operaciones de Seguridad e Higiene en Yacimiento Vaca Muerta, Patagonia Argentina"
                     fill
                     sizes="100vw"
                     quality={95}

@@ -51,7 +51,7 @@ export function Benefits() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/ventaja_competitiva_bg.jpg"
-                    alt="Transporte Pesado y Operaciones VMP en Terreno"
+                    alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
                     fill
                     sizes="100vw"
                     quality={95}

@@ -105,7 +105,7 @@ export function ProfessionalServices() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/servicios_tecnicos_bg.jpg"
-            alt="Inspección Técnica de Seguridad e Higiene en Terreno"
+            alt="Inspección Técnica de Seguridad e Higiene en Neuquén y Vaca Muerta, Argentina"
             fill
             sizes="100vw"
             quality={95}
@@ -211,7 +211,7 @@ export function ProfessionalServices() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/soluciones_corporativas_bg.jpg"
-            alt="Consultoría Corporativa de Seguridad e Higiene"
+            alt="Consultoría Técnica Corporativa de Seguridad e Higiene en Planta Industrial de Argentina"
             fill
             sizes="100vw"
             quality={95}

@@ -39,7 +39,7 @@ export default function ValueProposition() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/porque_elegir_vmp_bg.jpg"
-                    alt="Capacitación Vial Práctica en Terreno"
+                    alt="Capacitación Vial Práctica de Flotas en Rutas y Terreno de Argentina"
                     fill
                     sizes="100vw"
                     quality={95}
