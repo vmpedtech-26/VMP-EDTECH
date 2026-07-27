@@ -58,12 +58,13 @@ def html_to_text(html: str) -> str:
 
 class EmailService:
     def __init__(self):
+        self.resend_api_key = os.getenv("RESEND_API_KEY", "")
         self.smtp_host = os.getenv("SMTP_HOST", "smtp.sendgrid.net")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_user = os.getenv("SMTP_USER", "apikey")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.email_from = os.getenv("EMAIL_FROM", "noreply@vmp-edtech.com")
-        self.email_ventas = os.getenv("EMAIL_VENTAS", "ventas@vmp-edtech.com")
+        self.email_from = os.getenv("EMAIL_FROM", "VMP-EDTECH <administracion@vmp-edtech.com>")
+        self.email_ventas = os.getenv("EMAIL_VENTAS", "administracion@vmp-edtech.com")
         
         # Setup Jinja2 for templates
         template_dir = Path(__file__).parent.parent / "templates"
@@ -71,6 +72,47 @@ class EmailService:
             loader=FileSystemLoader(str(template_dir)),
             autoescape=select_autoescape(['html', 'xml'])
         )
+
+    async def send_via_resend(
+        self,
+        to_email: str,
+        subject: str,
+        html_content: str,
+        from_email: Optional[str] = None
+    ) -> bool:
+        """
+        Send an email via Resend REST API over HTTPS (Port 443 - Never blocked by cloud providers)
+        """
+        import httpx
+        try:
+            sender = from_email or self.email_from
+            # Clean sender format if needed
+            if "<" not in sender and "@" in sender:
+                sender = f"VMP-EDTECH <{sender}>"
+
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                res = await client.post(
+                    "https://api.resend.com/emails",
+                    headers={
+                        "Authorization": f"Bearer {self.resend_api_key.strip()}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "from": sender,
+                        "to": [to_email],
+                        "subject": subject,
+                        "html": html_content,
+                    },
+                )
+                if res.status_code in [200, 201]:
+                    logger.info(f"✅ Email sent successfully via Resend API to {to_email}")
+                    return True
+                else:
+                    logger.error(f"❌ Resend API error ({res.status_code}): {res.text}")
+                    return False
+        except Exception as e:
+            logger.error(f"❌ Error sending email via Resend API: {str(e)}")
+            return False
         
     async def send_email(
         self,
@@ -78,14 +120,21 @@ class EmailService:
         subject: str,
         html_content: str,
         from_email: Optional[str] = None,
-        attachments: Optional[list] = None  # List of dicts with 'path' and 'filename'
+        attachments: Optional[list] = None
     ) -> bool:
         """
-        Send an email using SMTP with retries
+        Send an email using Resend API (HTTPS) or SMTP fallback with retries
         """
-        # Development mode: if no SMTP password or placeholder, just log the email
-        if not self.smtp_password or self.smtp_password == "TU_API_KEY_AQUI":
-            logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT)")
+        # 1. High-priority HTTPS driver: Resend API (bypasses cloud SMTP port blocking)
+        if self.resend_api_key and self.resend_api_key.strip():
+            resend_success = await self.send_via_resend(to_email, subject, html_content, from_email)
+            if resend_success:
+                return True
+            logger.warning("Resend API delivery failed or unconfigured, falling back to SMTP driver...")
+
+        # 2. Development mode check if no SMTP password or placeholder
+        if not self.smtp_password or self.smtp_password in ["TU_API_KEY_AQUI", ""]:
+            logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT TO EXTERNAL SMTP)")
             logger.info(f"To: {to_email} | Subject: {subject}")
             return True
         

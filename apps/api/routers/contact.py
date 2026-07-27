@@ -106,9 +106,11 @@ async def submit_contact_form(data: ContactFormRequest):
         )
         logger.info(f"Cotización guardada en base de datos para {data.empresa} ({data.email})")
 
-        # Notificación por email al equipo administrativo
+        # Notificación por email al equipo administrativo (administracion@vmp-edtech.com)
+        admin_recipient = os.getenv("EMAIL_ADMIN", os.getenv("EMAIL_VENTAS", "administracion@vmp-edtech.com"))
+        
         await email_service.send_email(
-            to_email="administracion@vmp-edtech.com",
+            to_email=admin_recipient,
             subject=f"Nueva consulta web: {data.empresa} - {data.nombre}",
             html_content=html_content,
         )
@@ -155,3 +157,41 @@ async def submit_contact_form(data: ContactFormRequest):
     except Exception as e:
         logger.error(f"Error processing contact form: {str(e)}")
         raise HTTPException(status_code=500, detail="Error al procesar la consulta")
+
+
+@router.post("/test-email")
+async def test_email_sending(target_email: Optional[str] = "administracion@vmp-edtech.com"):
+    """
+    Diagnostic endpoint to test email delivery to administracion@vmp-edtech.com
+    """
+    import os
+    resend_key = os.getenv("RESEND_API_KEY", "")
+    smtp_host = os.getenv("SMTP_HOST", "")
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASSWORD", "")
+
+    has_resend = bool(resend_key.strip())
+    has_smtp = bool(smtp_pass and smtp_pass != "TU_API_KEY_AQUI")
+
+    test_html = f"""
+    <div style="font-family: sans-serif; padding: 20px; background: #0A192F; color: white; border-radius: 10px;">
+        <h2>🧪 Prueba de Diagnóstico de Email - VMP-EDTECH</h2>
+        <p>Este es un mensaje de prueba automático para verificar la entrega a <strong>{target_email}</strong>.</p>
+        <p>Driver usado: <strong>{'Resend HTTPS API' if has_resend else ('SMTP' if has_smtp else 'Modo Desarrollo (No configurado)')}</strong></p>
+    </div>
+    """
+
+    success = await email_service.send_email(
+        to_email=target_email,
+        subject="🧪 Prueba de Diagnóstico de Correo VMP",
+        html_content=test_html
+    )
+
+    return {
+        "status": "success" if success else "error",
+        "target_email": target_email,
+        "resend_configured": has_resend,
+        "smtp_configured": has_smtp,
+        "sent": success
+    }
+
