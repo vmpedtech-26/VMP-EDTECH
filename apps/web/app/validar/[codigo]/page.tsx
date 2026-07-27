@@ -302,17 +302,25 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className="text-center mt-8">
-                    <p className="text-sm text-slate-800 mb-4">
-                        ¿Necesitas más información?
+                {/* Footer de Acciones */}
+                <div className="text-center mt-8 space-y-4">
+                    <p className="text-sm text-slate-800">
+                        ¿Querés verificar otro certificado o consultar más información?
                     </p>
-                    <Link
-                        href="/"
-                        className="inline-block bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-colors shadow-md"
-                    >
-                        Volver al Inicio
-                    </Link>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <Link
+                            href="/validar"
+                            className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg flex items-center justify-center gap-2"
+                        >
+                            <Award className="w-5 h-5" /> Validar Otra Credencial
+                        </Link>
+                        <Link
+                            href="/"
+                            className="w-full sm:w-auto bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-semibold hover:bg-slate-50 transition-colors shadow-sm text-center"
+                        >
+                            Volver al Inicio
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Info adicional */}
