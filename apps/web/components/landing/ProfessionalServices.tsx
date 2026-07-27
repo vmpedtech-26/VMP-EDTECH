@@ -204,21 +204,34 @@ export function ProfessionalServices() {
       </section>
 
       {/* Soluciones Corporativas Section */}
-      <section id="servicios-profesionales" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="servicios-profesionales" className="py-24 relative overflow-hidden border-t border-slate-800">
+        {/* Background Image: Realistic Organic Corporate Executive Scene */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/soluciones_corporativas_bg.jpg"
+            alt="Consultoría Corporativa de Seguridad e Higiene"
+            fill
+            className="object-cover object-center scale-105"
+            priority
+          />
+          {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95 backdrop-blur-[2px]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">
+              <h2 className="text-emerald-400 font-extrabold tracking-wider uppercase text-sm mb-3">
                 Soluciones Corporativas
               </h2>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-6">
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-white mb-6">
                 Servicios de Consultoría y Gestión Integral
               </h3>
-              <p className="text-lg text-slate-600 leading-relaxed">
+              <p className="text-lg text-slate-200 leading-relaxed">
                 Brindamos soporte técnico y normativo de nivel experto para proteger el activo más valioso de su organización: su gente.
               </p>
             </motion.div>
