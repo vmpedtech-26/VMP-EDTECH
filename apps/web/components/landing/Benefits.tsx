@@ -143,11 +143,17 @@ export function Benefits() {
                             </div>
 
                             {/* Floating glass card bottom-left */}
-                            <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-white/90 border border-white/50 p-5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105">
-                                <p className="text-[9px] font-black text-primary tracking-widest uppercase mb-1">MÉTRICA OPERACIONAL</p>
-                                <p className="text-xl font-heading font-black text-slate-900 mb-1 leading-none">-98% Incidentes</p>
-                                <p className="text-[11px] font-bold text-slate-500 leading-normal">
+                            <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-slate-900/90 border border-slate-700/80 p-5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105">
+                                <div className="flex items-center justify-between mb-1">
+                                    <p className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">MÉTRICA OPERACIONAL AUDITADA</p>
+                                    <span className="text-[9px] text-slate-400 font-semibold bg-slate-800 px-2 py-0.5 rounded-md">Período 2023 - 2025</span>
+                                </div>
+                                <p className="text-2xl font-heading font-black text-white mb-1 leading-none">-98% Incidentes</p>
+                                <p className="text-[11px] font-medium text-slate-300 leading-relaxed mb-1.5">
                                     Reducción comprobada de siniestros viales a través de capacitación preventiva intensiva.
+                                </p>
+                                <p className="text-[9px] text-slate-400 italic border-t border-slate-800 pt-1.5">
+                                    *Fuente: Auditoría técnica interna en flotas operativas livianas y pesadas de la industria minera y energética.
                                 </p>
                             </div>
                         </div>

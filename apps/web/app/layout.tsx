@@ -75,6 +75,9 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '@/lib/auth-context';
 import { Toaster } from 'sonner';
+import JsonLd from '@/components/seo/JsonLd';
+import CookieConsentBanner from '@/components/common/CookieConsentBanner';
+import WhatsAppButton from '@/components/common/WhatsAppButton';
 
 export default function RootLayout({
     children,
@@ -83,9 +86,14 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
+            <head>
+                <JsonLd type="Organization" />
+            </head>
             <body className="antialiased font-sans">
                 <AuthProvider>
                     {children}
+                    <WhatsAppButton />
+                    <CookieConsentBanner />
                     <Toaster position="top-right" richColors />
                 </AuthProvider>
             </body>

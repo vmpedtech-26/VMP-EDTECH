@@ -327,7 +327,9 @@ export default function CourseCatalog() {
                     <div className="flex items-center gap-3 ml-auto">
                         {/* Progress bar */}
                         <div className="hidden sm:flex items-center gap-2 mr-4">
-                            <span className="text-slate-400 text-xs tabular-nums">{active + 1} / {courses.length}</span>
+                            <span className="text-slate-400 text-xs tabular-nums" aria-live="polite" role="status">
+                                {active + 1} / {courses.length}
+                            </span>
                             <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden">
                                 <motion.div
                                     className={`h-full bg-gradient-to-r ${course.accentColor} rounded-full`}
@@ -340,15 +342,15 @@ export default function CourseCatalog() {
 
                         <button
                             onClick={prev}
-                            className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all"
-                            aria-label="Anterior"
+                            className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 focus:ring-2 focus:ring-teal-400 outline-none transition-all"
+                            aria-label="Ver curso anterior"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button
                             onClick={next}
-                            className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all"
-                            aria-label="Siguiente"
+                            className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 focus:ring-2 focus:ring-teal-400 outline-none transition-all"
+                            aria-label="Ver curso siguiente"
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>

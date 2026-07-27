@@ -321,21 +321,35 @@ export default function ContactSection() {
                                             onChange={handleChange}
                                             required
                                             rows={4}
+                                            aria-describedby={status === 'error' ? 'contact-error-msg' : undefined}
                                             placeholder="Contanos sobre tu flota: cantidad de conductores, tipo de vehículos, modalidad preferida..."
                                             className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none resize-none"
                                         />
                                     </div>
 
-                                    {status === 'error' && (
-                                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-                                            Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a administracion@vmp-edtech.com
-                                        </div>
-                                    )}
+                                    {/* Honeypot field (Anti-spam protection) */}
+                                    <input
+                                        type="text"
+                                        name="website_hp"
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        className="hidden aria-hidden"
+                                        style={{ display: 'none' }}
+                                    />
+
+                                    {/* ARIA Live Error Region */}
+                                    <div aria-live="polite" role="status">
+                                        {status === 'error' && (
+                                            <div id="contact-error-msg" className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm font-medium">
+                                                Hubo un error al enviar tu mensaje. Por favor, intentá nuevamente o escribinos directamente a administracion@vmp-edtech.com
+                                            </div>
+                                        )}
+                                    </div>
 
                                     <button
                                         type="submit"
                                         disabled={status === 'sending'}
-                                        className="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 transition-all duration-300 flex items-center justify-center"
+                                        className="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] focus:ring-4 focus:ring-primary/30 disabled:opacity-60 disabled:hover:scale-100 transition-all duration-300 flex items-center justify-center"
                                     >
                                         {status === 'sending' ? (
                                             <>
