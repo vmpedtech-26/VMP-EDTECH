@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShieldCheck } from 'lucide-react';
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -47,6 +47,9 @@ export default function Header() {
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Cursos
                             </Link>
+                            <Link href="/validar" className="text-slate-900 hover:text-primary font-bold transition-colors border-b-2 border-transparent hover:border-primary pb-1 flex items-center gap-1.5 text-primary">
+                                <ShieldCheck className="w-4 h-4 text-primary" /> Validar Credencial
+                            </Link>
                             <Link href="/blog" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Blog
                             </Link>
@@ -56,16 +59,22 @@ export default function Header() {
                         </div>
 
                         {/* CTAs */}
-                        <div className="hidden md:flex items-center space-x-4">
+                        <div className="hidden md:flex items-center space-x-3">
+                            <Link
+                                href="/validar"
+                                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all flex items-center gap-1.5 text-sm"
+                            >
+                                <ShieldCheck className="w-4 h-4 text-primary" /> Validar
+                            </Link>
                             <Link
                                 href="/login"
-                                className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300"
+                                className="px-5 py-2 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 text-sm"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/#contacto"
-                                className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300"
+                                className="px-5 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
                             >
                                 Contacto
                             </Link>
@@ -89,6 +98,9 @@ export default function Header() {
                                 </Link>
                                 <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Cursos
+                                </Link>
+                                <Link href="/validar" className="text-primary font-bold py-2 flex items-center gap-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                    <ShieldCheck className="w-5 h-5" /> Validar Credencial
                                 </Link>
                                 <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Blog

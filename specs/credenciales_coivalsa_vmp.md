@@ -1,14 +1,16 @@
-# Spec: Credenciales Oficiales VMP-EDTECH (Botón de Acción "Validar Otra Credencial")
+# Spec: Credenciales Oficiales VMP-EDTECH (Enlace "Validar" en la Navegación Principal del Inicio)
 
 ## 1. Objective
-Agregar una opción directa y destacada en la página de resultado de validación (`/validar/[codigo]`) para permitir al usuario escanear o ingresar el código de otra credencial de forma inmediata (`Validar Otra Credencial`), evitando la necesidad de regresar al inicio.
+Incorporar la opción **"Validar Credencial"** en la barra de navegación del encabezado principal (`Header.tsx`) de la web, tanto para versión Desktop como Mobile, permitiendo a los usuarios acceder al validador con 1 solo clic desde cualquier página del sitio.
 
-## 2. UX Specifications
-- **Botonera de Acción en Resultados (`/validar/[codigo]`):**
-  - **Botón Primario:** `🔍 Validar Otra Credencial` (Enlace directo a `/validar`, estilo destacado con color primario).
-  - **Botón Secundario:** `Volver al Inicio` (Enlace a `/`).
+## 2. Header Specs
+- **Menú Desktop (`Header.tsx`):**
+  - Añadir enlace `Validar Credencial` apuntando a `/validar` destacado junto a Servicios, Cursos, Blog y Alianzas.
+  - Añadir botón de acceso rápido `Validar` en la barra de llamadas a la acción (CTAs) junto a `Login` y `Contacto`.
+- **Menú Mobile:**
+  - Añadir opción `Validar Credencial` destacada en la lista del menú desplegable móvil.
 
 ## 3. Definition of Done (DoD)
-- [ ] **DoD-1**: El botón "Validar Otra Credencial" figura destacado en los resultados.
-- [ ] **DoD-2**: Hace clic y navega directamente a `/validar` para continuar escaneando.
-- [ ] **DoD-3**: Cambios integrados en `apps/web/app/validar/[codigo]/page.tsx` y desplegados.
+- [ ] **DoD-1**: La opción "Validar Credencial" figura en la barra de navegación del inicio.
+- [ ] **DoD-2**: El botón redirige a `/validar`.
+- [ ] **DoD-3**: Cambios subidos e integrados en `apps/web/components/landing/Header.tsx`.
