@@ -40,15 +40,15 @@ export default function Header() {
                             </div>
                         </Link>
 
-                        <div className="hidden md:flex items-center space-x-8">
+                        <div className="hidden md:flex items-center space-x-4 lg:space-x-6 text-sm lg:text-base">
                             <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Servicios
                             </Link>
                             <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Cursos
                             </Link>
-                            <Link href="/validar" className="text-slate-900 hover:text-primary font-bold transition-colors border-b-2 border-transparent hover:border-primary pb-1 flex items-center gap-1.5 text-primary">
-                                <ShieldCheck className="w-4 h-4 text-primary" /> Validar Credencial
+                            <Link href="/validar" className="bg-emerald-50 text-teal-800 hover:bg-emerald-100 border border-emerald-300 font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Validar Credencial
                             </Link>
                             <Link href="/blog" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
                                 Blog
@@ -59,22 +59,22 @@ export default function Header() {
                         </div>
 
                         {/* CTAs */}
-                        <div className="hidden md:flex items-center space-x-3">
+                        <div className="hidden md:flex items-center space-x-2.5">
                             <Link
                                 href="/validar"
-                                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all flex items-center gap-1.5 text-sm"
+                                className="px-3.5 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5 text-xs lg:text-sm shadow-md"
                             >
-                                <ShieldCheck className="w-4 h-4 text-primary" /> Validar
+                                <ShieldCheck className="w-4 h-4" /> Validar
                             </Link>
                             <Link
                                 href="/login"
-                                className="px-5 py-2 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 text-sm"
+                                className="px-4 py-2 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 text-xs lg:text-sm"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/#contacto"
-                                className="px-5 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
+                                className="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300 text-xs lg:text-sm"
                             >
                                 Contacto
                             </Link>
