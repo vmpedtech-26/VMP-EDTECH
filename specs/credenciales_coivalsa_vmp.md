@@ -1,16 +1,15 @@
-# Spec: Credenciales Oficiales VMP-EDTECH (Enlace "Validar" en la Navegación Principal del Inicio)
+# Spec: Credenciales Oficiales VMP-EDTECH (Fondo Orgánico Realista en "Servicios Técnicos Oficiales")
 
 ## 1. Objective
-Incorporar la opción **"Validar Credencial"** en la barra de navegación del encabezado principal (`Header.tsx`) de la web, tanto para versión Desktop como Mobile, permitiendo a los usuarios acceder al validador con 1 solo clic desde cualquier página del sitio.
+Añadir una imagen de fondo orgánica y realista que represente la inspección técnica en infraestructura vial e industrial en la sección **"Servicios Técnicos Oficiales"** (`ProfessionalServices.tsx`), combinada con capas de gradientes oscuros para asegurar legibilidad, contraste y estética de diseño premium.
 
-## 2. Header Specs
-- **Menú Desktop (`Header.tsx`):**
-  - Añadir enlace `Validar Credencial` apuntando a `/validar` destacado junto a Servicios, Cursos, Blog y Alianzas.
-  - Añadir botón de acceso rápido `Validar` en la barra de llamadas a la acción (CTAs) junto a `Login` y `Contacto`.
-- **Menú Mobile:**
-  - Añadir opción `Validar Credencial` destacada en la lista del menú desplegable móvil.
+## 2. Component Specs
+- **Fondo de Sección (`section#servicios`):**
+  - **Imagen:** `/images/servicios_tecnicos_bg.jpg` (Fotografía cinematográfica realista de ingenieros de seguridad en terreno de obra e infraestructura vial).
+  - **Capas de Superposición:** `bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/90` con efecto de viñeta y patrón técnico sutil.
+  - **Tipografía y Contraste:** Título en blanco puro con acento en gradiente verde esmeralda/teal y texto descriptivo en gris claro de alto contraste.
 
 ## 3. Definition of Done (DoD)
-- [ ] **DoD-1**: La opción "Validar Credencial" figura en la barra de navegación del inicio.
-- [ ] **DoD-2**: El botón redirige a `/validar`.
-- [ ] **DoD-3**: Cambios subidos e integrados en `apps/web/components/landing/Header.tsx`.
+- [ ] **DoD-1**: Imagen guardada en `apps/web/public/images/servicios_tecnicos_bg.jpg`.
+- [ ] **DoD-2**: Sección `#servicios` renderiza el fondo orgánico realista con gradiente protector.
+- [ ] **DoD-3**: Cambios integrados en `apps/web/components/landing/ProfessionalServices.tsx` y subidos a producción.

@@ -100,15 +100,28 @@ export function ProfessionalServices() {
   return (
     <>
       {/* Servicios Técnicos Section (Seguridad e Higiene) */}
-      <section id="servicios" className="py-28 bg-[#fafbfc] relative overflow-hidden border-b border-slate-100">
-        {/* Native High-Dither Radial Glow (No blur filter color banding or pixelation artifacts) */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: `radial-gradient(circle at 50% 35%, rgba(20, 184, 166, 0.05) 0%, transparent 60%)`
+      <section id="servicios" className="py-28 relative overflow-hidden border-b border-slate-800">
+        {/* Background Image: Realistic Organic Inspection Scene */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/servicios_tecnicos_bg.jpg"
+            alt="Inspección Técnica de Seguridad e Higiene en Terreno"
+            fill
+            className="object-cover object-center scale-105"
+            priority
+          />
+          {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95 backdrop-blur-[2px]" />
+        </div>
+        
+        {/* Native High-Dither Radial Glow */}
+        <div className="absolute inset-0 pointer-events-none z-0" style={{
+          background: `radial-gradient(circle at 50% 35%, rgba(20, 184, 166, 0.15) 0%, transparent 60%)`
         }} />
         
-        {/* Engineering technical grid pattern (SVG Vector Sharp - 100% pixel-perfect on all screens) */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%23e2e8f0' stroke-width='0.85' stroke-opacity='0.6'/%3E%3C/svg%3E")`,
+        {/* Technical grid pattern */}
+        <div className="absolute inset-0 pointer-events-none z-0 opacity-20" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%2338bdf8' stroke-width='0.85' stroke-opacity='0.4'/%3E%3C/svg%3E")`,
           backgroundSize: '60px 60px'
         }} />
 
@@ -118,18 +131,18 @@ export function ProfessionalServices() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4.5 py-1.5 mb-4 shadow-sm backdrop-blur-sm"
+              className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4.5 py-1.5 mb-4 shadow-md backdrop-blur-md"
             >
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-extrabold text-primary uppercase tracking-wider">Servicios Técnicos Oficiales</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-extrabold text-emerald-300 uppercase tracking-wider">Servicios Técnicos Oficiales</span>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl font-heading font-black text-slate-900 mb-6 tracking-tight">
-              Consultoría en <span className="text-primary italic relative inline-block">
+            <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-6 tracking-tight">
+              Consultoría en <span className="text-teal-400 italic relative inline-block">
                 Seguridad e Higiene
-                <span className="absolute bottom-1 left-0 w-full h-2.5 bg-primary/15 -z-10 rounded-sm" />
+                <span className="absolute bottom-1 left-0 w-full h-2.5 bg-teal-500/25 -z-10 rounded-sm" />
               </span>
             </h2>
-            <p className="max-w-3xl mx-auto text-lg text-slate-600 leading-relaxed font-medium">
+            <p className="max-w-3xl mx-auto text-lg text-slate-200 leading-relaxed font-medium">
               Consultoría técnica especializada para elevar los estándares de seguridad en su organización y garantizar el cumplimiento normativo.
             </p>
           </div>
