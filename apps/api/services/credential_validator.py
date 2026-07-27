@@ -50,7 +50,8 @@ class CredentialValidator:
         signature_valid = False
         signature_status = "missing"
         
-        if credencial.firmaCriptografica and credencial.fechaEmision:
+        firma_sig = getattr(credencial, 'firmaCriptografica', None)
+        if firma_sig and credencial.fechaEmision:
             fecha_emision_str = credencial.fechaEmision.strftime("%Y-%m-%d")
             recalculated_sig = calculate_credential_signature(
                 credencial.numero,
@@ -58,7 +59,7 @@ class CredentialValidator:
                 credencial.cursoId,
                 fecha_emision_str
             )
-            if credencial.firmaCriptografica == recalculated_sig:
+            if firma_sig == recalculated_sig:
                 signature_valid = True
                 signature_status = "verified"
             else:
