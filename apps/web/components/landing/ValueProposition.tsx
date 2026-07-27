@@ -34,10 +34,19 @@ export default function ValueProposition() {
     };
 
     return (
-        <section className="py-24 bg-white relative overflow-hidden border-b border-slate-100">
-            {/* Background Grid Accent */}
-            <div className="absolute inset-0 bg-[#fafbfc]/50 pointer-events-none" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        <section className="py-24 relative overflow-hidden border-b border-slate-800">
+            {/* Background Image: Realistic Driving Instruction Scene */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/porque_elegir_vmp_bg.jpg"
+                    alt="Capacitación Vial Práctica en Terreno"
+                    fill
+                    className="object-cover object-center scale-105"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast & Readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95 backdrop-blur-[2px]" />
+            </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -89,17 +98,17 @@ export default function ValueProposition() {
                             transition={fadeIn.transition}
                             className="mb-8"
                         >
-                            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4 shadow-sm">
-                                <span className="w-2 h-2 rounded-full bg-primary" />
-                                <span className="text-xs font-black text-primary uppercase tracking-wider">¿Por qué elegir VMP?</span>
+                            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4 py-1.5 mb-4 shadow-sm backdrop-blur-md">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">¿Por qué elegir VMP?</span>
                             </div>
-                            <h2 className="font-heading font-black text-4xl md:text-5xl text-slate-900 mb-4 tracking-tight leading-tight">
-                                La Plataforma Líder en <span className="text-primary italic relative inline-block">
+                            <h2 className="font-heading font-black text-4xl md:text-5xl text-white mb-4 tracking-tight leading-tight">
+                                La Plataforma Líder en <span className="text-teal-400 italic relative inline-block">
                                     Capacitación Vial
-                                    <span className="absolute bottom-1 left-0 w-full h-2.5 bg-primary/15 -z-10 rounded-sm" />
+                                    <span className="absolute bottom-1 left-0 w-full h-2.5 bg-teal-500/25 -z-10 rounded-sm" />
                                 </span>
                             </h2>
-                            <p className="text-base text-slate-600 leading-relaxed font-medium">
+                            <p className="text-base text-slate-200 leading-relaxed font-medium">
                                 Proveemos programas oficiales y herramientas tecnológicas diseñadas para elevar la seguridad y eficiencia de las flotas operativas.
                             </p>
                         </motion.div>
@@ -114,24 +123,24 @@ export default function ValueProposition() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        className="flex gap-5 p-5 rounded-2xl border border-slate-100 hover:border-primary/25 hover:bg-slate-50/70 transition-all duration-300 group"
+                                        className="flex gap-5 p-5 rounded-2xl border border-slate-700/60 bg-slate-900/70 backdrop-blur-md hover:border-emerald-400/40 hover:bg-slate-900/90 transition-all duration-300 group shadow-md"
                                     >
                                         {/* Icon Container */}
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm group-hover:bg-primary/10 group-hover:border-primary/20 transition-all duration-300">
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center shadow-sm group-hover:bg-emerald-500/20 group-hover:border-emerald-400/30 transition-all duration-300">
                                             {value.icon}
                                         </div>
 
                                         {/* Texts */}
                                         <div className="flex-1">
                                             <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-                                                <h3 className="font-bold text-lg text-slate-950 group-hover:text-primary transition-colors">
+                                                <h3 className="font-bold text-lg text-white group-hover:text-emerald-300 transition-colors">
                                                     {value.title}
                                                 </h3>
-                                                <span className="text-[10px] font-black tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md uppercase italic">
+                                                <span className="text-[10px] font-black tracking-wider text-emerald-300 bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 rounded-md uppercase italic">
                                                     {value.details}
                                                 </span>
                                             </div>
-                                            <p className="text-slate-500 text-sm leading-relaxed font-semibold">
+                                            <p className="text-slate-300 text-sm leading-relaxed font-medium">
                                                 {value.description}
                                             </p>
                                         </div>
@@ -148,9 +157,9 @@ export default function ValueProposition() {
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.4 }}
-                    className="text-center mt-16 border-t border-slate-100 pt-8"
+                    className="text-center mt-16 border-t border-slate-800 pt-8"
                 >
-                    <p className="text-sm text-slate-500 italic max-w-2xl mx-auto font-medium leading-relaxed">
+                    <p className="text-sm text-slate-300 italic max-w-2xl mx-auto font-medium leading-relaxed">
                         "Nuestras capacitaciones están diseñadas bajo los estándares normativos nacionales e internacionales más exigentes, garantizando certificaciones con validez técnica real."
                     </p>
                 </motion.div>

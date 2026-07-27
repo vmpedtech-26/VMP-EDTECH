@@ -46,9 +46,19 @@ export function Benefits() {
     };
 
     return (
-        <section id="beneficios" className="py-24 bg-slate-50 relative overflow-hidden border-b border-slate-100">
-            {/* Background Grid Accent */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+        <section id="beneficios" className="py-24 relative overflow-hidden border-b border-slate-800">
+            {/* Background Image: Realistic Industrial Transport Scene */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/ventaja_competitiva_bg.png"
+                    alt="Transporte Pesado y Operaciones VMP en Terreno"
+                    fill
+                    className="object-cover object-center scale-105"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast & Readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95 backdrop-blur-[2px]" />
+            </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -62,17 +72,17 @@ export function Benefits() {
                             transition={fadeIn.transition}
                             className="mb-10 text-left"
                         >
-                            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4 shadow-sm">
-                                <span className="w-2 h-2 rounded-full bg-primary" />
-                                <span className="text-xs font-black text-primary uppercase tracking-wider">Ventaja Competitiva</span>
+                            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4 py-1.5 mb-4 shadow-sm backdrop-blur-md">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">Ventaja Competitiva</span>
                             </div>
-                            <h2 className="text-3xl sm:text-4xl font-heading font-black text-slate-900 mb-4 tracking-tight leading-tight">
-                                Beneficios de nuestra <span className="text-primary italic relative inline-block">
+                            <h2 className="text-3xl sm:text-4xl font-heading font-black text-white mb-4 tracking-tight leading-tight">
+                                Beneficios de nuestra <span className="text-teal-400 italic relative inline-block">
                                     Solución Corporativa
-                                    <span className="absolute bottom-1 left-0 w-full h-2.5 bg-primary/15 -z-10 rounded-sm" />
+                                    <span className="absolute bottom-1 left-0 w-full h-2.5 bg-teal-500/25 -z-10 rounded-sm" />
                                 </span>
                             </h2>
-                            <p className="text-base text-slate-600 font-semibold max-w-2xl leading-relaxed">
+                            <p className="text-base text-slate-200 font-medium max-w-2xl leading-relaxed">
                                 Digitaliza la formación obligatoria de tu equipo, reduce costes operacionales y obtén visibilidad técnica en tiempo real.
                             </p>
                         </motion.div>
@@ -87,15 +97,15 @@ export function Benefits() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.5, delay: index * 0.08 }}
-                                        className="group bg-white rounded-2xl p-5 border border-slate-100/80 hover:border-primary/25 hover:shadow-[0_15px_40px_rgba(15,23,42,0.03)] transition-all duration-300 flex flex-col"
+                                        className="group bg-slate-900/70 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 hover:border-emerald-400/40 hover:bg-slate-900/90 transition-all duration-300 flex flex-col shadow-md"
                                     >
-                                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 group-hover:bg-primary/10 group-hover:border-primary/20 transition-colors duration-300">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 group-hover:border-emerald-400/30 transition-colors duration-300">
                                             {benefit.icon}
                                         </div>
-                                        <h3 className="text-base font-bold text-slate-950 mb-2 group-hover:text-primary transition-colors">
+                                        <h3 className="text-base font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
                                             {benefit.title}
                                         </h3>
-                                        <p className="text-slate-500 text-xs font-semibold leading-relaxed">
+                                        <p className="text-slate-300 text-xs font-medium leading-relaxed">
                                             {benefit.description}
                                         </p>
                                     </motion.div>

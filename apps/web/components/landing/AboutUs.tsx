@@ -13,14 +13,18 @@ export default function AboutUs() {
     };
 
     return (
-        <section id="sobre-nosotros" className="relative py-16 md:py-20 overflow-hidden bg-slate-50">
-            {/* Background Grid Overlay */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                <div className="absolute inset-0 bg-slate-50" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.035)_1px,transparent_1px)] bg-[size:60px_60px]" />
-                <div className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
-                <div className="absolute top-[30%] right-[-10%] w-[30%] h-[30%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
+        <section id="sobre-nosotros" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
+            {/* Background Image: Realistic Corporate Operations & Control Center */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/sobre_la_empresa_bg.jpg"
+                    alt="Centro de Operaciones y Control VMP EDTECH"
+                    fill
+                    className="object-cover object-center scale-105"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast & Readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95 backdrop-blur-[2px]" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12 md:space-y-16">
@@ -45,7 +49,7 @@ export default function AboutUs() {
                         whileInView={fadeIn.whileInView}
                         viewport={fadeIn.viewport}
                         transition={{ ...fadeIn.transition, delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-bold font-heading text-slate-900 tracking-tight mb-8"
+                        className="text-4xl md:text-5xl font-bold font-heading text-white tracking-tight mb-8"
                     >
                         VMP-EDTECH <span className="gradient-text">Educación con Tecnología</span>
                     </motion.h2>
