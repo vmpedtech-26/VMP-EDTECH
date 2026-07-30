@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # CORS
-    FRONTEND_URL: str = "http://localhost:3000"
-    ENVIRONMENT: str = "development"
+    FRONTEND_URL: str = "https://www.vmp-edtech.com"
+    ENVIRONMENT: str = "production"
     
     @property
     def BACKEND_CORS_ORIGINS(self) -> List[str]:
@@ -26,10 +26,13 @@ class Settings(BaseSettings):
         if self.ENVIRONMENT == "production":
             # Lista blanca de dominios permitidos en producción
             return [
+                "https://www.vmp-edtech.com",
+                "https://vmp-edtech.com",
                 "https://vmpservicios.com",
                 "https://www.vmpservicios.com",
                 "https://app.vmpservicios.com",
-                # Agregar dominios de producción aquí
+                "http://localhost:3000",
+                "http://localhost:3001",
             ]
         else:
             # Desarrollo: permite localhost en varios puertos
