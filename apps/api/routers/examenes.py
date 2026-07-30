@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 from schemas.models import (
     GenerateCredencialRequest,
     CredencialResponse,
@@ -10,13 +9,53 @@ from schemas.models import (
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
+from core.config import settings
 from services.credencial_generator import (
     generate_credencial_number,
     create_credencial_pdf,
-    save_credencial_pdf
+    save_credencial_pdf,
+    generate_qr_code
 )
 
 router = APIRouter()
+
+
+@router.get("/all")
+async def obtener_todos_examenes(current_user=Depends(get_current_user)):
+    """Obtener todos los exámenes (solo INSTRUCTOR y SUPER_ADMIN)"""
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="No autorizado")
+    
+    examenes = await prisma.examen.find_many(
+        include={
+            "alumno": True,
+            "curso": True
+        },
+        order={"realizadoAt": "desc"}
+    )
+    
+    return [
+        {
+            "id": e.id,
+            "alumnoId": e.alumnoId,
+            "cursoId": e.cursoId,
+            "calificacion": e.calificacion,
+            "aprobado": e.aprobado,
+            "realizadoAt": e.realizadoAt.isoformat() if e.realizadoAt else None,
+            "alumno": {
+                "nombre": e.alumno.nombre,
+                "apellido": e.alumno.apellido,
+                "dni": e.alumno.dni,
+                "email": e.alumno.email
+            },
+            "curso": {
+                "nombre": e.curso.nombre,
+                "codigo": e.curso.codigo
+            }
+        }
+        for e in examenes
+    ]
 
     
 @router.post("/generar-credencial/{inscripcionId}")
@@ -43,11 +82,11 @@ async def generate_credencial(
         if current_user.id != inscripcion.alumnoId:
             raise HTTPException(status_code=403, detail="No autorizado")
     
-    # Check if course is completed
-    if not inscripcion.completado:
+    # Check if course is completed — only check estado field (no 'completado' boolean field in model)
+    if inscripcion.estado not in ["COMPLETADO", "APROBADO"]:
         raise HTTPException(status_code=400, detail="El curso no está completado")
     
-    # Check if credential already exists
+    # Check if credential already exists — use find_first with compound fields
     existing = await prisma.credencial.find_first(
         where={
             "alumnoId": inscripcion.alumnoId,
@@ -56,10 +95,10 @@ async def generate_credencial(
     )
     
     if existing:
-        return {"message": "Credencial ya existe", "pdfUrl": existing.pdfUrl}
+        return {"message": "Credencial ya existe", "pdfUrl": existing.pdfUrl, "numero": existing.numero}
     
-    # Get approved photo for student
-    foto_credencial = await prisma.fotocredencial.find_unique(
+    # Get approved photo for student — use find_first (not find_unique) since filtering by state
+    foto_credencial = await prisma.fotocredencial.find_first(
         where={
             "alumnoId": inscripcion.alumnoId,
             "estado": "APROBADA"
@@ -70,7 +109,6 @@ async def generate_credencial(
     foto_path = None
     if foto_credencial:
         # Convert URL to file path
-        # Assuming fotoUrl is like "/uploads/credenciales/filename.jpg"
         foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
     
     # Generate credential number
@@ -78,16 +116,23 @@ async def generate_credencial(
     count = await prisma.credencial.count()
     numero_credencial = generate_credencial_number(year, count + 1)
     
+    # Build QR URL
+    qr_url = f"{settings.FRONTEND_URL}/validar/{numero_credencial}"
+    
     # Prepare PDF data
     pdf_data = {
         "numero_credencial": numero_credencial,
         "alumno_nombre": f"{inscripcion.alumno.nombre} {inscripcion.alumno.apellido}",
         "dni": inscripcion.alumno.dni,
         "curso_nombre": inscripcion.curso.nombre,
-        "curso_codigo": inscripcion.curso.id[:8].upper(),
+        "curso_codigo": inscripcion.curso.codigo,
         "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
-        "fecha_vencimiento": None,  # Could add expiration logic
-        "qr_url": f"{settings.FRONTEND_URL}/verificar/{numero_credencial}"
+        "fecha_vencimiento": (
+            (datetime.now() + timedelta(days=30 * inscripcion.curso.vigenciaMeses)).strftime("%d/%m/%Y")
+            if inscripcion.curso.vigenciaMeses
+            else None
+        ),
+        "qr_url": qr_url
     }
     
     # Generate PDF with photo
@@ -95,21 +140,36 @@ async def generate_credencial(
     filename = f"{numero_credencial}.pdf"
     pdf_url = await save_credencial_pdf(pdf_bytes, filename)
     
-    # Create credential record
+    # Generate and save QR image URL (stored alongside PDF)
+    qr_filename = f"{numero_credencial}_qr.png"
+    qr_storage_path_str = f"/storage/credenciales/{qr_filename}"
+    
+    # Calculate fecha de vencimiento
+    fecha_vencimiento = None
+    if inscripcion.curso.vigenciaMeses:
+        fecha_vencimiento = datetime.now() + timedelta(days=30 * inscripcion.curso.vigenciaMeses)
+    
+    # Create credential record with all required fields
     credencial = await prisma.credencial.create(
         data={
+            "numero": numero_credencial,
             "alumnoId": inscripcion.alumnoId,
             "cursoId": inscripcion.cursoId,
-            "codigoVerifica": numero_credencial,
             "pdfUrl": pdf_url,
+            "qrCodeUrl": qr_storage_path_str,
             "fechaEmision": datetime.now(),
-            "fechaVenc": datetime.now() + timedelta(days=365*2)  # 2 years validity
+            "fechaVencimiento": fecha_vencimiento
         }
     )
     
     return {
         "message": "Credencial generada exitosamente",
-        "credencial": credencial,
+        "credencial": {
+            "id": credencial.id,
+            "numero": credencial.numero,
+            "pdfUrl": credencial.pdfUrl,
+            "qrCodeUrl": credencial.qrCodeUrl,
+        },
         "pdfUrl": pdf_url
     }
 
@@ -209,6 +269,15 @@ async def enviar_quiz(
     # Determinar si aprobó (70% mínimo)
     aprobado = calificacion >= 70
     
+    # Contar intentos previas del alumno para este curso
+    intentos_previos = await prisma.examen.count(
+        where={
+            "alumnoId": current_user.id,
+            "cursoId": data.cursoId
+        }
+    )
+    intento_actual = intentos_previos + 1
+
     # Guardar examen en base de datos
     await prisma.examen.create(
         data={
@@ -220,11 +289,11 @@ async def enviar_quiz(
         }
     )
     
-    # Generar mensaje
+    # Generar mensaje con información de intento
     if aprobado:
-        message = f"¡Felicitaciones! Aprobaste con {calificacion:.1f}%"
+        message = f"¡Felicitaciones! Aprobaste en el intento #{intento_actual} con {calificacion:.1f}%"
     else:
-        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
+        message = f"Intento #{intento_actual}: Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
     
     return QuizFeedbackResponse(
         calificacion=calificacion,
@@ -234,4 +303,3 @@ async def enviar_quiz(
         feedback=feedback_list,
         message=message
     )
-

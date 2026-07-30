@@ -64,7 +64,7 @@ export default function MetricsPage() {
             setIsLoading(true);
             setError(null);
 
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('vmp_token');
             if (!token) {
                 throw new Error('No autenticado');
             }

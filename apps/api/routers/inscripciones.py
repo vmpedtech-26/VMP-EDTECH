@@ -9,7 +9,6 @@ from schemas.inscripciones import (
     CompletarModuloRequest,
     CompletarModuloResponse
 )
-from schemas.models import GenerateCredencialRequest
 from auth.dependencies import get_current_user
 from core.database import prisma
 from services.progreso_calculator import (
@@ -214,18 +213,19 @@ async def completar_modulo(
         )
         
         if not existing_credencial:
-            # Importar función de generación
-            from routers.examenes import generar_credencial
+            # Buscar la inscripcion para obtener el id
+            inscripcion_para_cred = await prisma.inscripcion.find_first(
+                where={"alumnoId": current_user.id, "cursoId": cursoId}
+            )
             
             try:
-                # Generar credencial
-                credencial_request = GenerateCredencialRequest(
-                    alumnoId=current_user.id,
-                    cursoId=cursoId
-                )
-                credencial = await generar_credencial(credencial_request, current_user)
-                credencial_generada = True
-                credencial_numero = credencial.numero
+                # Importar y llamar la función correcta de generación
+                from routers.examenes import generate_credencial
+                if inscripcion_para_cred:
+                    resultado = await generate_credencial(inscripcion_para_cred.id, current_user)
+                    credencial_generada = True
+                    # resultado es un dict
+                    credencial_numero = resultado.get("credencial", {}).get("numero")
             except Exception as e:
                 # Log error but don't fail the completion
                 print(f"Error generando credencial: {e}")

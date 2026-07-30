@@ -5,6 +5,7 @@ import qrcode
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import landscape
+from reportlab.lib.utils import ImageReader
 from core.config import settings
 
 def generate_credencial_number(year: int, sequential: int) -> str:
@@ -104,7 +105,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # QR Code (bottom-right)
     qr_buffer = generate_qr_code(credencial_data['qr_url'])
-    c.drawImage(qr_buffer, 62*mm, 3*mm, 20*mm, 20*mm, mask='auto')
+    qr_image_reader = ImageReader(qr_buffer)
+    c.drawImage(qr_image_reader, 62*mm, 3*mm, 20*mm, 20*mm, mask='auto')
     
     c.save()
     buffer.seek(0)

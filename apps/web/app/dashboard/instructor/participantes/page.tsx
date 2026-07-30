@@ -33,6 +33,7 @@ export default function ParticipantesPage() {
     const [filtroEstado, setFiltroEstado] = useState<string>('all');
     const [loading, setLoading] = useState(true);
     const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
         fetchEmpresas();
@@ -41,9 +42,9 @@ export default function ParticipantesPage() {
 
     const fetchEmpresas = async () => {
         try {
-            const res = await fetch('/api/empresas', {
+            const res = await fetch(`${API_URL}/api/empresas`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
                 }
             });
             if (res.ok) {
@@ -64,9 +65,9 @@ export default function ParticipantesPage() {
                 params.append('empresaId', selectedEmpresa);
             }
 
-            const res = await fetch(`/api/users?${params}`, {
+            const res = await fetch(`${API_URL}/api/users?${params}`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
                 }
             });
 
@@ -77,9 +78,9 @@ export default function ParticipantesPage() {
                 const alumnosWithFotos = await Promise.all(
                     data.map(async (alumno: Alumno) => {
                         try {
-                            const fotoRes = await fetch(`/api/fotos-credencial/alumno/${alumno.id}`, {
+                            const fotoRes = await fetch(`${API_URL}/api/fotos-credencial/alumno/${alumno.id}`, {
                                 headers: {
-                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
                                 }
                             });
                             if (fotoRes.ok) {
@@ -110,10 +111,10 @@ export default function ParticipantesPage() {
             formData.append('alumnoId', alumnoId);
             formData.append('comentario', 'Foto de credencial subida por instructor');
 
-            const res = await fetch('/api/fotos-credencial/upload', {
+            const res = await fetch(`${API_URL}/api/fotos-credencial/upload`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
                 },
                 body: formData
             });
@@ -135,10 +136,10 @@ export default function ParticipantesPage() {
 
     const handleAprobarFoto = async (fotoId: string) => {
         try {
-            const res = await fetch(`/api/fotos-credencial/${fotoId}/evaluar`, {
+            const res = await fetch(`${API_URL}/api/fotos-credencial/${fotoId}/evaluar`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -161,10 +162,10 @@ export default function ParticipantesPage() {
         if (!feedback) return;
 
         try {
-            const res = await fetch(`/api/fotos-credencial/${fotoId}/evaluar`, {
+            const res = await fetch(`${API_URL}/api/fotos-credencial/${fotoId}/evaluar`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({

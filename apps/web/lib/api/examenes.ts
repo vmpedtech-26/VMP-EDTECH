@@ -25,15 +25,10 @@ export const examenesApi = {
     },
 
     /**
-     * Generar una credencial (normalmente automático, pero para manual admin o reintentos)
+     * Generar una credencial para una inscripción específica
+     * inscripcionId: ID de la inscripción del alumno en el curso
      */
-    async generarCredencial(
-        alumnoId: string,
-        cursoId: string
-    ): Promise<Credencial> {
-        return api.post('/examenes/generar-credencial', {
-            alumnoId,
-            cursoId,
-        });
+    async generarCredencial(inscripcionId: string): Promise<{ message: string; pdfUrl: string; numero: string }> {
+        return api.post(`/examenes/generar-credencial/${inscripcionId}`, {});
     },
 };

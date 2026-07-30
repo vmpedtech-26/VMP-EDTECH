@@ -145,11 +145,6 @@ export default function SuperCursosPage() {
                             </div>
 
                             <div className="flex items-center gap-4 text-xs font-medium text-gray-500 pt-2">
-                                <span className="flex items-center">
-                                    <Eye className="h-3 w-3 mr-1" />
-                                    6 modulos
-                                </span>
-                                <span>•</span>
                                 <span>{curso.duracionHoras} horas</span>
                             </div>
 

@@ -13,6 +13,7 @@ from schemas.cursos import (
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
+from core.security_utils import sanitize_rich_html
 
 router = APIRouter()
 
@@ -192,8 +193,7 @@ async def obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True,
-            "tareasPracticas": True
+            "preguntas": True
         }
     )
     
@@ -228,7 +228,7 @@ async def crear_modulo(
         "orden": data.orden,
         "tipo": data.tipo,
         "cursoId": cursoId,
-        "contenidoHtml": data.contenidoHtml,
+        "contenidoHtml": sanitize_rich_html(data.contenidoHtml) if data.contenidoHtml else None,
         "videoUrl": data.videoUrl
     }
     
@@ -247,21 +247,10 @@ async def crear_modulo(
                 }
             )
             
-    # 3. Si tiene tareas (Práctica)
-    if data.tipo == "PRACTICA" and data.tareasPracticas:
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": modulo.id,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
-            
     # Re-obtener con relaciones
     return await prisma.modulo.find_unique(
         where={"id": modulo.id},
-        include={"preguntas": True, "tareasPracticas": True}
+        include={"preguntas": True}
     )
 
 
@@ -280,8 +269,7 @@ async def admin_obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True,
-            "tareasPracticas": True
+            "preguntas": True
         }
     )
     
@@ -312,7 +300,7 @@ async def actualizar_modulo(
     update_data = {}
     if data.titulo is not None: update_data["titulo"] = data.titulo
     if data.orden is not None: update_data["orden"] = data.orden
-    if data.contenidoHtml is not None: update_data["contenidoHtml"] = data.contenidoHtml
+    if data.contenidoHtml is not None: update_data["contenidoHtml"] = sanitize_rich_html(data.contenidoHtml)
     if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
     if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
     
@@ -334,21 +322,9 @@ async def actualizar_modulo(
                 }
             )
             
-    # 3. Si se envían tareas
-    if data.tareasPracticas is not None:
-        await prisma.tareapractica.delete_many(where={"moduloId": moduloId})
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": moduloId,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
-            
     return await prisma.modulo.find_unique(
         where={"id": moduloId},
-        include={"preguntas": True, "tareasPracticas": True}
+        include={"preguntas": True}
     )
 
 
