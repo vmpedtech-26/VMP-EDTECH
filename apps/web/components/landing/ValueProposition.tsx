@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { Building2, Smartphone, GraduationCap } from 'lucide-react';
 
 export default function ValueProposition() {
