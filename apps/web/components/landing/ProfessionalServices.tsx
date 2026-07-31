@@ -109,16 +109,16 @@ export function ProfessionalServices() {
             fill
             sizes="100vw"
             quality={95}
-            className="object-cover object-center"
+            className="object-cover object-center brightness-[0.85] contrast-[1.1]"
             priority
           />
-          {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95 backdrop-blur-[2px]" />
+          {/* Ambient Lighting Gradient for Sharp Contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/75 to-slate-950/90" />
         </div>
         
         {/* Native High-Dither Radial Glow */}
         <div className="absolute inset-0 pointer-events-none z-0" style={{
-          background: `radial-gradient(circle at 50% 35%, rgba(20, 184, 166, 0.15) 0%, transparent 60%)`
+          background: `radial-gradient(circle at 50% 35%, rgba(52, 211, 153, 0.2) 0%, transparent 70%)`
         }} />
         
         {/* Technical grid pattern */}

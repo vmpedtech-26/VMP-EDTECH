@@ -125,23 +125,25 @@ export function Benefits() {
                         className="lg:col-span-5 relative"
                     >
                         {/* Glow Effect */}
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-primary/15 to-emerald-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3.5rem] blur-3xl opacity-80 pointer-events-none" />
 
-                        <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.08)] border border-slate-200/80 bg-slate-100 group">
+                        <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
-                                src="/images/vmp_hero_winter.png" 
-                                alt="Operación en climas extremos de la Patagonia - VMP"
+                                src="/images/ventaja_competitiva_bg.jpg" 
+                                alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
                                 fill
+                                quality={95}
+                                sizes="(max-width: 1024px) 100vw, 40vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 priority
                             />
                             {/* Accent Gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
 
                             {/* Floating glass badge top-right */}
-                            <div className="absolute top-6 right-6 backdrop-blur-md bg-slate-900/80 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                <span className="text-[10px] font-black text-white tracking-wider uppercase">Operaciones Patagónicas</span>
+                            <div className="absolute top-6 right-6 backdrop-blur-md bg-slate-900/90 border border-emerald-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-[10px] font-black text-emerald-300 tracking-wider uppercase">Operaciones Patagónicas</span>
                             </div>
 
                             {/* Floating glass card bottom-left */}

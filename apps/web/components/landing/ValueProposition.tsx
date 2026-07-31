@@ -62,30 +62,32 @@ export default function ValueProposition() {
                         className="lg:col-span-6 relative"
                     >
                         {/* Glow Behind Image */}
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-teal-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3.5rem] blur-3xl opacity-80 pointer-events-none" />
                         
-                        <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.08)] border border-slate-100/80 bg-slate-50 group">
+                        <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
-                                src="/images/hero-training-real.png" 
-                                alt="Capacitación Vial Real en VMP"
+                                src="/images/porque_elegir_vmp_bg.jpg" 
+                                alt="Capacitación Vial Práctica de Flotas en Rutas de Argentina"
                                 fill
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                quality={95}
                                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 priority
                             />
                             {/* Ambient overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
                             
                             {/* Floating glass badge Top Left */}
-                            <div className="absolute top-6 left-6 backdrop-blur-md bg-white/90 border border-white/50 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
-                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-slate-800 tracking-wider uppercase">100% Homologado</span>
+                            <div className="absolute top-6 left-6 backdrop-blur-md bg-slate-900/90 border border-emerald-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-[10px] font-black text-emerald-300 tracking-wider uppercase">100% Homologado en Argentina</span>
                             </div>
 
                             {/* Floating glass badge Bottom Right */}
-                            <div className="absolute bottom-6 right-6 max-w-[260px] backdrop-blur-md bg-slate-900/80 border border-slate-700/50 p-4 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105 text-white">
-                                <span className="text-[9px] font-black text-primary tracking-widest uppercase mb-1 block">ENTRENAMIENTO REAL</span>
-                                <p className="text-[11px] font-bold text-slate-100 leading-normal">
-                                    Simulaciones prácticas en campo para garantizar la respuesta idónea de los operarios.
+                            <div className="absolute bottom-6 right-6 max-w-[280px] backdrop-blur-md bg-slate-900/95 border border-slate-700/80 p-4.5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105 text-white">
+                                <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase mb-1 block">ENTRENAMIENTO EN CAMPO REAL</span>
+                                <p className="text-[11px] font-medium text-slate-200 leading-relaxed">
+                                    Simulaciones prácticas en rutas nacionales para garantizar la respuesta idónea de operarios de flota.
                                 </p>
                             </div>
                         </div>

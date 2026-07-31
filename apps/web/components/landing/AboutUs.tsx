@@ -141,16 +141,37 @@ export default function AboutUs() {
                     </div>
                 </motion.div>
 
-                {/* Banner de Operaciones de Alta Resolución */}
-                <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-200/60 shadow-xl shadow-slate-100 bg-slate-100">
-                    <Image
-                        src="/images/vmp_prop_mining_sharp_v2.png"
-                        alt="Operaciones de Seguridad Vial e Industrial VMP"
-                        fill
-                        className="object-cover object-[50%_35%] transition-transform duration-700 hover:scale-[1.02]"
-                        sizes="(max-width: 1280px) 100vw, 1280px"
-                        priority
-                    />
+                {/* Banner Panorámico Separador de Operaciones en Vaca Muerta */}
+                <div className="relative group">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
+                    
+                    <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-700/80 shadow-[0_25px_60px_rgba(0,0,0,0.5)] bg-slate-950">
+                        <Image
+                            src="/images/sobre_la_empresa_bg.jpg"
+                            alt="Operaciones de Seguridad Vial e Industrial en Yacimiento Vaca Muerta, Patagonia Argentina"
+                            fill
+                            quality={95}
+                            sizes="100vw"
+                            className="object-cover object-[50%_35%] transition-transform duration-700 group-hover:scale-105"
+                            priority
+                        />
+                        {/* Gradient Overlay for Crisp Depth */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                        {/* Floating glass badge Top Left */}
+                        <div className="absolute top-6 left-6 md:top-8 md:left-8 backdrop-blur-md bg-slate-900/90 border border-emerald-400/40 px-4.5 py-2 rounded-2xl shadow-2xl flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-xs font-black text-white tracking-wider uppercase">Operaciones Vaca Muerta & Patagonia</span>
+                        </div>
+
+                        {/* Floating glass badge Bottom Right */}
+                        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 backdrop-blur-md bg-slate-900/90 border border-slate-700/80 px-5 py-3 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4">
+                            <div>
+                                <p className="text-[10px] font-black text-emerald-400 tracking-widest uppercase">PRESENCIA EN CAMPO REAL</p>
+                                <p className="text-sm font-bold text-white leading-none mt-0.5">Neuquén • CABA • Santa Cruz</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* 9 & 10. Fortalezas y Sectores */}
