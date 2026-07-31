@@ -1,0 +1,479 @@
+// VMP Servicios - Database Schema
+// Plataforma de capacitación con certificaciones profesionales
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums removed for SQLite compatibility - Using String instead
+
+// ============= MODELOS =============
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  nombre       String
+  apellido     String
+  dni          String   @unique
+  telefono     String?
+  rol          String   @default("ALUMNO")
+  empresaId    String?  @map("empresa_id")
+  avatar       String?
+  meetLink     String?  @map("meet_link")
+  puesto       String?  @map("puesto")
+  activo       Boolean  @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  inscripciones Inscripcion[]
+  examenes      Examen[]
+  credenciales  Credencial[]
+  fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
+  fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([rol])
+  @@index([empresaId])
+  @@map("users")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  nombre    String
+  cuit      String   @unique
+  direccion String?
+  telefono  String?
+  email     String
+  activa    Boolean  @default(true)
+  
+  // Configuración de Single Sign-On (SSO)
+  ssoActive    Boolean  @default(false) @map("sso_active")
+  ssoDomain    String?  @unique @map("sso_domain")
+  ssoProvider  String?  @map("sso_provider") // "AZURE_AD", "OKTA", "GOOGLE"
+  ssoClientId  String?  @map("sso_client_id")
+  ssoTenantId  String?  @map("sso_tenant_id")
+  
+  usuarios User[]
+  cursos   Curso[]
+  ventas   Venta[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("companies")
+}
+
+model Curso {
+  id             String  @id @default(uuid())
+  nombre         String
+  descripcion    String
+  codigo         String  @unique
+  duracionHoras  Int     @map("duracion_horas")
+  vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
+  empresaId      String? @map("empresa_id")
+  alumnosEsperados Int     @default(0) @map("alumnos_esperados")
+  activo           Boolean @default(true)
+  meetingLink      String? @map("meeting_link")
+  meetingPlatform  String? @map("meeting_platform") // "zoom", "teams", "meet"
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  modulos       Modulo[]
+  examenes      Examen[]
+  inscripciones Inscripcion[]
+  credenciales  Credencial[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cursos")
+}
+
+model Modulo {
+  id            String      @id @default(uuid())
+  cursoId       String      @map("curso_id")
+  titulo        String
+  orden         Int
+  tipo          String
+  contenidoHtml String?     @map("contenido_html")
+  videoUrl      String?     @map("video_url")
+  
+  // Live class support
+  liveClassUrl  String?     @map("live_class_url") // Google Meet or Teams URL
+  liveClassDate DateTime?   @map("live_class_date") // Fecha programada
+  liveClassPlatform String? @map("live_class_platform") // "google_meet" o "teams"
+  
+  curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  preguntas        Pregunta[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("modulos")
+}
+
+model Pregunta {
+  id                 String @id @default(uuid())
+  moduloId           String @map("modulo_id")
+  pregunta           String
+  opciones           String // JSON string (Array de strings)
+  respuestaCorrecta  Int    @map("respuesta_correcta") // Index de la opción correcta
+  explicacion        String?
+  
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("preguntas")
+}
+
+// TareaPractica eliminado - ya no se usa
+
+model Inscripcion {
+  id        String             @id @default(uuid())
+  alumnoId  String             @map("alumno_id")
+  cursoId   String             @map("curso_id")
+  progreso  Int                @default(0) // 0-100
+  estado    String             @default("NO_INICIADO")
+  inicioDate DateTime?         @map("inicio_date")
+  finDate    DateTime?         @map("fin_date")
+  modulosCompletados String    @default("[]") @map("modulos_completados") // JSON array de IDs
+  
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  obd2Sessions Obd2Session[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([alumnoId, cursoId])
+  @@index([estado])
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("inscripciones")
+}
+
+model Obd2Session {
+  id              String   @id @default(uuid())
+  inscripcionId   String   @map("inscripcion_id")
+  fecha           DateTime @default(now())
+  
+  fuerzaFrenado   Float?   @map("fuerza_frenado") 
+  aceleracion     Float?   
+  curvasScore     Float?   @map("curvas_score") 
+  esquivoAlce     Boolean? @map("esquivo_alce") 
+
+  rawData         String?  @map("raw_data")
+
+  inscripcion     Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
+  
+  @@index([inscripcionId])
+  @@map("obd2_sessions")
+}
+
+model Examen {
+  id           String   @id @default(uuid())
+  alumnoId     String   @map("alumno_id")
+  cursoId      String   @map("curso_id")
+  respuestas   String // JSON string ({ preguntaId: respuestaIndex })
+  calificacion Float?
+  aprobado     Boolean?
+  
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  
+  realizadoAt DateTime @default(now()) @map("realizado_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("examenes")
+}
+
+model FotoCredencial {
+  id          String          @id @default(uuid())
+  alumnoId    String          @unique @map("alumno_id") // Solo una foto por alumno
+  fotoUrl     String          @map("foto_url")
+  comentario  String?         // Comentario del instructor al subir
+  estado      String          @default("PENDIENTE")
+  feedback    String?         // Feedback si se rechaza
+  evaluadorId String?         @map("evaluador_id") // Instructor que subió/aprobó
+
+  alumno    User  @relation("AlumnoFoto", fields: [alumnoId], references: [id], onDelete: Cascade)
+  evaluador User? @relation("EvaluadorFoto", fields: [evaluadorId], references: [id])
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("fotos_credencial")
+}
+
+model Credencial {
+  id               String    @id @default(uuid())
+  numero           String    @unique // VMP-2026-XXXXX
+  alumnoId         String    @map("alumno_id")
+  cursoId          String    @map("curso_id")
+  pdfUrl           String    @map("pdf_url")
+  qrCodeUrl        String    @map("qr_code_url")
+  fechaEmision     DateTime  @default(now()) @map("fecha_emision")
+  fechaVencimiento DateTime? @map("fecha_vencimiento")
+  puesto           String?   @map("puesto")
+  
+  firmaCriptografica String?   @map("firma_criptografica")
+  metadataFirmada    String?   @map("metadata_firmada")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  curso  Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@index([numero])
+  @@map("credenciales")
+}
+
+model ComplianceReport {
+  id                 String   @id @default(uuid())
+  codigoSeguimiento  String   @unique @map("codigo_seguimiento") // Ej: VMP-COMP-XXXXXX
+  titulo             String
+  descripcion        String
+  categoria          String   // FRAUDE, ACOSO, SEGURIDAD, CORRUPCION, OTROS
+  relacionEmpresa    String   // EMPLEADO, PROVEEDOR, CLIENTE, EXTERNO, ANONIMO
+  esAnonima          Boolean  @default(true) @map("es_anonima")
+  nombreDenunciante  String?  @map("nombre_denunciante")
+  emailDenunciante   String?  @map("email_denunciante")
+  telefono           String?
+  estado             String   @default("NUEVA") // NUEVA, EN_INVESTIGACION, RESUELTA, DESESTIMADA
+  comentariosOficial String?  @map("comentarios_oficial")
+  
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([codigoSeguimiento])
+  @@index([estado])
+  @@map("compliance_reports")
+}
+
+
+// ============= COTIZACIONES (LEADS) =============
+
+model Cotizacion {
+  id               Int      @id @default(autoincrement())
+  
+  // Datos de contacto
+  empresa          String
+  cuit             String?
+  nombre           String
+  email            String
+  telefono         String
+  comentarios      String?
+  
+  // Datos del cotizador
+  quantity         Int      // Cantidad de conductores
+  course           String   // defensivo, carga_pesada, 4x4, completo
+  modality         String   // online, presencial, mixto
+  totalPrice       Float    @map("total_price")
+  pricePerStudent  Float    @map("price_per_student")
+  discount         Int      // Porcentaje de descuento aplicado
+  
+  // Consentimientos
+  acceptMarketing  Boolean  @default(false) @map("accept_marketing")
+  acceptTerms      Boolean  @default(false) @map("accept_terms")
+  
+  // Estado del lead
+  status           String   @default("pending") // pending, contacted, converted, rejected
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+  @@map("cotizaciones")
+}
+
+// ============= PASSWORD RESET =============
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ============= CONTABILIDAD =============
+
+model Account {
+  id          String   @id @default(uuid())
+  code        String   @unique // Ej: 1.1.1.01 (Caja)
+  name        String
+  type        String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  parentCode  String?  @map("parent_code")
+  level       Int      @default(1)
+  isSelectable Boolean  @default(true) @map("is_selectable")
+  
+  ledgerEntries LedgerEntry[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model JournalEntry {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  concept     String
+  reference   String?  // Ej: Factura A-0001-000001
+  type        String   @default("GENERAL") // SALES, PURCHASES, CASH, GENERAL
+  
+  entries     LedgerEntry[]
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([date])
+  @@map("journal_entries")
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  journalId      String   @map("journal_id")
+  accountId      String   @map("account_id")
+  description    String?
+  debit          Float    @default(0)
+  credit         Float    @default(0)
+  
+  journal        JournalEntry @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  account        Account      @relation(fields: [accountId], references: [id])
+  
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([journalId])
+  @@index([accountId])
+  @@map("ledger_entries")
+}
+
+model Venta {
+  id              String   @id @default(uuid())
+  numero          String   @unique // A-0001-00000001
+  fecha           DateTime @default(now())
+  companyId       String   @map("company_id")
+  condicionIva    String   @default("RI") @map("condicion_iva")
+  subtotal        Float
+  iva             Float
+  percepciones    Float    @default(0)
+  total           Float
+  metodoPago      String   @default("TRANSFERENCIA") @map("metodo_pago")
+  estado          String   @default("PENDIENTE") // PENDIENTE, COBRADA, ANULADA
+  
+  company         Company  @relation(fields: [companyId], references: [id])
+  items           VentaItem[]
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([estado])
+  @@index([fecha])
+  @@map("ventas")
+}
+
+model VentaItem {
+  id          String   @id @default(uuid())
+  ventaId     String   @map("venta_id")
+  descripcion String
+  cantidad    Int
+  precioUnit  Float    @map("precio_unit")
+  subtotal    Float
+  
+  venta       Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+
+  @@map("venta_items")
+}
+
+model Compra {
+  id              String   @id @default(uuid())
+  proveedor       String
+  cuit            String?
+  numero          String?
+  fecha           DateTime @default(now())
+  subtotal        Float
+  iva             Float
+  percepciones    Float    @default(0)
+  total           Float
+  metodoPago      String   @default("EFECTIVO") @map("metodo_pago")
+  categoria       String   @default("OTROS") // SERVICIOS, IMPUESTOS, SUELDOS, etc
+  
+  tipoFactura     String?  @default("A") @map("tipo_factura")
+  cbuProveedor    String?  @map("cbu_proveedor")
+  esImportacionServicio Boolean? @default(false) @map("es_importacion_servicio")
+  
+  items           CompraItem[]
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([fecha])
+  @@map("compras")
+}
+
+model CompraItem {
+  id          String   @id @default(uuid())
+  compraId    String   @map("compra_id")
+  descripcion String
+  cantidad    Int
+  precioUnit  Float    @map("precio_unit")
+  subtotal    Float
+  
+  compra      Compra   @relation(fields: [compraId], references: [id], onDelete: Cascade)
+
+  @@map("compra_items")
+}
+
+model CajaMovimiento {
+  id          String   @id @default(uuid())
+  fecha       DateTime @default(now())
+  tipo        String   // INGRESO, EGRESO
+  monto       Float
+  concepto    String
+  referencia  String?  // ID de Venta o Compra
+  metodo      String   @default("EFECTIVO") // EFECTIVO, TRANSFERENCIA, MERCADOPAGO
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([fecha])
+  @@index([tipo])
+  @@map("caja_movimientos")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  userEmail String?  @map("user_email")
+  action    String
+  details   String?  // Descripción textual o formato JSON
+  ipAddress String?  @map("ip_address")
+  requestId String?  @map("request_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

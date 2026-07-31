@@ -1,0 +1,171 @@
+{
+  "name": "VMP | Lead CRM + Alerta Ventas",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vmp-lead-crm",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-lead",
+      "name": "Webhook - Lead Creado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "vmp-lead-crm"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Verificar firma HMAC-SHA256 del webhook\nconst crypto = require('crypto');\nconst secret = $env.VMP_WEBHOOK_SECRET || 'vmp-n8n-default-secret-change-me';\nconst signature = $input.first().headers['x-vmp-signature'] || '';\nconst body = JSON.stringify($input.first().body);\nconst expected = 'sha256=' + crypto.createHmac('sha256', secret).update(body).digest('hex');\n\nif (signature && expected !== signature) {\n  throw new Error('Firma HMAC inválida — request rechazado');\n}\n\nconst lead = $input.first().body.data;\nreturn [{ json: { \n  ...lead, \n  isHighPriority: (lead.quantity || 0) >= 30,\n  timestamp: new Date().toISOString()\n}}];"
+      },
+      "id": "verify-hmac",
+      "name": "Verificar Firma & Parsear",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isHighPriority }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-high-priority",
+      "name": "¿Alta Prioridad? (≥30 alumnos)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "value": "__GOOGLE_SHEET_ID__",
+          "__rl": true,
+          "mode": "id"
+        },
+        "sheetName": {
+          "value": "Leads",
+          "__rl": true,
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "ID": "={{ $json.id }}",
+            "Empresa": "={{ $json.empresa }}",
+            "Nombre Contacto": "={{ $json.nombre }}",
+            "Email": "={{ $json.email }}",
+            "Teléfono": "={{ $json.telefono }}",
+            "Cantidad Alumnos": "={{ $json.quantity }}",
+            "Curso": "={{ $json.course }}",
+            "Modalidad": "={{ $json.modality }}",
+            "Precio Total": "={{ $json.totalPrice }}",
+            "Prioridad": "={{ $json.isHighPriority ? 'ALTA 🔥' : 'NORMAL' }}",
+            "Estado": "NUEVO",
+            "Fecha": "={{ $json.timestamp }}"
+          }
+        }
+      },
+      "id": "google-sheets-lead",
+      "name": "Google Sheets — Agregar Lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [910, 400],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "__GOOGLE_SHEETS_CREDENTIAL_ID__",
+          "name": "Google Sheets VMP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{ $env.TWILIO_ACCOUNT_SID }}/Messages.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twilioApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "From", "value": "={{ $env.TWILIO_WHATSAPP_FROM }}" },
+            { "name": "To", "value": "={{ $env.TWILIO_SALES_PHONE }}" },
+            { "name": "Body", "value": "=🔥 *LEAD PRIORITARIO VMP*\n\n🏢 *Empresa:* {{ $json.empresa }}\n👤 *Contacto:* {{ $json.nombre }}\n📧 *Email:* {{ $json.email }}\n📱 *Tel:* {{ $json.telefono }}\n\n📚 *Curso:* {{ $json.course }}\n👥 *Alumnos:* {{ $json.quantity }}\n💰 *Total:* ${{ $json.totalPrice }}\n\n⚡ Cliente con más de 30 alumnos. ¡Llamar YA!" }
+          ]
+        }
+      },
+      "id": "twilio-alert",
+      "name": "WhatsApp — Alerta Ventas Urgente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [910, 200],
+      "credentials": {
+        "twilioApi": {
+          "id": "__TWILIO_CREDENTIAL_ID__",
+          "name": "Twilio VMP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "wait-3-days",
+      "name": "Esperar 3 días",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1130, 400]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ventas@vmp-edtech.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "¿Pudimos ayudarte? — VMP EDTECH",
+        "emailType": "html",
+        "message": "=<h2>Hola {{ $json.nombre }},</h2><p>Hace 3 días pediste información sobre capacitación para <strong>{{ $json.empresa }}</strong>.</p><p>Queremos asegurarnos de que recibiste toda la información que necesitabas. ¿Podemos ayudarte con algo más?</p><p>Estamos a tu disposición,<br>Equipo VMP EDTECH</p>"
+      },
+      "id": "followup-email",
+      "name": "Email Seguimiento 3 días",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1350, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - Lead Creado": {
+      "main": [[{ "node": "Verificar Firma & Parsear", "type": "main", "index": 0 }]]
+    },
+    "Verificar Firma & Parsear": {
+      "main": [[{ "node": "¿Alta Prioridad? (≥30 alumnos)", "type": "main", "index": 0 }]]
+    },
+    "¿Alta Prioridad? (≥30 alumnos)": {
+      "main": [
+        [{ "node": "WhatsApp — Alerta Ventas Urgente", "type": "main", "index": 0 }],
+        [{ "node": "Google Sheets — Agregar Lead", "type": "main", "index": 0 }]
+      ]
+    },
+    "WhatsApp — Alerta Ventas Urgente": {
+      "main": [[{ "node": "Google Sheets — Agregar Lead", "type": "main", "index": 0 }]]
+    },
+    "Google Sheets — Agregar Lead": {
+      "main": [[{ "node": "Esperar 3 días", "type": "main", "index": 0 }]]
+    },
+    "Esperar 3 días": {
+      "main": [[{ "node": "Email Seguimiento 3 días", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [{ "name": "VMP-EDTECH" }]
+}
