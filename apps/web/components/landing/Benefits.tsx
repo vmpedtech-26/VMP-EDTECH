@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import {
     TrendingUp,
