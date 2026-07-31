@@ -1,13 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, EmailStr, validator
-from typing import Optional, Any
+from typing import Optional
 from datetime import datetime
 from prisma import Prisma
 import logging
 from core.security_utils import sanitize_data
 from middleware.security import rate_limit_public
-from services.webhook_service import emit, WebhookEvent
-from auth.dependencies import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -87,7 +85,7 @@ async def get_db():
         await db.disconnect()
 
 
-@router.post("", response_model=CotizacionResponse, status_code=201)
+@router.post("/", response_model=CotizacionResponse, status_code=201)
 @rate_limit_public()
 async def create_cotizacion(
     request: Request,
@@ -161,22 +159,6 @@ async def create_cotizacion(
             # No fallar la creación si los emails fallan
             logger.error(f"Error enviando emails para cotización {new_cotizacion.id}: {str(email_error)}")
         
-        # ── Disparar evento hacia n8n (no bloqueante) ──
-        await emit(WebhookEvent.LEAD_CREATED, {
-            "id":               new_cotizacion.id,
-            "empresa":          new_cotizacion.empresa,
-            "nombre":           new_cotizacion.nombre,
-            "email":            new_cotizacion.email,
-            "telefono":         new_cotizacion.telefono,
-            "quantity":         new_cotizacion.quantity,
-            "course":           new_cotizacion.course,
-            "modality":         new_cotizacion.modality,
-            "totalPrice":       new_cotizacion.totalPrice,
-            "pricePerStudent":  new_cotizacion.pricePerStudent,
-            "discount":         new_cotizacion.discount,
-            "priority":         "HIGH" if new_cotizacion.quantity >= 30 else "NORMAL",
-        })
-        
         return new_cotizacion
         
     except Exception as e:
@@ -187,12 +169,11 @@ async def create_cotizacion(
         )
 
 
-@router.get("", response_model=list[CotizacionResponse])
+@router.get("/", response_model=list[CotizacionResponse])
 async def get_cotizaciones(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
-    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -227,7 +208,6 @@ async def get_cotizaciones(
 @router.get("/{cotizacion_id}", response_model=CotizacionResponse)
 async def get_cotizacion(
     cotizacion_id: int,
-    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -256,15 +236,10 @@ async def get_cotizacion(
         )
 
 
-class UpdateStatusRequest(BaseModel):
-    status: str
-
-
-@router.patch("/{cotizacion_id}/status", response_model=CotizacionResponse)
+@router.patch("/{cotizacion_id}/status")
 async def update_cotizacion_status(
     cotizacion_id: int,
-    request_data: UpdateStatusRequest,
-    current_user: Any = Depends(get_current_user),
+    status: str,
     db: Prisma = Depends(get_db)
 ):
     """
@@ -272,7 +247,6 @@ async def update_cotizacion_status(
     
     - **status**: Nuevo estado (pending, contacted, converted, rejected)
     """
-    status = request_data.status
     valid_statuses = ["pending", "contacted", "converted", "rejected"]
     if status not in valid_statuses:
         raise HTTPException(
@@ -288,7 +262,7 @@ async def update_cotizacion_status(
         
         logger.info(f"Cotización {cotizacion_id} actualizada a estado: {status}")
         
-        return cotizacion
+        return {"message": "Estado actualizado correctamente", "cotizacion": cotizacion}
         
     except Exception as e:
         logger.error(f"Error al actualizar cotización {cotizacion_id}: {str(e)}")
@@ -327,7 +301,6 @@ class ConvertCotizacionResponse(BaseModel):
 async def convert_cotizacion_to_client(
     cotizacion_id: int,
     data: ConvertCotizacionRequest,
-    current_user: Any = Depends(get_current_user),
     db: Prisma = Depends(get_db)
 ):
     """
@@ -404,104 +377,100 @@ async def convert_cotizacion_to_client(
         logger.info(f"Empresa creada: {empresa.id} - {empresa.nombre}")
         
         # 4. Mapear curso de cotización a curso en BD
-        # ACTUALIZADO: Corregido para coincidir con los códigos de seed_data.py
         course_mapping = {
-            "defensivo": "MDL-001",      # Manejo Defensivo Livianos
-            "carga_pesada": "MDP-001",   # Manejo Defensivo Pesados
-            "4x4": "COND-DEF",           # Mapeo original para 4x4
-            "completo": "COND-DEF"       # Mapeo original para completo
+            "defensivo": "COND-DEF",
+            "carga_pesada": "COND-CP",
+            "4x4": "COND-4X4",
+            "completo": "COND-COMP"
         }
         
         curso_codigo = course_mapping.get(cotizacion.course)
         if not curso_codigo:
             raise HTTPException(
                 status_code=400,
-                detail=f"Curso '{cotizacion.course}' no reconocido en el sistema"
+                detail=f"Curso '{cotizacion.course}' no reconocido"
             )
         
-        # Buscar curso en BD para asegurar que existe antes de la transacción
+        # Buscar curso en BD
         curso = await db.curso.find_first(
             where={"codigo": curso_codigo}
         )
         
         if not curso:
-            # Fallback al código original si el nuevo no existe
-            curso = await db.curso.find_first(where={"codigo": "COND-DEF"})
-            if not curso:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Curso con código '{curso_codigo}' no encontrado. Por favor, ejecute el seed."
-                )
+            raise HTTPException(
+                status_code=404,
+                detail=f"Curso con código '{curso_codigo}' no encontrado en la base de datos"
+            )
         
         # 5. Generar contraseña temporal para alumnos
         def generate_password(length=12):
-            alphabet = string.ascii_letters + string.digits
+            """Genera una contraseña segura aleatoria"""
+            alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
             return ''.join(secrets.choice(alphabet) for _ in range(length))
         
-        # 6. Crear alumnos e inscripciones dentro de una transacción manual (simulada con bloques)
-        # Nota: prisma-client-py soporta transacciones, pero para mayor compatibilidad
-        # usamos un flujo secuencial con rollback manual o manejo de estado.
+        # 6. Crear alumnos
+        alumnos_creados = []
+        inscripciones_creadas = []
+        credenciales_alumnos = []
         
-        alumnos_creados: list[dict[str, Any]] = []
-        inscripciones_creadas: list[dict[str, Any]] = []
-        credenciales_alumnos: list[dict[str, Any]] = []
-        
-        try:
-            for i in range(1, cantidad_alumnos + 1):
-                # Generar datos del alumno
-                alumno_dni = f"{secrets.token_hex(4).upper()}-{i}"
-                alumno_email = f"alumno{i}_{secrets.token_hex(2)}@{empresa_cuit.lower()}.vmp"
-                password_temporal = generate_password()
-                
-                # Crear alumno
-                alumno = await db.user.create(
-                    data={
-                        "email": alumno_email,
-                        "passwordHash": pwd_context.hash(password_temporal),
-                        "nombre": f"Alumno {i}",
-                        "apellido": empresa_nombre,
-                        "dni": alumno_dni,
-                        "rol": "ALUMNO",
-                        "empresaId": empresa.id,
-                        "activo": True
-                    }
-                )
-                
-                # Crear inscripción
-                inscripcion = await db.inscripcion.create(
-                    data={
-                        "alumnoId": alumno.id,
-                        "cursoId": curso.id,
-                        "estado": "NO_INICIADO"
-                    }
-                )
-                
-                inscripciones_creadas.append({
-                    "id": inscripcion.id,
-                    "alumnoId": inscripcion.alumnoId,
-                    "cursoId": inscripcion.cursoId,
-                    "estado": inscripcion.estado
-                })
-                
-                alumnos_creados.append({
-                    "id": alumno.id,
-                    "nombre": alumno.nombre,
-                    "email": alumno.email,
-                    "password_temporal": password_temporal
-                })
-                
-                credenciales_alumnos.append({
-                    "email": alumno.email,
-                    "password": password_temporal
-                })
-        except Exception as tx_error:
-            logger.error(f"Error en transacción de conversión: {tx_error}")
-            # Rollback: borrar la empresa creada
-            try:
-                await db.company.delete(where={"id": empresa.id})
-            except Exception as rollback_err:
-                logger.error(f"Fallo en rollback de empresa: {rollback_err}")
-            raise HTTPException(status_code=500, detail="Error al crear registros. Operación cancelada.")
+        for i in range(1, cantidad_alumnos + 1):
+            # Generar datos del alumno
+            alumno_nombre = f"Alumno {i}"
+            alumno_apellido = empresa_nombre
+            alumno_dni = f"TEMP-{empresa.id[:8]}-{i:03d}"
+            alumno_email = f"alumno{i}@{empresa_cuit.lower()}.vmp.temp"
+            password_temporal = generate_password()
+            
+            # Crear alumno
+            alumno = await db.user.create(
+                data={
+                    "email": alumno_email,
+                    "passwordHash": pwd_context.hash(password_temporal),
+                    "nombre": alumno_nombre,
+                    "apellido": alumno_apellido,
+                    "dni": alumno_dni,
+                    "telefono": empresa_telefono,
+                    "rol": "ALUMNO",
+                    "empresaId": empresa.id,
+                    "activo": True
+                }
+            )
+            
+            logger.info(f"Alumno creado: {alumno.id} - {alumno.nombre} {alumno.apellido}")
+            
+            # Crear inscripción al curso
+            inscripcion = await db.inscripcion.create(
+                data={
+                    "alumnoId": alumno.id,
+                    "cursoId": curso.id,
+                    "progreso": 0,
+                    "estado": "NO_INICIADO"
+                }
+            )
+            
+            logger.info(f"Inscripción creada: {inscripcion.id} - Alumno {alumno.id} en curso {curso.id}")
+            
+            # Guardar datos para respuesta
+            alumnos_creados.append({
+                "id": alumno.id,
+                "nombre": alumno.nombre,
+                "apellido": alumno.apellido,
+                "email": alumno.email,
+                "dni": alumno.dni,
+                "password_temporal": password_temporal  # Solo para mostrar una vez
+            })
+            
+            inscripciones_creadas.append({
+                "id": inscripcion.id,
+                "alumnoId": alumno.id,
+                "cursoId": curso.id,
+                "curso": curso.nombre
+            })
+            
+            credenciales_alumnos.append({
+                "email": alumno.email,
+                "password": password_temporal
+            })
         
         # 7. Actualizar cotización a 'converted'
         await db.cotizacion.update(
@@ -530,17 +499,6 @@ async def convert_cotizacion_to_client(
             logger.error(f"Error enviando email de bienvenida: {str(email_error)}")
             # No fallar la conversión si el email falla
         
-        # ── Disparar evento company.onboarded hacia n8n ──
-        await emit(WebhookEvent.COMPANY_ONBOARDED, {
-            "empresa_id":       empresa.id,
-            "empresa_nombre":   empresa.nombre,
-            "empresa_email":    empresa.email,
-            "empresa_cuit":     empresa.cuit,
-            "cantidad_alumnos": cantidad_alumnos,
-            "curso":            curso.nombre,
-            "cotizacion_id":    cotizacion_id,
-        })
-
         # 9. Retornar resultado
         return {
             "empresa": {

@@ -19,16 +19,16 @@ export function TheoriaViewer({ titulo, contenidoHtml, videoUrl, onComplete }: T
                     <div className="w-full h-full flex flex-col items-center justify-center text-white space-y-4">
                         <Play className="h-16 w-16 text-primary animate-pulse" />
                         <p className="text-lg font-medium">Cargando video de capacitación...</p>
-                        <p className="text-sm text-slate-700">{videoUrl}</p>
+                        <p className="text-sm text-gray-500">{videoUrl}</p>
                     </div>
                 </div>
             )}
 
-            <div className="bg-white rounded-2xl border border-slate-100 p-8 md:p-12 shadow-sm prose prose-blue max-w-none">
-                <h1 className="text-3xl font-bold text-slate-900 mb-6">{titulo}</h1>
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 md:p-12 shadow-sm prose prose-blue max-w-none">
+                <h1 className="text-3xl font-bold text-gray-900 mb-6">{titulo}</h1>
                 <div
                     dangerouslySetInnerHTML={{ __html: contenidoHtml || '<p>Cargando contenido teórico...</p>' }}
-                    className="text-slate-700 leading-relaxed text-lg space-y-4"
+                    className="text-gray-700 leading-relaxed text-lg space-y-4"
                 />
             </div>
 

@@ -10,7 +10,7 @@ export function BlisterSection() {
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-light/20 rounded-2xl blur-2xl"></div>
                         <div className="relative">
                             {/* Mock de credencial Blister */}
-                            <div className="bg-white rounded-2xl shadow-2xl p-8 border border-slate-100">
+                            <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                                 <div className="aspect-[1.6/1] bg-gradient-to-br from-primary to-primary-light rounded-xl p-6 text-white relative overflow-hidden">
                                     {/* Pattern de fondo */}
                                     <div className="absolute inset-0 opacity-10">
@@ -25,7 +25,7 @@ export function BlisterSection() {
                                     <div className="relative h-full flex flex-col justify-between">
                                         <div>
                                             <div className="text-sm font-semibold mb-1">
-                                                VMP - EDTECH
+                                                VMP SERVICIOS
                                             </div>
                                             <div className="text-xs opacity-80">
                                                 Credencial Profesional
@@ -63,11 +63,11 @@ export function BlisterSection() {
                             </span>
                         </div>
 
-                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
                             Credencial Digital <span className="text-primary">Blister</span>
                         </h2>
 
-                        <p className="text-lg text-slate-800 leading-relaxed">
+                        <p className="text-lg text-gray-600 leading-relaxed">
                             Al completar exitosamente un curso, nuestro sistema genera
                             automáticamente una credencial profesional en formato compacto
                             tipo ID card, verificable por código QR.
@@ -78,10 +78,10 @@ export function BlisterSection() {
                             <div className="flex items-start space-x-3">
                                 <CreditCard className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">
+                                    <div className="font-semibold text-gray-900">
                                         Formato ID Card
                                     </div>
-                                    <div className="text-sm text-slate-800">
+                                    <div className="text-sm text-gray-600">
                                         85.60 × 53.98 mm estándar
                                     </div>
                                 </div>
@@ -90,20 +90,20 @@ export function BlisterSection() {
                             <div className="flex items-start space-x-3">
                                 <User className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">
+                                    <div className="font-semibold text-gray-900">
                                         Datos del Alumno
                                     </div>
-                                    <div className="text-sm text-slate-800">DNI, nombre, foto</div>
+                                    <div className="text-sm text-gray-600">DNI, nombre, foto</div>
                                 </div>
                             </div>
 
                             <div className="flex items-start space-x-3">
                                 <Building className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">
+                                    <div className="font-semibold text-gray-900">
                                         Info del Curso
                                     </div>
-                                    <div className="text-sm text-slate-800">
+                                    <div className="text-sm text-gray-600">
                                         Nombre y código oficial
                                     </div>
                                 </div>
@@ -112,8 +112,8 @@ export function BlisterSection() {
                             <div className="flex items-start space-x-3">
                                 <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">Vigencia</div>
-                                    <div className="text-sm text-slate-800">
+                                    <div className="font-semibold text-gray-900">Vigencia</div>
+                                    <div className="text-sm text-gray-600">
                                         Fechas de emisión y vencimiento
                                     </div>
                                 </div>
@@ -122,10 +122,10 @@ export function BlisterSection() {
                             <div className="flex items-start space-x-3">
                                 <QrCode className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">
+                                    <div className="font-semibold text-gray-900">
                                         Código QR
                                     </div>
-                                    <div className="text-sm text-slate-800">
+                                    <div className="text-sm text-gray-600">
                                         Verificación pública online
                                     </div>
                                 </div>
@@ -134,10 +134,10 @@ export function BlisterSection() {
                             <div className="flex items-start space-x-3">
                                 <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                 <div>
-                                    <div className="font-semibold text-slate-900">
+                                    <div className="font-semibold text-gray-900">
                                         Número Único
                                     </div>
-                                    <div className="text-sm text-slate-800">
+                                    <div className="text-sm text-gray-600">
                                         Formato VMP-2026-XXXXX
                                     </div>
                                 </div>

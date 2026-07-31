@@ -1,83 +1,29 @@
 import type { Metadata } from 'next';
-import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 
-
-const inter = Inter({
-    subsets: ['latin'],
-    display: 'swap',
-    variable: '--font-inter',
-});
-
-const outfit = Outfit({
-    subsets: ['latin'],
-    display: 'swap',
-    variable: '--font-outfit',
-});
-
-const SITE_URL = 'https://www.vmp-edtech.com';
-
 export const metadata: Metadata = {
-    metadataBase: new URL(SITE_URL),
-    title: {
-        default: 'VMP - EDTECH | Capacitación Profesional para Conductores',
-        template: '%s | VMP - EDTECH',
-    },
+    title: 'VMP Servicios - Capacitación Profesional Certificada',
     description:
-        'Plataforma de capacitación profesional con credenciales verificables con código QR. Cursos de Conducción Preventiva, Flota Liviana / Pesada y Doble Tracción.',
+        'Plataforma de capacitación profesional con credenciales verificables con código QR. Cursos teórico-prácticos con validez industrial.',
     keywords: [
-        'capacitación profesional',
-        'conducción preventiva',
-        'flota liviana',
-        'carga pesada',
-        'doble tracción',
+        'capacitación',
         'certificación',
-        'cursos conductores',
-        'seguridad vial',
-        'Argentina',
+        'profesional',
+        'industrial',
+        'empresas',
+        'cursos',
     ],
-    authors: [{ name: 'VMP - EDTECH' }],
     openGraph: {
-        title: 'VMP - EDTECH | Capacitación Profesional para Conductores',
+        title: 'VMP Servicios - Capacitación Profesional',
         description:
-            'Cursos certificados de conducción profesional. Credenciales digitales verificables con QR. Modalidad online y presencial.',
+            'Capacitación profesional con credenciales digitales verificables.',
         type: 'website',
-        url: SITE_URL,
-        siteName: 'VMP - EDTECH',
-        locale: 'es_AR',
-        images: [
-            {
-                url: '/images/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'VMP - EDTECH — Capacitación Profesional para Conductores',
-            },
-        ],
     },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'VMP - EDTECH | Capacitación Profesional',
-        description:
-            'Cursos certificados de conducción profesional con credenciales verificables.',
-        images: ['/images/og-image.png'],
-    },
-    robots: {
-        index: true,
-        follow: true,
-    },
-    manifest: '/manifest.json',
-    other: {
-        'theme-color': '#3AAFA9',
-        'apple-mobile-web-app-capable': 'yes',
-        'apple-mobile-web-app-status-bar-style': 'black-translucent',
-    },
+    viewport: 'width=device-width, initial-scale=1',
 };
 
 import { AuthProvider } from '@/lib/auth-context';
 import { Toaster } from 'sonner';
-import JsonLd from '@/components/seo/JsonLd';
-import CookieConsentBanner from '@/components/common/CookieConsentBanner';
-import WhatsAppButton from '@/components/common/WhatsAppButton';
 
 export default function RootLayout({
     children,
@@ -85,15 +31,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
-            <head>
-                <JsonLd type="Organization" />
-            </head>
-            <body className="antialiased font-sans">
+        <html lang="es">
+            <body>
                 <AuthProvider>
                     {children}
-                    <WhatsAppButton />
-                    <CookieConsentBanner />
                     <Toaster position="top-right" richColors />
                 </AuthProvider>
             </body>

@@ -1,7 +1,10 @@
+// VMP Servicios - Database Schema
+// Plataforma de capacitación con certificaciones profesionales
+
 generator client {
   provider             = "prisma-client-py"
   interface            = "asyncio"
-  recursive_type_depth = "5"
+  recursive_type_depth = 5
 }
 
 datasource db {
@@ -9,462 +12,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                                        String               @id @default(uuid())
-  email                                     String               @unique
-  passwordHash                              String               @map("password_hash")
-  nombre                                    String
-  apellido                                  String
-  dni                                       String               @unique
-  telefono                                  String?
-  rol                                       UserRole             @default(ALUMNO)
-  empresaId                                 String?              @map("empresa_id")
-  avatar                                    String?
-  activo                                    Boolean              @default(true)
-  createdAt                                 DateTime             @default(now()) @map("created_at")
-  updatedAt                                 DateTime             @updatedAt @map("updated_at")
-  meetLink                                  String?              @map("meet_link")
-  puesto                                    String?              @map("puesto")
-  asistencias_clase                         asistencias_clase[]
-  credenciales                              Credencial[]
-  evidencias_evidencias_alumno_idTousers    evidencias[]         @relation("evidencias_alumno_idTousers")
-  evidencias_evidencias_evaluador_idTousers evidencias[]         @relation("evidencias_evaluador_idTousers")
-  examenes                                  Examen[]
-  fotoCredencial                            FotoCredencial?      @relation("AlumnoFoto")
-  fotosEvaluadas                            FotoCredencial[]     @relation("EvaluadorFoto")
-  inscripciones                             Inscripcion[]
-  empresa                                   Company?             @relation(fields: [empresaId], references: [id])
-  // Mejora #4: cursos asignados como instructor
-  cursosComoInstructor                      Curso[]              @relation("InstructorCursos")
-  // Mejora #5: asistencias a sesiones de capacitación
-  asistenciasSesion                         AsistenciaSesion[]
-  sesionesComoInstructor                    SesionCapacitacion[] @relation("InstructorSesiones")
+// ============= ENUMS =============
 
-  @@index([rol])
-  @@index([empresaId])
-  @@map("users")
+enum UserRole {
+  SUPER_ADMIN
+  INSTRUCTOR
+  ALUMNO
 }
 
-model Company {
-  id        String   @id @default(uuid())
-  nombre    String
-  cuit      String   @unique
-  direccion String?
-  telefono  String?
-  email     String
-  activa    Boolean  @default(true)
-  ssoActive    Boolean  @default(false) @map("sso_active")
-  ssoDomain    String?  @unique @map("sso_domain")
-  ssoProvider  String?  @map("sso_provider") // "AZURE_AD", "OKTA", "GOOGLE"
-  ssoClientId  String?  @map("sso_client_id")
-  ssoTenantId  String?  @map("sso_tenant_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cursos    Curso[]
-  usuarios  User[]
-  ventas    Venta[]
-  sesiones  SesionCapacitacion[]
-
-  @@map("companies")
+enum TipoModulo {
+  TEORIA
+  QUIZ
+  PRACTICA
 }
-
-model Curso {
-  id               String              @id @default(uuid())
-  nombre           String
-  descripcion      String
-  codigo           String              @unique
-  duracionHoras    Int                 @map("duracion_horas")
-  vigenciaMeses    Int?                @map("vigencia_meses")
-  empresaId        String?             @map("empresa_id")
-  activo           Boolean             @default(true)
-  // Fix Bug #1: campo faltante en schema
-  alumnosEsperados Int                 @default(0) @map("alumnos_esperados")
-  // Mejora #3: modalidad de capacitación
-  modalidad        ModalidadCurso      @default(ONLINE)
-  // Mejora #4: instructor asignado al curso
-  instructorId     String?             @map("instructor_id")
-  meetingLink      String?             @map("meeting_link")
-  meetingPlatform  String?             @map("meeting_platform") // "zoom", "teams", "meet"
-  estado           EstadoCurso         @default(BORRADOR)
-  minimoAprobacion Int                 @default(70) @map("minimo_aprobacion")
-  materialDescargableUrl String?       @map("material_descargable_url")
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @updatedAt @map("updated_at")
-  credenciales     Credencial[]
-  empresa          Company?            @relation(fields: [empresaId], references: [id])
-  instructor       User?               @relation("InstructorCursos", fields: [instructorId], references: [id])
-  examenes         Examen[]
-  inscripciones    Inscripcion[]
-  modulos          Modulo[]
-  // Mejora #5: sesiones de capacitación programadas
-  sesiones         SesionCapacitacion[]
-
-  @@index([instructorId])
-  @@index([modalidad])
-  @@map("cursos")
-}
-
-model Modulo {
-  id                String              @id @default(uuid())
-  cursoId           String              @map("curso_id")
-  titulo            String
-  orden             Int
-  tipo              String
-  contenidoHtml     String?             @map("contenido_html")
-  videoUrl          String?             @map("video_url")
-  liveClassUrl      String?             @map("live_class_url")
-  liveClassDate     DateTime?           @map("live_class_date")
-  liveClassPlatform String?             @map("live_class_platform")
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  asistencias_clase asistencias_clase[]
-  curso             Curso               @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  preguntas         Pregunta[]
-  tareas_practicas  tareas_practicas[]
-  // Fix Mejora #6: relación formal con Examen
-  examenes          Examen[]
-
-  @@map("modulos")
-}
-
-model Pregunta {
-  id                String   @id @default(uuid())
-  moduloId          String   @map("modulo_id")
-  pregunta          String
-  opciones          Json
-  respuestaCorrecta Int      @map("respuesta_correcta")
-  explicacion       String?
-  createdAt         DateTime @default(now()) @map("created_at")
-  modulo            Modulo   @relation(fields: [moduloId], references: [id], onDelete: Cascade)
-
-  @@map("preguntas")
-}
-
-model Inscripcion {
-  id         String            @id @default(uuid())
-  alumnoId   String            @map("alumno_id")
-  cursoId    String            @map("curso_id")
-  progreso   Int               @default(0)
-  estado     EstadoInscripcion @default(NO_INICIADO)
-  inicioDate DateTime?         @map("inicio_date")
-  finDate    DateTime?         @map("fin_date")
-  createdAt  DateTime          @default(now()) @map("created_at")
-  updatedAt  DateTime          @updatedAt @map("updated_at")
-  alumno     User              @relation(fields: [alumnoId], references: [id])
-  curso      Curso             @relation(fields: [cursoId], references: [id])
-  modulosCompletados String    @default("[]") @map("modulos_completados")
-  obd2Sessions Obd2Session[]
-
-  @@unique([alumnoId, cursoId])
-  @@index([estado])
-  @@index([alumnoId])
-  @@index([cursoId])
-  @@map("inscripciones")
-}
-
-model Examen {
-  id           String   @id @default(uuid())
-  alumnoId     String   @map("alumno_id")
-  cursoId      String   @map("curso_id")
-  // Fix Mejora #6: relación formal a Modulo (era String suelto)
-  moduloId     String?  @map("modulo_id")
-  respuestas   Json
-  calificacion Float?
-  aprobado     Boolean?
-  realizadoAt  DateTime @default(now()) @map("realizado_at")
-  alumno       User     @relation(fields: [alumnoId], references: [id])
-  curso        Curso    @relation(fields: [cursoId], references: [id])
-  modulo       Modulo?  @relation(fields: [moduloId], references: [id])
-
-  @@index([alumnoId])
-  @@index([cursoId])
-  @@index([moduloId])
-  @@map("examenes")
-}
-
-model FotoCredencial {
-  id          String          @id @default(uuid())
-  alumnoId    String          @unique @map("alumno_id")
-  fotoUrl     String          @map("foto_url")
-  comentario  String?
-  estado      EstadoEvidencia @default(PENDIENTE)
-  feedback    String?
-  evaluadorId String?         @map("evaluador_id")
-  uploadedAt  DateTime        @default(now()) @map("uploaded_at")
-  updatedAt   DateTime        @updatedAt @map("updated_at")
-  alumno      User            @relation("AlumnoFoto", fields: [alumnoId], references: [id], onDelete: Cascade)
-  evaluador   User?           @relation("EvaluadorFoto", fields: [evaluadorId], references: [id])
-
-  @@map("fotos_credencial")
-}
-
-model Credencial {
-  id               String    @id @default(uuid())
-  numero           String    @unique
-  alumnoId         String    @map("alumno_id")
-  cursoId          String    @map("curso_id")
-  pdfUrl           String    @map("pdf_url")
-  qrCodeUrl        String    @map("qr_code_url")
-  fechaEmision     DateTime  @default(now()) @map("fecha_emision")
-  fechaVencimiento DateTime? @map("fecha_vencimiento")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  alumno           User      @relation(fields: [alumnoId], references: [id])
-  curso            Curso     @relation(fields: [cursoId], references: [id])
-
-  @@index([alumnoId])
-  @@index([cursoId])
-  @@index([numero])
-  @@map("credenciales")
-}
-
-model Cotizacion {
-  id              Int      @id @default(autoincrement())
-  empresa         String
-  cuit            String?
-  nombre          String
-  email           String
-  telefono        String
-  comentarios     String?
-  quantity        Int
-  course          String
-  modality        String
-  totalPrice      Float    @map("total_price")
-  pricePerStudent Float    @map("price_per_student")
-  discount        Int
-  acceptMarketing Boolean  @default(false) @map("accept_marketing")
-  acceptTerms     Boolean  @default(false) @map("accept_terms")
-  status          String   @default("pending")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  @@index([status])
-  @@index([email])
-  @@index([createdAt])
-  @@map("cotizaciones")
-}
-
-model PasswordResetToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String   @map("user_id")
-  expiresAt DateTime @map("expires_at")
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([token])
-  @@index([userId])
-  @@map("password_reset_tokens")
-}
-
-model Account {
-  id            String        @id @default(uuid())
-  code          String        @unique
-  name          String
-  type          String
-  parentCode    String?       @map("parent_code")
-  level         Int?          @default(1)
-  isSelectable  Boolean?      @default(true) @map("is_selectable")
-  createdAt     DateTime?     @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt     DateTime?     @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  ledgerEntries LedgerEntry[]
-
-  @@map("accounts")
-}
-
-model JournalEntry {
-  id        String        @id @default(uuid())
-  date      DateTime?     @default(now()) @db.Timestamp(6)
-  concept   String
-  reference String?
-  type      String?       @default("GENERAL")
-  createdAt DateTime?     @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt DateTime?     @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  entries   LedgerEntry[]
-
-  @@map("journal_entries")
-}
-
-model LedgerEntry {
-  id          String        @id @default(uuid())
-  journalId   String?       @map("journal_id")
-  accountId   String?       @map("account_id")
-  description String?
-  debit       Float?        @default(0)
-  credit      Float?        @default(0)
-  createdAt   DateTime?     @default(now()) @map("created_at") @db.Timestamp(6)
-  account     Account?      @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  journal     JournalEntry? @relation(fields: [journalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("ledger_entries")
-}
-
-model Venta {
-  id           String      @id @default(uuid())
-  numero       String      @unique
-  fecha        DateTime?   @default(now()) @db.Timestamp(6)
-  companyId    String?     @map("company_id")
-  condicionIva String?     @default("RI") @map("condicion_iva")
-  subtotal     Float
-  iva          Float
-  percepciones Float?      @default(0)
-  total        Float
-  metodoPago   String?     @default("TRANSFERENCIA") @map("metodo_pago")
-  estado       String?     @default("PENDIENTE")
-  createdAt    DateTime?   @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt    DateTime?   @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  items        VentaItem[]
-  company      Company?    @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map("ventas")
-}
-
-model VentaItem {
-  id          String  @id @default(uuid())
-  ventaId     String? @map("venta_id")
-  descripcion String
-  cantidad    Int
-  precioUnit  Float   @map("precio_unit")
-  subtotal    Float
-  venta       Venta?  @relation(fields: [ventaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("venta_items")
-}
-
-model Compra {
-  id           String       @id @default(uuid())
-  proveedor    String
-  cuit         String?
-  numero       String?
-  fecha        DateTime?    @default(now()) @db.Timestamp(6)
-  subtotal     Float
-  iva          Float
-  percepciones Float?       @default(0)
-  total        Float
-  metodoPago   String?      @default("EFECTIVO") @map("metodo_pago")
-  categoria    String?      @default("OTROS")
-  createdAt    DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt    DateTime?    @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  items        CompraItem[]
-
-  @@map("compras")
-}
-
-model CompraItem {
-  id          String  @id @default(uuid())
-  compraId    String? @map("compra_id")
-  descripcion String
-  cantidad    Int
-  precioUnit  Float   @map("precio_unit")
-  subtotal    Float
-  compra      Compra? @relation(fields: [compraId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("compra_items")
-}
-
-model CajaMovimiento {
-  id         String    @id @default(uuid())
-  fecha      DateTime? @default(now()) @db.Timestamp(6)
-  tipo       String
-  monto      Float
-  concepto   String
-  referencia String?
-  metodo     String?   @default("EFECTIVO")
-  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
-
-  @@map("caja_movimientos")
-}
-
-model asistencias_clase {
-  id        String   @id
-  alumno_id String
-  modulo_id String
-  curso_id  String
-  check_in  DateTime @default(now())
-  users     User     @relation(fields: [alumno_id], references: [id])
-  modulos   Modulo   @relation(fields: [modulo_id], references: [id])
-
-  @@unique([alumno_id, modulo_id])
-  @@index([curso_id])
-}
-
-model evidencias {
-  id                                   String           @id
-  tarea_id                             String
-  alumno_id                            String
-  foto_url                             String
-  comentario                           String?
-  estado                               EstadoEvidencia  @default(PENDIENTE)
-  feedback                             String?
-  evaluador_id                         String?
-  uploaded_at                          DateTime         @default(now())
-  updated_at                           DateTime
-  users_evidencias_alumno_idTousers    User             @relation("evidencias_alumno_idTousers", fields: [alumno_id], references: [id])
-  users_evidencias_evaluador_idTousers User?            @relation("evidencias_evaluador_idTousers", fields: [evaluador_id], references: [id])
-  tareas_practicas                     tareas_practicas @relation(fields: [tarea_id], references: [id], onDelete: Cascade)
-
-  @@index([alumno_id])
-  @@index([tarea_id])
-}
-
-// Fix Bug #2: modelo modulos_completados eliminado (era huérfano).
-// La lógica de progreso usa inscripciones.modulosCompletados (JSON) de forma centralizada.
-
-model tareas_practicas {
-  id            String       @id
-  modulo_id     String
-  descripcion   String
-  requiere_foto Boolean      @default(true)
-  created_at    DateTime     @default(now())
-  updated_at    DateTime
-  evidencias    evidencias[]
-  modulos       Modulo       @relation(fields: [modulo_id], references: [id], onDelete: Cascade)
-}
-
-// ============ MEJORA #5: Sesiones de Capacitación ============
-
-model SesionCapacitacion {
-  id           String             @id @default(uuid())
-  cursoId      String             @map("curso_id")
-  empresaId    String?            @map("empresa_id")
-  instructorId String?            @map("instructor_id")
-  titulo       String
-  descripcion  String?
-  fechaInicio  DateTime           @map("fecha_inicio")
-  fechaFin     DateTime           @map("fecha_fin")
-  lugar        String?
-  plataforma   String?            // zoom, teams, meet, presencial
-  meetLink     String?            @map("meet_link")
-  estado       EstadoSesion       @default(PROGRAMADA)
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime           @updatedAt @map("updated_at")
-  curso        Curso              @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  empresa      Company?           @relation(fields: [empresaId], references: [id])
-  instructor   User?              @relation("InstructorSesiones", fields: [instructorId], references: [id])
-  asistencias  AsistenciaSesion[]
-
-  @@index([cursoId])
-  @@index([fechaInicio])
-  @@index([estado])
-  @@map("sesiones_capacitacion")
-}
-
-model AsistenciaSesion {
-  id        String             @id @default(uuid())
-  sesionId  String             @map("sesion_id")
-  alumnoId  String             @map("alumno_id")
-  presente  Boolean            @default(false)
-  checkIn   DateTime?          @map("check_in")
-  notas     String?
-  createdAt DateTime           @default(now()) @map("created_at")
-  sesion    SesionCapacitacion @relation(fields: [sesionId], references: [id], onDelete: Cascade)
-  alumno    User               @relation(fields: [alumnoId], references: [id])
-
-  @@unique([sesionId, alumnoId])
-  @@index([alumnoId])
-  @@map("asistencias_sesion")
-}
-
-// ============ ENUMS ============
 
 enum EstadoEvidencia {
   PENDIENTE
@@ -480,88 +40,244 @@ enum EstadoInscripcion {
   REPROBADO
 }
 
-enum TipoModulo {
-  TEORIA
-  QUIZ
-  PRACTICA
+// ============= MODELOS =============
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  nombre       String
+  apellido     String
+  dni          String   @unique
+  telefono     String?
+  rol          UserRole @default(ALUMNO)
+  empresaId    String?  @map("empresa_id")
+  avatar       String?
+  activo       Boolean  @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  inscripciones Inscripcion[]
+  examenes      Examen[]
+  credenciales  Credencial[]
+  fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
+  fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([rol])
+  @@index([empresaId])
+  @@map("users")
 }
 
-// Mejora #8: SUPERVISOR y CONTADOR ahora existen formalmente en la BD
-enum UserRole {
-  SUPER_ADMIN
-  INSTRUCTOR
-  ALUMNO
-  SUPERVISOR
-  CONTADOR
-}
-
-enum ModalidadCurso {
-  ONLINE
-  IN_COMPANY
-  HYBRID
-}
-
-enum EstadoSesion {
-  PROGRAMADA
-  EN_CURSO
-  FINALIZADA
-  CANCELADA
-}
-
-enum EstadoCurso {
-  BORRADOR
-  PENDIENTE
-  PUBLICADO
-}
-
-model Obd2Session {
-  id            String      @id @default(uuid())
-  inscripcionId String      @map("inscripcion_id")
-  fecha         DateTime    @default(now())
-  fuerzaFrenado Float?      @map("fuerza_frenado")
-  aceleracion   Float?
-  curvasScore   Float?      @map("curvas_score")
-  esquivoAlce   Boolean?    @map("esquivo_alce")
-  rawData       String?     @map("raw_data")
-  inscripcion   Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
-
-  @@index([inscripcionId])
-  @@map("obd2_sessions")
-}
-
-model ComplianceReport {
-  id                 String   @id @default(uuid())
-  codigoSeguimiento  String   @unique @map("codigo_seguimiento")
-  titulo             String
-  descripcion        String
-  categoria          String
-  relacionEmpresa    String
-  esAnonima          Boolean  @default(true) @map("es_anonima")
-  nombreDenunciante  String?  @map("nombre_denunciante")
-  emailDenunciante   String?  @map("email_denunciante")
-  telefono           String?
-  estado             String   @default("NUEVA")
-  comentariosOficial String?  @map("comentarios_oficial")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
-
-  @@index([codigoSeguimiento])
-  @@index([estado])
-  @@map("compliance_reports")
-}
-
-model AuditLog {
+model Company {
   id        String   @id @default(uuid())
-  userId    String?  @map("user_id")
-  userEmail String?  @map("user_email")
-  action    String
-  details   String?
-  ipAddress String?  @map("ip_address")
-  requestId String?  @map("request_id")
+  nombre    String
+  cuit      String   @unique
+  direccion String?
+  telefono  String?
+  email     String
+  activa    Boolean  @default(true)
+  
+  usuarios User[]
+  cursos   Curso[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("companies")
+}
+
+model Curso {
+  id             String  @id @default(uuid())
+  nombre         String
+  descripcion    String
+  codigo         String  @unique
+  duracionHoras  Int     @map("duracion_horas")
+  vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
+  empresaId      String? @map("empresa_id")
+  activo         Boolean @default(true)
+  
+  empresa       Company?      @relation(fields: [empresaId], references: [id])
+  modulos       Modulo[]
+  examenes      Examen[]
+  inscripciones Inscripcion[]
+  credenciales  Credencial[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cursos")
+}
+
+model Modulo {
+  id            String      @id @default(uuid())
+  cursoId       String      @map("curso_id")
+  titulo        String
+  orden         Int
+  tipo          TipoModulo
+  contenidoHtml String?     @map("contenido_html") @db.Text
+  videoUrl      String?     @map("video_url")
+  
+  // Live class support
+  liveClassUrl  String?     @map("live_class_url") // Google Meet or Teams URL
+  liveClassDate DateTime?   @map("live_class_date") // Fecha programada
+  liveClassPlatform String? @map("live_class_platform") // "google_meet" o "teams"
+  
+  curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  preguntas        Pregunta[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("modulos")
+}
+
+model Pregunta {
+  id                 String @id @default(uuid())
+  moduloId           String @map("modulo_id")
+  pregunta           String
+  opciones           Json // Array de strings
+  respuestaCorrecta  Int    @map("respuesta_correcta") // Index de la opción correcta
+  explicacion        String?
+  
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([action])
+  @@map("preguntas")
+}
+
+// TareaPractica eliminado - ya no se usa
+
+model Inscripcion {
+  id        String             @id @default(uuid())
+  alumnoId  String             @map("alumno_id")
+  cursoId   String             @map("curso_id")
+  progreso  Int                @default(0) // 0-100
+  estado    EstadoInscripcion  @default(NO_INICIADO)
+  inicioDate DateTime?         @map("inicio_date")
+  finDate    DateTime?         @map("fin_date")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([alumnoId, cursoId])
+  @@index([estado])
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("inscripciones")
+}
+
+model Examen {
+  id           String   @id @default(uuid())
+  alumnoId     String   @map("alumno_id")
+  cursoId      String   @map("curso_id")
+  respuestas   Json // { preguntaId: respuestaIndex }
+  calificacion Float?
+  aprobado     Boolean?
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  realizadoAt DateTime @default(now()) @map("realizado_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@map("examenes")
+}
+
+model FotoCredencial {
+  id          String          @id @default(uuid())
+  alumnoId    String          @unique @map("alumno_id") // Solo una foto por alumno
+  fotoUrl     String          @map("foto_url")
+  comentario  String?         // Comentario del instructor al subir
+  estado      EstadoEvidencia @default(PENDIENTE)
+  feedback    String?         // Feedback si se rechaza
+  evaluadorId String?         @map("evaluador_id") // Instructor que subió/aprobó
+
+  alumno    User  @relation("AlumnoFoto", fields: [alumnoId], references: [id], onDelete: Cascade)
+  evaluador User? @relation("EvaluadorFoto", fields: [evaluadorId], references: [id])
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("fotos_credencial")
+}
+
+model Credencial {
+  id               String    @id @default(uuid())
+  numero           String    @unique // VMP-2026-XXXXX
+  alumnoId         String    @map("alumno_id")
+  cursoId          String    @map("curso_id")
+  pdfUrl           String    @map("pdf_url")
+  qrCodeUrl        String    @map("qr_code_url")
+  fechaEmision     DateTime  @default(now()) @map("fecha_emision")
+  fechaVencimiento DateTime? @map("fecha_vencimiento")
+  
+  alumno User  @relation(fields: [alumnoId], references: [id])
+  curso  Curso @relation(fields: [cursoId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([alumnoId])
+  @@index([cursoId])
+  @@index([numero])
+  @@map("credenciales")
+}
+
+// ============= COTIZACIONES (LEADS) =============
+
+model Cotizacion {
+  id               Int      @id @default(autoincrement())
+  
+  // Datos de contacto
+  empresa          String
+  cuit             String?
+  nombre           String
+  email            String
+  telefono         String
+  comentarios      String?  @db.Text
+  
+  // Datos del cotizador
+  quantity         Int      // Cantidad de conductores
+  course           String   // defensivo, carga_pesada, 4x4, completo
+  modality         String   // online, presencial, mixto
+  totalPrice       Float    @map("total_price")
+  pricePerStudent  Float    @map("price_per_student")
+  discount         Int      // Porcentaje de descuento aplicado
+  
+  // Consentimientos
+  acceptMarketing  Boolean  @default(false) @map("accept_marketing")
+  acceptTerms      Boolean  @default(false) @map("accept_terms")
+  
+  // Estado del lead
+  status           String   @default("pending") // pending, contacted, converted, rejected
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([email])
   @@index([createdAt])
-  @@map("audit_logs")
+  @@map("cotizaciones")
+}
+
+// ============= PASSWORD RESET =============
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
 }

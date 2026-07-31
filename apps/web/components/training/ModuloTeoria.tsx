@@ -22,7 +22,7 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al completar el módulo');
         } finally {
             setLoading(false);
         }
@@ -32,8 +32,8 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
         <div className="space-y-6">
             {/* Header */}
             <div className="border-b pb-4">
-                <h2 className="text-2xl font-bold text-slate-900">{modulo.titulo}</h2>
-                <div className="flex items-center space-x-2 mt-2 text-sm text-slate-800">
+                <h2 className="text-2xl font-bold text-gray-900">{modulo.titulo}</h2>
+                <div className="flex items-center space-x-2 mt-2 text-sm text-gray-600">
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">
                         Módulo Teórico
                     </span>
@@ -52,10 +52,10 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
                             </div>
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-lg font-bold text-slate-900 mb-1">
+                            <h3 className="text-lg font-bold text-gray-900 mb-1">
                                 Clase en Vivo Programada
                             </h3>
-                            <p className="text-slate-700 mb-3">
+                            <p className="text-gray-700 mb-3">
                                 {new Date(modulo.liveClassDate).toLocaleString('es-AR', {
                                     dateStyle: 'full',
                                     timeStyle: 'short'
@@ -72,7 +72,7 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
                                         <>👥 Unirse a Teams</>
                                     )}
                                 </Button>
-                                <span className="text-sm text-slate-800">
+                                <span className="text-sm text-gray-600">
                                     {modulo.liveClassPlatform === 'google_meet' ? 'Google Meet' : 'Microsoft Teams'}
                                 </span>
                             </div>
@@ -83,7 +83,7 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
 
             {/* Video (si existe) */}
             {modulo.videoUrl && (
-                <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden">
+                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
                     <video
                         src={modulo.videoUrl}
                         controls

@@ -1,21 +1,9 @@
-export const API_URL = (() => {
-    const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    // Ignore localhost, 127.0.0.1, legacy railway.app URLs, and dead CNAME api.vmp-edtech.com
-    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1') && !envUrl.includes('railway.app') && !envUrl.includes('api.vmp-edtech.com')) {
-        return envUrl;
-    }
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
-    // Always fallback to active Render production backend
-    return 'https://vmp-edtech-6wgw.onrender.com';
-})();
-
-async function request(path: string, options: RequestInit & { params?: Record<string, any>, timeout?: number } = {}) {
+async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
 
-    const baseUrl = API_URL;
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    let url = `${baseUrl}/api${cleanPath}`;
-    
+    let url = `${API_URL}/api${path}`;
     if (options.params) {
         const query = new URLSearchParams();
         Object.entries(options.params).forEach(([key, value]) => {
@@ -39,79 +27,17 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         headers['Content-Type'] = 'application/json';
     }
 
-    const timeout = options.timeout || 60000;
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
+    const response = await fetch(url, {
+        ...options,
+        headers,
+    });
 
-    try {
-        let response = await fetch(url, {
-            ...options,
-            headers,
-            signal: controller.signal,
-        });
-
-        // Highly resilient retry mechanism for 503 (Database Connection / Lazy Setup)
-        let retries = 0;
-        const maxRetries = 2;
-        const retryDelay = 800;
-
-        while (response.status === 503 && retries < maxRetries) {
-            retries++;
-            console.warn(`[API-CLIENT] HTTP 503 received (Attempt ${retries}/${maxRetries}). Retrying in ${retryDelay}ms...`);
-            await new Promise((resolve) => setTimeout(resolve, retryDelay));
-            response = await fetch(url, {
-                ...options,
-                headers,
-                signal: controller.signal,
-            });
-        }
-
-        clearTimeout(id);
-
-        if (response.status === 401 && cleanPath !== '/auth/login') {
-            // Manejar expiración de sesión
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('vmp_token');
-                localStorage.removeItem('vmp_user');
-                document.cookie = 'vmp_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-                if (!window.location.pathname.includes('/login')) {
-                    window.location.href = '/login?error=session_expired';
-                }
-            }
-            throw new Error('Sesión expirada. Por favor, inicie sesión nuevamente.');
-        }
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor', request_id: undefined }));
-            let errMsg = error.detail || `Error ${response.status}: ${response.statusText}`;
-            if (error.request_id) {
-                errMsg += ` (ID de seguimiento: ${error.request_id})`;
-            }
-            throw new Error(errMsg);
-        }
-
-        return response.json();
-    } catch (error: any) {
-        clearTimeout(id);
-        
-        // Automatic retry for Render cold starts / transient connection drops
-        const isRetryable = error.name === 'AbortError' || (error.message && error.message.includes('Failed to fetch'));
-        const currentAttempt = (options as any)._attempt || 1;
-        
-        if (isRetryable && currentAttempt < 4) {
-            console.warn(`[API-CLIENT] Fetch failed (attempt ${currentAttempt}/4). Retrying connection...`);
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            return request(path, { ...options, _attempt: currentAttempt + 1 } as any);
-        }
-
-        if (error.name === 'AbortError') {
-            throw new Error('El servidor está iniciando. Por favor, intente nuevamente en unos segundos.');
-        }
-        if (error.message && error.message.includes('Failed to fetch')) {
-            throw new Error('El servidor está iniciando. Por favor, intente nuevamente en unos segundos.');
-        }
-        throw error;
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
+        throw new Error(error.detail || 'Error en la petición');
     }
+
+    return response.json();
 }
 
 export type ApiOptions = RequestInit & { params?: Record<string, any> };
@@ -128,12 +54,6 @@ export const api = {
         request(path, {
             ...options,
             method: 'PUT',
-            body: body instanceof FormData ? body : JSON.stringify(body),
-        }),
-    patch: (path: string, body: any, options?: ApiOptions) =>
-        request(path, {
-            ...options,
-            method: 'PATCH',
             body: body instanceof FormData ? body : JSON.stringify(body),
         }),
     delete: (path: string, options?: ApiOptions) => request(path, { ...options, method: 'DELETE' }),

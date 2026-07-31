@@ -53,15 +53,15 @@ export default function RegisterPage() {
                     <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">V</span>
                     </div>
-                    <span className="text-2xl font-bold text-slate-900">VMP - EDTECH</span>
+                    <span className="text-2xl font-bold text-gray-900">VMP Servicios</span>
                 </Link>
 
                 {/* Register Card */}
                 <div className="bg-white rounded-lg shadow-md p-8">
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">
                         Crear Cuenta
                     </h1>
-                    <p className="text-slate-800 mb-6">
+                    <p className="text-gray-600 mb-6">
                         Completá tus datos para empezar tu capacitación
                     </p>
 
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                             }
                         />
 
-                        <div className="pt-2 text-xs text-slate-700">
+                        <div className="pt-2 text-xs text-gray-500">
                             Al registrarte, aceptás nuestros <Link href="/terminos" className="text-primary hover:underline">Términos y Condiciones</Link> y nuestra <Link href="/privacidad" className="text-primary hover:underline">Política de Privacidad</Link>.
                         </div>
 
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                         </Button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-slate-800">
+                    <div className="mt-6 text-center text-sm text-gray-600">
                         ¿Ya tenés cuenta?{' '}
                         <Link href="/login" className="text-primary font-semibold hover:underline">
                             Iniciá sesión aquí

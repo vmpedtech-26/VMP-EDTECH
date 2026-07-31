@@ -69,8 +69,8 @@ export default function InstructorTareasPage() {
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-slate-900">Revisión de Tareas</h1>
-                <p className="text-slate-800 mt-2">
+                <h1 className="text-3xl font-bold text-gray-900">Revisión de Tareas</h1>
+                <p className="text-gray-600 mt-2">
                     Gestiona las evidencias prácticas enviadas por tus alumnos.
                 </p>
             </div>
@@ -78,11 +78,11 @@ export default function InstructorTareasPage() {
             {/* Filters & Search */}
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                         type="text"
                         placeholder="Buscar por alumno o curso..."
-                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -117,17 +117,17 @@ export default function InstructorTareasPage() {
                                         {evidencia.alumno?.nombre[0]}{evidencia.alumno?.apellido[0]}
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-slate-900">
+                                        <h3 className="font-bold text-gray-900">
                                             {evidencia.alumno?.nombre} {evidencia.alumno?.apellido}
                                         </h3>
-                                        <p className="text-sm text-slate-700 font-medium">
+                                        <p className="text-sm text-gray-500 font-medium">
                                             {evidencia.tarea?.modulo.curso.nombre}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex-1 md:px-8">
-                                    <div className="flex items-center justify-between md:justify-start gap-8 text-sm text-slate-800">
+                                    <div className="flex items-center justify-between md:justify-start gap-8 text-sm text-gray-600">
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-4 w-4 text-warning" />
                                             <span>Subido: {format(new Date(evidencia.uploadedAt), "d MMM, HH:mm", { locale: es })}</span>

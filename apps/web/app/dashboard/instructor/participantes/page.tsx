@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Check, X, Upload, Users, Building2, Filter } from 'lucide-react';
 import Image from 'next/image';
-import { api } from '@/lib/api-client';
 
 interface Alumno {
     id: string;
@@ -34,6 +33,7 @@ export default function ParticipantesPage() {
     const [filtroEstado, setFiltroEstado] = useState<string>('all');
     const [loading, setLoading] = useState(true);
     const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
         fetchEmpresas();
@@ -42,8 +42,15 @@ export default function ParticipantesPage() {
 
     const fetchEmpresas = async () => {
         try {
-            const data = await api.get('/empresas');
-            setEmpresas(data);
+            const res = await fetch(`${API_URL}/api/empresas`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
+                }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setEmpresas(data);
+            }
         } catch (error) {
             console.error('Error fetching empresas:', error);
         }
@@ -52,27 +59,43 @@ export default function ParticipantesPage() {
     const fetchAlumnos = async () => {
         setLoading(true);
         try {
-            const params: any = { rol: 'ALUMNO' };
+            const params = new URLSearchParams();
+            params.append('rol', 'ALUMNO');
             if (selectedEmpresa !== 'all') {
-                params.empresaId = selectedEmpresa;
+                params.append('empresaId', selectedEmpresa);
             }
 
-            const data = await api.get('/users', { params });
+            const res = await fetch(`${API_URL}/api/users?${params}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
+                }
+            });
 
-            // Fetch fotos for each alumno
-            const alumnosWithFotos = await Promise.all(
-                data.map(async (alumno: Alumno) => {
-                    try {
-                        const foto = await api.get(`/fotos-credencial/alumno/${alumno.id}`);
-                        return { ...alumno, fotoCredencial: foto };
-                    } catch {
-                        // No foto found
-                    }
-                    return alumno;
-                })
-            );
+            if (res.ok) {
+                const data = await res.json();
 
-            setAlumnos(alumnosWithFotos);
+                // Fetch fotos for each alumno
+                const alumnosWithFotos = await Promise.all(
+                    data.map(async (alumno: Alumno) => {
+                        try {
+                            const fotoRes = await fetch(`${API_URL}/api/fotos-credencial/alumno/${alumno.id}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
+                                }
+                            });
+                            if (fotoRes.ok) {
+                                const foto = await fotoRes.json();
+                                return { ...alumno, fotoCredencial: foto };
+                            }
+                        } catch {
+                            // No foto found
+                        }
+                        return alumno;
+                    })
+                );
+
+                setAlumnos(alumnosWithFotos);
+            }
         } catch (error) {
             console.error('Error fetching alumnos:', error);
         } finally {
@@ -83,33 +106,29 @@ export default function ParticipantesPage() {
     const handleFileUpload = async (alumnoId: string, file: File) => {
         setUploadingFor(alumnoId);
         try {
-            // 1. Pre-validación con IA (Gemini Vision)
-            const validationData = new FormData();
-            validationData.append('file', file);
-            
-            try {
-                const validation = await api.post('/fotos-credencial/validate-ia', validationData);
-                if (!validation.valid) {
-                    alert(`❌ Validación inteligente fallida:\n\n${validation.feedback}\n\nPor favor, sube otra foto que cumpla los requisitos.`);
-                    setUploadingFor(null);
-                    return;
-                }
-            } catch (err) {
-                console.warn("AI validation error, bypassing to manual approval:", err);
-            }
-
-            // 2. Subida real si es válida
             const formData = new FormData();
             formData.append('file', file);
             formData.append('alumnoId', alumnoId);
             formData.append('comentario', 'Foto de credencial subida por instructor');
 
-            await api.post('/fotos-credencial/upload', formData);
-            await fetchAlumnos(); // Refresh list
-            alert('¡Foto subida y validada con éxito!');
-        } catch (error: any) {
+            const res = await fetch(`${API_URL}/api/fotos-credencial/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
+                },
+                body: formData
+            });
+
+            if (res.ok) {
+                await fetchAlumnos(); // Refresh list
+                alert('Foto subida exitosamente');
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.detail || 'No se pudo subir la foto'}`);
+            }
+        } catch (error) {
             console.error('Error uploading foto:', error);
-            alert(`Error: ${error.message || 'No se pudo subir la foto'}`);
+            alert('Error al subir la foto');
         } finally {
             setUploadingFor(null);
         }
@@ -117,12 +136,22 @@ export default function ParticipantesPage() {
 
     const handleAprobarFoto = async (fotoId: string) => {
         try {
-            await api.put(`/fotos-credencial/${fotoId}/evaluar`, {
-                estado: 'APROBADA',
-                feedback: 'Foto aprobada'
+            const res = await fetch(`${API_URL}/api/fotos-credencial/${fotoId}/evaluar`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    estado: 'APROBADA',
+                    feedback: 'Foto aprobada'
+                })
             });
-            await fetchAlumnos();
-            alert('Foto aprobada exitosamente');
+
+            if (res.ok) {
+                await fetchAlumnos();
+                alert('Foto aprobada exitosamente');
+            }
         } catch (error) {
             console.error('Error aprobando foto:', error);
         }
@@ -133,12 +162,22 @@ export default function ParticipantesPage() {
         if (!feedback) return;
 
         try {
-            await api.put(`/fotos-credencial/${fotoId}/evaluar`, {
-                estado: 'RECHAZADA',
-                feedback
+            const res = await fetch(`${API_URL}/api/fotos-credencial/${fotoId}/evaluar`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    estado: 'RECHAZADA',
+                    feedback
+                })
             });
-            await fetchAlumnos();
-            alert('Foto rechazada');
+
+            if (res.ok) {
+                await fetchAlumnos();
+                alert('Foto rechazada');
+            }
         } catch (error) {
             console.error('Error rechazando foto:', error);
         }
@@ -156,8 +195,8 @@ export default function ParticipantesPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-slate-900">Participantes</h1>
-                <p className="text-slate-800 mt-2">Gestiona las fotos de credencial de los alumnos</p>
+                <h1 className="text-3xl font-bold text-gray-900">Participantes</h1>
+                <p className="text-gray-600 mt-2">Gestiona las fotos de credencial de los alumnos</p>
             </div>
 
             {/* Filtros */}
@@ -165,7 +204,7 @@ export default function ParticipantesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Filtro por empresa */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             <Building2 className="inline h-4 w-4 mr-1" />
                             Empresa
                         </label>
@@ -183,7 +222,7 @@ export default function ParticipantesPage() {
 
                     {/* Filtro por estado de foto */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             <Filter className="inline h-4 w-4 mr-1" />
                             Estado de Foto
                         </label>
@@ -201,7 +240,7 @@ export default function ParticipantesPage() {
                     </div>
                 </div>
 
-                <div className="text-sm text-slate-800">
+                <div className="text-sm text-gray-600">
                     Mostrando {alumnosFiltrados.length} de {alumnos.length} participantes
                 </div>
             </div>
@@ -210,14 +249,14 @@ export default function ParticipantesPage() {
             {loading ? (
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-slate-800">Cargando participantes...</p>
+                    <p className="mt-4 text-gray-600">Cargando participantes...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {alumnosFiltrados.map(alumno => (
                         <div key={alumno.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                             {/* Foto */}
-                            <div className="relative h-64 bg-slate-100 flex items-center justify-center">
+                            <div className="relative h-64 bg-gray-100 flex items-center justify-center">
                                 {alumno.fotoCredencial ? (
                                     <>
                                         <Image
@@ -238,20 +277,20 @@ export default function ParticipantesPage() {
                                     </>
                                 ) : (
                                     <div className="text-center">
-                                        <Camera className="h-16 w-16 text-slate-600 mx-auto mb-2" />
-                                        <p className="text-slate-700 text-sm">Sin foto</p>
+                                        <Camera className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                                        <p className="text-gray-500 text-sm">Sin foto</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Info del alumno */}
                             <div className="p-4">
-                                <h3 className="font-semibold text-lg text-slate-900">
+                                <h3 className="font-semibold text-lg text-gray-900">
                                     {alumno.nombre} {alumno.apellido}
                                 </h3>
-                                <p className="text-sm text-slate-800">DNI: {alumno.dni}</p>
+                                <p className="text-sm text-gray-600">DNI: {alumno.dni}</p>
                                 {alumno.empresaNombre && (
-                                    <p className="text-sm text-slate-800">
+                                    <p className="text-sm text-gray-600">
                                         <Building2 className="inline h-3 w-3 mr-1" />
                                         {alumno.empresaNombre}
                                     </p>
@@ -302,7 +341,7 @@ export default function ParticipantesPage() {
                                 </div>
 
                                 {alumno.fotoCredencial?.feedback && (
-                                    <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-800">
+                                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
                                         <strong>Feedback:</strong> {alumno.fotoCredencial.feedback}
                                     </div>
                                 )}
@@ -314,9 +353,9 @@ export default function ParticipantesPage() {
 
             {!loading && alumnosFiltrados.length === 0 && (
                 <div className="text-center py-12 bg-white rounded-lg shadow">
-                    <Users className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay participantes</h3>
-                    <p className="text-slate-800">
+                    <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay participantes</h3>
+                    <p className="text-gray-600">
                         {filtroEstado !== 'all'
                             ? 'No se encontraron participantes con los filtros seleccionados'
                             : 'No hay participantes registrados'}

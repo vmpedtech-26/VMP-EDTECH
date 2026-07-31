@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Loader2, Save, ArrowLeft, Building2, Users, GraduationCap, Monitor } from 'lucide-react';
+import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import { Curso } from '@/types/training';
-import { empresasApi, Empresa } from '@/lib/api/empresas';
-import { api } from '@/lib/api-client';
 import Link from 'next/link';
 
 interface CursoFormProps {
@@ -17,328 +15,118 @@ interface CursoFormProps {
 }
 
 export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoFormProps) {
-    const [formData, setFormData] = useState<Partial<Curso>>({
+    const [formData, setFormData] = useState<Partial<Curso>>(initialData || {
         nombre: '',
         descripcion: '',
         codigo: '',
         duracionHoras: 0,
         vigenciaMeses: 12,
-        empresaId: '',
-        alumnosEsperados: 0,
         activo: true,
-        modalidad: 'ONLINE',
-        instructorId: '',
-        meetingLink: '',
-        meetingPlatform: '',
-        minimoAprobacion: 70,
-        materialDescargableUrl: '',
-        ...initialData
     });
 
-    const [empresas, setEmpresas] = useState<Empresa[]>([]);
-    const [instructores, setInstructores] = useState<{ id: string; nombre: string; apellido: string }[]>([]);
-    const [isLoadingEmpresas, setIsLoadingEmpresas] = useState(false);
-
-    useEffect(() => {
-        const fetchEmpresas = async () => {
-            setIsLoadingEmpresas(true);
-            try {
-                const data = await empresasApi.listarEmpresas();
-                setEmpresas(data);
-            } catch (error) {
-                console.error('Error fetching empresas:', error);
-            } finally {
-                setIsLoadingEmpresas(false);
-            }
-        };
-        const fetchInstructores = async () => {
-            try {
-                const res = await api.get('/users?rol=INSTRUCTOR');
-                setInstructores(Array.isArray(res) ? res : []);
-            } catch (e) {
-                console.error('Error fetching instructores:', e);
-            }
-        };
-        fetchEmpresas();
-        fetchInstructores();
-    }, []);
-
-    const generateCodeFromName = (name: string): string => {
-        if (!name) return '';
-        const cleanName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const words = cleanName.toUpperCase().split(/[\s\-]+/).filter(w => w.length > 0);
-        
-        if (words.length === 1) {
-            return 'VMP-' + words[0].substring(0, 4);
-        } else {
-            const initials = words.map(w => w[0]).join('');
-            return 'VMP-' + initials;
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        
-        let finalValue: string | number = value;
-        if (type === 'number') {
-            finalValue = parseInt(value) || 0;
-        } else if (name === 'codigo') {
-            finalValue = value.toUpperCase().replace(/\s+/g, '-').replace(/-+/g, '-');
-        }
-
-        setFormData(prev => {
-            const newData = { ...prev, [name]: finalValue };
-            
-            // Auto-generar código al escribir el nombre (solo en creación)
-            if (name === 'nombre' && !initialData?.id) {
-                newData.codigo = generateCodeFromName(value);
-            }
-            
-            return newData;
-        });
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'number' ? parseInt(value) || 0 : value
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Limpiar empresaId si se seleccionó la opción vacía
-        const submissionData = { ...formData };
-        if (!submissionData.empresaId) delete submissionData.empresaId;
-        
-        await onSubmit(submissionData);
+        await onSubmit(formData);
     };
 
     return (
-        <div className="space-y-6 max-w-2xl mx-auto pb-20">
+        <div className="space-y-6 max-w-2xl mx-auto">
             <div className="flex items-center gap-4">
                 <Button variant="outline" size="sm" asChild>
                     <Link href="/dashboard/super/cursos">
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
             </div>
 
             <Card className="p-8 border-none shadow-xl ring-1 ring-gray-100">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Nombre */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                        <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                             Nombre del Curso
                         </label>
                         <input
                             type="text"
                             name="nombre"
                             required
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                             placeholder="Ej: Seguridad en Alturas"
                             value={formData.nombre}
                             onChange={handleChange}
                         />
                     </div>
 
-                    {/* Modalidad + Instructor */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                                <Monitor className="h-4 w-4 text-slate-400" />
-                                Modalidad
-                            </label>
-                            <select
-                                name="modalidad"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
-                                value={(formData as any).modalidad || 'ONLINE'}
-                                onChange={handleChange}
-                            >
-                                <option value="ONLINE">🌐 Online</option>
-                                <option value="IN_COMPANY">🏢 In Company (Presencial)</option>
-                                <option value="HYBRID">⚡ Híbrido</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                                <GraduationCap className="h-4 w-4 text-slate-400" />
-                                Instructor Asignado
-                            </label>
-                            <select
-                                name="instructorId"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
-                                value={(formData as any).instructorId || ''}
-                                onChange={handleChange}
-                            >
-                                <option value="">Sin instructor asignado</option>
-                                {instructores.map(inst => (
-                                    <option key={inst.id} value={inst.id}>
-                                        {inst.nombre} {inst.apellido}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Empresa y Alumnos */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                                <Building2 className="h-4 w-4 text-slate-400" />
-                                Empresa (Opcional)
-                            </label>
-                            <select
-                                name="empresaId"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
-                                value={formData.empresaId || ''}
-                                onChange={handleChange}
-                                disabled={isLoadingEmpresas}
-                            >
-                                <option value="">Seleccionar Empresa (General)</option>
-                                {empresas.map(emp => (
-                                    <option key={emp.id} value={emp.id}>
-                                        {emp.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                                <Users className="h-4 w-4 text-slate-400" />
-                                Alumnos Esperados
-                            </label>
-                            <input
-                                type="number"
-                                name="alumnosEsperados"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                value={formData.alumnosEsperados}
-                                onChange={handleChange}
-                                min="0"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Código y Duración */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Código (ID Único)
                             </label>
                             <input
                                 type="text"
                                 name="codigo"
                                 required
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 placeholder="Ej: VMP-SEG-01"
                                 value={formData.codigo}
                                 onChange={handleChange}
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Duración (Horas)
                             </label>
                             <input
                                 type="number"
                                 name="duracionHoras"
                                 required
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 value={formData.duracionHoras}
                                 onChange={handleChange}
                             />
                         </div>
                     </div>
 
-                    {/* Descripción */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                        <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                             Descripción
                         </label>
                         <textarea
                             name="descripcion"
                             required
                             rows={4}
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none resize-none"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none resize-none"
                             placeholder="Describe de qué trata el curso..."
                             value={formData.descripcion}
                             onChange={handleChange}
                         />
                     </div>
 
-                    {/* Vigencia, Mínimo Aprobación y Material de lectura */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Vigencia (Meses)
                             </label>
                             <input
                                 type="number"
                                 name="vigenciaMeses"
                                 required
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 value={formData.vigenciaMeses}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                                Mínimo Aprobación (%)
-                            </label>
-                            <input
-                                type="number"
-                                name="minimoAprobacion"
-                                required
-                                min="0"
-                                max="100"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                value={formData.minimoAprobacion ?? 70}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                                Material URL (Descarga)
-                            </label>
-                            <input
-                                type="url"
-                                name="materialDescargableUrl"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                placeholder="https://..."
-                                value={formData.materialDescargableUrl || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
                     </div>
 
-                    {/* Configuración de Reunión Virtual */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                                Plataforma de Reunión
-                            </label>
-                            <select
-                                name="meetingPlatform"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none font-medium text-slate-750"
-                                value={formData.meetingPlatform || ''}
-                                onChange={handleChange}
-                            >
-                                <option value="">Ninguna / Presencial</option>
-                                <option value="zoom">Zoom Meeting</option>
-                                <option value="meet">Google Meet</option>
-                                <option value="teams">Microsoft Teams</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                                Enlace de la Reunión (URL)
-                            </label>
-                            <input
-                                type="url"
-                                name="meetingLink"
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                placeholder="https://zoom.us/j/... o https://meet.google.com/..."
-                                value={formData.meetingLink || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-100 flex justify-end">
+                    <div className="pt-6 border-t border-gray-100 flex justify-end">
                         <Button
                             type="submit"
                             disabled={isLoading}

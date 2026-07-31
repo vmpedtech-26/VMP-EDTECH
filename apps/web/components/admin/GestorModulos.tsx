@@ -18,26 +18,20 @@ import Link from 'next/link';
 
 interface GestorModulosProps {
     cursoId: string;
-    cursoNombre: string;
     modulos: ModuloSummary[];
     onUpdate: () => void;
 }
 
-export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: GestorModulosProps) {
+export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [newModulo, setNewModulo] = useState({
-        titulo: cursoNombre || '',
+        titulo: '',
         tipo: 'TEORIA',
         orden: modulos.length + 1,
         contenidoHtml: '',
         videoUrl: ''
     });
-
-    // Sincronizar el título con el nombre del curso al cargar o cambiar el curso
-    React.useEffect(() => {
-        setNewModulo(prev => ({ ...prev, titulo: cursoNombre || '' }));
-    }, [cursoNombre]);
 
     const handleAdd = async () => {
         if (!newModulo.titulo) return;
@@ -46,7 +40,7 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
             await cursosApi.crearModulo(cursoId, newModulo);
             setIsAdding(false);
             setNewModulo({
-                titulo: cursoNombre || '',
+                titulo: '',
                 tipo: 'TEORIA',
                 orden: modulos.length + 2,
                 contenidoHtml: '',
@@ -55,7 +49,7 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
             onUpdate();
         } catch (error) {
             console.error('Error adding modulo:', error);
-            alert('Error al agregar módulo: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al agregar módulo');
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +62,7 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
             onUpdate();
         } catch (error) {
             console.error('Error deleting modulo:', error);
-            alert('Error al eliminar módulo: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al eliminar módulo');
         }
     };
 
@@ -76,8 +70,8 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-bold text-slate-900">Estructura del Curso</h2>
-                    <p className="text-sm text-slate-700">Administra los módulos y su contenido</p>
+                    <h2 className="text-xl font-bold text-gray-900">Estructura del Curso</h2>
+                    <p className="text-sm text-gray-500">Administra los módulos y su contenido</p>
                 </div>
                 {!isAdding && (
                     <Button size="sm" onClick={() => setIsAdding(true)}>
@@ -101,7 +95,7 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                 Título del Módulo
                             </label>
                             <input
@@ -113,7 +107,7 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                 Tipo de Contenido
                             </label>
                             <select
@@ -148,15 +142,15 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
                 {modulos.map((modulo, idx) => (
                     <Card key={modulo.id} className="p-4 border-none shadow-sm ring-1 ring-gray-100 group hover:shadow-md transition-all">
                         <div className="flex items-center gap-4">
-                            <div className="text-gray-300 group-hover:text-slate-600 cursor-grab">
+                            <div className="text-gray-300 group-hover:text-gray-400 cursor-grab">
                                 <GripVertical className="h-5 w-5" />
                             </div>
-                            <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 text-xs font-bold">
+                            <div className="h-8 w-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 text-xs font-bold">
                                 {idx + 1}
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                    <h4 className="font-bold text-slate-900">{modulo.titulo}</h4>
+                                    <h4 className="font-bold text-gray-900">{modulo.titulo}</h4>
                                     <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${modulo.tipo === 'TEORIA' ? 'bg-blue-50 text-blue-600' :
                                             modulo.tipo === 'QUIZ' ? 'bg-purple-50 text-purple-600' :
                                                 'bg-orange-50 text-orange-600'
@@ -186,8 +180,8 @@ export function GestorModulos({ cursoId, cursoNombre, modulos, onUpdate }: Gesto
                 ))}
 
                 {modulos.length === 0 && !isAdding && (
-                    <div className="py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-100 text-center">
-                        <p className="text-slate-600 font-medium">Este curso aún no tiene módulos</p>
+                    <div className="py-12 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 text-center">
+                        <p className="text-gray-400 font-medium">Este curso aún no tiene módulos</p>
                         <Button variant="outline" size="sm" className="mt-2 text-primary" onClick={() => setIsAdding(true)}>
                             Agregar mi primer contenido
                         </Button>

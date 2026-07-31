@@ -92,13 +92,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Nombre */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             Nombre
                         </label>
                         <input
                             required
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="Ej: Juan"
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
@@ -107,13 +107,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* Apellido */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             Apellido
                         </label>
                         <input
                             required
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="Ej: Pérez"
                             value={formData.apellido}
                             onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
@@ -122,13 +122,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Mail className="h-3 w-3 text-gray-300" /> Email
                         </label>
                         <input
                             required
                             type="email"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="juan@ejemplo.com"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -137,13 +137,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* DNI */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Fingerprint className="h-3 w-3 text-gray-300" /> DNI (Sin puntos)
                         </label>
                         <input
                             required
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="12345678"
                             value={formData.dni}
                             onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
@@ -152,12 +152,12 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* Teléfono */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Phone className="h-3 w-3 text-gray-300" /> Teléfono
                         </label>
                         <input
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="+54 9 11 ..."
                             value={formData.telefono}
                             onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -166,13 +166,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* Password */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Key className="h-3 w-3 text-gray-300" /> {initialData ? 'Cambiar Contraseña (Opcional)' : 'Contraseña'}
                         </label>
                         <input
                             required={!initialData}
                             type="password"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
                             placeholder="********"
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -183,12 +183,12 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-50">
                     {/* Rol (Solo Super Admin) */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <ShieldCheck className="h-3 w-3 text-gray-300" /> Rol de Usuario
                         </label>
                         <select
                             disabled={!isSuperAdminView}
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-slate-700"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-gray-700"
                             value={formData.rol}
                             onChange={(e) => setFormData({ ...formData, rol: e.target.value })}
                         >
@@ -200,13 +200,13 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
 
                     {/* Empresa */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Building2 className="h-3 w-3 text-gray-300" /> Empresa Asignada
                         </label>
                         <select
                             disabled={!isSuperAdminView}
                             required={formData.rol !== 'SUPER_ADMIN'}
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-slate-700"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-medium text-gray-700"
                             value={formData.empresaId}
                             onChange={(e) => setFormData({ ...formData, empresaId: e.target.value })}
                         >
@@ -227,7 +227,7 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
                             checked={formData.activo}
                             onChange={(e) => setFormData({ ...formData, activo: e.target.checked })}
                         />
-                        <label htmlFor="activo" className="text-sm font-medium text-slate-700">Usuario Activo</label>
+                        <label htmlFor="activo" className="text-sm font-medium text-gray-700">Usuario Activo</label>
                     </div>
 
                     <div className="flex items-center gap-3">

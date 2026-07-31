@@ -35,9 +35,9 @@ export default function CursosPage() {
             case 'EN_PROGRESO':
                 return 'bg-warning/10 text-warning border-warning/20';
             case 'NO_INICIADO':
-                return 'bg-slate-100 text-slate-800 border-slate-200';
+                return 'bg-gray-100 text-gray-600 border-gray-200';
             default:
-                return 'bg-slate-100 text-slate-800 border-slate-200';
+                return 'bg-gray-100 text-gray-600 border-gray-200';
         }
     };
 
@@ -67,8 +67,8 @@ export default function CursosPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-slate-900">Mis Cursos</h1>
-                <p className="text-slate-800 mt-2">
+                <h1 className="text-3xl font-bold text-gray-900">Mis Cursos</h1>
+                <p className="text-gray-600 mt-2">
                     Cursos asignados y tu progreso en cada uno
                 </p>
             </div>
@@ -81,10 +81,10 @@ export default function CursosPage() {
                                 {/* Header del curso */}
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-bold text-slate-900 mb-2">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">
                                             {i.nombre}
                                         </h3>
-                                        <p className="text-slate-800 text-sm line-clamp-2">{i.descripcion}</p>
+                                        <p className="text-gray-600 text-sm line-clamp-2">{i.descripcion}</p>
                                     </div>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-semibold border ${getEstadoColor(
@@ -96,13 +96,13 @@ export default function CursosPage() {
                                 </div>
 
                                 {/* Info del curso */}
-                                <div className="flex items-center space-x-4 text-sm text-slate-800">
+                                <div className="flex items-center space-x-4 text-sm text-gray-600">
                                     <div className="flex items-center space-x-1">
                                         <Clock className="h-4 w-4" />
                                         <span>{i.duracionHoras} horas</span>
                                     </div>
                                     <div className="flex items-center space-x-1">
-                                        <span className="text-xs font-mono font-bold text-slate-600">
+                                        <span className="text-xs font-mono font-bold text-gray-400">
                                             {i.codigo}
                                         </span>
                                     </div>
@@ -111,8 +111,8 @@ export default function CursosPage() {
                                 {/* Progress Bar */}
                                 <div>
                                     <div className="flex items-center justify-between text-sm mb-2">
-                                        <span className="text-slate-800">Progreso</span>
-                                        <span className="font-semibold text-slate-900">
+                                        <span className="text-gray-600">Progreso</span>
+                                        <span className="font-semibold text-gray-900">
                                             {i.progreso}%
                                         </span>
                                     </div>
@@ -147,10 +147,10 @@ export default function CursosPage() {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+                <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                     <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-1">No tienes cursos en curso</h3>
-                    <p className="text-slate-700 mb-6">Explora nuestro catálogo para comenzar tu capacitación.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No tienes cursos en curso</h3>
+                    <p className="text-gray-500 mb-6">Explora nuestro catálogo para comenzar tu capacitación.</p>
                     <Button asChild>
                         <Link href="/dashboard/explorar">Ver Catálogo de Cursos</Link>
                     </Button>

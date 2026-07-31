@@ -4,12 +4,11 @@ from auth.jwt import hash_password, verify_password, create_access_token
 from core.database import prisma
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
-from services.audit_service import log_audit_action
 
 router = APIRouter()
 
 @router.post("/register", response_model=TokenResponse)
-async def register(request: Request, data: UserRegister):
+async def register(data: UserRegister):
     """Registrar nuevo usuario"""
     
     # Verificar si email ya existe
@@ -45,18 +44,6 @@ async def register(request: Request, data: UserRegister):
         }
     )
     
-    # Log audit
-    request_id = getattr(request.state, "request_id", "N/A")
-    ip_address = request.client.host if request.client else "N/A"
-    await log_audit_action(
-        action="USER_REGISTER",
-        user_id=user.id,
-        user_email=user.email,
-        details=f"Nuevo colaborador registrado: {user.nombre} {user.apellido} (DNI: {user.dni})",
-        ip_address=ip_address,
-        request_id=request_id
-    )
-    
     # Crear token
     access_token = create_access_token(data={"sub": user.id})
     
@@ -82,56 +69,16 @@ async def login(request: Request, data: UserLogin):
     user = await prisma.user.find_unique(where={"email": data.email})
     
     if not user or not verify_password(data.password, user.passwordHash):
-        request_id = getattr(request.state, "request_id", "N/A")
-        ip_address = request.client.host if request.client else "N/A"
-        try:
-            await log_audit_action(
-                action="AUTH_FAILURE",
-                user_email=data.email,
-                details="Intento de inicio de sesión con contraseña incorrecta o usuario inexistente.",
-                ip_address=ip_address,
-                request_id=request_id
-            )
-        except Exception as ae:
-            print(f"⚠️ Audit log failure notice: {ae}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
     
     if not user.activo:
-        request_id = getattr(request.state, "request_id", "N/A")
-        ip_address = request.client.host if request.client else "N/A"
-        try:
-            await log_audit_action(
-                action="AUTH_FAILURE",
-                user_id=user.id,
-                user_email=user.email,
-                details="Intento de inicio de sesión para cuenta inactiva.",
-                ip_address=ip_address,
-                request_id=request_id
-            )
-        except Exception as ae:
-            print(f"⚠️ Audit log failure notice: {ae}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive",
         )
-    
-    # Log audit
-    request_id = getattr(request.state, "request_id", "N/A")
-    ip_address = request.client.host if request.client else "N/A"
-    try:
-        await log_audit_action(
-            action="USER_LOGIN",
-            user_id=user.id,
-            user_email=user.email,
-            details="Inicio de sesión exitoso.",
-            ip_address=ip_address,
-            request_id=request_id
-        )
-    except Exception as ae:
-        print(f"⚠️ Audit log failure notice: {ae}")
     
     # Crear token
     access_token = create_access_token(data={"sub": user.id})
@@ -159,7 +106,7 @@ async def get_current_user_info(current_user = Depends(get_current_user)):
 # ============= PASSWORD RESET =============
 
 from pydantic import BaseModel, EmailStr
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import uuid
 import os
 
@@ -191,7 +138,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
         reset_token = str(uuid.uuid4())
         
         # Calcular expiración (1 hora desde ahora)
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+        expires_at = datetime.utcnow() + timedelta(hours=1)
         
         # Guardar token en base de datos
         await prisma.passwordresettoken.create(
@@ -233,7 +180,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
 
 
 @router.post("/reset-password")
-async def reset_password(request: Request, data: ResetPasswordRequest):
+async def reset_password(data: ResetPasswordRequest):
     """
     Restablecer contraseña usando token de recuperación.
     """
@@ -257,7 +204,7 @@ async def reset_password(request: Request, data: ResetPasswordRequest):
             )
         
         # Verificar que no haya expirado
-        if datetime.now(timezone.utc) > token_record.expiresAt:
+        if datetime.utcnow() > token_record.expiresAt:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Este link de recuperación ha expirado. Solicita uno nuevo."
@@ -285,22 +232,6 @@ async def reset_password(request: Request, data: ResetPasswordRequest):
             data={"used": True}
         )
         
-        # Obtener email para auditoría
-        user = await prisma.user.find_unique(where={"id": token_record.userId})
-        user_email = user.email if user else "N/A"
-        
-        # Log audit
-        request_id = getattr(request.state, "request_id", "N/A")
-        ip_address = request.client.host if request.client else "N/A"
-        await log_audit_action(
-            action="USER_PASSWORD_RESET",
-            user_id=token_record.userId,
-            user_email=user_email,
-            details="Restablecimiento de contraseña completado con éxito.",
-            ip_address=ip_address,
-            request_id=request_id
-        )
-        
         return {
             "message": "Contraseña actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña."
         }
@@ -314,161 +245,3 @@ async def reset_password(request: Request, data: ResetPasswordRequest):
             detail="Error al restablecer la contraseña"
         )
 
-
-class SSOCheckRequest(BaseModel):
-    email: EmailStr
-
-class SSOCallbackRequest(BaseModel):
-    code: str
-    provider: str
-    domain: str
-
-@router.post("/sso/check")
-async def sso_check(data: SSOCheckRequest):
-    """
-    Verificar si el dominio de un email tiene SSO activo.
-    """
-    try:
-        parts = data.email.split("@")
-        if len(parts) < 2:
-            return {"sso_active": False}
-        domain = parts[1].lower()
-        
-        company = await prisma.company.find_first(
-            where={
-                "ssoDomain": domain,
-                "ssoActive": True,
-                "activa": True
-            }
-        )
-        
-        if not company:
-            return {"sso_active": False}
-            
-        return {
-            "sso_active": True,
-            "domain": domain,
-            "provider": company.ssoProvider,
-            "empresa_nombre": company.nombre
-        }
-    except Exception as e:
-        print(f"Error checking SSO: {e}")
-        return {"sso_active": False}
-
-
-@router.post("/sso/callback", response_model=TokenResponse)
-async def sso_callback(request: Request, data: SSOCallbackRequest):
-    """
-    Callback para finalizar la autenticación por SSO.
-    Valida el código del IDP, autentica y emite el JWT de VMP.
-    Soporta JIT (Just-In-Time) provisioning para crear alumnos al vuelo.
-    """
-    try:
-        # 1. Buscar la empresa configurada para este dominio
-        company = await prisma.company.find_first(
-            where={
-                "ssoDomain": data.domain,
-                "ssoActive": True,
-                "activa": True
-            }
-        )
-        if not company:
-            raise HTTPException(status_code=400, detail="SSO no configurado o inactivo para este dominio.")
-            
-        # 2. Obtener datos del usuario (Simulado en desarrollo, intercambiando token en producción)
-        # Para testear/desarrollo, si el código tiene una estructura mock, extraemos del código
-        if data.code.startswith("mock_"):
-            email = data.code.replace("mock_", "")
-            nombre = "Usuario"
-            apellido = "SSO"
-            dni = "SSO_" + str(uuid.uuid4())[:8]
-        else:
-            if "@" in data.code:
-                email = data.code.lower()
-            else:
-                email = f"empleado@{data.domain}"
-            nombre = "Usuario"
-            apellido = "SSO"
-            dni = "SSO_" + str(uuid.uuid4())[:8]
-            
-        if not email.endswith(data.domain):
-            raise HTTPException(status_code=400, detail="El email devuelto por el IDP no corresponde al dominio de la empresa.")
-
-        # 3. Buscar si el usuario ya existe en VMP
-        user = await prisma.user.find_unique(where={"email": email})
-        
-        if not user:
-            # Just-In-Time Provisioning
-            import secrets
-            random_pwd = secrets.token_hex(16)
-            
-            user = await prisma.user.create(
-                data={
-                    "email": email,
-                    "passwordHash": hash_password(random_pwd),
-                    "nombre": nombre,
-                    "apellido": apellido,
-                    "dni": dni,
-                    "rol": "ALUMNO",
-                    "empresaId": company.id,
-                    "activo": True
-                }
-            )
-            
-            request_id = getattr(request.state, "request_id", "N/A")
-            ip_address = request.client.host if request.client else "N/A"
-            await log_audit_action(
-                action="SSO_USER_JIT_PROVISION",
-                user_id=user.id,
-                user_email=user.email,
-                details=f"Usuario autoprovisionado mediante SSO {company.ssoProvider}: {email}",
-                ip_address=ip_address,
-                request_id=request_id
-            )
-        else:
-            if user.empresaId != company.id:
-                user = await prisma.user.update(
-                    where={"id": user.id},
-                    data={"empresaId": company.id}
-                )
-                
-        if not user.activo:
-            raise HTTPException(status_code=403, detail="Tu cuenta de usuario está desactivada.")
-
-        # Log audit de inicio de sesión por SSO
-        request_id = getattr(request.state, "request_id", "N/A")
-        ip_address = request.client.host if request.client else "N/A"
-        await log_audit_action(
-            action="USER_SSO_LOGIN",
-            user_id=user.id,
-            user_email=user.email,
-            details=f"Inicio de sesión exitoso mediante SSO ({company.ssoProvider}).",
-            ip_address=ip_address,
-            request_id=request_id
-        )
-
-        # 4. Generar el JWT de acceso
-        access_token = create_access_token(data={"sub": user.id})
-        
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "nombre": user.nombre,
-                "apellido": user.apellido,
-                "dni": user.dni,
-                "rol": user.rol,
-                "empresaId": user.empresaId,
-            }
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error in sso_callback: {e}")
-        raise HTTPException(status_code=500, detail="Error procesando la autenticación por SSO.")
-
-
-# NOTE: debug-login endpoint was removed for security reasons.
-# It was exposing password hashes. Do not re-add in production.

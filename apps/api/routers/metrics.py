@@ -4,7 +4,7 @@ Proporciona estadísticas y datos para visualización.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import datetime, timedelta
-from typing import Optional, Any
+from typing import Optional
 from core.database import prisma
 from auth.dependencies import get_current_user
 from schemas.models import UserResponse
@@ -40,15 +40,8 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
         quotes_rejected = await prisma.cotizacion.count(where={"status": "rejected"})
         
         # Inscripciones por estado
-        enrollments_active = await prisma.inscripcion.count(where={"estado": "EN_PROGRESO"})
-        enrollments_completed = await prisma.inscripcion.count(
-            where={
-                "OR": [
-                    {"estado": "COMPLETADO"},
-                    {"estado": "APROBADO"}
-                ]
-            }
-        )
+        enrollments_active = await prisma.inscripcion.count(where={"estado": "ACTIVO"})
+        enrollments_completed = await prisma.inscripcion.count(where={"estado": "COMPLETADO"})
         
         # Calcular tasa de conversión
         conversion_rate = (quotes_converted / total_quotes * 100) if total_quotes > 0 else 0
@@ -170,10 +163,7 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
             completed = await prisma.inscripcion.count(
                 where={
                     "cursoId": course.id,
-                    "OR": [
-                        {"estado": "COMPLETADO"},
-                        {"estado": "APROBADO"}
-                    ]
+                    "estado": "COMPLETADO"
                 }
             )
             
@@ -183,7 +173,6 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
                 "codigo": course.codigo,
                 "total_enrollments": course._count.inscripciones,
                 "total_credentials": course._count.credenciales,
-                "alumnos_esperados": course.alumnosEsperados,
                 "completed_enrollments": completed,
                 "completion_rate": round((completed / course._count.inscripciones * 100) if course._count.inscripciones > 0 else 0, 2)
             })
@@ -197,89 +186,3 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al obtener estadísticas de cursos"
         )
-
-
-@router.get("/instructor")
-async def get_instructor_metrics(current_user: UserResponse = Depends(get_current_user)):
-    """
-    Obtener métricas para el panel de instructor.
-    Filtra por empresa del instructor.
-    """
-    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permisos de instructor"
-        )
-    
-    try:
-        empresa_id = current_user.empresaId
-        
-        # Evidencias pendientes de revisión (de su empresa)
-        where_pendientes: dict[str, Any] = {"estado": "PENDIENTE"}
-        if empresa_id:
-            where_pendientes["alumno"] = {"empresaId": empresa_id}
-        pending_evidencias = await prisma.evidencia.count(where=where_pendientes)
-        
-        # Alumnos activos de su empresa
-        where_alumnos: dict[str, Any] = {"rol": "ALUMNO"}
-        if empresa_id:
-            where_alumnos["empresaId"] = empresa_id
-        active_alumnos = await prisma.user.count(where=where_alumnos)
-        
-        # Cursos de la empresa
-        if empresa_id:
-            cursos_count = await prisma.curso.count(
-                where={"empresaId": empresa_id}
-            )
-        else:
-            cursos_count = await prisma.curso.count()
-        
-        # Credenciales emitidas (de alumnos de su empresa)
-        if empresa_id:
-            credenciales_count = await prisma.credencial.count(
-                where={"alumno": {"empresaId": empresa_id}}
-            )
-        else:
-            credenciales_count = await prisma.credencial.count()
-        
-        # Inscripciones activas de la empresa
-        where_inscripciones: dict[str, Any] = {"estado": "ACTIVO"}
-        if empresa_id:
-            where_inscripciones["alumno"] = {"empresaId": empresa_id}
-        inscripciones_activas = await prisma.inscripcion.count(where=where_inscripciones)
-        
-        # Detalle de cursos (Actual vs Esperado)
-        cursos_data = await prisma.curso.find_many(
-            where={"empresaId": empresa_id} if empresa_id else {},
-            include={
-                "_count": {
-                    "select": {"inscripciones": True}
-                }
-            }
-        )
-        
-        cursos_stats = [
-            {
-                "id": c.id,
-                "nombre": c.nombre,
-                "reales": c._count.inscripciones,
-                "esperados": c.alumnosEsperados
-            }
-            for c in cursos_data
-        ]
-        
-        return {
-            "pending_evidencias": pending_evidencias,
-            "active_alumnos": active_alumnos,
-            "cursos_count": cursos_count,
-            "credenciales_count": credenciales_count,
-            "inscripciones_activas": inscripciones_activas,
-            "cursos_stats": cursos_stats
-        }
-    except Exception as e:
-        print(f"Error getting instructor metrics: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error al obtener métricas de instructor"
-        )
-

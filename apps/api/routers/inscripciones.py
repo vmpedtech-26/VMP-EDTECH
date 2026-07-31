@@ -16,8 +16,6 @@ from services.progreso_calculator import (
     verificar_curso_completado,
     obtener_proxima_actividad
 )
-from services.credential_service import generate_credential_for_student
-from services.asistencia_service import sincronizar_asistencia_alumno
 
 router = APIRouter()
 
@@ -122,12 +120,7 @@ async def inscribirse_en_curso(cursoId: str, current_user=Depends(get_current_us
         }
     )
     
-    # Sincronizar asistencia en sesiones programadas
-    await sincronizar_asistencia_alumno(current_user.id, cursoId)
-    
-    insc_dict = inscripcion.model_dump()
-    insc_dict["modulosCompletados"] = []
-    return insc_dict
+    return inscripcion
 
 
 @router.get("/{cursoId}", response_model=InscripcionDetailResponse)
@@ -147,14 +140,7 @@ async def obtener_inscripcion(cursoId: str, current_user=Depends(get_current_use
             detail="No estás inscrito en este curso"
         )
     
-    insc_dict = inscripcion.model_dump()
-    import json
-    try:
-        insc_dict["modulosCompletados"] = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
-    except:
-        insc_dict["modulosCompletados"] = []
-        
-    return insc_dict
+    return inscripcion
 
 
 @router.post("/{cursoId}/modulos/{moduloId}/completar", response_model=CompletarModuloResponse)
@@ -183,35 +169,19 @@ async def completar_modulo(
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
     
     # Actualizar estado a EN_PROGRESO si es la primera vez
-    import json
-    
-    update_data = {}
     if inscripcion.estado == "NO_INICIADO":
-        update_data["estado"] = "EN_PROGRESO"
-        update_data["inicioDate"] = datetime.now()
-        
-    # Añadir a modulosCompletados
-    completados = []
-    try:
-        completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
-    except:
-        pass
-        
-    if moduloId not in completados:
-        completados.append(moduloId)
-        update_data["modulosCompletados"] = json.dumps(completados)
-        
-    # Guardar actualización parcial (estado y modulos)
-    if update_data:
         await prisma.inscripcion.update(
             where={"id": inscripcion.id},
-            data=update_data
+            data={
+                "estado": "EN_PROGRESO",
+                "inicioDate": datetime.now()
+            }
         )
     
-    # Calcular nuevo progreso (ya leerá de la DB actualizada)
+    # Calcular nuevo progreso
     nuevo_progreso = await calcular_progreso_curso(current_user.id, cursoId)
     
-    # Actualizar progreso
+    # Actualizar inscripción
     await prisma.inscripcion.update(
         where={"id": inscripcion.id},
         data={"progreso": nuevo_progreso}
@@ -233,17 +203,32 @@ async def completar_modulo(
             }
         )
         
-        # Generar Credencial automáticamente usando el servicio centralizado
-        try:
-            result = await generate_credential_for_student(
-                alumno_id=current_user.id,
-                curso_id=cursoId,
+        # Generar Credencial automáticamente
+        # Verificar si ya existe
+        existing_credencial = await prisma.credencial.find_first(
+            where={
+                "alumnoId": current_user.id,
+                "cursoId": cursoId
+            }
+        )
+        
+        if not existing_credencial:
+            # Buscar la inscripcion para obtener el id
+            inscripcion_para_cred = await prisma.inscripcion.find_first(
+                where={"alumnoId": current_user.id, "cursoId": cursoId}
             )
-            if not result.get("already_existed"):
-                credencial_generada = True
-                credencial_numero = result["credencial"].numero
-        except Exception as e:
-            print(f"[CREDENCIAL AUTO-GEN] Error al completar módulo: {e}")
+            
+            try:
+                # Importar y llamar la función correcta de generación
+                from routers.examenes import generate_credencial
+                if inscripcion_para_cred:
+                    resultado = await generate_credencial(inscripcion_para_cred.id, current_user)
+                    credencial_generada = True
+                    # resultado es un dict
+                    credencial_numero = resultado.get("credencial", {}).get("numero")
+            except Exception as e:
+                # Log error but don't fail the completion
+                print(f"Error generando credencial: {e}")
     
     return CompletarModuloResponse(
         success=True,
@@ -253,101 +238,3 @@ async def completar_modulo(
         credencialNumero=credencial_numero,
         message="Módulo completado exitosamente" if not curso_completado else "¡Felicitaciones! Has completado el curso"
     )
-
-
-# ============= ENDPOINTS ADMINISTRATIVOS ADICIONALES =============
-from pydantic import BaseModel
-from typing import Optional
-
-class InscripcionCreateRequest(BaseModel):
-    alumnoId: str
-    cursoId: str
-
-
-class UpdateProgresoRequest(BaseModel):
-    progreso: int
-    estado: Optional[str] = None
-
-
-@router.post("", response_model=dict)
-async def crear_inscripcion_manual(
-    data: InscripcionCreateRequest,
-    current_user=Depends(get_current_user)
-):
-    """Creación manual de inscripción por parte de un administrador"""
-    # Verificar si ya existe
-    existing = await prisma.inscripcion.find_first(
-        where={
-            "alumnoId": data.alumnoId,
-            "cursoId": data.cursoId
-        }
-    )
-    if existing:
-        return existing.model_dump()
-        
-    inscripcion = await prisma.inscripcion.create(
-        data={
-            "alumnoId": data.alumnoId,
-            "cursoId": data.cursoId,
-            "progreso": 0,
-            "estado": "NO_INICIADO"
-        }
-    )
-    
-    # Sincronizar asistencia en sesiones programadas
-    await sincronizar_asistencia_alumno(data.alumnoId, data.cursoId)
-    
-    return inscripcion.model_dump()
-
-
-@router.get("/alumno/{alumno_id}", response_model=List[dict])
-async def obtener_inscripciones_por_alumno(
-    alumno_id: str,
-    current_user=Depends(get_current_user)
-):
-    """Obtener todas las inscripciones asociadas a un alumno"""
-    inscripciones = await prisma.inscripcion.find_many(
-        where={"alumnoId": alumno_id},
-        include={"curso": True}
-    )
-    return [i.model_dump() for i in inscripciones]
-
-
-@router.patch("/{id}/progreso", response_model=dict)
-async def actualizar_progreso_inscripcion(
-    id: str,
-    data: UpdateProgresoRequest,
-    current_user=Depends(get_current_user)
-):
-    """Actualización manual/administrativa del progreso y estado de una inscripción"""
-    estado = data.estado
-    if data.progreso >= 100 and not estado:
-        estado = "COMPLETADO"
-    elif data.progreso > 0 and not estado:
-        estado = "EN_PROGRESO"
-        
-    update_data = {
-        "progreso": data.progreso
-    }
-    if estado:
-        update_data["estado"] = estado
-        if estado == "COMPLETADO":
-            update_data["finDate"] = datetime.now()
-            
-    inscripcion = await prisma.inscripcion.update(
-        where={"id": id},
-        data=update_data
-    )
-    
-    # Si pasa a COMPLETADO, generar credencial si no existe
-    if estado == "COMPLETADO":
-        try:
-            await generate_credential_for_student(
-                alumno_id=inscripcion.alumnoId,
-                curso_id=inscripcion.cursoId
-            )
-        except Exception as e:
-            print(f"[CREDENCIAL MANUAL] Error al autogenerar al actualizar progreso: {e}")
-            
-    return inscripcion.model_dump()
-

@@ -10,21 +10,10 @@ from slowapi.errors import RateLimitExceeded
 from starlette.middleware.base import BaseHTTPMiddleware
 from typing import Callable
 import time
-from core.config import settings
-
-
-def safe_get_remote_address(request: Request) -> str:
-    """
-    Retorna la IP remota del cliente de forma de evitar crashes en entornos de test.
-    Si request.client es None (ej: AsyncClient en pytest), retorna '127.0.0.1'.
-    """
-    if not request.client or not request.client.host:
-        return "127.0.0.1"
-    return request.client.host
 
 
 # Configurar rate limiter
-limiter = Limiter(key_func=safe_get_remote_address, enabled=True)
+limiter = Limiter(key_func=get_remote_address)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -33,6 +22,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
     
     async def dispatch(self, request: Request, call_next: Callable):
+        print(f"DEBUG: SecurityHeadersMiddleware executing for {request.url}")
         response = await call_next(request)
         # Headers de seguridad
         response.headers["X-Content-Type-Options"] = "nosniff"
@@ -41,15 +31,14 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         
-        # Content Security Policy - Dynamic based on settings
-        origins = " ".join(settings.BACKEND_CORS_ORIGINS)
+        # Content Security Policy
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
-            f"connect-src 'self' {origins} https:;"
+            "connect-src 'self' http://localhost:8001 http://localhost:3000 http://127.0.0.1:8001 http://127.0.0.1:3000 https:;"
         )
 
         return response
@@ -62,7 +51,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
     """
     
     async def dispatch(self, request: Request, call_next: Callable):
-        request_id = f"{int(time.time() * 1000)}-{safe_get_remote_address(request)}"
+        request_id = f"{int(time.time() * 1000)}-{get_remote_address(request)}"
         request.state.request_id = request_id
         
         response = await call_next(request)
@@ -82,11 +71,6 @@ def rate_limit_forgot_password():
     return limiter.limit("3/minute")
 
 
-def rate_limit_ia():
-    """Rate limit para validación de fotos con IA: 3 requests por minuto"""
-    return limiter.limit("3/minute")
-
-
 def rate_limit_public():
     """Rate limit para endpoints públicos: 20 requests por minuto"""
     return limiter.limit("20/minute")
@@ -95,24 +79,3 @@ def rate_limit_public():
 def rate_limit_api():
     """Rate limit general para API: 60 requests por minuto"""
     return limiter.limit("60/minute")
-
-
-async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
-    """
-    Handler personalizado para capturar bloqueos de Rate Limit, 
-    registrarlos en la auditoría de seguridad y responder al cliente.
-    """
-    from services.security_service import security_service
-    ip = safe_get_remote_address(request)
-    request_id = getattr(request.state, "request_id", None)
-    endpoint = request.url.path
-    
-    # Registrar evento asíncronamente
-    await security_service.log_rate_limit_exceeded(
-        ip_address=ip,
-        endpoint=endpoint,
-        request_id=request_id
-    )
-    
-    return _rate_limit_exceeded_handler(request, exc)
-

@@ -49,7 +49,7 @@ export default function EmpresasPage() {
             await empresasApi.eliminarEmpresa(id);
             fetchEmpresas();
         } catch (error) {
-            alert('Error al eliminar la empresa: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al eliminar la empresa');
         }
     };
 
@@ -61,10 +61,10 @@ export default function EmpresasPage() {
     return (
         <div className="space-y-8 pb-20">
             {/* Header section with actions */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Empresas</h1>
-                    <p className="text-slate-700 text-sm">Administra las organizaciones y sus configuraciones.</p>
+                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Gestión de Empresas</h1>
+                    <p className="text-gray-500 text-sm">Administra las organizaciones y sus configuraciones.</p>
                 </div>
                 <Button className="w-full md:w-auto" asChild>
                     <Link href="/dashboard/super/empresas/nuevo">
@@ -77,16 +77,16 @@ export default function EmpresasPage() {
             {/* Filters and search */}
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 group-focus-within:text-primary transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                     <input
                         type="text"
                         placeholder="Buscar por nombre o CUIT..."
-                        className="w-full pl-11 pr-4 py-3 bg-white border-none rounded-xl shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-700"
+                        className="w-full pl-11 pr-4 py-3 bg-white border-none rounded-xl shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline" className="bg-white border-slate-200">
+                <Button variant="outline" className="bg-white border-gray-200">
                     <Filter className="h-4 w-4 mr-2" />
                     Filtros
                 </Button>
@@ -101,7 +101,7 @@ export default function EmpresasPage() {
 
                         <div className="p-6 flex-1 flex flex-col">
                             <div className="flex items-start justify-between mb-4">
-                                <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                <div className="h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                     <Building2 className="h-6 w-6" />
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -110,27 +110,27 @@ export default function EmpresasPage() {
                                             <CheckCircle2 className="h-3 w-3" /> Activa
                                         </span>
                                     ) : (
-                                        <span className="flex items-center gap-1 text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-full uppercase tracking-wider">
+                                        <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full uppercase tracking-wider">
                                             <XCircle className="h-3 w-3" /> Inactiva
                                         </span>
                                     )}
                                 </div>
                             </div>
 
-                            <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors line-clamp-1">{empresa.nombre}</h3>
-                            <div className="flex items-center text-xs font-mono text-slate-600 mb-6 bg-slate-50 px-2 py-1 rounded w-fit">
+                            <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors line-clamp-1">{empresa.nombre}</h3>
+                            <div className="flex items-center text-xs font-mono text-gray-400 mb-6 bg-gray-50 px-2 py-1 rounded w-fit">
                                 CUIT: {empresa.cuit}
                             </div>
 
                             <div className="space-y-3 mb-8">
-                                <div className="flex items-center text-sm text-slate-700 gap-3 group/item">
+                                <div className="flex items-center text-sm text-gray-500 gap-3 group/item">
                                     <div className="h-8 w-8 rounded-lg bg-blue-50/50 flex items-center justify-center text-blue-500 group-hover/item:bg-blue-50 transition-colors">
                                         <Mail className="h-4 w-4" />
                                     </div>
                                     <span className="truncate">{empresa.email}</span>
                                 </div>
                                 {empresa.telefono && (
-                                    <div className="flex items-center text-sm text-slate-700 gap-3 group/item">
+                                    <div className="flex items-center text-sm text-gray-500 gap-3 group/item">
                                         <div className="h-8 w-8 rounded-lg bg-orange-50/50 flex items-center justify-center text-orange-500 group-hover/item:bg-orange-50 transition-colors">
                                             <Phone className="h-4 w-4" />
                                         </div>
@@ -138,7 +138,7 @@ export default function EmpresasPage() {
                                     </div>
                                 )}
                                 {empresa.direccion && (
-                                    <div className="flex items-center text-sm text-slate-700 gap-3 group/item">
+                                    <div className="flex items-center text-sm text-gray-500 gap-3 group/item">
                                         <div className="h-8 w-8 rounded-lg bg-purple-50/50 flex items-center justify-center text-purple-500 group-hover/item:bg-purple-50 transition-colors">
                                             <MapPin className="h-4 w-4" />
                                         </div>
@@ -156,10 +156,8 @@ export default function EmpresasPage() {
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </div>
-                                <Button variant="outline" size="sm" className="rounded-xl border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-bold" asChild>
-                                    <Link href={`/dashboard/super/empresas/${empresa.id}`}>
-                                        Administrar
-                                    </Link>
+                                <Button variant="outline" size="sm" className="rounded-xl border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-bold">
+                                    Administrar
                                 </Button>
                             </div>
                         </div>
@@ -192,7 +190,7 @@ export default function EmpresasPage() {
 
                 {isLoading && (
                     <>
-                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-slate-100">
+                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-gray-100">
                             <Skeleton className="h-12 w-12 rounded-xl" />
                             <Skeleton className="h-6 w-3/4" />
                             <Skeleton className="h-4 w-1/2" />
@@ -202,7 +200,7 @@ export default function EmpresasPage() {
                                 <Skeleton className="h-4 w-full" />
                             </div>
                         </div>
-                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-slate-100">
+                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-gray-100">
                             <Skeleton className="h-12 w-12 rounded-xl" />
                             <Skeleton className="h-6 w-3/4" />
                             <Skeleton className="h-4 w-1/2" />
@@ -212,7 +210,7 @@ export default function EmpresasPage() {
                                 <Skeleton className="h-4 w-full" />
                             </div>
                         </div>
-                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-slate-100">
+                        <div className="md:col-span-1 p-6 space-y-4 bg-white rounded-2xl border border-gray-100">
                             <Skeleton className="h-12 w-12 rounded-xl" />
                             <Skeleton className="h-6 w-3/4" />
                             <Skeleton className="h-4 w-1/2" />

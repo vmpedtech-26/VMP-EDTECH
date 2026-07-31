@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, Building2, User, Calendar, Award, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { API_URL } from '@/lib/api-client';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 interface CredentialData {
     numero: string;
@@ -27,29 +28,26 @@ interface CredentialData {
 
 interface ValidationResult {
     valid: boolean;
-    status: 'valid' | 'expired' | 'not_found' | 'invalid_signature';
-    signatureValid?: boolean;
-    signatureStatus?: 'verified' | 'missing' | 'invalid';
+    status: 'valid' | 'expired' | 'not_found';
     message?: string;
     credential?: CredentialData;
 }
 
-export default function ValidarCredencialPage({ params }: { params: Promise<{ codigo: string }> }) {
-    const resolvedParams = React.use(params);
+export default function ValidarCredencialPage({ params }: { params: { codigo: string } }) {
     const [result, setResult] = useState<ValidationResult | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         validateCredential();
-    }, [resolvedParams.codigo]);
+    }, [params.codigo]);
 
     const validateCredential = async () => {
         try {
             setIsLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_URL}/api/public/validar/${resolvedParams.codigo}`);
+            const response = await fetch(`${API_URL}/api/public/validar/${params.codigo}`);
 
             if (!response.ok) {
                 throw new Error('Error al validar la credencial');
@@ -66,10 +64,10 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-                    <p className="text-slate-800">Validando credencial...</p>
+                    <Loader2 className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
+                    <p className="text-gray-600">Validando credencial...</p>
                 </div>
             </div>
         );
@@ -77,16 +75,16 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
                 <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
                         <XCircle className="w-8 h-8 text-red-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Error</h2>
-                    <p className="text-slate-800 mb-6">{error}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Error</h2>
+                    <p className="text-gray-600 mb-6">{error}</p>
                     <button
                         onClick={validateCredential}
-                        className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                        className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
                     >
                         Reintentar
                     </button>
@@ -98,14 +96,14 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
     if (!result) return null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-primary mb-2">
-                        🎓 VMP - EDTECH
+                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
+                        🚗 VMP SERVICIOS
                     </h1>
-                    <p className="text-slate-800">Validación de Credencial</p>
+                    <p className="text-gray-600">Validación de Credencial</p>
                 </div>
 
                 {/* Card */}
@@ -143,15 +141,6 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                     </div>
                                 </>
                             )}
-                            {result.status === 'invalid_signature' && (
-                                <>
-                                    <AlertCircle className="w-8 h-8 text-red-600" />
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-red-950">Firma Criptográfica Inválida</h2>
-                                        <p className="text-sm text-red-700 font-semibold">Este certificado ha sido alterado o manipulado de forma fraudulenta.</p>
-                                    </div>
-                                </>
-                            )}
                         </div>
                     </div>
 
@@ -159,50 +148,50 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                     {result.credential && (
                         <div className="p-8 space-y-6">
                             {/* Número de Credencial */}
-                            <div className="text-center pb-6 border-b border-slate-200">
-                                <p className="text-sm text-slate-700 uppercase font-semibold mb-2">Número de Credencial</p>
-                                <p className="text-3xl font-bold text-primary">{result.credential.numero}</p>
+                            <div className="text-center pb-6 border-b border-gray-200">
+                                <p className="text-sm text-gray-500 uppercase font-semibold mb-2">Número de Credencial</p>
+                                <p className="text-3xl font-bold text-orange-500">{result.credential.numero}</p>
                             </div>
 
                             {/* Información del Alumno */}
-                            <div className="bg-slate-50 rounded-lg p-6">
+                            <div className="bg-gray-50 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <User className="w-5 h-5 text-primary" />
-                                    <h3 className="font-bold text-slate-900">Información del Titular</h3>
+                                    <User className="w-5 h-5 text-orange-500" />
+                                    <h3 className="font-bold text-gray-900">Información del Titular</h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <p className="text-xs text-slate-700 uppercase font-semibold">Nombre Completo</p>
-                                        <p className="text-lg font-semibold text-slate-900">
+                                        <p className="text-xs text-gray-500 uppercase font-semibold">Nombre Completo</p>
+                                        <p className="text-lg font-semibold text-gray-900">
                                             {result.credential.alumno.nombre} {result.credential.alumno.apellido}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-slate-700 uppercase font-semibold">DNI</p>
-                                        <p className="text-lg font-semibold text-slate-900">{result.credential.alumno.dni}</p>
+                                        <p className="text-xs text-gray-500 uppercase font-semibold">DNI</p>
+                                        <p className="text-lg font-semibold text-gray-900">{result.credential.alumno.dni}</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Información del Curso */}
-                            <div className="bg-primary/5 rounded-lg p-6">
+                            <div className="bg-orange-50 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Award className="w-5 h-5 text-primary" />
-                                    <h3 className="font-bold text-slate-900">Curso Completado</h3>
+                                    <Award className="w-5 h-5 text-orange-500" />
+                                    <h3 className="font-bold text-gray-900">Curso Completado</h3>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
-                                        <p className="text-xs text-slate-700 uppercase font-semibold">Nombre del Curso</p>
-                                        <p className="text-lg font-semibold text-slate-900">{result.credential.curso.nombre}</p>
+                                        <p className="text-xs text-gray-500 uppercase font-semibold">Nombre del Curso</p>
+                                        <p className="text-lg font-semibold text-gray-900">{result.credential.curso.nombre}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-slate-700 uppercase font-semibold">Código</p>
-                                        <p className="text-sm text-slate-700">{result.credential.curso.codigo}</p>
+                                        <p className="text-xs text-gray-500 uppercase font-semibold">Código</p>
+                                        <p className="text-sm text-gray-700">{result.credential.curso.codigo}</p>
                                     </div>
                                     {result.credential.curso.descripcion && (
                                         <div>
-                                            <p className="text-xs text-slate-700 uppercase font-semibold">Descripción</p>
-                                            <p className="text-sm text-slate-700">{result.credential.curso.descripcion}</p>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Descripción</p>
+                                            <p className="text-sm text-gray-700">{result.credential.curso.descripcion}</p>
                                         </div>
                                     )}
                                 </div>
@@ -213,16 +202,16 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                 <div className="bg-blue-50 rounded-lg p-6">
                                     <div className="flex items-center gap-2 mb-4">
                                         <Building2 className="w-5 h-5 text-blue-500" />
-                                        <h3 className="font-bold text-slate-900">Empresa</h3>
+                                        <h3 className="font-bold text-gray-900">Empresa</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-xs text-slate-700 uppercase font-semibold">Razón Social</p>
-                                            <p className="text-lg font-semibold text-slate-900">{result.credential.empresa.nombre}</p>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Razón Social</p>
+                                            <p className="text-lg font-semibold text-gray-900">{result.credential.empresa.nombre}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-slate-700 uppercase font-semibold">CUIT</p>
-                                            <p className="text-lg font-semibold text-slate-900">{result.credential.empresa.cuit}</p>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">CUIT</p>
+                                            <p className="text-lg font-semibold text-gray-900">{result.credential.empresa.cuit}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -230,12 +219,12 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
 
                             {/* Fechas */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-slate-50 rounded-lg p-4">
+                                <div className="bg-gray-50 rounded-lg p-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Calendar className="w-4 h-4 text-slate-700" />
-                                        <p className="text-xs text-slate-700 uppercase font-semibold">Fecha de Emisión</p>
+                                        <Calendar className="w-4 h-4 text-gray-500" />
+                                        <p className="text-xs text-gray-500 uppercase font-semibold">Fecha de Emisión</p>
                                     </div>
-                                    <p className="text-lg font-semibold text-slate-900">
+                                    <p className="text-lg font-semibold text-gray-900">
                                         {new Date(result.credential.fechaEmision).toLocaleDateString('es-AR', {
                                             day: '2-digit',
                                             month: 'long',
@@ -244,12 +233,12 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                     </p>
                                 </div>
                                 {result.credential.fechaVencimiento && (
-                                    <div className="bg-slate-50 rounded-lg p-4">
+                                    <div className="bg-gray-50 rounded-lg p-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <Calendar className="w-4 h-4 text-slate-700" />
-                                            <p className="text-xs text-slate-700 uppercase font-semibold">Fecha de Vencimiento</p>
+                                            <Calendar className="w-4 h-4 text-gray-500" />
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Fecha de Vencimiento</p>
                                         </div>
-                                        <p className="text-lg font-semibold text-slate-900">
+                                        <p className="text-lg font-semibold text-gray-900">
                                             {new Date(result.credential.fechaVencimiento).toLocaleDateString('es-AR', {
                                                 day: '2-digit',
                                                 month: 'long',
@@ -260,76 +249,37 @@ export default function ValidarCredencialPage({ params }: { params: Promise<{ co
                                 )}
                             </div>
 
-                             {/* Footer de verificación y firma criptográfica */}
-                             {result.signatureStatus === 'verified' && (
-                                 <div className="bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white rounded-2xl p-6 shadow-lg border border-emerald-500/20 text-center relative overflow-hidden animate-pulse-slow">
-                                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full transform translate-x-8 -translate-y-8 pointer-events-none" />
-                                     <p className="text-base font-bold mb-1 tracking-wider flex items-center justify-center gap-1.5">
-                                         🛡️ FIRMA CRIPTOGRÁFICA VERIFICADA
-                                     </p>
-                                     <p className="text-xs opacity-90 max-w-md mx-auto">
-                                         Integridad de registro auditada exitosamente mediante firma inmutable del servidor. El certificado coincide al 100% con los registros de VMP - EDTECH.
-                                     </p>
-                                     <p className="text-[10px] opacity-75 mt-3">
-                                         Validado el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
-                                     </p>
-                                 </div>
-                             )}
-                             
-                             {result.signatureStatus === 'missing' && (
-                                 <div className="bg-gradient-to-r from-primary to-primary-dark rounded-xl p-6 text-white text-center">
-                                     <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP - EDTECH</p>
-                                     <p className="text-xs opacity-95">
-                                         Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
-                                     </p>
-                                 </div>
-                             )}
-
-                             {result.signatureStatus === 'invalid' && (
-                                 <div className="bg-gradient-to-br from-red-900 to-red-950 text-white rounded-2xl p-6 shadow-lg border border-red-500/30 text-center">
-                                     <p className="text-base font-bold mb-1 tracking-wider">
-                                         ⚠️ ERROR DE INTEGRIDAD - ALERTA
-                                     </p>
-                                     <p className="text-xs opacity-90 max-w-md mx-auto">
-                                         La firma criptográfica calculada no coincide con el registro original. Esta credencial puede haber sido alterada externamente o deshabilitada.
-                                     </p>
-                                     <p className="text-[10px] opacity-75 mt-3">
-                                         Fecha de auditoría: {new Date().toLocaleDateString('es-AR')}
-                                     </p>
-                                 </div>
-                             )}
+                            {/* Footer de verificación */}
+                            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white text-center">
+                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP Servicios</p>
+                                <p className="text-xs opacity-90">
+                                    Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
+                                </p>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {/* Footer de Acciones */}
-                <div className="text-center mt-8 space-y-4">
-                    <p className="text-sm text-slate-800">
-                        ¿Querés verificar otro certificado o consultar más información?
+                {/* Footer */}
+                <div className="text-center mt-8">
+                    <p className="text-sm text-gray-600 mb-4">
+                        ¿Necesitas más información?
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                        <Link
-                            href="/validar"
-                            className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg flex items-center justify-center gap-2"
-                        >
-                            <Award className="w-5 h-5" /> Validar Otra Credencial
-                        </Link>
-                        <Link
-                            href="/"
-                            className="w-full sm:w-auto bg-white text-slate-700 border border-slate-200 px-6 py-3.5 rounded-xl font-semibold hover:bg-slate-50 transition-colors shadow-sm text-center"
-                        >
-                            Volver al Inicio
-                        </Link>
-                    </div>
+                    <Link
+                        href="/"
+                        className="inline-block bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-md"
+                    >
+                        Volver al Inicio
+                    </Link>
                 </div>
 
                 {/* Info adicional */}
-                <div className="mt-6 text-center text-xs text-slate-700">
-                    <p>VMP - EDTECH - Capacitación Profesional</p>
+                <div className="mt-6 text-center text-xs text-gray-500">
+                    <p>VMP Servicios - Capacitación Profesional</p>
                     <p className="mt-1">
                         Contacto:{' '}
-                        <a href="mailto:soporte@vmp-edtech.com.ar" className="text-primary hover:underline">
-                            soporte@vmp-edtech.com.ar
+                        <a href="mailto:info@vmpservicios.com" className="text-orange-500 hover:underline">
+                            info@vmpservicios.com
                         </a>
                     </p>
                 </div>

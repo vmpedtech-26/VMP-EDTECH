@@ -1,9 +1,8 @@
 from pydantic import BaseModel, EmailStr
-from core.security_utils import SanitizedBaseModel
 from typing import Optional, List
 from datetime import datetime
 
-class EmpresaBase(SanitizedBaseModel):
+class EmpresaBase(BaseModel):
     nombre: str
     cuit: str
     direccion: Optional[str] = None
@@ -14,7 +13,7 @@ class EmpresaBase(SanitizedBaseModel):
 class CreateEmpresaRequest(EmpresaBase):
     pass
 
-class UpdateEmpresaRequest(SanitizedBaseModel):
+class UpdateEmpresaRequest(BaseModel):
     nombre: Optional[str] = None
     cuit: Optional[str] = None
     direccion: Optional[str] = None

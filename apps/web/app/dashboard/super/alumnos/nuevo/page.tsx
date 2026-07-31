@@ -19,7 +19,7 @@ export default function NuevoAlumnoPage() {
             router.push('/dashboard/super/alumnos');
         } catch (error: any) {
             console.error('Error creating user:', error);
-            alert(error.message || 'Error al registrar el alumno');
+            alert(error.response?.data?.detail || 'Error al registrar el alumno');
         } finally {
             setIsLoading(false);
         }
@@ -33,7 +33,7 @@ export default function NuevoAlumnoPage() {
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold text-slate-900">Registrar Nuevo Alumno</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Registrar Nuevo Alumno</h1>
             </div>
 
             <UsuarioForm

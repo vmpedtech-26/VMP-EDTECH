@@ -45,7 +45,7 @@ export function PracticaEditor({ tareas, onChange }: PracticaEditorProps) {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     <ClipboardList className="h-5 w-5 text-primary" />
                     Lista de Verificación Práctica ({tareas.length} items)
                 </h3>
@@ -60,11 +60,11 @@ export function PracticaEditor({ tareas, onChange }: PracticaEditorProps) {
                     <Card key={idx} className="p-4 border-none shadow-sm ring-1 ring-gray-100 group">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 space-y-2">
-                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                     Instrucción para el Alumno
                                 </label>
                                 <input
-                                    className="w-full px-4 py-2 bg-slate-50 border-none rounded-lg outline-none focus:ring-2 focus:ring-primary/20"
+                                    className="w-full px-4 py-2 bg-gray-50 border-none rounded-lg outline-none focus:ring-2 focus:ring-primary/20"
                                     placeholder="Ej: Verifique que el arnés no tenga cortes"
                                     value={t.descripcion}
                                     onChange={(e) => updateTarea(idx, { descripcion: e.target.value })}
@@ -74,7 +74,7 @@ export function PracticaEditor({ tareas, onChange }: PracticaEditorProps) {
                             <div className="flex items-end gap-2">
                                 <button
                                     type="button"
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${t.requiereFoto ? 'bg-primary/10 text-primary ring-1 ring-primary/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${t.requiereFoto ? 'bg-primary/10 text-primary ring-1 ring-primary/20' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
                                     onClick={() => updateTarea(idx, { requiereFoto: !t.requiereFoto })}
                                 >
                                     <Camera className="h-4 w-4" />
@@ -96,9 +96,9 @@ export function PracticaEditor({ tareas, onChange }: PracticaEditorProps) {
             </div>
 
             {tareas.length === 0 && (
-                <div className="py-12 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100">
+                <div className="py-12 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
                     <ClipboardList className="h-12 w-12 text-gray-200 mx-auto mb-3" />
-                    <p className="text-slate-700 italic">Define los pasos que el alumno debe realizar y documentar.</p>
+                    <p className="text-gray-500 italic">Define los pasos que el alumno debe realizar y documentar.</p>
                 </div>
             )}
         </div>

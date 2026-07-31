@@ -1,10 +1,9 @@
 """
 Servicio para validar credenciales públicamente.
 """
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, Dict, Any
 from core.database import prisma
-from services.credential_service import calculate_credential_signature
 
 
 class CredentialValidator:
@@ -26,8 +25,7 @@ class CredentialValidator:
             include={
                 "alumno": {
                     "include": {
-                        "empresa": True,
-                        "fotoCredencial": True
+                        "empresa": True
                     }
                 },
                 "curso": True
@@ -41,36 +39,15 @@ class CredentialValidator:
                 "message": "Credencial no encontrada"
             }
         
+        # Verificar expiración
         is_expired = False
         if credencial.fechaVencimiento:
-            # PostgreSQL datetimes from Prisma are timezone-aware (UTC), so we use timezone-aware now
-            is_expired = datetime.now(timezone.utc) > credencial.fechaVencimiento
-            
-        # Verificar firma criptográfica
-        signature_valid = False
-        signature_status = "missing"
-        
-        firma_sig = getattr(credencial, 'firmaCriptografica', None)
-        if firma_sig and credencial.fechaEmision:
-            fecha_emision_str = credencial.fechaEmision.strftime("%Y-%m-%d")
-            recalculated_sig = calculate_credential_signature(
-                credencial.numero,
-                credencial.alumnoId,
-                credencial.cursoId,
-                fecha_emision_str
-            )
-            if firma_sig == recalculated_sig:
-                signature_valid = True
-                signature_status = "verified"
-            else:
-                signature_status = "invalid"
+            is_expired = datetime.utcnow() > credencial.fechaVencimiento
         
         # Preparar respuesta con datos públicos
         return {
-            "valid": not is_expired and (signature_status != "invalid"),
-            "status": "expired" if is_expired else ("valid" if signature_valid or signature_status == "missing" else "invalid_signature"),
-            "signatureValid": signature_valid,
-            "signatureStatus": signature_status,
+            "valid": not is_expired,
+            "status": "expired" if is_expired else "valid",
             "credential": {
                 "numero": credencial.numero,
                 "fechaEmision": credencial.fechaEmision.isoformat(),
@@ -78,8 +55,7 @@ class CredentialValidator:
                 "alumno": {
                     "nombre": credencial.alumno.nombre,
                     "apellido": credencial.alumno.apellido,
-                    "dni": credencial.alumno.dni,
-                    "fotoUrl": credencial.alumno.fotoCredencial.fotoUrl if credencial.alumno.fotoCredencial and credencial.alumno.fotoCredencial.estado == "APROBADA" else None
+                    "dni": credencial.alumno.dni
                 },
                 "curso": {
                     "nombre": credencial.curso.nombre,
@@ -96,4 +72,3 @@ class CredentialValidator:
 
 # Instancia global del validador
 credential_validator = CredentialValidator()
-

@@ -53,7 +53,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             setSubmitted(true);
         } catch (error) {
             console.error('Error al enviar quiz:', error);
-            alert('Error al enviar el quiz: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al enviar el quiz');
         } finally {
             setLoading(false);
         }
@@ -80,7 +80,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al completar el módulo');
         } finally {
             setLoading(false);
         }
@@ -88,7 +88,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
 
     if (preguntas.length === 0) {
         return (
-            <div className="p-8 text-center text-slate-800">
+            <div className="p-8 text-center text-gray-600">
                 Este quiz no tiene preguntas configuradas.
             </div>
         );
@@ -99,7 +99,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
         return (
             <div className="space-y-6">
                 <div className="border-b pb-4">
-                    <h2 className="text-2xl font-bold text-slate-900">{modulo.titulo}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">{modulo.titulo}</h2>
                 </div>
 
                 {/* Resultado General */}
@@ -111,11 +111,11 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                             <XCircle className="w-16 h-16 text-red-600 mx-auto" />
                         )}
                         <div>
-                            <h3 className="text-2xl font-bold text-slate-900">
+                            <h3 className="text-2xl font-bold text-gray-900">
                                 {feedback.calificacion.toFixed(1)}%
                             </h3>
-                            <p className="text-slate-700 mt-2">{feedback.message}</p>
-                            <p className="text-sm text-slate-800 mt-1">
+                            <p className="text-gray-700 mt-2">{feedback.message}</p>
+                            <p className="text-sm text-gray-600 mt-1">
                                 Respondiste correctamente {feedback.respuestasCorrectas} de {feedback.totalPreguntas} preguntas
                             </p>
                         </div>
@@ -124,7 +124,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
 
                 {/* Feedback por pregunta */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-slate-900">Revisión de Respuestas</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Revisión de Respuestas</h3>
                     {feedback.feedback.map((item, idx) => {
                         const pregunta = preguntas.find(p => p.id === item.preguntaId);
                         if (!pregunta) return null;
@@ -133,7 +133,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                             <Card key={item.preguntaId} className={`border-l-4 ${item.correcta ? 'border-l-green-500' : 'border-l-red-500'}`}>
                                 <div className="space-y-2">
                                     <div className="flex items-start justify-between">
-                                        <p className="font-semibold text-slate-900">
+                                        <p className="font-semibold text-gray-900">
                                             {idx + 1}. {pregunta.pregunta}
                                         </p>
                                         {item.correcta ? (
@@ -155,7 +155,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                                     )}
 
                                     {item.explicacion && (
-                                        <p className="text-sm text-slate-800 bg-slate-50 p-2 rounded">
+                                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
                                             💡 {item.explicacion}
                                         </p>
                                     )}
@@ -194,12 +194,12 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
         <div className="space-y-6">
             {/* Header */}
             <div className="border-b pb-4">
-                <h2 className="text-2xl font-bold text-slate-900">{modulo.titulo}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{modulo.titulo}</h2>
                 <div className="flex items-center justify-between mt-2">
                     <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-semibold text-sm">
                         Cuestionario
                     </span>
-                    <span className="text-sm text-slate-800">
+                    <span className="text-sm text-gray-600">
                         Pregunta {currentQuestion + 1} de {preguntas.length}
                     </span>
                 </div>
@@ -216,7 +216,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
             {/* Pregunta */}
             <Card>
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-slate-900">
+                    <h3 className="text-lg font-semibold text-gray-900">
                         {preguntaActual.pregunta}
                     </h3>
 
@@ -230,7 +230,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                                     onClick={() => handleSelectOption(idx)}
                                     className={`w-full text-left p-4 rounded-lg border-2 transition-all ${isSelected
                                         ? 'border-purple-500 bg-purple-50'
-                                        : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'
+                                        : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
                                         }`}
                                 >
                                     <div className="flex items-center space-x-3">
@@ -240,7 +240,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                                                 <div className="w-2 h-2 rounded-full bg-white" />
                                             )}
                                         </div>
-                                        <span className="text-slate-900">{opcion}</span>
+                                        <span className="text-gray-900">{opcion}</span>
                                     </div>
                                 </button>
                             );
@@ -260,7 +260,7 @@ export function ModuloQuiz({ modulo, cursoId, onCompletar }: ModuloQuizProps) {
                     Anterior
                 </Button>
 
-                <span className="text-sm text-slate-800">
+                <span className="text-sm text-gray-600">
                     {Object.keys(respuestas).length} de {preguntas.length} respondidas
                 </span>
 

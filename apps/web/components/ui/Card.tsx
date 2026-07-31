@@ -11,9 +11,9 @@ export function Card({ children, className, hover = true, ...props }: CardProps)
     return (
         <div
             className={cn(
-                'glass-card rounded-2xl p-6 border border-white/50',
+                'bg-white rounded-lg shadow-sm p-6 border border-gray-100',
                 hover &&
-                'transition-all duration-300 hover:shadow-lg hover:-translate-y-1',
+                'transition-all duration-200 hover:shadow-md hover:-translate-y-1',
                 props.onClick && 'cursor-pointer',
                 className
             )}

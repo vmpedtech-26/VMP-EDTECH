@@ -13,9 +13,8 @@ import {
     BarChart3
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
-import { api } from '@/lib/api-client';
 
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 interface OverviewMetrics {
     totals: {
@@ -65,16 +64,35 @@ export default function MetricsPage() {
             setIsLoading(true);
             setError(null);
 
+            const token = localStorage.getItem('vmp_token');
+            if (!token) {
+                throw new Error('No autenticado');
+            }
+
             // Fetch overview metrics
-            const overviewData = await api.get('/metrics/overview');
+            const overviewResponse = await fetch(`${API_URL}/api/metrics/overview`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!overviewResponse.ok) {
+                throw new Error('Error al cargar métricas');
+            }
+
+            const overviewData = await overviewResponse.json();
             setOverview(overviewData);
 
             // Fetch course metrics
-            try {
-                const coursesData = await api.get('/metrics/courses');
+            const coursesResponse = await fetch(`${API_URL}/api/metrics/courses`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (coursesResponse.ok) {
+                const coursesData = await coursesResponse.json();
                 setCourses(coursesData.courses);
-            } catch (courseErr) {
-                console.warn('Could not fetch course metrics:', courseErr);
             }
 
         } catch (err: any) {
@@ -106,10 +124,10 @@ export default function MetricsPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
                     Dashboard de Métricas
                 </h1>
-                <p className="text-slate-700 mt-1">
+                <p className="text-gray-500 mt-1">
                     Visualiza el rendimiento y estadísticas de la plataforma
                 </p>
             </div>
@@ -169,10 +187,10 @@ export default function MetricsPage() {
                 <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-semibold text-slate-700 uppercase">Cotizaciones</p>
-                            <p className="text-3xl font-bold text-slate-900 mt-1">{overview.totals.quotes}</p>
+                            <p className="text-xs font-semibold text-gray-700 uppercase">Cotizaciones</p>
+                            <p className="text-3xl font-bold text-gray-900 mt-1">{overview.totals.quotes}</p>
                         </div>
-                        <BarChart3 className="h-10 w-10 text-slate-800" />
+                        <BarChart3 className="h-10 w-10 text-gray-600" />
                     </div>
                 </Card>
             </div>
@@ -180,35 +198,35 @@ export default function MetricsPage() {
             {/* Métricas de Conversión */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="p-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-primary" />
                         Conversión de Cotizaciones
                     </h2>
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Pendientes</span>
+                            <span className="text-sm font-semibold text-gray-700">Pendientes</span>
                             <span className="text-2xl font-bold text-yellow-700">{overview.quotes.pending}</span>
                         </div>
 
                         <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Contactados</span>
+                            <span className="text-sm font-semibold text-gray-700">Contactados</span>
                             <span className="text-2xl font-bold text-blue-700">{overview.quotes.contacted}</span>
                         </div>
 
                         <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Convertidos</span>
+                            <span className="text-sm font-semibold text-gray-700">Convertidos</span>
                             <span className="text-2xl font-bold text-green-700">{overview.quotes.converted}</span>
                         </div>
 
                         <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Rechazados</span>
+                            <span className="text-sm font-semibold text-gray-700">Rechazados</span>
                             <span className="text-2xl font-bold text-red-700">{overview.quotes.rejected}</span>
                         </div>
 
-                        <div className="pt-4 border-t border-slate-200">
+                        <div className="pt-4 border-t border-gray-200">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold text-slate-700">Tasa de Conversión</span>
+                                <span className="text-sm font-semibold text-gray-700">Tasa de Conversión</span>
                                 <span className="text-3xl font-bold text-primary">{overview.quotes.conversion_rate}%</span>
                             </div>
                         </div>
@@ -216,25 +234,25 @@ export default function MetricsPage() {
                 </Card>
 
                 <Card className="p-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <GraduationCap className="h-5 w-5 text-primary" />
                         Estado de Inscripciones
                     </h2>
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Activas</span>
+                            <span className="text-sm font-semibold text-gray-700">Activas</span>
                             <span className="text-2xl font-bold text-blue-700">{overview.enrollments.active}</span>
                         </div>
 
                         <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                            <span className="text-sm font-semibold text-slate-700">Completadas</span>
+                            <span className="text-sm font-semibold text-gray-700">Completadas</span>
                             <span className="text-2xl font-bold text-green-700">{overview.enrollments.completed}</span>
                         </div>
 
-                        <div className="pt-4 border-t border-slate-200">
+                        <div className="pt-4 border-t border-gray-200">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold text-slate-700">Tasa de Completitud</span>
+                                <span className="text-sm font-semibold text-gray-700">Tasa de Completitud</span>
                                 <span className="text-3xl font-bold text-primary">{overview.enrollments.completion_rate}%</span>
                             </div>
                         </div>
@@ -255,7 +273,7 @@ export default function MetricsPage() {
             {/* Estadísticas por Curso */}
             {courses.length > 0 && (
                 <Card className="p-6">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <Award className="h-5 w-5 text-primary" />
                         Estadísticas por Curso
                     </h2>
@@ -263,21 +281,21 @@ export default function MetricsPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-200">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Curso</th>
-                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">Código</th>
-                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">Inscripciones</th>
-                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">Completadas</th>
-                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">Credenciales</th>
-                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">% Completitud</th>
+                                <tr className="border-b border-gray-200">
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Curso</th>
+                                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Código</th>
+                                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Inscripciones</th>
+                                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Completadas</th>
+                                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Credenciales</th>
+                                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">% Completitud</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {courses.map((course) => (
-                                    <tr key={course.id} className="border-b border-slate-100 hover:bg-slate-50">
-                                        <td className="py-3 px-4 text-sm font-medium text-slate-900">{course.nombre}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-800 text-center">{course.codigo}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-900 text-center font-semibold">{course.total_enrollments}</td>
+                                    <tr key={course.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{course.nombre}</td>
+                                        <td className="py-3 px-4 text-sm text-gray-600 text-center">{course.codigo}</td>
+                                        <td className="py-3 px-4 text-sm text-gray-900 text-center font-semibold">{course.total_enrollments}</td>
                                         <td className="py-3 px-4 text-sm text-green-700 text-center font-semibold">{course.completed_enrollments}</td>
                                         <td className="py-3 px-4 text-sm text-blue-700 text-center font-semibold">{course.total_credentials}</td>
                                         <td className="py-3 px-4 text-center">

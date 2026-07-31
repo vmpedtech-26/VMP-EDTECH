@@ -12,45 +12,29 @@ import {
     CheckCircle2,
     PlayCircle,
     FileText,
-    HelpCircle,
-    Video
+    HelpCircle
 } from 'lucide-react';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { CursoDetail, Inscripcion } from '@/types/training';
-import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
-import { api } from '@/lib/api-client';
-import { toast } from 'sonner';
 import Link from 'next/link';
-
-interface Sesion {
-  id: string;
-  titulo: string;
-  descripcion?: string;
-  estado: string;
-  fechaInicio: string;
-  meetLink?: string;
-}
 
 export default function CursoDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const [curso, setCurso] = useState<CursoDetail | null>(null);
     const [inscripcion, setInscripcion] = useState<Inscripcion | null>(null);
-    const [sesiones, setSesiones] = useState<Sesion[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [cursoData, inscripcionData, sesionesData] = await Promise.all([
+                const [cursoData, inscripcionData] = await Promise.all([
                     cursosApi.obtenerCurso(id as string),
-                    inscripcionesApi.obtenerInscripcion(id as string).catch(() => null),
-                    api.get(`/sesiones?cursoId=${id}`).catch(() => [])
+                    inscripcionesApi.obtenerInscripcion(id as string).catch(() => null)
                 ]);
                 setCurso(cursoData);
                 setInscripcion(inscripcionData);
-                setSesiones(Array.isArray(sesionesData) ? sesionesData : []);
             } catch (error) {
                 console.error('Error fetching course detail:', error);
             } finally {
@@ -72,7 +56,7 @@ export default function CursoDetailPage() {
     if (!curso) {
         return (
             <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-slate-900">Curso no encontrado</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Curso no encontrado</h2>
                 <Button className="mt-4" asChild>
                     <Link href="/dashboard/cursos">Volver a mis cursos</Link>
                 </Button>
@@ -81,84 +65,11 @@ export default function CursoDetailPage() {
     }
 
     const isEnrolled = !!inscripcion;
-    const activeLiveModule = curso.modulos?.find(m => m.liveClassUrl);
-    
-    // Sesiones del curso
-    const sesionActiva = sesiones.find(s => s.estado === 'EN_CURSO');
-    const proximaSesion = sesiones.find(s => s.estado === 'PROGRAMADA');
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            {/* Live Class Hub integration */}
-            {isEnrolled && activeLiveModule && (
-                <LiveClassHub 
-                    platform={activeLiveModule.liveClassPlatform || (activeLiveModule.liveClassUrl?.includes('teams') ? 'teams' : 'google_meet')}
-                    url={activeLiveModule.liveClassUrl || null}
-                    courseName={curso.nombre}
-                />
-            )}
-
-            {/* Clase en Vivo Activa */}
-            {isEnrolled && sesionActiva && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="h-3 w-3 bg-red-600 rounded-full animate-ping shrink-0" />
-                        <div>
-                            <h3 className="font-bold text-red-950 flex items-center gap-2">
-                                🔴 CLASE EN VIVO EN CURSO
-                            </h3>
-                            <p className="text-sm text-red-700 font-semibold">{sesionActiva.titulo}</p>
-                            {sesionActiva.descripcion && (
-                                <p className="text-xs text-red-600 line-clamp-1">{sesionActiva.descripcion}</p>
-                            )}
-                        </div>
-                    </div>
-                    {sesionActiva.meetLink && (
-                        <Button 
-                            className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl border-none shadow-sm"
-                            onClick={async () => {
-                                try {
-                                    await api.post(`/sesiones/${sesionActiva.id}/checkin`, {});
-                                    toast.success('¡Asistencia registrada con éxito!');
-                                } catch (e) {
-                                    console.error('Error auto check-in:', e);
-                                }
-                                window.open(sesionActiva.meetLink, '_blank');
-                            }}
-                        >
-                            Ingresar a Clase Virtual
-                        </Button>
-                    )}
-                </div>
-            )}
-
-            {/* Próxima clase programada */}
-            {isEnrolled && !sesionActiva && proximaSesion && (
-                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <Video className="h-5 w-5 text-blue-600 shrink-0" />
-                        <div>
-                            <h3 className="font-bold text-blue-950">Próxima Sesión Programada</h3>
-                            <p className="text-sm text-blue-800 font-medium">{proximaSesion.titulo}</p>
-                            <p className="text-xs text-blue-750">
-                                {new Date(proximaSesion.fechaInicio).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })} hs
-                            </p>
-                        </div>
-                    </div>
-                    {proximaSesion.meetLink && (
-                        <Button 
-                            variant="outline"
-                            className="border-blue-200 text-blue-800 hover:bg-blue-100 font-semibold px-5 py-2 rounded-xl"
-                            onClick={() => window.open(proximaSesion.meetLink, '_blank')}
-                        >
-                            Ver Enlace
-                        </Button>
-                    )}
-                </div>
-            )}
-
             {/* Header / Hero */}
-            <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+            <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
                 <div className="flex flex-col md:flex-row gap-8 items-start">
                     <div className="flex-1 space-y-4">
                         <div className="flex items-center space-x-2">
@@ -171,14 +82,14 @@ export default function CursoDetailPage() {
                                 </span>
                             )}
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                             {curso.nombre}
                         </h1>
-                        <p className="text-slate-800 text-lg max-w-2xl">
+                        <p className="text-gray-600 text-lg max-w-2xl">
                             {curso.descripcion}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-6 text-sm text-slate-700 pt-2">
+                        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 pt-2">
                             <div className="flex items-center space-x-2">
                                 <Clock className="h-5 w-5 text-secondary" />
                                 <span>{curso.duracionHoras} Horas totales</span>
@@ -192,87 +103,10 @@ export default function CursoDetailPage() {
                 </div>
             </div>
 
-            {/* Timeline de Hitos Interactivos */}
-            {isEnrolled && (
-                <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100/50 bg-white" hover={false}>
-                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Línea de Hitos y Logros</h3>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative">
-                        {/* Line connector */}
-                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 hidden md:block z-0" />
-                        <div 
-                            className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-primary to-emerald-500 -translate-y-1/2 hidden md:block z-0 transition-all duration-1000"
-                            style={{ 
-                                width: `${
-                                    inscripcion.progreso === 100 ? '100%' :
-                                    inscripcion.progreso > 50 ? '66%' :
-                                    inscripcion.progreso > 0 ? '33%' : '0%'
-                                }` 
-                            }}
-                        />
-                        
-                        {/* Hito 1 */}
-                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
-                            <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-bold ring-4 ring-primary/20 shadow-md">
-                                ✓
-                            </div>
-                            <div className="md:mt-2">
-                                <h4 className="font-bold text-slate-900 text-sm">Registro Inicial</h4>
-                                <p className="text-xs text-slate-700">Inscripción confirmada</p>
-                            </div>
-                        </div>
-
-                        {/* Hito 2 */}
-                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
-                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
-                                inscripcion.progreso > 0 
-                                    ? 'bg-primary text-white ring-4 ring-primary/20 shadow-md' 
-                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
-                            }`}>
-                                {inscripcion.progreso > 0 ? '✓' : '2'}
-                            </div>
-                            <div className="md:mt-2">
-                                <h4 className={`font-bold text-sm ${inscripcion.progreso > 0 ? 'text-slate-900' : 'text-slate-400'}`}>Módulos Activos</h4>
-                                <p className="text-xs text-slate-700">En progreso de lectura</p>
-                            </div>
-                        </div>
-
-                        {/* Hito 3 */}
-                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
-                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
-                                inscripcion.progreso >= 80 
-                                    ? 'bg-primary text-white ring-4 ring-primary/20 shadow-md' 
-                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
-                            }`}>
-                                {inscripcion.progreso >= 80 ? '✓' : '3'}
-                            </div>
-                            <div className="md:mt-2">
-                                <h4 className={`font-bold text-sm ${inscripcion.progreso >= 80 ? 'text-slate-900' : 'text-slate-400'}`}>Evaluación Final</h4>
-                                <p className="text-xs text-slate-700">Mínimo 70% requerido</p>
-                            </div>
-                        </div>
-
-                        {/* Hito 4 */}
-                        <div className="flex items-center md:flex-col gap-4 text-left md:text-center z-10 w-full md:w-auto relative bg-white px-2">
-                            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
-                                inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO'
-                                    ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 shadow-md' 
-                                    : 'bg-white text-slate-400 border-2 border-slate-200 shadow-sm'
-                            }`}>
-                                {inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO' ? '🏆' : '4'}
-                            </div>
-                            <div className="md:mt-2">
-                                <h4 className={`font-bold text-sm ${inscripcion.progreso === 100 && inscripcion.estado === 'APROBADO' ? 'text-emerald-600' : 'text-slate-400'}`}>Certificación</h4>
-                                <p className="text-xs text-slate-700">Credencial QR generada</p>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            )}
-
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Modules List */}
                 <div className="lg:col-span-2 space-y-6">
-                    <h2 className="text-2xl font-bold text-slate-900">Contenido del curso</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">Contenido del curso</h2>
                     <div className="space-y-4">
                         {curso.modulos?.map((modulo, index) => {
                             const isCompleted = inscripcion?.modulosCompletados?.includes(modulo.id);
@@ -291,17 +125,17 @@ export default function CursoDetailPage() {
                                         <div className="flex items-center space-x-4">
                                             <div className={`p-2 rounded-lg ${isCompleted ? 'bg-success/10 text-success' :
                                                 isNext ? 'bg-primary/10 text-primary' :
-                                                    'bg-slate-100 text-slate-600'
+                                                    'bg-gray-100 text-gray-400'
                                                 }`}>
                                                 {modulo.tipo === 'TEORIA' ? <FileText className="h-5 w-5" /> :
                                                     modulo.tipo === 'QUIZ' ? <HelpCircle className="h-5 w-5" /> :
                                                         <PlayCircle className="h-5 w-5" />}
                                             </div>
                                             <div>
-                                                <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                     Módulo {modulo.orden}
                                                 </div>
-                                                <h3 className={`font-bold ${isDisabled ? 'text-slate-600' : 'text-slate-900'}`}>
+                                                <h3 className={`font-bold ${isDisabled ? 'text-gray-400' : 'text-gray-900'}`}>
                                                     {modulo.titulo}
                                                 </h3>
                                             </div>
@@ -318,7 +152,7 @@ export default function CursoDetailPage() {
                                                         </Link>
                                                     </Button>
                                                 ) : (
-                                                    <span className="text-xs text-slate-600 italic">No disponible</span>
+                                                    <span className="text-xs text-gray-400 italic">No disponible</span>
                                                 )}
                                             </div>
                                         ) : null}
@@ -332,37 +166,27 @@ export default function CursoDetailPage() {
                 {/* Sidebar Info */}
                 <div className="space-y-6">
                     <Card>
-                        <h3 className="text-lg font-bold text-slate-900 mb-4">Sobre esta capacitación</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Sobre esta capacitación</h3>
                         <div className="space-y-4">
                             <div className="flex items-start space-x-3">
-                                <div className="p-2 bg-slate-50 rounded-lg">
-                                    <BookOpen className="h-4 w-4 text-slate-800" />
+                                <div className="p-2 bg-gray-50 rounded-lg">
+                                    <BookOpen className="h-4 w-4 text-gray-600" />
                                 </div>
                                 <div>
                                     <div className="text-sm font-semibold">Modalidad Flexible</div>
-                                    <div className="text-xs text-slate-700">Avanza a tu propio ritmo desde cualquier dispositivo.</div>
+                                    <div className="text-xs text-gray-500">Avanza a tu propio ritmo desde cualquier dispositivo.</div>
                                 </div>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <div className="p-2 bg-slate-50 rounded-lg">
-                                    <CheckCircle2 className="h-4 w-4 text-slate-800" />
+                                <div className="p-2 bg-gray-50 rounded-lg">
+                                    <CheckCircle2 className="h-4 w-4 text-gray-600" />
                                 </div>
                                 <div>
                                     <div className="text-sm font-semibold">Certificado Oficial</div>
-                                    <div className="text-xs text-slate-700">Obtén tu credencial VMP al finalizar todos los módulos.</div>
+                                    <div className="text-xs text-gray-500">Obtén tu credencial VMP al finalizar todos los módulos.</div>
                                 </div>
                             </div>
                         </div>
-
-                        {curso.materialDescargableUrl && (
-                            <Button 
-                                variant="outline"
-                                className="w-full mt-4 border-primary text-primary hover:bg-primary/5"
-                                onClick={() => window.open(curso.materialDescargableUrl, '_blank')}
-                            >
-                                Descargar Material de Lectura
-                            </Button>
-                        )}
 
                         {!isEnrolled && (
                             <Button
@@ -372,7 +196,7 @@ export default function CursoDetailPage() {
                                         await inscripcionesApi.inscribirse(curso.id);
                                         window.location.reload();
                                     } catch (err) {
-                                        alert('Error al inscribirse: ' + (err instanceof Error ? err.message : String(err)));
+                                        alert('Error al inscribirse');
                                     }
                                 }}
                             >

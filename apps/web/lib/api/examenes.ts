@@ -19,24 +19,16 @@ export const examenesApi = {
 
     /**
      * Obtener todas las credenciales del usuario actual
-     * (Usa el nuevo router de credenciales)
      */
     async misCredenciales(): Promise<Credencial[]> {
-        return api.get('/credenciales/mis-credenciales');
+        return api.get('/examenes/mis-credenciales');
     },
 
     /**
-     * Generar una credencial manualmente
-     * (Usa el nuevo router de credenciales)
+     * Generar una credencial para una inscripción específica
+     * inscripcionId: ID de la inscripción del alumno en el curso
      */
-    async generarCredencial(
-        alumnoId: string,
-        cursoId: string
-    ): Promise<any> {
-        return api.post('/credenciales/generar-manual', {
-            alumnoId,
-            cursoId,
-        });
+    async generarCredencial(inscripcionId: string): Promise<{ message: string; pdfUrl: string; numero: string }> {
+        return api.post(`/examenes/generar-credencial/${inscripcionId}`, {});
     },
 };
-

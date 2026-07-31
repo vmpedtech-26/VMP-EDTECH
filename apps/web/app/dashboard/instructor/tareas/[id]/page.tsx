@@ -97,7 +97,7 @@ export default function EvaluarEvidenciaPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left: Evidence Image */}
                 <div className="space-y-4">
-                    <div className="relative aspect-[3/4] md:aspect-square bg-slate-100 rounded-3xl overflow-hidden border border-slate-200">
+                    <div className="relative aspect-[3/4] md:aspect-square bg-gray-100 rounded-3xl overflow-hidden border border-gray-200">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={evidencia.fotoUrl}
@@ -123,49 +123,49 @@ export default function EvaluarEvidenciaPage() {
                                     Revisión Pendiente
                                 </span>
                             </div>
-                            <h1 className="text-2xl font-bold text-slate-900">
+                            <h1 className="text-2xl font-bold text-gray-900">
                                 {evidencia.tarea?.descripcion}
                             </h1>
-                            <p className="text-slate-700 mt-1">
+                            <p className="text-gray-500 mt-1">
                                 {evidencia.tarea?.modulo.curso.nombre} • {evidencia.tarea?.modulo.titulo}
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 py-6 border-y border-slate-100">
+                        <div className="grid grid-cols-2 gap-4 py-6 border-y border-gray-100">
                             <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-sm text-slate-700">
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <User className="h-4 w-4" />
                                     <span>Alumno</span>
                                 </div>
-                                <p className="font-bold text-slate-900">{evidencia.alumno?.nombre} {evidencia.alumno?.apellido}</p>
+                                <p className="font-bold text-gray-900">{evidencia.alumno?.nombre} {evidencia.alumno?.apellido}</p>
                             </div>
                             <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-sm text-slate-700">
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <Calendar className="h-4 w-4" />
                                     <span>Enviado</span>
                                 </div>
-                                <p className="font-bold text-slate-900">
+                                <p className="font-bold text-gray-900">
                                     {format(new Date(evidencia.uploadedAt), "d 'de' MMMM, yyyy", { locale: es })}
                                 </p>
                             </div>
                         </div>
 
                         {evidencia.comentario && (
-                            <div className="bg-slate-50 p-4 rounded-2xl">
+                            <div className="bg-gray-50 p-4 rounded-2xl">
                                 <div className="flex items-center gap-2 text-primary mb-2 text-sm font-bold">
                                     <MessageSquare className="h-4 w-4" />
                                     Comentario del alumno:
                                 </div>
-                                <p className="text-slate-700 italic">"{evidencia.comentario}"</p>
+                                <p className="text-gray-700 italic">"{evidencia.comentario}"</p>
                             </div>
                         )}
 
                         <div className="space-y-4 pt-4">
-                            <label className="block text-sm font-bold text-slate-700">
+                            <label className="block text-sm font-bold text-gray-700">
                                 Feedback para el alumno (Opcional)
                             </label>
                             <textarea
-                                className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all min-h-[120px]"
+                                className="w-full p-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all min-h-[120px]"
                                 placeholder="Escribe aquí tus observaciones, correcciones o felicitaciones..."
                                 value={feedback}
                                 onChange={(e) => setFeedback(e.target.value)}

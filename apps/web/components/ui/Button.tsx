@@ -18,18 +18,18 @@ export function Button({
     ...props
 }: ButtonProps) {
     const buttonClasses = cn(
-        'inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300',
+        'inline-flex items-center justify-center rounded-md font-semibold transition-all duration-200',
         'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         {
             // Variants
-            'bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:scale-105':
+            'bg-gradient-to-r from-primary to-primary-light text-white hover:shadow-lg hover:-translate-y-0.5':
                 variant === 'primary',
-            'bg-white text-slate-800 hover:bg-slate-50 border border-slate-200':
+            'bg-secondary-light text-gray-900 hover:bg-secondary':
                 variant === 'secondary',
             'border-2 border-primary text-primary hover:bg-primary hover:text-white':
                 variant === 'outline',
-            'bg-transparent hover:bg-slate-100 text-slate-800':
+            'bg-transparent hover:bg-gray-100 text-gray-600':
                 variant === 'ghost',
             // Sizes
             'px-2 py-1 text-[10px]': size === 'xs',

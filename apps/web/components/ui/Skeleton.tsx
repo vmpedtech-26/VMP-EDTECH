@@ -20,8 +20,8 @@ export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number, cols?: nu
                 <Skeleton className="h-8 w-[200px]" />
                 <Skeleton className="h-10 w-[150px]" />
             </div>
-            <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex gap-4">
+            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex gap-4">
                     {Array.from({ length: cols }).map((_, i) => (
                         <Skeleton key={i} className="h-4 flex-1" />
                     ))}

@@ -1,13 +1,13 @@
-from pydantic import BaseModel, EmailStr
-from core.security_utils import SanitizedBaseModel
+from pydantic import BaseModel, EmailStr, validator
+from core.security_utils import sanitize_data
 
 # ============= AUTH SCHEMAS =============
 
-class UserLogin(SanitizedBaseModel):
+class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class UserRegister(SanitizedBaseModel):
+class UserRegister(BaseModel):
     email: EmailStr
     password: str
     nombre: str
@@ -15,6 +15,12 @@ class UserRegister(SanitizedBaseModel):
     dni: str
     telefono: str | None = None
     empresaId: str | None = None
+
+    @validator('nombre', 'apellido', 'dni', 'telefono', pre=True)
+    def sanitize_text(cls, v):
+        if isinstance(v, str):
+            return sanitize_data(v)
+        return v
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -64,7 +70,7 @@ class InscripcionResponse(BaseModel):
 
 # ============= EXAMEN SCHEMAS =============
 
-class SubmitExamenRequest(SanitizedBaseModel):
+class SubmitExamenRequest(BaseModel):
     cursoId: str
     respuestas: dict  # { preguntaId: respuestaIndex }
 
@@ -87,7 +93,7 @@ class PreguntaFeedback(BaseModel):
     respuestaCorrecta: int
     explicacion: str | None = None
 
-class EnviarQuizRequest(SanitizedBaseModel):
+class EnviarQuizRequest(BaseModel):
     """Request para enviar quiz de un módulo"""
     cursoId: str
     moduloId: str
@@ -101,11 +107,10 @@ class QuizFeedbackResponse(BaseModel):
     totalPreguntas: int
     feedback: list[PreguntaFeedback]
     message: str
-    credencialInfo: dict | None = None
 
 # ============= CREDENCIAL SCHEMAS =============
 
-class GenerateCredencialRequest(SanitizedBaseModel):
+class GenerateCredencialRequest(BaseModel):
     alumnoId: str
     cursoId: str
 

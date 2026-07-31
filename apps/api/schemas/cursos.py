@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from core.security_utils import SanitizedBaseModel
 from typing import List, Optional
 
 # ============= CURSO SCHEMAS =============
@@ -12,53 +11,26 @@ class CursoListItem(BaseModel):
     codigo: str
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
-    empresaId: Optional[str] = None
-    alumnosEsperados: int = 0
-    modalidad: Optional[str] = "ONLINE"
-    instructorId: Optional[str] = None
-    instructorNombre: Optional[str] = None
     activo: bool
-    meetingLink: Optional[str] = None
-    meetingPlatform: Optional[str] = None
-    estado: str = "BORRADOR"
-    minimoAprobacion: int = 70
-    materialDescargableUrl: Optional[str] = None
     
     class Config:
         from_attributes = True
 
-class CreateCursoRequest(SanitizedBaseModel):
+class CreateCursoRequest(BaseModel):
     nombre: str
     descripcion: str
     codigo: str
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
-    alumnosEsperados: int = 0
-    modalidad: Optional[str] = "ONLINE"
-    instructorId: Optional[str] = None
-    meetingLink: Optional[str] = None
-    meetingPlatform: Optional[str] = None
-    estado: Optional[str] = "BORRADOR"
-    minimoAprobacion: Optional[int] = 70
-    materialDescargableUrl: Optional[str] = None
 
-class UpdateCursoRequest(SanitizedBaseModel):
+class UpdateCursoRequest(BaseModel):
     nombre: Optional[str] = None
     descripcion: Optional[str] = None
     codigo: Optional[str] = None
     duracionHoras: Optional[int] = None
     vigenciaMeses: Optional[int] = None
-    empresaId: Optional[str] = None
-    alumnosEsperados: Optional[int] = None
     activo: Optional[bool] = None
-    modalidad: Optional[str] = None
-    instructorId: Optional[str] = None
-    meetingLink: Optional[str] = None
-    meetingPlatform: Optional[str] = None
-    estado: Optional[str] = None
-    minimoAprobacion: Optional[int] = None
-    materialDescargableUrl: Optional[str] = None
 
 class ModuloSummary(BaseModel):
     """Resumen de módulo para detalle de curso"""
@@ -66,8 +38,6 @@ class ModuloSummary(BaseModel):
     titulo: str
     orden: int
     tipo: str  # TEORIA, QUIZ, PRACTICA
-    liveClassUrl: Optional[str] = None
-    liveClassPlatform: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -80,17 +50,7 @@ class CursoDetail(BaseModel):
     codigo: str
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
-    empresaId: Optional[str] = None
-    alumnosEsperados: int = 0
     activo: bool
-    modalidad: Optional[str] = "ONLINE"
-    instructorId: Optional[str] = None
-    instructorNombre: Optional[str] = None
-    meetingLink: Optional[str] = None
-    meetingPlatform: Optional[str] = None
-    estado: str = "BORRADOR"
-    minimoAprobacion: int = 70
-    materialDescargableUrl: Optional[str] = None
     modulos: List[ModuloSummary]
     
     class Config:
@@ -153,6 +113,9 @@ class ModuloDetailAdmin(BaseModel):
     tipo: str
     contenidoHtml: Optional[str] = None
     videoUrl: Optional[str] = None
+    liveClassUrl: Optional[str] = None
+    liveClassDate: Optional[str] = None
+    liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaDetailAdmin]] = None
     
     class Config:
@@ -160,45 +123,42 @@ class ModuloDetailAdmin(BaseModel):
 
 # ============= GESTOR DE CONTENIDOS (REQUESTS) =============
 
-class PreguntaCreate(SanitizedBaseModel):
+class PreguntaCreate(BaseModel):
     pregunta: str
     opciones: List[str]
     respuestaCorrecta: int
     explicacion: Optional[str] = None
 
-class TareaCreate(SanitizedBaseModel):
+class TareaCreate(BaseModel):
     descripcion: str
     requiereFoto: bool = True
 
-class CreateModuloRequest(SanitizedBaseModel):
+class CreateModuloRequest(BaseModel):
     titulo: str
     orden: int
     tipo: str  # TEORIA, QUIZ, PRACTICA
     contenidoHtml: Optional[str] = None
     videoUrl: Optional[str] = None
-    # Live class support
-    liveClassUrl: Optional[str] = None
-    liveClassPlatform: Optional[str] = None
-    # Solo si es QUIZ
+    # Solo si es QUIZ o PRACTICA
     preguntas: Optional[List[PreguntaCreate]] = None
+    tareasPracticas: Optional[List[TareaCreate]] = None
 
-class UpdateModuloRequest(SanitizedBaseModel):
+class UpdateModuloRequest(BaseModel):
     titulo: Optional[str] = None
     orden: Optional[int] = None
     contenidoHtml: Optional[str] = None
     videoUrl: Optional[str] = None
     # Live class support
     liveClassUrl: Optional[str] = None
-    liveClassPlatform: Optional[str] = None
-    # Optional sync for Quiz
+    # Optional sync for Quiz preguntas
     preguntas: Optional[List[PreguntaCreate]] = None
 
-class UpdatePreguntaRequest(SanitizedBaseModel):
+class UpdatePreguntaRequest(BaseModel):
     pregunta: Optional[str] = None
     opciones: Optional[List[str]] = None
     respuestaCorrecta: Optional[int] = None
     explicacion: Optional[str] = None
 
-class UpdateTareaRequest(SanitizedBaseModel):
+class UpdateTareaRequest(BaseModel):
     descripcion: Optional[str] = None
     requiereFoto: Optional[bool] = None

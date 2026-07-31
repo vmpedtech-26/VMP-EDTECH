@@ -64,8 +64,8 @@ export default function ExplorarCursosPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Explorar Capacitaciones</h1>
-                    <p className="text-slate-800 mt-2">
+                    <h1 className="text-3xl font-bold text-gray-900">Explorar Capacitaciones</h1>
+                    <p className="text-gray-600 mt-2">
                         Descubre nuevos cursos para potenciar tus habilidades y obtener certificaciones oficiales.
                     </p>
                 </div>
@@ -74,7 +74,7 @@ export default function ExplorarCursosPage() {
             {/* Filters and Search */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                         placeholder="Buscar por nombre, código o descripción..."
                         className="pl-10"
@@ -99,21 +99,21 @@ export default function ExplorarCursosPage() {
                                         {curso.codigo}
                                     </span>
                                     {curso.vigenciaMeses && (
-                                        <span className="text-xs text-slate-700">
+                                        <span className="text-xs text-gray-500">
                                             Vigencia: {curso.vigenciaMeses} meses
                                         </span>
                                     )}
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2">
+                                <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                                     {curso.nombre}
                                 </h3>
-                                <p className="text-slate-800 text-sm mb-6 line-clamp-3">
+                                <p className="text-gray-600 text-sm mb-6 line-clamp-3">
                                     {curso.descripcion}
                                 </p>
                             </div>
 
-                            <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <div className="flex items-center justify-between text-sm text-slate-700">
+                            <div className="space-y-4 pt-4 border-t border-gray-100">
+                                <div className="flex items-center justify-between text-sm text-gray-500">
                                     <div className="flex items-center space-x-1">
                                         <Clock className="h-4 w-4" />
                                         <span>{curso.duracionHoras} horas</span>
@@ -138,10 +138,10 @@ export default function ExplorarCursosPage() {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+                <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                     <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-1">No se encontraron cursos</h3>
-                    <p className="text-slate-700">Intenta con otros términos de búsqueda.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No se encontraron cursos</h3>
+                    <p className="text-gray-500">Intenta con otros términos de búsqueda.</p>
                 </div>
             )}
         </div>

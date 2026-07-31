@@ -1,22 +1,203 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
-from datetime import datetime
-import json
+from fastapi import APIRouter, HTTPException, Depends
+from datetime import datetime, timedelta
 from schemas.models import (
+    GenerateCredencialRequest,
+    CredencialResponse,
     EnviarQuizRequest,
     QuizFeedbackResponse,
     PreguntaFeedback
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
-from services.credential_service import generate_credential_for_student
-from services.audit_service import log_audit_action
+from core.config import settings
+from services.credencial_generator import (
+    generate_credencial_number,
+    create_credencial_pdf,
+    save_credencial_pdf,
+    generate_qr_code
+)
 
 router = APIRouter()
 
 
+@router.get("/all")
+async def obtener_todos_examenes(current_user=Depends(get_current_user)):
+    """Obtener todos los exámenes (solo INSTRUCTOR y SUPER_ADMIN)"""
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="No autorizado")
+    
+    examenes = await prisma.examen.find_many(
+        include={
+            "alumno": True,
+            "curso": True
+        },
+        order={"realizadoAt": "desc"}
+    )
+    
+    return [
+        {
+            "id": e.id,
+            "alumnoId": e.alumnoId,
+            "cursoId": e.cursoId,
+            "calificacion": e.calificacion,
+            "aprobado": e.aprobado,
+            "realizadoAt": e.realizadoAt.isoformat() if e.realizadoAt else None,
+            "alumno": {
+                "nombre": e.alumno.nombre,
+                "apellido": e.alumno.apellido,
+                "dni": e.alumno.dni,
+                "email": e.alumno.email
+            },
+            "curso": {
+                "nombre": e.curso.nombre,
+                "codigo": e.curso.codigo
+            }
+        }
+        for e in examenes
+    ]
+
+    
+@router.post("/generar-credencial/{inscripcionId}")
+async def generate_credencial(
+    inscripcionId: str,
+    current_user=Depends(get_current_user)
+):
+    """Generate credential PDF for completed course"""
+    
+    # Get inscripcion with related data
+    inscripcion = await prisma.inscripcion.find_unique(
+        where={"id": inscripcionId},
+        include={
+            "alumno": True,
+            "curso": True
+        }
+    )
+    
+    if not inscripcion:
+        raise HTTPException(status_code=404, detail="Inscripción no encontrada")
+    
+    # Verify user has permission
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        if current_user.id != inscripcion.alumnoId:
+            raise HTTPException(status_code=403, detail="No autorizado")
+    
+    # Check if course is completed — only check estado field (no 'completado' boolean field in model)
+    if inscripcion.estado not in ["COMPLETADO", "APROBADO"]:
+        raise HTTPException(status_code=400, detail="El curso no está completado")
+    
+    # Check if credential already exists — use find_first with compound fields
+    existing = await prisma.credencial.find_first(
+        where={
+            "alumnoId": inscripcion.alumnoId,
+            "cursoId": inscripcion.cursoId
+        }
+    )
+    
+    if existing:
+        return {"message": "Credencial ya existe", "pdfUrl": existing.pdfUrl, "numero": existing.numero}
+    
+    # Get approved photo for student — use find_first (not find_unique) since filtering by state
+    foto_credencial = await prisma.fotocredencial.find_first(
+        where={
+            "alumnoId": inscripcion.alumnoId,
+            "estado": "APROBADA"
+        }
+    )
+    
+    # Prepare foto path if exists
+    foto_path = None
+    if foto_credencial:
+        # Convert URL to file path
+        foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
+    
+    # Generate credential number
+    year = datetime.now().year
+    count = await prisma.credencial.count()
+    numero_credencial = generate_credencial_number(year, count + 1)
+    
+    # Build QR URL
+    qr_url = f"{settings.FRONTEND_URL}/validar/{numero_credencial}"
+    
+    # Prepare PDF data
+    pdf_data = {
+        "numero_credencial": numero_credencial,
+        "alumno_nombre": f"{inscripcion.alumno.nombre} {inscripcion.alumno.apellido}",
+        "dni": inscripcion.alumno.dni,
+        "curso_nombre": inscripcion.curso.nombre,
+        "curso_codigo": inscripcion.curso.codigo,
+        "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
+        "fecha_vencimiento": (
+            (datetime.now() + timedelta(days=30 * inscripcion.curso.vigenciaMeses)).strftime("%d/%m/%Y")
+            if inscripcion.curso.vigenciaMeses
+            else None
+        ),
+        "qr_url": qr_url
+    }
+    
+    # Generate PDF with photo
+    pdf_bytes = await create_credencial_pdf(pdf_data, foto_path)
+    filename = f"{numero_credencial}.pdf"
+    pdf_url = await save_credencial_pdf(pdf_bytes, filename)
+    
+    # Generate and save QR image URL (stored alongside PDF)
+    qr_filename = f"{numero_credencial}_qr.png"
+    qr_storage_path_str = f"/storage/credenciales/{qr_filename}"
+    
+    # Calculate fecha de vencimiento
+    fecha_vencimiento = None
+    if inscripcion.curso.vigenciaMeses:
+        fecha_vencimiento = datetime.now() + timedelta(days=30 * inscripcion.curso.vigenciaMeses)
+    
+    # Create credential record with all required fields
+    credencial = await prisma.credencial.create(
+        data={
+            "numero": numero_credencial,
+            "alumnoId": inscripcion.alumnoId,
+            "cursoId": inscripcion.cursoId,
+            "pdfUrl": pdf_url,
+            "qrCodeUrl": qr_storage_path_str,
+            "fechaEmision": datetime.now(),
+            "fechaVencimiento": fecha_vencimiento
+        }
+    )
+    
+    return {
+        "message": "Credencial generada exitosamente",
+        "credencial": {
+            "id": credencial.id,
+            "numero": credencial.numero,
+            "pdfUrl": credencial.pdfUrl,
+            "qrCodeUrl": credencial.qrCodeUrl,
+        },
+        "pdfUrl": pdf_url
+    }
+
+@router.get("/mis-credenciales", response_model=list[CredencialResponse])
+async def get_my_credenciales(current_user = Depends(get_current_user)):
+    """Obtener todas las credenciales del usuario actual"""
+    
+    credenciales = await prisma.credencial.find_many(
+        where={"alumnoId": current_user.id},
+        include={"curso": True},
+        order={"createdAt": "desc"}
+    )
+    
+    return [
+        CredencialResponse(
+            id=c.id,
+            numero=c.numero,
+            pdfUrl=c.pdfUrl,
+            qrCodeUrl=c.qrCodeUrl,
+            fechaEmision=c.fechaEmision.isoformat(),
+            fechaVencimiento=c.fechaVencimiento.isoformat() if c.fechaVencimiento else None,
+            curso=c.curso
+        )
+        for c in credenciales
+    ]
+
 @router.post("/enviar-quiz", response_model=QuizFeedbackResponse)
 async def enviar_quiz(
-    request: Request,
     data: EnviarQuizRequest,
     current_user = Depends(get_current_user)
 ):
@@ -40,10 +221,6 @@ async def enviar_quiz(
     if modulo.cursoId != data.cursoId:
         raise HTTPException(status_code=400, detail="Módulo no pertenece a este curso")
     
-    # Cargar el curso para obtener minimoAprobacion real
-    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
-    minimo_aprobacion = curso.minimoAprobacion if curso and curso.minimoAprobacion is not None else 70
-    
     # Verificar inscripción
     inscripcion = await prisma.inscripcion.find_first(
         where={
@@ -62,13 +239,6 @@ async def enviar_quiz(
     feedback_list = []
     
     for pregunta in preguntas:
-        # Parse opciones if it's a string (SQLite case)
-        if isinstance(pregunta.opciones, str):
-            try:
-                pregunta.opciones = json.loads(pregunta.opciones)
-            except:
-                pass
-                
         respuesta_elegida = data.respuestas.get(pregunta.id)
         
         if respuesta_elegida is None:
@@ -96,99 +266,34 @@ async def enviar_quiz(
     # Calcular calificación (0-100)
     calificacion = (respuestas_correctas / total_preguntas) * 100 if total_preguntas > 0 else 0
     
-    # Determinar si aprobó usando el mínimo del curso
-    aprobado = calificacion >= minimo_aprobacion
+    # Determinar si aprobó (70% mínimo)
+    aprobado = calificacion >= 70
     
+    # Contar intentos previas del alumno para este curso
+    intentos_previos = await prisma.examen.count(
+        where={
+            "alumnoId": current_user.id,
+            "cursoId": data.cursoId
+        }
+    )
+    intento_actual = intentos_previos + 1
+
     # Guardar examen en base de datos
     await prisma.examen.create(
         data={
             "alumnoId": current_user.id,
             "cursoId": data.cursoId,
-            "moduloId": data.moduloId,
-            "respuestas": json.dumps(data.respuestas),
+            "respuestas": data.respuestas,
             "calificacion": calificacion,
             "aprobado": aprobado
         }
     )
     
-    # Generar mensaje y procesar credencial si aprueba
-    credencial_info = None
+    # Generar mensaje con información de intento
     if aprobado:
-        message = f"¡Felicitaciones! Aprobaste con {calificacion:.1f}%"
-        
-        # 1. Agregar el módulo a modulosCompletados
-        try:
-            completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
-            if modulo.id not in completados:
-                completados.append(modulo.id)
-                await prisma.inscripcion.update(
-                    where={"id": inscripcion.id},
-                    data={"modulosCompletados": json.dumps(completados)}
-                )
-        except Exception as e:
-            print(f"[MODULOS COMPLETADOS] Error al actualizar: {e}")
-            
-        # 2. Recalcular el progreso general del curso
-        from services.progreso_calculator import calcular_progreso_curso, verificar_curso_completado
-        nuevo_progreso = await calcular_progreso_curso(current_user.id, data.cursoId)
-        
-        # Actualizar el progreso en la DB
-        await prisma.inscripcion.update(
-            where={"id": inscripcion.id},
-            data={"progreso": nuevo_progreso}
-        )
-        
-        # 3. Si el curso está completado, emitir credencial
-        curso_completado = await verificar_curso_completado(current_user.id, data.cursoId)
-        if curso_completado:
-            # Marcar inscripción como APROBADO
-            await prisma.inscripcion.update_many(
-                where={
-                    "alumnoId": current_user.id,
-                    "cursoId": data.cursoId
-                },
-                data={
-                    "estado": "APROBADO",
-                    "finDate": datetime.now()
-                }
-            )
-            
-            # ===== AUTO-GENERACIÓN DE CREDENCIAL =====
-            try:
-                result = await generate_credential_for_student(
-                    alumno_id=current_user.id,
-                    curso_id=data.cursoId,
-                )
-                if result.get("already_existed"):
-                    message += " — Ya tenías una credencial para este curso."
-                else:
-                    message += " — ¡Tu credencial ha sido generada!"
-                    credencial_info = {
-                        "numero": result["credencial"].numero,
-                        "pdfUrl": result["pdfUrl"]
-                    }
-            except Exception as e:
-                print(f"[CREDENCIAL AUTO-GEN] Error: {e}")
-                # No falla el quiz si falla la generación
+        message = f"¡Felicitaciones! Aprobaste en el intento #{intento_actual} con {calificacion:.1f}%"
     else:
-        message = f"No aprobaste. Obtuviste {calificacion:.1f}%. Necesitas {minimo_aprobacion}% para aprobar. Puedes intentarlo nuevamente."
-    
-    # Log audit
-    request_id = getattr(request.state, "request_id", "N/A")
-    ip_address = request.client.host if request.client else "N/A"
-    action_type = "EXAM_PASS" if aprobado else "EXAM_FAIL"
-    details_str = f"Examen del módulo {modulo.titulo} completado con calificación {calificacion:.1f}%."
-    if aprobado and credencial_info:
-        details_str += f" Credencial auto-generada: {credencial_info['numero']}."
-        
-    await log_audit_action(
-        action=action_type,
-        user_id=current_user.id,
-        user_email=current_user.email,
-        details=details_str,
-        ip_address=ip_address,
-        request_id=request_id
-    )
+        message = f"Intento #{intento_actual}: Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
     
     return QuizFeedbackResponse(
         calificacion=calificacion,
@@ -196,74 +301,5 @@ async def enviar_quiz(
         respuestasCorrectas=respuestas_correctas,
         totalPreguntas=total_preguntas,
         feedback=feedback_list,
-        message=message,
-        credencialInfo=credencial_info
+        message=message
     )
-
-
-@router.get("")
-async def listar_examenes(
-    estado: str = "COMPLETADO",
-    current_user = Depends(get_current_user)
-):
-    """
-    Listar exámenes realizados.
-    Instructores ven los de sus cursos; Super admins ven todos.
-    """
-    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
-        raise HTTPException(status_code=403, detail="No tienes permiso para ver las evaluaciones")
-        
-    # Construir filtro por rol
-    where_clause = {}
-    if current_user.rol == "INSTRUCTOR":
-        # Solo exámenes de cursos asignados al instructor
-        cursos = await prisma.curso.find_many(
-            where={"instructorId": current_user.id}
-        )
-        curso_ids = [c.id for c in cursos]
-        where_clause["cursoId"] = {"in": curso_ids}
-        
-    # Obtener exámenes de la base de datos
-    examenes = await prisma.examen.find_many(
-        where=where_clause,
-        include={
-            "alumno": True,
-            "modulo": {
-                "include": {
-                    "curso": True
-                }
-            }
-        },
-        order={"realizadoAt": "desc"}
-    )
-    
-    # Formatear la respuesta para el frontend
-    result = []
-    for ex in examenes:
-        modulo_nombre = ex.modulo.titulo if ex.modulo else "Módulo General"
-        curso_nombre = ex.modulo.curso.nombre if (ex.modulo and ex.modulo.curso) else "Curso General"
-        
-        result.append({
-            "id": ex.id,
-            "moduloId": ex.moduloId or "",
-            "alumnoId": ex.alumnoId,
-            "puntaje": int(ex.calificacion) if ex.calificacion is not None else None,
-            "aprobado": ex.aprobado,
-            "estado": "COMPLETADO",
-            "createdAt": ex.realizadoAt.isoformat(),
-            "completedAt": ex.realizadoAt.isoformat(),
-            "alumno": {
-                "nombre": ex.alumno.nombre or "",
-                "apellido": ex.alumno.apellido or "",
-                "dni": ex.alumno.dni or "",
-                "email": ex.alumno.email
-            },
-            "modulo": {
-                "nombre": modulo_nombre,
-                "curso": {
-                    "nombre": curso_nombre
-                }
-            }
-        })
-        
-    return result

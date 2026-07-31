@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from 'react';
 import {
     Plus,
     Search,
@@ -19,18 +18,13 @@ import { Card } from '@/components/ui/Card';
 import { cursosApi } from '@/lib/api/cursos';
 import { Curso } from '@/types/training';
 import Link from 'next/link';
-import { api } from '@/lib/api-client';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { Download } from 'lucide-react';
 
 export default function SuperCursosPage() {
     const [cursos, setCursos] = useState<Curso[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchCursos();
@@ -50,59 +44,20 @@ export default function SuperCursosPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Estás seguro de que deseas eliminar este curso?')) return;
-        setDeletingId(id);
+
         try {
             await cursosApi.eliminarCurso(id);
-            toast.success('Curso eliminado correctamente');
             fetchCursos();
         } catch (error) {
-            toast.error('Error al eliminar curso: ' + (error instanceof Error ? error.message : String(error)));
-        } finally {
-            setDeletingId(null);
+            console.error('Error deleting curso:', error);
+            alert('Error al eliminar curso');
         }
     };
 
-    const handlePublish = async (id: string) => {
-        try {
-            await api.post(`/cursos/${id}/publicar`, {});
-            toast.success('Curso publicado con éxito');
-            fetchCursos();
-        } catch (error) {
-            toast.error('Error al publicar curso: ' + (error instanceof Error ? error.message : String(error)));
-        }
-    };
-
-    const filteredCursos = useMemo(() => {
-        return cursos.filter(c =>
-            c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [cursos, searchTerm]);
-
-    const handleExportPDF = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text('Catálogo de Cursos - VMP EDTECH', 14, 15);
-        doc.setFontSize(10);
-        doc.text(`Total de cursos: ${filteredCursos.length}`, 14, 22);
-
-        const tableData = filteredCursos.map(c => [
-            c.codigo,
-            c.nombre,
-            `${c.duracionHoras} horas`,
-            c.estado || 'BORRADOR'
-        ]);
-
-        autoTable(doc, {
-            head: [['Código', 'Nombre', 'Duración', 'Estado']],
-            body: tableData,
-            startY: 28,
-            theme: 'grid',
-            headStyles: { fillColor: [59, 130, 246] },
-        });
-
-        doc.save('cursos_vmp.pdf');
-    };
+    const filteredCursos = cursos.filter(c =>
+        c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     if (isLoading) {
         return (
@@ -117,7 +72,7 @@ export default function SuperCursosPage() {
                 <Skeleton className="h-14 w-full rounded-xl" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="space-y-4 p-6 bg-white rounded-2xl border border-slate-100">
+                        <div key={i} className="space-y-4 p-6 bg-white rounded-2xl border border-gray-100">
                             <Skeleton className="h-12 w-12 rounded-xl" />
                             <div className="space-y-2">
                                 <Skeleton className="h-4 w-[60px]" />
@@ -139,30 +94,24 @@ export default function SuperCursosPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Gestión de Cursos</h1>
-                    <p className="text-slate-700">Administra el catálogo global de capacitaciones</p>
+                    <h1 className="text-2xl font-bold text-gray-900">Gestión de Cursos</h1>
+                    <p className="text-gray-500">Administra el catálogo global de capacitaciones</p>
                 </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <Button variant="outline" onClick={handleExportPDF} className="bg-white hover:bg-slate-50 flex-1 md:flex-none">
-                        <Download className="h-4 w-4 mr-2" />
-                        Exportar PDF
-                    </Button>
-                    <Button asChild className="shadow-lg shadow-primary/20 flex-1 md:flex-none">
-                        <Link href="/dashboard/super/cursos/nuevo">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nuevo Curso
-                        </Link>
-                    </Button>
-                </div>
+                <Button asChild className="shadow-lg shadow-primary/20">
+                    <Link href="/dashboard/super/cursos/nuevo">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nuevo Curso
+                    </Link>
+                </Button>
             </div>
 
             <Card className="p-4 border-none shadow-sm ring-1 ring-gray-100">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
                         placeholder="Buscar por nombre o código..."
-                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none text-sm"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-primary/20 transition-all outline-none text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -177,35 +126,25 @@ export default function SuperCursosPage() {
                                 <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                                     <BookOpen className="h-6 w-6" />
                                 </div>
-                                <div className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                    curso.estado === 'PUBLICADO' 
-                                        ? 'bg-emerald-100 text-emerald-800' 
-                                        : curso.estado === 'PENDIENTE' 
-                                            ? 'bg-amber-100 text-amber-800' 
-                                            : 'bg-slate-100 text-slate-700'
+                                <div className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${curso.activo ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-500'
                                     }`}>
-                                    {curso.estado || 'BORRADOR'}
+                                    {curso.activo ? 'Activo' : 'Inactivo'}
                                 </div>
                             </div>
 
                             <div>
-                                <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">
+                                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                                     {curso.codigo}
                                 </div>
-                                <h3 className="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1">
+                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
                                     {curso.nombre}
                                 </h3>
-                                <p className="text-sm text-slate-700 line-clamp-2 mt-1">
+                                <p className="text-sm text-gray-500 line-clamp-2 mt-1">
                                     {curso.descripcion}
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-4 text-xs font-medium text-slate-700 pt-2">
-                                <span className="flex items-center">
-                                    <Eye className="h-3 w-3 mr-1" />
-                                    Mín. Aprobación: {curso.minimoAprobacion ?? 70}%
-                                </span>
-                                <span>•</span>
+                            <div className="flex items-center gap-4 text-xs font-medium text-gray-500 pt-2">
                                 <span>{curso.duracionHoras} horas</span>
                             </div>
 
@@ -216,24 +155,13 @@ export default function SuperCursosPage() {
                                         Editar
                                     </Link>
                                 </Button>
-                                {curso.estado !== 'PUBLICADO' && (
-                                    <Button 
-                                        variant="primary" 
-                                        size="sm" 
-                                        className="bg-emerald-600 hover:bg-emerald-700 hover:text-white text-white border-none shadow-sm flex-1"
-                                        onClick={() => handlePublish(curso.id)}
-                                    >
-                                        Publicar
-                                    </Button>
-                                )}
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100 disabled:opacity-50"
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100"
                                     onClick={() => handleDelete(curso.id)}
-                                    disabled={deletingId === curso.id}
                                 >
-                                    {deletingId === curso.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                                    <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
                         </div>

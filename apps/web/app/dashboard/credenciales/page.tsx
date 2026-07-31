@@ -45,8 +45,8 @@ export default function CredencialesPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-slate-900">Mis Credenciales</h1>
-                <p className="text-slate-800 mt-2">
+                <h1 className="text-3xl font-bold text-gray-900">Mis Credenciales</h1>
+                <p className="text-gray-600 mt-2">
                     Certificaciones profesionales con validez industrial obtenidas
                 </p>
             </div>
@@ -55,10 +55,10 @@ export default function CredencialesPage() {
             <div className="grid sm:grid-cols-3 gap-6">
                 <Card hover={false}>
                     <div className="text-center">
-                        <div className="text-3xl font-bold text-slate-900">
+                        <div className="text-3xl font-bold text-gray-900">
                             {credenciales.length}
                         </div>
-                        <div className="text-sm text-slate-800 mt-1">Total Credenciales</div>
+                        <div className="text-sm text-gray-600 mt-1">Total Credenciales</div>
                     </div>
                 </Card>
                 <Card hover={false}>
@@ -66,15 +66,15 @@ export default function CredencialesPage() {
                         <div className="text-3xl font-bold text-success">
                             {vigentesCount}
                         </div>
-                        <div className="text-sm text-slate-800 mt-1">Vigentes</div>
+                        <div className="text-sm text-gray-600 mt-1">Vigentes</div>
                     </div>
                 </Card>
                 <Card hover={false}>
                     <div className="text-center">
-                        <div className="text-2xl font-bold text-slate-600">
+                        <div className="text-2xl font-bold text-gray-400">
                             {vencidasCount}
                         </div>
-                        <div className="text-sm text-slate-800 mt-1">Vencidas</div>
+                        <div className="text-sm text-gray-600 mt-1">Vencidas</div>
                     </div>
                 </Card>
             </div>
@@ -87,10 +87,10 @@ export default function CredencialesPage() {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-20 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                     <Award className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-slate-900">Sin credenciales aún</h3>
-                    <p className="text-slate-700 mt-2 max-w-md mx-auto">
+                    <h3 className="text-xl font-bold text-gray-900">Sin credenciales aún</h3>
+                    <p className="text-gray-500 mt-2 max-w-md mx-auto">
                         Completa tus cursos de capacitación para obtener tus certificaciones industriales oficiales.
                     </p>
                 </div>

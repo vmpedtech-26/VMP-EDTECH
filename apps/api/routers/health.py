@@ -71,4 +71,3 @@ async def detailed_health_check():
         }
     
     return health_status
-

@@ -8,7 +8,7 @@ interface User {
     email: string;
     nombre: string;
     apellido: string;
-    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'SUPERVISOR' | 'CONTADOR';
+    rol: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN';
     dni: string;
     empresaId?: string;
 }
@@ -48,38 +48,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = (token: string, userData: User) => {
         localStorage.setItem('vmp_token', token);
         localStorage.setItem('vmp_user', JSON.stringify(userData));
-        document.cookie = `vmp_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         setUser(userData);
-
-        let targetUrl = '/dashboard';
-        if (userData.rol === 'INSTRUCTOR') {
-            targetUrl = '/dashboard/instructor';
-        } else if (userData.rol === 'SUPER_ADMIN') {
-            targetUrl = '/dashboard/super';
-        } else if (userData.rol === 'CONTADOR') {
-            targetUrl = '/dashboard/super/contabilidad';
-        }
-
-        window.location.href = targetUrl;
+        router.push('/dashboard');
     };
 
     const logout = () => {
         localStorage.removeItem('vmp_token');
         localStorage.removeItem('vmp_user');
-
-        // Comprehensive cookie clearing
+        // Delete cookie
         document.cookie = 'vmp_token=; path=/; max-age=0';
-        document.cookie = 'vmp_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
         setUser(null);
-
-        // Try router first, fallback to window.location for hard reset
         router.push('/login');
-        setTimeout(() => {
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
-            }
-        }, 100);
     };
 
     return (

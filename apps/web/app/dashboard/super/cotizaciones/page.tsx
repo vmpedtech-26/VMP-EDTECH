@@ -56,9 +56,9 @@ const STATUS_CONFIG = {
 };
 
 const COURSE_LABELS: Record<string, string> = {
-    defensivo: 'Conducción Preventiva',
-    carga_pesada: 'Conducción Flota Liviana / Pesada',
-    '4x4': 'Conducción Doble Tracción',
+    defensivo: 'Manejo Defensivo',
+    carga_pesada: 'Carga Pesada',
+    '4x4': '4x4 Profesional',
     completo: 'Paquete Completo'
 };
 
@@ -134,7 +134,7 @@ export default function CotizacionesPage() {
             setStatusToUpdate(null);
         } catch (err) {
             console.error('Error updating status:', err);
-            alert('Error al actualizar el estado. Intenta nuevamente.: ' + (err instanceof Error ? err.message : String(err)));
+            alert('Error al actualizar el estado. Intenta nuevamente.');
         } finally {
             setIsUpdatingStatus(false);
         }
@@ -162,10 +162,10 @@ export default function CotizacionesPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
                     Cotizaciones
                 </h1>
-                <p className="text-slate-700 mt-1">
+                <p className="text-gray-500 mt-1">
                     Gestiona los leads generados desde el cotizador de la landing page
                 </p>
             </div>
@@ -196,10 +196,10 @@ export default function CotizacionesPage() {
                 <Card className="p-4 border-none shadow-sm ring-1 ring-gray-100">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-semibold text-slate-700 uppercase">Total</p>
-                            <p className="text-2xl font-bold text-slate-900 mt-1">{stats.total}</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase">Total</p>
+                            <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
                         </div>
-                        <Calculator className="h-8 w-8 text-slate-600" />
+                        <Calculator className="h-8 w-8 text-gray-400" />
                     </div>
                 </Card>
 
@@ -280,7 +280,7 @@ export default function CotizacionesPage() {
                 </div>
 
                 <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
                         placeholder="Buscar..."
@@ -296,10 +296,10 @@ export default function CotizacionesPage() {
                 {filteredCotizaciones.length === 0 ? (
                     <Card className="p-12 text-center border-dashed">
                         <Calculator className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                        <h3 className="font-semibold text-slate-900 mb-2">
+                        <h3 className="font-semibold text-gray-900 mb-2">
                             No hay cotizaciones
                         </h3>
-                        <p className="text-sm text-slate-700">
+                        <p className="text-sm text-gray-500">
                             {searchTerm
                                 ? 'No se encontraron resultados para tu búsqueda'
                                 : 'Las cotizaciones aparecerán aquí cuando los usuarios completen el formulario'}
@@ -317,11 +317,11 @@ export default function CotizacionesPage() {
                                     <div className="flex-1 space-y-4">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
-                                                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                                     <Building2 className="h-5 w-5 text-primary" />
                                                     {cot.empresa}
                                                 </h3>
-                                                <div className="flex flex-wrap gap-3 mt-2 text-sm text-slate-800">
+                                                <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
                                                     <span className="flex items-center gap-1">
                                                         <User className="h-4 w-4" />
                                                         {cot.nombre}
@@ -346,26 +346,26 @@ export default function CotizacionesPage() {
                                         </div>
 
                                         {/* Details Grid */}
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
                                             <div>
-                                                <p className="text-xs text-slate-700 font-semibold uppercase">Conductores</p>
-                                                <p className="text-lg font-bold text-slate-900 mt-1">{cot.quantity}</p>
+                                                <p className="text-xs text-gray-500 font-semibold uppercase">Conductores</p>
+                                                <p className="text-lg font-bold text-gray-900 mt-1">{cot.quantity}</p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-700 font-semibold uppercase">Curso</p>
-                                                <p className="text-sm font-semibold text-slate-900 mt-1">
+                                                <p className="text-xs text-gray-500 font-semibold uppercase">Curso</p>
+                                                <p className="text-sm font-semibold text-gray-900 mt-1">
                                                     {COURSE_LABELS[cot.course] || cot.course}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-700 font-semibold uppercase">Modalidad</p>
-                                                <p className="text-sm font-semibold text-slate-900 mt-1">
+                                                <p className="text-xs text-gray-500 font-semibold uppercase">Modalidad</p>
+                                                <p className="text-sm font-semibold text-gray-900 mt-1">
                                                     {MODALITY_LABELS[cot.modality] || cot.modality}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-700 font-semibold uppercase">Fecha</p>
-                                                <p className="text-sm font-semibold text-slate-900 mt-1">
+                                                <p className="text-xs text-gray-500 font-semibold uppercase">Fecha</p>
+                                                <p className="text-sm font-semibold text-gray-900 mt-1">
                                                     {new Date(cot.createdAt).toLocaleDateString('es-AR')}
                                                 </p>
                                             </div>
@@ -375,11 +375,11 @@ export default function CotizacionesPage() {
                                     {/* Price and Actions */}
                                     <div className="lg:w-48 flex flex-col justify-between items-end gap-4">
                                         <div className="text-right">
-                                            <p className="text-xs text-slate-700 font-semibold uppercase">Valor Total</p>
+                                            <p className="text-xs text-gray-500 font-semibold uppercase">Valor Total</p>
                                             <p className="text-3xl font-bold text-primary mt-1">
                                                 ${(cot.totalPrice / 1000).toFixed(0)}k
                                             </p>
-                                            <p className="text-xs text-slate-700 mt-1">
+                                            <p className="text-xs text-gray-500 mt-1">
                                                 ${Math.round(cot.totalPrice / cot.quantity).toLocaleString('es-AR')} por alumno
                                             </p>
                                         </div>
@@ -445,10 +445,10 @@ export default function CotizacionesPage() {
                         <div className="p-6 space-y-6">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-slate-900">
+                                    <h2 className="text-2xl font-bold text-gray-900">
                                         Cotización #{selectedCotizacion.id}
                                     </h2>
-                                    <p className="text-sm text-slate-700 mt-1">
+                                    <p className="text-sm text-gray-500 mt-1">
                                         Recibida el {new Date(selectedCotizacion.createdAt).toLocaleString('es-AR')}
                                     </p>
                                 </div>
@@ -463,7 +463,7 @@ export default function CotizacionesPage() {
 
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="font-semibold text-slate-900 mb-2">Información de Contacto</h3>
+                                    <h3 className="font-semibold text-gray-900 mb-2">Información de Contacto</h3>
                                     <div className="space-y-2 text-sm">
                                         <p><span className="font-semibold">Empresa:</span> {selectedCotizacion.empresa}</p>
                                         <p><span className="font-semibold">Contacto:</span> {selectedCotizacion.nombre}</p>
@@ -473,7 +473,7 @@ export default function CotizacionesPage() {
                                 </div>
 
                                 <div>
-                                    <h3 className="font-semibold text-slate-900 mb-2">Detalles de la Cotización</h3>
+                                    <h3 className="font-semibold text-gray-900 mb-2">Detalles de la Cotización</h3>
                                     <div className="space-y-2 text-sm">
                                         <p><span className="font-semibold">Conductores:</span> {selectedCotizacion.quantity}</p>
                                         <p><span className="font-semibold">Curso:</span> {COURSE_LABELS[selectedCotizacion.course]}</p>
@@ -491,10 +491,10 @@ export default function CotizacionesPage() {
             {showStatusModal && statusToUpdate && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <Card className="max-w-md w-full p-6">
-                        <h3 className="text-lg font-bold text-slate-900 mb-4">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">
                             Confirmar Cambio de Estado
                         </h3>
-                        <p className="text-slate-800 mb-6">
+                        <p className="text-gray-600 mb-6">
                             ¿Estás seguro que deseas cambiar el estado a{' '}
                             <span className="font-semibold">
                                 {STATUS_CONFIG[statusToUpdate.status as keyof typeof STATUS_CONFIG]?.label}

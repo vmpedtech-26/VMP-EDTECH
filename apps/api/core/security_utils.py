@@ -1,59 +1,59 @@
 import bleach
 from typing import Any, Dict, List, Union
-from pydantic import BaseModel, model_validator
 
-# Define a safe set of HTML tags for rich content (like module HTML content)
-SAFE_TAGS = [
-    'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul',
-    'p', 'br', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'table', 'thead', 'tbody',
-    'tr', 'th', 'td', 'pre', 'hr'
+ALLOWED_TAGS = [
+    'a', 'abbr', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol',
+    'p', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br', 'hr',
+    'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'span',
+    'iframe', 'video', 'source', 'pre', 'sub', 'sup', 'mark'
 ]
 
-SAFE_ATTRIBUTES = {
-    'a': ['href', 'title', 'target'],
-    'img': ['src', 'alt', 'title', 'width', 'height'],
-    '*': ['class', 'style']
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title', 'target', 'rel'],
+    'img': ['src', 'alt', 'title', 'width', 'height', 'class'],
+    'iframe': ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'class'],
+    'video': ['src', 'controls', 'width', 'height', 'poster'],
+    'source': ['src', 'type'],
+    '*': ['class', 'style', 'id']
 }
+
+ALLOWED_STYLES = [
+    'color', 'background-color', 'text-align', 'font-weight', 'font-style',
+    'text-decoration', 'margin', 'padding', 'width', 'height'
+]
 
 def sanitize_html(text: str) -> str:
     """
-    Sanitize HTML content to prevent XSS.
-    Allows only a safe set of tags if needed, or strips all tags by default.
+    Sanitize plain text fields to prevent HTML injection.
+    Strips all HTML tags.
     """
     if not text:
         return text
-    # Strip all tags by default for simple text fields
     return bleach.clean(text, tags=[], attributes={}, strip=True)
 
-def sanitize_data(data: Any, key: str = "") -> Any:
+def sanitize_rich_html(text: str) -> str:
+    """
+    Sanitize rich text HTML content for course modules.
+    Allows safe structural and formatting tags while filtering dangerous scripts and attributes.
+    """
+    if not text:
+        return text
+    return bleach.clean(
+        text,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES,
+        styles=ALLOWED_STYLES,
+        strip=True
+    )
+
+def sanitize_data(data: Union[str, Dict, List]) -> Any:
     """
     Recursively sanitize strings in a data structure.
-    Skips fields like password, email, token, url, and link to avoid corruption.
-    If the key contains 'html' (like 'contenidoHtml'), allows a safe set of HTML tags.
     """
     if isinstance(data, str):
-        low_key = key.lower()
-        if any(ignored in low_key for ignored in ["password", "email", "token", "url", "link"]):
-            return data
-        if "html" in low_key:
-            return bleach.clean(data, tags=SAFE_TAGS, attributes=SAFE_ATTRIBUTES, strip=True)
         return sanitize_html(data)
     elif isinstance(data, dict):
-        return {k: sanitize_data(v, k) for k, v in data.items()}
+        return {k: sanitize_data(v) for k, v in data.items()}
     elif isinstance(data, list):
-        return [sanitize_data(i, key) for i in data]
+        return [sanitize_data(i) for i in data]
     return data
-
-class SanitizedBaseModel(BaseModel):
-    """
-    Modelo base de Pydantic v2 que sanitiza de forma recursiva todos los campos
-    del tipo string en las peticiones entrantes para mitigar vulnerabilidades XSS.
-    """
-    @model_validator(mode="before")
-    @classmethod
-    def sanitize_inputs(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            return sanitize_data(data)
-        return data
-
-

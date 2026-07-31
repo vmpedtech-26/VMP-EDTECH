@@ -1,5 +1,5 @@
 """
-Email Service for VMP - EDTECH
+Email Service for VMP Servicios
 Handles all email sending with HTML templates
 """
 
@@ -9,71 +9,25 @@ from typing import Optional, Dict, Any
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from html.parser import HTMLParser
 import aiosmtplib
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 
 logger = logging.getLogger(__name__)
 
-class HTMLToTextParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.reset()
-        self.fed = []
-        self.ignore_tags = {'style', 'script', 'head', 'title', 'meta', 'link'}
-        self.current_tag = None
-        
-    def handle_starttag(self, tag, attrs):
-        self.current_tag = tag
-        if tag in {'p', 'div', 'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'}:
-            self.fed.append('\n')
-        elif tag == 'br':
-            self.fed.append('\n')
-            
-    def handle_endtag(self, tag):
-        if self.current_tag == tag:
-            self.current_tag = None
-        if tag in {'p', 'div', 'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'}:
-            self.fed.append('\n')
-            
-    def handle_data(self, d):
-        if self.current_tag not in self.ignore_tags:
-            self.fed.append(d)
-            
-    def get_data(self):
-        text = ''.join(self.fed)
-        # Clean up excessive newlines
-        lines = [line.strip() for line in text.split('\n')]
-        return '\n'.join([line for line in lines if line])
-
-def html_to_text(html: str) -> str:
-    try:
-        parser = HTMLToTextParser()
-        parser.feed(html)
-        return parser.get_data()
-    except Exception as e:
-        logger.warning(f"Error converting HTML to text: {e}")
-        return "VMP - EDTECH Email"
-
-
 class EmailService:
     def __init__(self):
-        self.resend_api_key = os.getenv("RESEND_API_KEY", "")
         self.smtp_host = os.getenv("SMTP_HOST", "smtp.sendgrid.net")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_user = os.getenv("SMTP_USER", "apikey")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.email_from = os.getenv("EMAIL_FROM", "VMP-EDTECH <administracion@vmp-edtech.com>")
-        self.email_ventas = os.getenv("EMAIL_VENTAS", "administracion@vmp-edtech.com")
+        self.email_from = os.getenv("EMAIL_FROM", "noreply@vmpservicios.com")
+        self.email_ventas = os.getenv("EMAIL_VENTAS", "ventas@vmpservicios.com")
         
         # Setup Jinja2 for templates
         template_dir = Path(__file__).parent.parent / "templates"
-        self.jinja_env = Environment(
-            loader=FileSystemLoader(str(template_dir)),
-            autoescape=select_autoescape(['html', 'xml'])
-        )
-
-    async def send_via_resend(
+        self.jinja_env = Environment(loader=FileSystemLoader(str(template_dir)))
+        
+    async def send_email(
         self,
         to_email: str,
         subject: str,
@@ -81,116 +35,48 @@ class EmailService:
         from_email: Optional[str] = None
     ) -> bool:
         """
-        Send an email via Resend REST API over HTTPS (Port 443 - Never blocked by cloud providers)
+        Send an email using SMTP
         """
-        import httpx
-        try:
-            sender = from_email or self.email_from
-            # Clean sender format if needed
-            if "<" not in sender and "@" in sender:
-                sender = f"VMP-EDTECH <{sender}>"
-
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                res = await client.post(
-                    "https://api.resend.com/emails",
-                    headers={
-                        "Authorization": f"Bearer {self.resend_api_key.strip()}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "from": sender,
-                        "to": [to_email],
-                        "subject": subject,
-                        "html": html_content,
-                    },
-                )
-                if res.status_code in [200, 201]:
-                    logger.info(f"✅ Email sent successfully via Resend API to {to_email}")
-                    return True
-                else:
-                    logger.error(f"❌ Resend API error ({res.status_code}): {res.text}")
-                    return False
-        except Exception as e:
-            logger.error(f"❌ Error sending email via Resend API: {str(e)}")
-            return False
-        
-    async def send_email(
-        self,
-        to_email: str,
-        subject: str,
-        html_content: str,
-        from_email: Optional[str] = None,
-        attachments: Optional[list] = None
-    ) -> bool:
-        """
-        Send an email using Resend API (HTTPS) or SMTP fallback with retries
-        """
-        # 1. High-priority HTTPS driver: Resend API (bypasses cloud SMTP port blocking)
-        if self.resend_api_key and self.resend_api_key.strip():
-            resend_success = await self.send_via_resend(to_email, subject, html_content, from_email)
-            if resend_success:
-                return True
-            logger.warning("Resend API delivery failed or unconfigured, falling back to SMTP driver...")
-
-        # 2. Development mode check if no SMTP password or placeholder
-        if not self.smtp_password or self.smtp_password in ["TU_API_KEY_AQUI", ""]:
-            logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT TO EXTERNAL SMTP)")
-            logger.info(f"To: {to_email} | Subject: {subject}")
+        # Development mode: if no SMTP password, just log the email
+        if not self.smtp_password:
+            logger.info("=" * 80)
+            logger.info("📧 EMAIL (DEVELOPMENT MODE - NOT SENT)")
+            logger.info(f"To: {to_email}")
+            logger.info(f"From: {from_email or self.email_from}")
+            logger.info(f"Subject: {subject}")
+            logger.info(f"Content preview: {html_content[:200]}...")
+            logger.info("=" * 80)
             return True
         
-        from email.mime.application import MIMEApplication
-        import asyncio
+        try:
+            message = MIMEMultipart("alternative")
+            message["From"] = from_email or self.email_from
+            message["To"] = to_email
+            message["Subject"] = subject
+            
+            html_part = MIMEText(html_content, "html")
+            message.attach(html_part)
+            
+            # Determine TLS settings based on port
+            use_tls = self.smtp_port == 465
+            start_tls = self.smtp_port != 465
 
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                message = MIMEMultipart("mixed")
-                message["From"] = from_email or self.email_from
-                message["To"] = to_email
-                message["Subject"] = subject
-                
-                # HTML and Text Part (MIME Multipart Alternative)
-                msg_body = MIMEMultipart("alternative")
-                
-                # Plain Text fallback
-                plain_text = html_to_text(html_content)
-                text_part = MIMEText(plain_text, "plain", "utf-8")
-                msg_body.attach(text_part)
-                
-                # HTML content
-                html_part = MIMEText(html_content, "html", "utf-8")
-                msg_body.attach(html_part)
-                
-                message.attach(msg_body)
-                
-                # Attachments
-                if attachments:
-                    for att in attachments:
-                        if os.path.exists(att['path']):
-                            with open(att['path'], "rb") as f:
-                                part = MIMEApplication(f.read(), Name=att['filename'])
-                            part['Content-Disposition'] = f'attachment; filename="{att["filename"]}"'
-                            message.attach(part)
-                
-                await aiosmtplib.send(
-                    message,
-                    hostname=self.smtp_host,
-                    port=self.smtp_port,
-                    username=self.smtp_user,
-                    password=self.smtp_password,
-                    start_tls=True,
-                    timeout=10,
-                )
-                
-                logger.info(f"Email sent successfully to {to_email}")
-                return True
-                
-            except Exception as e:
-                logger.error(f"Attempt {attempt + 1} failed sending email to {to_email}: {str(e)}")
-                if attempt < max_retries - 1:
-                    await asyncio.sleep(2 * (attempt + 1))
-        
-        return False
+            await aiosmtplib.send(
+                message,
+                hostname=self.smtp_host,
+                port=self.smtp_port,
+                username=self.smtp_user,
+                password=self.smtp_password,
+                use_tls=use_tls,
+                start_tls=start_tls,
+            )
+            
+            logger.info(f"Email sent successfully to {to_email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error sending email to {to_email}: {str(e)}")
+            return False
     
     async def send_cotizacion_ventas(self, cotizacion: Dict[str, Any]) -> bool:
         """
@@ -214,7 +100,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_cotizacion_cliente.html")
         html_content = template.render(cotizacion=cotizacion)
         
-        subject = "Recibimos tu solicitud de cotización - VMP - EDTECH"
+        subject = "Recibimos tu solicitud de cotización - VMP Servicios"
         
         return await self.send_email(
             to_email=cotizacion['email'],
@@ -229,7 +115,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_bienvenida.html")
         html_content = template.render(user=user, temp_password=temp_password)
         
-        subject = "Bienvenido a VMP - EDTECH - Acceso a tu cuenta"
+        subject = "Bienvenido a VMP Servicios - Acceso a tu cuenta"
         
         return await self.send_email(
             to_email=user['email'],
@@ -244,20 +130,13 @@ class EmailService:
         template = self.jinja_env.get_template("email_credencial.html")
         html_content = template.render(user=user, credencial=credencial)
         
-        subject = f"Tu Credencial VMP - EDTECH - {credencial['curso_nombre']}"
+        subject = f"Tu Credencial VMP - {credencial['curso_nombre']}"
         
-        attachments = []
-        if pdf_path and os.path.exists(pdf_path):
-            attachments.append({
-                "path": pdf_path,
-                "filename": f"Credencial_{credencial['numero']}.pdf"
-            })
-        
+        # TODO: Add PDF attachment support
         return await self.send_email(
             to_email=user['email'],
             subject=subject,
-            html_content=html_content,
-            attachments=attachments
+            html_content=html_content
         )
     
     async def send_reset_password(self, email: str, reset_token: str, reset_url: str) -> bool:
@@ -267,7 +146,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_reset_password.html")
         html_content = template.render(reset_url=reset_url, reset_token=reset_token)
         
-        subject = "Restablecer tu contraseña - VMP - EDTECH"
+        subject = "Restablecer tu contraseña - VMP Servicios"
         
         return await self.send_email(
             to_email=email,
@@ -301,7 +180,7 @@ class EmailService:
             admin_url=admin_url
         )
         
-        subject = f"Bienvenido a VMP - EDTECH - Credenciales de Acceso para {empresa_data['nombre']}"
+        subject = f"Bienvenido a VMP Servicios - Credenciales de Acceso para {empresa_data['nombre']}"
         
         return await self.send_email(
             to_email=empresa_data['email'],

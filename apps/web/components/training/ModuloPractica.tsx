@@ -73,7 +73,7 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
             alert('Evidencia subida exitosamente');
         } catch (error) {
             console.error('Error subiendo evidencia:', error);
-            alert('Error al subir la evidencia: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al subir la evidencia');
         } finally {
             setUploadingTareaId(null);
         }
@@ -93,7 +93,7 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
             onCompletar();
         } catch (error) {
             console.error('Error al completar módulo:', error);
-            alert('Error al completar el módulo: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al completar el módulo');
         } finally {
             setLoading(false);
         }
@@ -105,8 +105,8 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
         <div className="space-y-6">
             {/* Header */}
             <div className="border-b pb-4">
-                <h2 className="text-2xl font-bold text-slate-900">{modulo.titulo}</h2>
-                <div className="flex items-center space-x-2 mt-2 text-sm text-slate-800">
+                <h2 className="text-2xl font-bold text-gray-900">{modulo.titulo}</h2>
+                <div className="flex items-center space-x-2 mt-2 text-sm text-gray-600">
                     <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-semibold">
                         Módulo Práctico
                     </span>
@@ -129,13 +129,13 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
                                         ) : (
                                             <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
                                         )}
-                                        <p className="font-semibold text-slate-900">
+                                        <p className="font-semibold text-gray-900">
                                             Tarea {idx + 1}: {tarea.descripcion}
                                         </p>
                                     </div>
 
                                     {tarea.requiereFoto && (
-                                        <p className="text-sm text-slate-800 mt-1 ml-7">
+                                        <p className="text-sm text-gray-600 mt-1 ml-7">
                                             Requiere evidencia fotográfica
                                         </p>
                                     )}
@@ -158,10 +158,10 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
                                     <img
                                         src={tarea.evidenciaUrl}
                                         alt="Evidencia"
-                                        className="rounded-lg max-w-sm border border-slate-200"
+                                        className="rounded-lg max-w-sm border border-gray-200"
                                     />
                                     {tarea.comentario && (
-                                        <p className="text-sm text-slate-800 italic">
+                                        <p className="text-sm text-gray-600 italic">
                                             Comentario: {tarea.comentario}
                                         </p>
                                     )}
@@ -240,9 +240,9 @@ function PhotoUploadZone({
         <div className="space-y-3">
             {!selectedFile ? (
                 <label className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:border-primary transition-colors">
-                    <Upload className="w-8 h-8 text-slate-600 mb-2" />
-                    <span className="text-sm text-slate-800">Click para seleccionar imagen</span>
-                    <span className="text-xs text-slate-700 mt-1">JPG, PNG o WebP (máx. 5MB)</span>
+                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                    <span className="text-sm text-gray-600">Click para seleccionar imagen</span>
+                    <span className="text-xs text-gray-500 mt-1">JPG, PNG o WebP (máx. 5MB)</span>
                     <input
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
@@ -255,7 +255,7 @@ function PhotoUploadZone({
                     <img
                         src={preview!}
                         alt="Preview"
-                        className="rounded-lg max-w-sm border border-slate-200"
+                        className="rounded-lg max-w-sm border border-gray-200"
                     />
 
                     <textarea

@@ -1,11 +1,9 @@
 /* VMP Landing Page Custom Styles */
 
 :root {
-  /* Colores Primarios VMP */
+  /* Colores Primarios */
   --azul-petroleo: #0A192F;
-  --vmp-teal: #3AAFA9;
-  --vmp-teal-light: #5CC8C1;
-  --vmp-teal-dark: #2D9E93;
+  --amarillo-vial: #FFD700;
 
   /* Colores Secundarios */
   --gris-asfalto: #2D3748;
@@ -50,8 +48,8 @@
 
 /* Botones personalizados */
 .btn-primary {
-  background: linear-gradient(135deg, #2D9E93, #5CC8C1);
-  color: white;
+  background-color: var(--amarillo-vial);
+  color: var(--azul-petroleo);
   font-weight: 700;
   padding: 1.125rem 2.25rem;
   border-radius: 0.5rem;
@@ -60,13 +58,13 @@
 
 .btn-primary:hover {
   transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(58, 175, 169, 0.3);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
 }
 
 .btn-secondary {
   background-color: transparent;
-  color: var(--vmp-teal);
-  border: 2px solid var(--vmp-teal);
+  color: var(--amarillo-vial);
+  border: 2px solid var(--amarillo-vial);
   font-weight: 700;
   padding: 1.125rem 2.25rem;
   border-radius: 0.5rem;
@@ -74,8 +72,8 @@
 }
 
 .btn-secondary:hover {
-  background-color: var(--vmp-teal);
-  color: white;
+  background-color: var(--amarillo-vial);
+  color: var(--azul-petroleo);
 }
 
 /* Efectos de sombra */
@@ -108,7 +106,7 @@
 
 .card-vmp:hover {
   box-shadow: 0 8px 24px rgba(10, 25, 47, 0.12);
-  border-color: var(--vmp-teal);
+  border-color: var(--amarillo-vial);
   transform: translateY(-4px);
 }
 
@@ -154,7 +152,7 @@
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--vmp-teal);
+  border-left: 4px solid var(--amarillo-vial);
   background-color: var(--gris-claro);
   padding: 1.5rem;
   font-style: italic;

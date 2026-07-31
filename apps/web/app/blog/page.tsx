@@ -8,13 +8,8 @@ import { blogPosts } from '@/lib/blog-data';
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 
 export const metadata = {
-    title: 'Blog de Seguridad Vial',
-    description: 'Información de alto valor sobre seguridad vial, normativas vigentes y consejos para conductores profesionales en Argentina y Latam.',
-    openGraph: {
-        title: 'Blog de Seguridad Vial | VMP - EDTECH',
-        description: 'Artículos sobre seguridad vial, normativas y capacitación profesional de conductores.',
-        images: ['/images/og-image.png'],
-    },
+    title: 'Blog de Seguridad Vial | VMP Servicios',
+    description: 'Información de alto valor sobre seguridad vial, normativas ANSV y consejos para conductores profesionales en Argentina y Latam.',
 };
 
 export default function BlogPage() {
@@ -39,8 +34,8 @@ export default function BlogPage() {
 
             <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[...blogPosts].reverse().map((post) => (
-                        <article key={post.slug} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border border-slate-100">
+                    {blogPosts.map((post) => (
+                        <article key={post.slug} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border border-gray-100">
                             <div className="relative h-48 w-full">
                                 <Image
                                     src={post.image}
@@ -56,7 +51,7 @@ export default function BlogPage() {
                             </div>
 
                             <div className="p-6 flex-grow flex flex-col">
-                                <div className="flex items-center text-xs text-slate-700 mb-4 space-x-4">
+                                <div className="flex items-center text-xs text-gray-500 mb-4 space-x-4">
                                     <div className="flex items-center">
                                         <Calendar className="h-3 w-3 mr-1" />
                                         {post.date}
@@ -67,18 +62,18 @@ export default function BlogPage() {
                                     </div>
                                 </div>
 
-                                <h2 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2">
+                                <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                                     <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                                         {post.title}
                                     </Link>
                                 </h2>
 
-                                <p className="text-slate-800 mb-6 text-sm line-clamp-3">
+                                <p className="text-gray-600 mb-6 text-sm line-clamp-3">
                                     {post.excerpt}
                                 </p>
 
-                                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                                    <div className="text-xs font-medium text-slate-700">
+                                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                    <div className="text-xs font-medium text-gray-700">
                                         Por {post.author}
                                     </div>
                                     <Link
@@ -96,9 +91,9 @@ export default function BlogPage() {
 
                 {/* Newsletter / CTA Section */}
                 <section className="mt-20 bg-primary/10 rounded-2xl p-8 md:p-12 text-center">
-                    <h2 className="text-3xl font-bold text-slate-900 mb-4">Mantené tu flota informada</h2>
-                    <p className="text-lg text-slate-800 mb-8 max-w-2xl mx-auto">
-                        Recibí las novedades de seguridad vial y consejos para tu flota directamente en tu email corporativo.
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Mantené tu flota informada</h2>
+                    <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                        Recibí las actualizaciones de la ANSV y consejos de seguridad vial directamente en tu email corporativo.
                     </p>
                     <form className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
                         <input
@@ -111,7 +106,7 @@ export default function BlogPage() {
                             Suscribirse
                         </button>
                     </form>
-                    <p className="text-xs text-slate-700 mt-4">
+                    <p className="text-xs text-gray-500 mt-4">
                         Solo enviamos información relevante una vez al mes. Sin spam.
                     </p>
                 </section>

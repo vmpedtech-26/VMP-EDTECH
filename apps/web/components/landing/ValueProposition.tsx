@@ -1,37 +1,26 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { Award, Laptop, Users } from 'lucide-react';
+import { Building2, Smartphone, GraduationCap } from 'lucide-react';
 
 export default function ValueProposition() {
     const values = [
         {
-            icon: <Award className="h-6 w-6 text-primary" />,
-            title: "Certificación Profesional Oficial",
-            description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez y reconocimiento empresarial en todo el territorio argentino.",
-            details: "Validez Nacional"
+            icon: Building2,
+            title: "Certificación ANSV Oficial",
+            description: "Cumplimos rigurosamente con todas las normativas ANSV, garantizando que tu certificación tenga validez legal en todo el territorio argentino.",
+            details: "Disposiciones 380/555/54"
         },
         {
-            icon: <Laptop className="h-6 w-6 text-primary" />,
+            icon: Smartphone,
             title: "Plataforma Digital Moderna",
             description: "Tecnología educativa de última generación con modalidad 100% online, presencial o mixta. Validación QR instantánea de certificados.",
             details: "Online/Offline + QR"
         },
         {
-            icon: <Users className="h-6 w-6 text-primary" />,
+            icon: GraduationCap,
             title: "Instructores Certificados",
-            description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
+            description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación ANSV vigente.",
             details: "+15 años experiencia"
         }
     ];
-
-    const fadeIn = {
-        initial: { opacity: 0, y: 30 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true },
-        transition: { duration: 0.6 }
-    };
 
     return (
         <section className="py-24 relative overflow-hidden border-b border-slate-800">
@@ -155,18 +144,43 @@ export default function ValueProposition() {
                     </div>
                 </div>
 
-                {/* Bottom Quote */}
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 }}
-                    className="text-center mt-16 border-t border-slate-800 pt-8"
-                >
-                    <p className="text-sm text-slate-300 italic max-w-2xl mx-auto font-medium leading-relaxed">
-                        "Nuestras capacitaciones están diseñadas bajo los estándares normativos nacionales e internacionales más exigentes, garantizando certificaciones con validez técnica real."
+                {/* Value Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {values.map((value, index) => {
+                        const Icon = value.icon;
+                        return (
+                            <div
+                                key={index}
+                                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-[#FFD700] transition-all duration-300 hover:-translate-y-2"
+                            >
+                                {/* Icon */}
+                                <div className="w-16 h-16 rounded-full bg-[#0A192F]/10 flex items-center justify-center mb-6">
+                                    <Icon className="h-8 w-8 text-[#FFD700]" />
+                                </div>
+
+                                {/* Content */}
+                                <h3 className="font-heading font-bold text-2xl text-[#0A192F] mb-3">
+                                    {value.title}
+                                </h3>
+                                <p className="text-[#4A5568] leading-relaxed mb-4">
+                                    {value.description}
+                                </p>
+                                <div className="inline-block px-4 py-2 bg-[#FFD700]/10 rounded-lg">
+                                    <span className="text-sm font-semibold text-[#0A192F]">
+                                        {value.details}
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Bottom CTA */}
+                <div className="text-center mt-12">
+                    <p className="text-lg text-[#2D3748] italic">
+                        "Cumplimos rigurosamente con todas las normativas ANSV, garantizando que tu certificación tenga validez legal en todo el territorio argentino."
                     </p>
-                </motion.div>
+                </div>
             </div>
         </section>
     );

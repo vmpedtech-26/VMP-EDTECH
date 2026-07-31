@@ -19,7 +19,7 @@ export default function NuevaEmpresaPage() {
             router.push('/dashboard/super/empresas');
         } catch (error: any) {
             console.error('Error creating empresa:', error);
-            alert(error.message || 'Error al registrar la empresa');
+            alert(error.response?.data?.detail || 'Error al registrar la empresa');
         } finally {
             setIsLoading(false);
         }
@@ -33,7 +33,7 @@ export default function NuevaEmpresaPage() {
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold text-slate-900">Registrar Nueva Empresa</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Registrar Nueva Empresa</h1>
             </div>
 
             <EmpresaForm

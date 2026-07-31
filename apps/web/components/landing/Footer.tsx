@@ -1,56 +1,59 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { Instagram, Mail, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
     return (
-        <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <footer className="bg-[#0A192F] text-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}
                     <div>
-                        <div className="flex items-center space-x-3 mb-4">
-                            <Image
-                                src="/images/vmp_official.png"
-                                alt="VMP - EDTECH"
-                                width={120}
-                                height={40}
-                                className="h-auto w-auto max-h-12"
-                            />
+                        <div className="font-heading font-bold text-2xl mb-4">
+                            VMP <span className="text-[#FFD700]">SERVICIOS</span>
                         </div>
-                        <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                        <p className="text-[#CBD5E0] text-sm leading-relaxed mb-4">
                             Capacitación Vial Profesional
+                            <br />
+                            Certificaciones ANSV Argentina
                         </p>
                         <div className="flex space-x-3">
-                            <a href="https://www.instagram.com/vmpservicios" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
+                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#FFD700] flex items-center justify-center hover:bg-[#FFD700] hover:text-[#0A192F] transition-all">
+                                <Facebook className="h-5 w-5" />
+                            </a>
+                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#FFD700] flex items-center justify-center hover:bg-[#FFD700] hover:text-[#0A192F] transition-all">
                                 <Instagram className="h-5 w-5" />
                             </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#FFD700] flex items-center justify-center hover:bg-[#FFD700] hover:text-[#0A192F] transition-all">
+                                <Linkedin className="h-5 w-5" />
+                            </a>
+                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#FFD700] flex items-center justify-center hover:bg-[#FFD700] hover:text-[#0A192F] transition-all">
+                                <Youtube className="h-5 w-5" />
+                            </a>
                         </div>
-
                     </div>
 
                     {/* Cursos Column */}
                     <div>
-                        <h3 className="font-heading font-bold text-lg mb-4 text-white">CURSOS</h3>
+                        <h3 className="font-heading font-bold text-lg mb-4">CURSOS</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/cursos/conduccion-preventiva" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Conducción Preventiva
+                                <Link href="/cursos/manejo-defensivo" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    Manejo Defensivo
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/flota-liviana-pesada" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Conducción Flota Liviana / Pesada
+                                <Link href="/cursos/carga-pesada" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    Carga Pesada
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/doble-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
-                                    Conducción Doble Tracción
+                                <Link href="/cursos/4x4-profesional" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    4x4 Profesional
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
                                     Todos los Cursos
                                 </Link>
                             </li>
@@ -59,25 +62,30 @@ export default function Footer() {
 
                     {/* Recursos Column */}
                     <div>
-                        <h3 className="font-heading font-bold text-lg mb-4 text-white">RECURSOS</h3>
+                        <h3 className="font-heading font-bold text-lg mb-4">RECURSOS</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/blog" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/blog" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
                                     Blog
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/validar" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/#faq" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    FAQ
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/validar" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
                                     Validador de Certificaciones
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terminos" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/terminos" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
                                     Términos y Condiciones
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/privacidad" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/privacidad" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
                                     Política de Privacidad
                                 </Link>
                             </li>
@@ -86,60 +94,38 @@ export default function Footer() {
 
                     {/* Contacto Column */}
                     <div>
-                        <h3 className="font-heading font-bold text-lg mb-4 text-white">CONTACTO</h3>
-                        <ul className="space-y-4">
+                        <h3 className="font-heading font-bold text-lg mb-4">CONTACTO</h3>
+                        <ul className="space-y-3">
                             <li className="flex items-start space-x-3">
-                                <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors hover:underline break-all">
-                                    administracion@vmp-edtech.com
+                                <Mail className="h-5 w-5 text-[#FFD700] mt-0.5 flex-shrink-0" />
+                                <a href="mailto:info@vmpservicios.com" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    info@vmpservicios.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
-                                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <div className="space-y-3">
-                                    {/* Neuquén */}
-                                    <div className="text-slate-300 text-xs">
-                                        <span className="font-bold text-white block text-sm">🇦🇷 Neuquén (Central):</span>
-                                        <a href="tel:+5492995370173" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
-                                            +54 9 299 537-0173
-                                        </a>
-                                        <p className="leading-relaxed">
-                                            Juan B. Justo 385, Piso 1, Neuquén (8300)
-                                        </p>
-                                    </div>
-
-                                    {/* Cipolletti */}
-                                    <div className="text-slate-300 text-xs">
-                                        <span className="font-bold text-white block text-sm">🇦🇷 Cipolletti:</span>
-                                        <a href="tel:+5492996731487" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
-                                            +54 9 299 673-1487
-                                        </a>
-                                        <p className="leading-relaxed">
-                                            25 de Mayo 623, Cipolletti, Río Negro (8324)
-                                        </p>
-                                    </div>
-
-                                    {/* España */}
-                                    <div className="text-slate-300 text-xs">
-                                        <span className="font-bold text-white block text-sm">🇪🇸 España:</span>
-                                        <a href="tel:+34624536539" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
-                                            +34 624 536 539
-                                        </a>
-                                        <p className="leading-relaxed">
-                                            Calle Condes De Berberana 2, piso 4 of B, 09001 Burgos
-                                        </p>
-                                    </div>
-                                </div>
+                                <Phone className="h-5 w-5 text-[#FFD700] mt-0.5 flex-shrink-0" />
+                                <a href="tel:+5491112345678" className="text-[#CBD5E0] hover:text-[#FFD700] text-sm transition-colors">
+                                    +54 9 11 1234-5678
+                                </a>
+                            </li>
+                            <li className="flex items-start space-x-3">
+                                <MapPin className="h-5 w-5 text-[#FFD700] mt-0.5 flex-shrink-0" />
+                                <span className="text-[#CBD5E0] text-sm">
+                                    Buenos Aires, Argentina
+                                </span>
                             </li>
                         </ul>
                     </div>
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-slate-700 pt-8">
-                    <div className="text-center text-slate-400 text-sm">
-                        <p>
-                            © 2026 VMP - EDTECH | Vialidad y Manejo Profesional | CUIT 30-71936908-8
+                <div className="border-t border-gray-700 pt-8">
+                    <div className="text-center text-[#718096] text-sm">
+                        <p className="mb-2">
+                            © 2025 VMP - Vialidad y Manejo Profesional | CUIT 20-12345678-9
+                        </p>
+                        <p className="text-xs">
+                            Instructor Certificado ANSV - Matrícula 12345/2025
                         </p>
                     </div>
                 </div>

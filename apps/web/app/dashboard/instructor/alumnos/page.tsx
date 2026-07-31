@@ -8,8 +8,8 @@ export default function InstructorAlumnosPage() {
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-slate-900">Mis Alumnos</h1>
-                <p className="text-slate-800 mt-2">Gestiona el progreso de los alumnos de tu empresa.</p>
+                <h1 className="text-3xl font-bold text-gray-900">Mis Alumnos</h1>
+                <p className="text-gray-600 mt-2">Gestiona el progreso de los alumnos de tu empresa.</p>
             </div>
 
             <EmptyState

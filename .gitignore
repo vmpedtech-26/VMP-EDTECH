@@ -42,10 +42,7 @@ venv/
 env/
 .env
 db.sqlite3
-*.db
 .pytest_cache/
 
 # Prisma
 /apps/api/prisma/schema.prisma.bak
-.vercel
-.env*.local

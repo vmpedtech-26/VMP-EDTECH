@@ -16,17 +16,7 @@ export interface Curso {
     codigo: string;
     duracionHoras: number;
     vigenciaMeses?: number;
-    empresaId?: string;
-    alumnosEsperados: number;
     activo: boolean;
-    modalidad?: 'ONLINE' | 'IN_COMPANY' | 'HYBRID';
-    instructorId?: string;
-    instructorNombre?: string;
-    meetingLink?: string;
-    meetingPlatform?: string;
-    estado?: 'BORRADOR' | 'PENDIENTE' | 'PUBLICADO';
-    minimoAprobacion?: number;
-    materialDescargableUrl?: string;
 }
 
 export interface ModuloSummary {
@@ -34,8 +24,6 @@ export interface ModuloSummary {
     titulo: string;
     orden: number;
     tipo: TipoModulo;
-    liveClassUrl?: string;
-    liveClassPlatform?: string;
 }
 
 export interface CursoDetail extends Curso {
@@ -168,10 +156,4 @@ export interface Credencial {
     fechaEmision: string;
     fechaVencimiento?: string;
     curso: Curso;
-    alumno?: {
-        nombre: string;
-        apellido: string;
-        dni: string;
-        fotoUrl?: string;
-    };
 }

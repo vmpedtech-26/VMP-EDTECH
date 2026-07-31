@@ -55,13 +55,13 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Nombre */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Building2 className="h-3 w-3" /> Nombre de la Empresa
                         </label>
                         <input
                             required
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                             placeholder="Ej: Servicios Industriales S.A."
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
@@ -70,13 +70,13 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
 
                     {/* CUIT */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Fingerprint className="h-3 w-3" /> CUIT (Solo números)
                         </label>
                         <input
                             required
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
                             placeholder="30-XXXXXXXX-X"
                             value={formData.cuit}
                             onChange={(e) => setFormData({ ...formData, cuit: e.target.value })}
@@ -85,13 +85,13 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Mail className="h-3 w-3" /> Email de Contacto
                         </label>
                         <input
                             required
                             type="email"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                             placeholder="administracion@empresa.com"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -100,12 +100,12 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
 
                     {/* Teléfono */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Phone className="h-3 w-3" /> Teléfono
                         </label>
                         <input
                             type="text"
-                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                             placeholder="+54 11 XXXX-XXXX"
                             value={formData.telefono}
                             onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -115,19 +115,19 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
 
                 {/* Dirección */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                         <MapPin className="h-3 w-3" /> Dirección
                     </label>
                     <input
                         type="text"
-                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                         placeholder="Calle, Número, Localidad, Provincia"
                         value={formData.direccion}
                         onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
                     />
                 </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                     <div className="flex items-center gap-2">
                         <input
                             type="checkbox"
@@ -136,7 +136,7 @@ export function EmpresaForm({ initialData, onSubmit, onCancel, isLoading, title 
                             checked={formData.activa}
                             onChange={(e) => setFormData({ ...formData, activa: e.target.checked })}
                         />
-                        <label htmlFor="activa" className="text-sm font-medium text-slate-700">Empresa Activa</label>
+                        <label htmlFor="activa" className="text-sm font-medium text-gray-700">Empresa Activa</label>
                     </div>
 
                     <div className="flex items-center gap-3">

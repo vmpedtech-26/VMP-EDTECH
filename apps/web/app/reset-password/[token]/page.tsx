@@ -1,21 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
-import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 interface ResetPasswordPageProps {
-    params: Promise<{
+    params: {
         token: string;
-    }>;
+    };
 }
 
 export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
-    const resolvedParams = React.use(params);
     const router = useRouter();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -48,10 +46,22 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
         setIsLoading(true);
 
         try {
-            await api.post('/auth/reset-password', {
-                token: resolvedParams.token,
-                new_password: newPassword,
+            const response = await fetch(`${API_URL}/api/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: params.token,
+                    new_password: newPassword,
+                }),
             });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || 'Error al restablecer la contraseña');
+            }
 
             setIsSuccess(true);
 
@@ -76,29 +86,29 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
     const passwordStrength = getPasswordStrength();
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-primary mb-2">
-                        VMP - EDTECH
+                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
+                        🚗 VMP SERVICIOS
                     </h1>
-                    <p className="text-slate-800 font-medium">Capacitación Profesional</p>
+                    <p className="text-gray-600">Capacitación Profesional</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
+                <div className="bg-white rounded-2xl shadow-xl p-8">
                     {!isSuccess ? (
                         <>
                             {/* Header */}
                             <div className="text-center mb-6">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-                                    <Lock className="w-8 h-8 text-primary" />
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4">
+                                    <Lock className="w-8 h-8 text-orange-500" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                                     Restablecer Contraseña
                                 </h2>
-                                <p className="text-slate-600 text-sm">
+                                <p className="text-gray-600 text-sm">
                                     Ingresa tu nueva contraseña. Asegúrate de que sea segura y fácil de recordar.
                                 </p>
                             </div>
@@ -107,11 +117,11 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {/* New Password */}
                                 <div>
-                                    <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
                                         Nueva Contraseña
                                     </label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
                                             id="newPassword"
                                             type={showPassword ? 'text' : 'password'}
@@ -119,13 +129,13 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="Mínimo 6 caracteres"
-                                            className="w-full pl-11 pr-11 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-slate-900"
+                                            className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                                             disabled={isLoading}
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-800"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -135,7 +145,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                     {passwordStrength && (
                                         <div className="mt-2">
                                             <div className="flex items-center justify-between text-xs mb-1">
-                                                <span className="text-slate-800">Fortaleza:</span>
+                                                <span className="text-gray-600">Fortaleza:</span>
                                                 <span className={`font-semibold ${passwordStrength.label === 'Débil' ? 'text-red-600' :
                                                     passwordStrength.label === 'Media' ? 'text-yellow-600' :
                                                         'text-green-600'
@@ -155,11 +165,11 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
 
                                 {/* Confirm Password */}
                                 <div>
-                                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
                                         Confirmar Contraseña
                                     </label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
                                             id="confirmPassword"
                                             type={showConfirmPassword ? 'text' : 'password'}
@@ -167,13 +177,13 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="Repite tu contraseña"
-                                            className="w-full pl-11 pr-11 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-slate-900"
+                                            className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                                             disabled={isLoading}
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-800"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
@@ -209,11 +219,11 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.98]"
+                                    className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                             Restableciendo...
                                         </span>
                                     ) : (
@@ -242,10 +252,10 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                                     <CheckCircle2 className="w-8 h-8 text-green-500" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                                     ¡Contraseña Actualizada!
                                 </h2>
-                                <p className="text-slate-800 mb-6">
+                                <p className="text-gray-600 mb-6">
                                     Tu contraseña ha sido restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
                                 </p>
 
@@ -257,7 +267,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
 
                                 <Link
                                     href="/login"
-                                    className="inline-block w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-all shadow-md active:scale-[0.98]"
+                                    className="inline-block w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
                                 >
                                     Ir al Inicio de Sesión
                                 </Link>
@@ -267,10 +277,10 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-sm text-slate-500 mt-6">
+                <p className="text-center text-sm text-gray-500 mt-6">
                     ¿Necesitas ayuda? Contacta a{' '}
-                    <a href="mailto:soporte@vmp-edtech.com.ar" className="text-primary hover:underline font-semibold">
-                        soporte@vmp-edtech.com.ar
+                    <a href="mailto:soporte@vmpservicios.com" className="text-orange-500 hover:underline">
+                        soporte@vmpservicios.com
                     </a>
                 </p>
             </div>

@@ -1,57 +1,80 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ClipboardCheck, Eye, CheckCircle, XCircle, Clock, Filter, Search } from 'lucide-react';
-import { api } from '@/lib/api-client';
+import { Eye, CheckCircle, XCircle, Search, Download } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface Examen {
     id: string;
-    moduloId: string;
     alumnoId: string;
-    puntaje: number | null;
+    cursoId: string;
+    calificacion: number | null;
     aprobado: boolean | null;
-    estado: 'PENDIENTE' | 'EN_PROGRESO' | 'COMPLETADO';
-    createdAt: string;
-    completedAt: string | null;
+    realizadoAt: string;
     alumno: {
         nombre: string;
         apellido: string;
         dni: string;
         email: string;
     };
-    modulo: {
+    curso: {
         nombre: string;
-        curso: {
-            nombre: string;
-        };
+        codigo: string;
     };
 }
 
 export default function EvaluacionesPage() {
     const [examenes, setExamenes] = useState<Examen[]>([]);
-    const [filtroEstado, setFiltroEstado] = useState<string>('COMPLETADO');
     const [busqueda, setBusqueda] = useState('');
     const [loading, setLoading] = useState(true);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
         fetchExamenes();
-    }, [filtroEstado]);
+    }, []);
 
     const fetchExamenes = async () => {
         setLoading(true);
         try {
-            const params: any = {};
-            if (filtroEstado !== 'all') {
-                params.estado = filtroEstado;
-            }
+            const res = await fetch(`${API_URL}/api/examenes/all`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
+                }
+            });
 
-            const data = await api.get('/examenes', { params });
-            setExamenes(data);
+            if (res.ok) {
+                const data = await res.json();
+                setExamenes(data);
+            }
         } catch (error) {
             console.error('Error fetching examenes:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const exportToCSV = () => {
+        if (!examenesFiltrados.length) return;
+        const headers = ['Alumno', 'DNI', 'Email', 'Curso', 'Codigo Curso', 'Calificacion', 'Resultado', 'Fecha'];
+        const rows = examenesFiltrados.map(e => [
+            `"${e.alumno.nombre} ${e.alumno.apellido}"`,
+            `"${e.alumno.dni}"`,
+            `"${e.alumno.email}"`,
+            `"${e.curso.nombre}"`,
+            `"${e.curso.codigo}"`,
+            e.calificacion !== null ? `${e.calificacion.toFixed(1)}%` : 'N/A',
+            e.aprobado ? 'Aprobado' : 'Desaprobado',
+            new Date(e.realizadoAt).toLocaleDateString('es-AR')
+        ]);
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `reporte_evaluaciones_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const examenesFiltrados = examenes.filter(examen => {
@@ -61,29 +84,12 @@ export default function EvaluacionesPage() {
             examen.alumno.nombre.toLowerCase().includes(searchLower) ||
             examen.alumno.apellido.toLowerCase().includes(searchLower) ||
             examen.alumno.dni.includes(searchLower) ||
-            examen.modulo.nombre.toLowerCase().includes(searchLower) ||
-            examen.modulo.curso.nombre.toLowerCase().includes(searchLower)
+            examen.curso.nombre.toLowerCase().includes(searchLower)
         );
     });
 
-    const getEstadoBadge = (estado: string) => {
-        const badges = {
-            'PENDIENTE': { color: 'bg-slate-100 text-slate-800', icon: Clock },
-            'EN_PROGRESO': { color: 'bg-blue-100 text-blue-800', icon: Clock },
-            'COMPLETADO': { color: 'bg-green-100 text-green-800', icon: CheckCircle }
-        };
-        const badge = badges[estado as keyof typeof badges] || badges.PENDIENTE;
-        const Icon = badge.icon;
-        return (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
-                <Icon className="h-3 w-3 mr-1" />
-                {estado}
-            </span>
-        );
-    };
-
     const getAprobadoBadge = (aprobado: boolean | null) => {
-        if (aprobado === null) return null;
+        if (aprobado === null) return <span className="text-gray-400">N/A</span>;
         return aprobado ? (
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                 <CheckCircle className="h-3 w-3 mr-1" />
@@ -99,49 +105,37 @@ export default function EvaluacionesPage() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900">Evaluaciones</h1>
-                <p className="text-slate-800 mt-2">Revisa y gestiona las evaluaciones de los participantes</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900">Evaluaciones</h1>
+                    <p className="text-gray-600 mt-2">Revisa y gestiona las evaluaciones de los participantes</p>
+                </div>
+                <Button
+                    onClick={exportToCSV}
+                    disabled={examenesFiltrados.length === 0}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                >
+                    <Download className="h-4 w-4" /> Exportar CSV
+                </Button>
             </div>
 
             {/* Filtros y búsqueda */}
-            <div className="bg-white rounded-lg shadow p-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Búsqueda */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            <Search className="inline h-4 w-4 mr-1" />
-                            Buscar
-                        </label>
-                        <input
-                            type="text"
-                            value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
-                            placeholder="Buscar por nombre, DNI, curso..."
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                    </div>
-
-                    {/* Filtro por estado */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            <Filter className="inline h-4 w-4 mr-1" />
-                            Estado
-                        </label>
-                        <select
-                            value={filtroEstado}
-                            onChange={(e) => setFiltroEstado(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        >
-                            <option value="all">Todos</option>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="EN_PROGRESO">En Progreso</option>
-                            <option value="COMPLETADO">Completado</option>
-                        </select>
-                    </div>
+            <div className="bg-white rounded-lg shadow p-6">
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Search className="inline h-4 w-4 mr-1" />
+                        Buscar
+                    </label>
+                    <input
+                        type="text"
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                        placeholder="Buscar por nombre, DNI, curso..."
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
                 </div>
-
-                <div className="text-sm text-slate-800">
+                <div className="text-sm text-gray-600">
                     Mostrando {examenesFiltrados.length} de {examenes.length} evaluaciones
                 </div>
             </div>
@@ -150,85 +144,81 @@ export default function EvaluacionesPage() {
             {loading ? (
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-slate-800">Cargando evaluaciones...</p>
+                    <p className="mt-4 text-gray-600">Cargando evaluaciones...</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-slate-50">
+                        <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Alumno
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Curso / Módulo
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Puntaje
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Estado
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Resultado
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Fecha
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Acciones
                                 </th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {examenesFiltrados.map((examen) => (
-                                <tr key={examen.id} className="hover:bg-slate-50">
+                                <tr key={examen.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <div className="text-sm font-medium text-slate-900">
+                                            <div className="text-sm font-medium text-gray-900">
                                                 {examen.alumno.nombre} {examen.alumno.apellido}
                                             </div>
-                                            <div className="text-sm text-slate-700">
+                                            <div className="text-sm text-gray-500">
                                                 DNI: {examen.alumno.dni}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <div className="text-sm font-medium text-slate-900">
+                                            <div className="text-sm font-medium text-gray-900">
                                                 {examen.modulo.curso.nombre}
                                             </div>
-                                            <div className="text-sm text-slate-700">
+                                            <div className="text-sm text-gray-500">
                                                 {examen.modulo.nombre}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {examen.puntaje !== null ? (
-                                            <span className={`text-lg font-bold ${examen.aprobado ? 'text-green-600' : 'text-red-600'
-                                                }`}>
-                                                {examen.puntaje}
+                                        {examen.calificacion !== null && examen.calificacion !== undefined ? (
+                                            <span className={`text-lg font-bold ${examen.aprobado ? 'text-green-600' : 'text-red-600'}`}>
+                                                {examen.calificacion.toFixed(0)}%
                                             </span>
                                         ) : (
-                                            <span className="text-slate-600">-</span>
+                                            <span className="text-gray-400">-</span>
                                         )}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {getEstadoBadge(examen.estado)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {getAprobadoBadge(examen.aprobado)}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
-                                        {examen.completedAt
-                                            ? new Date(examen.completedAt).toLocaleDateString('es-AR')
-                                            : new Date(examen.createdAt).toLocaleDateString('es-AR')}
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {getAprobadoBadge(examen.aprobado)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {new Date(examen.realizadoAt).toLocaleDateString('es-AR')}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
                                             className="text-primary hover:text-primary-dark inline-flex items-center"
                                             onClick={() => {
-                                                // TODO: Navigate to exam detail
                                                 console.log('Ver examen:', examen.id);
                                             }}
                                         >
@@ -243,9 +233,9 @@ export default function EvaluacionesPage() {
 
                     {examenesFiltrados.length === 0 && (
                         <div className="text-center py-12">
-                            <ClipboardCheck className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay evaluaciones</h3>
-                            <p className="text-slate-800">
+                            <ClipboardCheck className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay evaluaciones</h3>
+                            <p className="text-gray-600">
                                 {busqueda || filtroEstado !== 'all'
                                     ? 'No se encontraron evaluaciones con los filtros seleccionados'
                                     : 'No hay evaluaciones registradas'}

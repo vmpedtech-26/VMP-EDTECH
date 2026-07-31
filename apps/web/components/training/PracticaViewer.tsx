@@ -55,7 +55,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             }
         } catch (error) {
             console.error('Error uploading evidence:', error);
-            alert('Error al subir la evidencia: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al subir la evidencia');
         } finally {
             setUploading({ ...uploading, [tareaId]: false });
         }
@@ -90,16 +90,16 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             <div className="space-y-4">
                 {tareas.map((tarea, idx) => (
                     <Card key={tarea.id} className="relative overflow-hidden border-0 shadow-md ring-1 ring-gray-100">
-                        {evidencias[tarea.id] && (
+                        {uploaded[tarea.id] && (
                             <div className="absolute top-0 right-0 p-4">
                                 <CheckCircle2 className="h-6 w-6 text-success" />
                             </div>
                         )}
                         <div className="flex flex-col md:flex-row gap-6 items-center p-6 bg-white">
                             <div className="flex-1 space-y-2">
-                                <div className="text-xs font-bold text-slate-600 uppercase tracking-widest">Actividad {idx + 1}</div>
-                                <h3 className="text-xl font-bold text-slate-900">{tarea.descripcion}</h3>
-                                <p className="text-sm text-slate-700">
+                                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Actividad {idx + 1}</div>
+                                <h3 className="text-xl font-bold text-gray-900">{tarea.descripcion}</h3>
+                                <p className="text-sm text-gray-500">
                                     {tarea.requiereFoto ? 'Requiere fotografía de evidencia' : 'Requiere confirmación de tarea'}
                                 </p>
                             </div>
@@ -155,7 +155,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                         />
                                         <label
                                             htmlFor={`file-${tarea.id}`}
-                                            className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all text-slate-600 hover:text-primary min-w-[120px] cursor-pointer"
+                                            className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all text-gray-400 hover:text-primary min-w-[120px] cursor-pointer"
                                         >
                                             {uploading[tarea.id] ? (
                                                 <Loader2 className="h-8 w-8 animate-spin" />

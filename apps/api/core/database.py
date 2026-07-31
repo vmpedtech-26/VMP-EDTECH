@@ -1,44 +1,12 @@
-import os
-import asyncio
-
-# Set cache dir to project directory so Render includes downloaded query engine binaries in deploy bundle
-_base_dir = os.path.abspath(os.path.dirname(__file__) + "/..")
-_cache_dir = os.path.join(_base_dir, ".prisma-cache")
-os.environ["PRISMA_PY_CACHE_DIR"] = _cache_dir
-os.makedirs(_cache_dir, exist_ok=True)
-
 from prisma import Prisma
 
-# Singleton Prisma client instance referenced by all routers
+# Prisma lee la URL desde schema.prisma (DATABASE_URL en .env)
 prisma = Prisma()
-_db_lock = asyncio.Lock()
-
-NEON_DB_FALLBACK = "postgresql://neondb_owner:npg_r3ATep2kCBGc@ep-snowy-river-axaapsnr-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
 
 async def connect_db():
-    async with _db_lock:
-        if not prisma.is_connected():
-            db_url = os.environ.get("DATABASE_URL", "").strip().strip('"').strip("'")
-            # If DATABASE_URL is missing, truncated, or invalid, force complete Neon connection string
-            if not db_url or "neon.tech" not in db_url and "localhost" not in db_url and "127.0.0.1" not in db_url:
-                print("⚠️ Truncated or invalid DATABASE_URL detected. Applying full Neon connection string...")
-                db_url = NEON_DB_FALLBACK
-            os.environ["DATABASE_URL"] = db_url
-            
-            try:
-                await prisma.connect(timeout=15000)
-                print("✅ Database connected successfully to Neon PostgreSQL")
-            except Exception as e:
-                print(f"❌ Error during prisma.connect(): {e}")
-                raise e
-
-async def ensure_db_connected():
-    """Ensure DB is connected, call this before queries if needed"""
-    if not prisma.is_connected():
-        await connect_db()
+    await prisma.connect()
+    print("✅ Database connected")
 
 async def disconnect_db():
-    async with _db_lock:
-        if prisma.is_connected():
-            await prisma.disconnect()
-            print("❌ Database disconnected")
+    await prisma.disconnect()
+    print("❌ Database disconnected")

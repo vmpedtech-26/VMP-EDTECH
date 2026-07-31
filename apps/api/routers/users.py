@@ -1,14 +1,13 @@
-from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List, Optional
 from schemas.users import UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse
 from auth.dependencies import get_current_user
 from core.database import prisma
 from auth.jwt import hash_password
-from services.file_upload import save_instructor_signature, get_instructor_signature_path
 
 router = APIRouter()
 
-@router.get("", response_model=List[UserWithEmpresaResponse])
+@router.get("/", response_model=List[UserWithEmpresaResponse])
 async def listar_usuarios(
     rol: Optional[str] = None, 
     empresaId: Optional[str] = None,
@@ -45,93 +44,8 @@ async def listar_usuarios(
         
     return result
 
-# ============ Meet/Teams Link ============
 
-from pydantic import BaseModel
-
-class MeetLinkRequest(BaseModel):
-    link: str
-
-
-@router.get("/me/meet-link")
-async def get_meet_link(current_user=Depends(get_current_user)):
-    """Get the saved meeting link for the current instructor"""
-    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
-        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
-
-    user = await prisma.user.find_unique(where={"id": current_user.id})
-    return {"link": user.meetLink if user else None}
-
-
-@router.put("/me/meet-link")
-async def save_meet_link(data: MeetLinkRequest, current_user=Depends(get_current_user)):
-    """Save a meeting link (Google Meet / Microsoft Teams) for the current instructor"""
-    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
-        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
-
-    link = data.link.strip()
-    if link and not link.startswith(("http://", "https://")):
-        link = "https://" + link
-
-    await prisma.user.update(
-        where={"id": current_user.id},
-        data={"meetLink": link or None}
-    )
-
-    return {"status": "ok", "link": link}
-
-
-@router.post("/me/signature")
-async def upload_signature(file: UploadFile = File(...), current_user=Depends(get_current_user)):
-    """Upload a signature image for the current instructor"""
-    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
-        raise HTTPException(status_code=403, detail="Solo instructores pueden subir firmas digitalizadas")
-        
-    try:
-        url = await save_instructor_signature(file, current_user.id)
-        return {"status": "ok", "url": url}
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al subir la firma: {str(e)}")
-
-@router.get("/me/signature")
-async def get_signature(current_user=Depends(get_current_user)):
-    """Check if the current instructor has a signature uploaded"""
-    if current_user.rol not in ("INSTRUCTOR", "SUPER_ADMIN"):
-        raise HTTPException(status_code=403, detail="Solo instructores pueden acceder a esta función")
-        
-    path = get_instructor_signature_path(current_user.id)
-    if path:
-        return {"exists": True, "url": f"/uploads/firmas/signature_{current_user.id}.png"}
-    return {"exists": False}
-
-
-@router.get("/{id}", response_model=UserWithEmpresaResponse)
-async def obtener_usuario(id: str, current_user=Depends(get_current_user)):
-    """Obtener un usuario específico (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
-    user = await prisma.user.find_unique(
-        where={"id": id},
-        include={"empresa": True}
-    )
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-        
-    # Restricciones de rol
-    if current_user.rol == "INSTRUCTOR" and user.empresaId != current_user.empresaId:
-        raise HTTPException(status_code=403, detail="No tienes permisos para ver a este usuario")
-    elif current_user.rol not in ("SUPER_ADMIN", "INSTRUCTOR"):
-        # Alumnos pueden verse a sí mismos
-        if current_user.id != id:
-            raise HTTPException(status_code=403, detail="No tienes permisos")
-            
-    user_dict = user.__dict__
-    user_dict["empresa_nombre"] = user.empresa.nombre if user.empresa else None
-    return user_dict
-
-
-@router.post("", response_model=UserAdminResponse)
+@router.post("/", response_model=UserAdminResponse)
 async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
     
@@ -161,31 +75,10 @@ async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_curren
             "telefono": data.telefono,
             "rol": data.rol,
             "empresaId": data.empresaId,
-            "puesto": data.puesto,
             "activo": data.activo
         }
     )
     
-    # Enviar email de bienvenida si el usuario es de tipo ALUMNO
-    if data.rol == "ALUMNO":
-        try:
-            from services.email_service import email_service
-            import logging
-            logger_user = logging.getLogger(__name__)
-            
-            user_info = {
-                "email": user.email,
-                "nombre": user.nombre,
-                "apellido": user.apellido
-            }
-            # Enviar el mail pasándole la contraseña en texto plano ingresada en el form
-            await email_service.send_bienvenida(user_info, data.password)
-            logger_user.info(f"Email de bienvenida enviado con éxito a {user.email}")
-        except Exception as email_err:
-            import logging
-            logger_user = logging.getLogger(__name__)
-            logger_user.error(f"Error al enviar email de bienvenida a {data.email}: {str(email_err)}")
-            
     return user
 
 
@@ -208,16 +101,6 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
         raise HTTPException(status_code=403, detail="No tienes permisos")
         
     update_data = {k: v for k, v in data.dict().items() if v is not None}
-    
-    if "email" in update_data and update_data["email"] != existing.email:
-        email_dup = await prisma.user.find_unique(where={"email": update_data["email"]})
-        if email_dup:
-            raise HTTPException(status_code=400, detail="El email ya está registrado")
-            
-    if "dni" in update_data and update_data["dni"] != existing.dni:
-        dni_dup = await prisma.user.find_unique(where={"dni": update_data["dni"]})
-        if dni_dup:
-            raise HTTPException(status_code=400, detail="El DNI ya está registrado")
     
     if "password" in update_data:
         update_data["passwordHash"] = hash_password(update_data.pop("password"))
@@ -255,4 +138,3 @@ async def eliminar_usuario(id: str, current_user=Depends(get_current_user)):
         
     await prisma.user.delete(where={"id": id})
     return {"message": "Usuario eliminado exitosamente"}
-

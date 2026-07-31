@@ -49,7 +49,7 @@ export default function ModuloDetailPage() {
             router.push(`/dashboard/cursos/${id}`);
         } catch (error) {
             console.error('Error completing modulo:', error);
-            alert('Error al guardar progreso: ' + (error instanceof Error ? error.message : String(error)));
+            alert('Error al guardar progreso');
         }
     };
 
@@ -73,9 +73,9 @@ export default function ModuloDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50/50 pb-20">
+        <div className="min-h-screen bg-gray-50/50 pb-20">
             {/* Nav Bar */}
-            <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-10">
+            <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-10">
                 <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <Button variant="outline" size="sm" asChild className="hidden sm:flex">
@@ -86,10 +86,10 @@ export default function ModuloDetailPage() {
                         </Button>
                         <div className="h-8 w-px bg-gray-200 hidden sm:block" />
                         <div>
-                            <div className="text-xs font-bold text-slate-600 uppercase tracking-widest hidden sm:block">
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden sm:block">
                                 Módulo {modulo.orden}
                             </div>
-                            <h1 className="text-lg font-bold text-slate-900 truncate max-w-[200px] md:max-w-md">
+                            <h1 className="text-lg font-bold text-gray-900 truncate max-w-[200px] md:max-w-md">
                                 {modulo.titulo}
                             </h1>
                         </div>
@@ -119,8 +119,6 @@ export default function ModuloDetailPage() {
 
                 {modulo.tipo === 'QUIZ' && (
                     <QuizViewer
-                        cursoId={id as string}
-                        moduloId={moduloId as string}
                         preguntas={modulo.preguntas || []}
                         onComplete={handleComplete}
                     />
