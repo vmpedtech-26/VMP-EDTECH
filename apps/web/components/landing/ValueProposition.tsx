@@ -1,28 +1,37 @@
+'use client';
+
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Building2, Smartphone, GraduationCap } from 'lucide-react';
+import { Award, Laptop, Users } from 'lucide-react';
 
 export default function ValueProposition() {
     const values = [
         {
-            icon: Building2,
+            icon: Award,
             title: "Certificación ANSV Oficial",
             description: "Cumplimos rigurosamente con todas las normativas ANSV, garantizando que tu certificación tenga validez legal en todo el territorio argentino.",
             details: "Disposiciones 380/555/54"
         },
         {
-            icon: Smartphone,
+            icon: Laptop,
             title: "Plataforma Digital Moderna",
             description: "Tecnología educativa de última generación con modalidad 100% online, presencial o mixta. Validación QR instantánea de certificados.",
             details: "Online/Offline + QR"
         },
         {
-            icon: GraduationCap,
+            icon: Users,
             title: "Instructores Certificados",
             description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación ANSV vigente.",
             details: "+15 años experiencia"
         }
     ];
+
+    const fadeIn = {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 }
+    };
 
     return (
         <section className="py-24 relative overflow-hidden border-b border-slate-800">
@@ -111,6 +120,7 @@ export default function ValueProposition() {
                         {/* Values List */}
                         <div className="space-y-4">
                             {values.map((value, index) => {
+                                const Icon = value.icon;
                                 return (
                                     <motion.div
                                         key={index}
@@ -122,7 +132,7 @@ export default function ValueProposition() {
                                     >
                                         {/* Icon Container */}
                                         <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center shadow-sm group-hover:bg-emerald-500/20 group-hover:border-emerald-400/30 transition-all duration-300">
-                                            {value.icon}
+                                            <Icon className="h-6 w-6 text-emerald-400" />
                                         </div>
 
                                         {/* Texts */}

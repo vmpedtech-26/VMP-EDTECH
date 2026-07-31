@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { CreditCard, QrCode, Shield, Calendar, User, Building } from 'lucide-react';
 
