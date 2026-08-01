@@ -1,7 +1,10 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
-async function request(path: string, options: RequestInit & { params?: Record<string, any> } = {}) {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function request(path: string, options: RequestInit & { params?: Record<string, any>; maxRetries?: number } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
+    const maxRetries = options.maxRetries ?? 3;
 
     let url = `${API_URL}/api${path}`;
     if (options.params) {
@@ -27,20 +30,47 @@ async function request(path: string, options: RequestInit & { params?: Record<st
         headers['Content-Type'] = 'application/json';
     }
 
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
+    let lastError: any = null;
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
-        throw new Error(error.detail || 'Error en la petición');
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                headers,
+            });
+
+            // Si recibimos 502/503/504 (servidor arrancando en Render), reintentar
+            if ([502, 503, 504].includes(response.status) && attempt < maxRetries) {
+                console.warn(`[API Client] Servidor en arranque (status ${response.status}). Reintentando (${attempt}/${maxRetries})...`);
+                await sleep(2500);
+                continue;
+            }
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
+                throw new Error(error.detail || `Error ${response.status} en la petición`);
+            }
+
+            return await response.json();
+        } catch (err: any) {
+            lastError = err;
+            const isNetworkOrColdStart =
+                err.name === 'TypeError' ||
+                (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('servidor')));
+
+            if (isNetworkOrColdStart && attempt < maxRetries) {
+                console.warn(`[API Client] Error de conexión/arranque: ${err.message}. Reintentando (${attempt}/${maxRetries}) en 2.5s...`);
+                await sleep(2500);
+                continue;
+            }
+            throw err;
+        }
     }
 
-    return response.json();
+    throw lastError || new Error('No se pudo conectar con el servidor tras varios intentos.');
 }
 
-export type ApiOptions = RequestInit & { params?: Record<string, any> };
+export type ApiOptions = RequestInit & { params?: Record<string, any>; maxRetries?: number };
 
 export const api = {
     get: (path: string, options?: ApiOptions) => request(path, { ...options, method: 'GET' }),
@@ -56,5 +86,13 @@ export const api = {
             method: 'PUT',
             body: body instanceof FormData ? body : JSON.stringify(body),
         }),
+    patch: (path: string, body?: any, options?: ApiOptions) =>
+        request(path, {
+            ...options,
+            method: 'PATCH',
+            body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
+        }),
     delete: (path: string, options?: ApiOptions) => request(path, { ...options, method: 'DELETE' }),
 };
+
+
