@@ -1,0 +1,31 @@
+name: VMP EdTech API Keep-Alive Pinger
+
+on:
+  schedule:
+    # Executed every 5 minutes 24/7
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    # Allows manual trigger from GitHub UI
+
+jobs:
+  ping-backend:
+    name: Ping Render Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping VMP EdTech Render API
+        run: |
+          echo "=== Starting Keep-Alive Ping to Render API ==="
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "Timestamp: $TIMESTAMP"
+          
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://vmp-edtech-6wgw.onrender.com/")
+          echo "HTTP Response Code: $RESPONSE_CODE"
+          
+          if [ "$RESPONSE_CODE" -eq 200 ] || [ "$RESPONSE_CODE" -eq 403 ] || [ "$RESPONSE_CODE" -eq 401 ]; then
+            echo "SUCCESS: Render backend is awake and responding (Code: $RESPONSE_CODE)."
+          else
+            echo "WARNING: Render API returned code $RESPONSE_CODE. Sending retry ping..."
+            sleep 3
+            RETRY_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://vmp-edtech-6wgw.onrender.com/")
+            echo "Retry HTTP Response Code: $RETRY_CODE"
+          fi
