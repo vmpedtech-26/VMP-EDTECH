@@ -1,6 +1,10 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+const envUrl = process.env.NEXT_PUBLIC_API_URL || 'https://vmp-edtech-6wgw.onrender.com';
+export const API_URL = (envUrl.includes('railway') || envUrl.includes('api.vmp-edtech.com'))
+    ? 'https://vmp-edtech-6wgw.onrender.com'
+    : envUrl;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 async function request(path: string, options: RequestInit & { params?: Record<string, any>; maxRetries?: number } = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
