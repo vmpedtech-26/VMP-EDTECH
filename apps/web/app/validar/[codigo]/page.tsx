@@ -47,8 +47,11 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
             setIsLoading(true);
             setError(null);
 
-            const cleanCode = encodeURIComponent(params.codigo.replace('/', '-'));
-            const response = await fetch(`${API_URL}/api/credenciales/validar/${cleanCode}`);
+            let raw = decodeURIComponent(params.codigo).trim().toUpperCase();
+            let num = raw.replace('BLT-RT/', '').replace('BLT-RT-', '').replace('VMP-2026-', '').replace('BLT-RT', '');
+            let targetCode = raw.includes('VMP-') ? raw : `VMP-2026-${num}`;
+
+            const response = await fetch(`${API_URL}/api/public/validar/${encodeURIComponent(targetCode)}`);
 
             if (!response.ok) {
                 throw new Error('Error al validar la credencial');

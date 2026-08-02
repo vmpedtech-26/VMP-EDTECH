@@ -114,7 +114,7 @@ students_data = [
         'nombre': 'Rosario Teresa',
         'dni': '18199704',
         'code_display': 'BLT-RT/1294',
-        'code_url': 'BLT-RT-1294',
+        'code_url': 'VMP-2026-1294',
         'fecha_realizacion': '01/08/2026',
         'fecha_vto': '01/08/2028',
         'photo_path': 'scratch/photos/Rosario_Teresa_Araujo_0.jpeg'
@@ -125,7 +125,7 @@ students_data = [
         'nombre': 'Norma Beatriz',
         'dni': '17377512',
         'code_display': 'BLT-RT/1291',
-        'code_url': 'BLT-RT-1291',
+        'code_url': 'VMP-2026-1291',
         'fecha_realizacion': '01/08/2026',
         'fecha_vto': '01/08/2028',
         'photo_path': 'scratch/photos/Norma_Beatriz_Araujo_0.jpeg'
@@ -136,7 +136,7 @@ students_data = [
         'nombre': 'Gabriel Omario',
         'dni': '17483526',
         'code_display': 'BLT-RT/1290',
-        'code_url': 'BLT-RT-1290',
+        'code_url': 'VMP-2026-1290',
         'fecha_realizacion': '01/08/2026',
         'fecha_vto': '01/08/2028',
         'photo_path': 'scratch/photos/Gabriel_Omario_Escobar_0.jpeg'
@@ -147,7 +147,7 @@ students_data = [
         'nombre': 'María Silvina',
         'dni': '18393991',
         'code_display': 'BLT-RT/1288',
-        'code_url': 'BLT-RT-1288',
+        'code_url': 'VMP-2026-1288',
         'fecha_realizacion': '01/08/2026',
         'fecha_vto': '01/08/2028',
         'photo_path': 'scratch/photos/Maria_Silvina_Del_Pino_0.jpeg'
