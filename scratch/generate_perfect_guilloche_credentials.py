@@ -4,37 +4,15 @@ from reportlab.lib.pagesizes import landscape
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
-from PIL import Image
 
 output_dir = '/Users/matias/Desktop/Credenciales_VMP_TRANSPORTE_YACCOS'
 artifact_dir = '/Users/matias/.gemini/antigravity/brain/be0298fa-fa80-4c0d-ab29-599f37a05f60'
 os.makedirs(output_dir, exist_ok=True)
 
-# User uploaded logos
+# User uploaded exact logo paths
 user_uploaded_dir = '/Users/matias/.gemini/antigravity/brain/be0298fa-fa80-4c0d-ab29-599f37a05f60/.user_uploaded'
-f1 = os.path.join(user_uploaded_dir, 'media__1785698128266.png') # Arg + Safety Council
-f2 = os.path.join(user_uploaded_dir, 'media__1785698117873.png') # Oldelval + TGS
-
-# Convert logos to transparent PNGs
-def make_transparent_logo(img_path, out_path):
-    img = Image.open(img_path).convert('RGBA')
-    pix = img.load()
-    w, h = img.size
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = pix[x, y]
-            lum = (r * 299 + g * 587 + b * 114) / 1000
-            if lum > 195:
-                pix[x, y] = (0, 0, 0, 0)
-            elif lum > 150:
-                alpha = int(255 * ((195 - lum) / 45))
-                pix[x, y] = (r, g, b, alpha)
-    img.save(out_path, 'PNG')
-
-logo_left_trans = 'scratch/logo_arg_safety_trans.png'
-logo_right_trans = 'scratch/logo_oldelval_tgs_trans.png'
-make_transparent_logo(f1, logo_left_trans)
-make_transparent_logo(f2, logo_right_trans)
+logo_left = os.path.join(user_uploaded_dir, 'media__1785698128266.png') # Arg + Safety Council
+logo_right = os.path.join(user_uploaded_dir, 'media__1785698117873.png') # Oldelval + TGS
 
 # Color Palette
 navy = HexColor('#0B172A')
@@ -52,11 +30,11 @@ def draw_guilloche_watermark(c, w=595, h=400):
     # Primary cyan wave mesh
     c.setStrokeColor(HexColor('#00B4B6'))
     c.setLineWidth(0.4)
-    c.setStrokeAlpha(0.14)
+    c.setStrokeAlpha(0.12)
     for i in range(-100, int(w) + 100, 24):
         path = c.beginPath()
         first = True
-        for y in range(0, int(h), 4):
+        for y in range(0, int(h), 5):
             x = i + math.sin(y * 0.02 + i * 0.04) * 18 + math.cos(y * 0.01) * 12
             if first:
                 path.moveTo(x, y)
@@ -68,11 +46,11 @@ def draw_guilloche_watermark(c, w=595, h=400):
     # Counter navy wave mesh
     c.setStrokeColor(HexColor('#0B172A'))
     c.setLineWidth(0.35)
-    c.setStrokeAlpha(0.07)
+    c.setStrokeAlpha(0.06)
     for i in range(-100, int(w) + 100, 30):
         path = c.beginPath()
         first = True
-        for y in range(0, int(h), 4):
+        for y in range(0, int(h), 5):
             x = i - math.sin(y * 0.02 + i * 0.03) * 18 - math.cos(y * 0.012) * 10
             if first:
                 path.moveTo(x, y)
@@ -119,7 +97,7 @@ def build_student_pdf_perfect(student):
     c.setFont('Helvetica-Bold', 8)
     c.drawString(460, 348, 'CAPACITACIÓN')
 
-    # --- Left Photo Card (Clean Photo Frame) ---
+    # --- Left Photo Card ---
     c.setFillColor(HexColor('#FFFFFF'))
     c.setStrokeColor(HexColor('#CBD5E1'))
     c.setLineWidth(1)
@@ -232,9 +210,9 @@ def build_student_pdf_perfect(student):
     c.drawCentredString(297, 292, '• Este comprobante no reemplaza a la licencia de conducir,')
     c.drawCentredString(297, 276, 'único documento habilitante y con validez a los efectos legales.')
 
-    # Center QR Card Container (positioned cleanly from y=95 to y=245)
+    # Center QR Card Container
     c.setFillColor(navy)
-    c.roundRect(210, 95, 175, 150, 10, fill=True, stroke=False)
+    c.roundRect(208, 95, 178, 150, 10, fill=True, stroke=False)
 
     # Generate QR Code
     qr_url = f"https://www.vmp-edtech.com/validar/{student['code_url']}"
@@ -247,7 +225,7 @@ def build_student_pdf_perfect(student):
     buf.seek(0)
 
     # QR Image inside card
-    c.drawImage(ImageReader(buf), 246, 128, width=103, height=103)
+    c.drawImage(ImageReader(buf), 242, 128, width=110, height=110)
 
     c.setFillColor(cyan)
     c.setFont('Helvetica-Bold', 7.5)
@@ -256,16 +234,16 @@ def build_student_pdf_perfect(student):
     c.setFont('Helvetica-Bold', 9)
     c.drawCentredString(297, 101, f"CÓDIGO: {student['code_display_short']}")
 
-    # --- Centered Logos on the Sides of the QR Code (Transparent & Prominent) ---
+    # --- Side Logos Centered Exactly like Image 2 ---
     # Left Logo: República Argentina + Safety Council
-    if os.path.exists(logo_left_trans):
-        c.drawImage(logo_left_trans, 25, 130, width=170, height=80, preserveAspectRatio=True)
+    if os.path.exists(logo_left):
+        c.drawImage(logo_left, 28, 140, width=165, height=60, preserveAspectRatio=True)
 
     # Right Logo: OLDELVAL + TGS
-    if os.path.exists(logo_right_trans):
-        c.drawImage(logo_right_trans, 400, 130, width=170, height=80, preserveAspectRatio=True)
+    if os.path.exists(logo_right):
+        c.drawImage(logo_right, 402, 140, width=165, height=60, preserveAspectRatio=True)
 
-    # Instructor Line (Positioned cleanly below QR card at y=72)
+    # Instructor Line (Below QR card at y=72)
     c.setFillColor(text_muted)
     c.setFont('Helvetica', 8.5)
     c.drawCentredString(297, 72, 'Acreditado por: Pedro Orejas - Instructor VMP | Mat. N° 2206823')
@@ -287,7 +265,7 @@ def build_student_pdf_perfect(student):
     c.showPage()
     c.save()
 
-    print(f"✅ Generated Perfect Guilloche Vector PDF: {pdf_path}")
+    print(f"✅ Generated Perfect Executive PDF (Matching Image 2): {pdf_path}")
 
     # Export PNG Previews for Artifact
     doc = fitz.open(pdf_path)
@@ -369,4 +347,4 @@ for p in pdf_files:
 
 master_pdf_path = os.path.join(output_dir, 'Credenciales_VMP_TRANSPORTE_YACCOS_COMPLETO.pdf')
 master_doc.save(master_pdf_path)
-print(f"🎉 Created Master Combined PDF with Guilloche & Centered Logos (8 pages): {master_pdf_path}")
+print(f"🎉 Created Master Combined PDF Matching Image 2 (8 pages): {master_pdf_path}")
