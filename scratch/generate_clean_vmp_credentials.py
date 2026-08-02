@@ -9,6 +9,11 @@ output_dir = '/Users/matias/Desktop/Credenciales_VMP_TRANSPORTE_YACCOS'
 artifact_dir = '/Users/matias/.gemini/antigravity/brain/be0298fa-fa80-4c0d-ab29-599f37a05f60'
 os.makedirs(output_dir, exist_ok=True)
 
+# User uploaded exact logo paths
+user_uploaded_dir = '/Users/matias/.gemini/antigravity/brain/be0298fa-fa80-4c0d-ab29-599f37a05f60/.user_uploaded'
+logo_arg_safety = os.path.join(user_uploaded_dir, 'media__1785698128266.png') # Argentina + Safety Council
+logo_oldelval_tgs = os.path.join(user_uploaded_dir, 'media__1785698117873.png') # Oldelval + TGS
+
 # Color Palette
 navy = HexColor('#0B172A')
 cyan = HexColor('#00B4B6')
@@ -38,12 +43,12 @@ def build_student_pdf_clean(student):
     c.setFillColor(cyan)
     c.rect(0, 332, 595, 3, fill=True, stroke=False)
 
-    # Header Text
+    # Header Text (Left)
     c.setFillColor(HexColor('#FFFFFF'))
     c.setFont('Helvetica-Bold', 18)
     c.drawString(30, 358, 'TRANSPORTE YACCOS')
 
-    # Brand Logo Top Right
+    # Brand Logo (Right)
     c.setFont('Helvetica-Bold', 15)
     c.drawString(420, 360, 'VMP')
     c.setFillColor(cyan)
@@ -162,9 +167,9 @@ def build_student_pdf_clean(student):
     c.drawCentredString(297, 292, '• Este comprobante no reemplaza a la licencia de conducir,')
     c.drawCentredString(297, 276, 'único documento habilitante y con validez a los efectos legales.')
 
-    # Center QR Container (positioned cleanly from y=95 to y=245)
+    # Center QR Container (positioned cleanly from y=105 to y=245)
     c.setFillColor(navy)
-    c.roundRect(205, 95, 185, 150, 10, fill=True, stroke=False)
+    c.roundRect(210, 105, 175, 145, 10, fill=True, stroke=False)
 
     # Generate QR Code
     qr_url = f"https://www.vmp-edtech.com/validar/{student['code_url']}"
@@ -177,23 +182,35 @@ def build_student_pdf_clean(student):
     buf.seek(0)
 
     # QR Image inside card (positioned cleanly without overlap)
-    c.drawImage(ImageReader(buf), 244, 132, width=107, height=107)
+    c.drawImage(ImageReader(buf), 246, 138, width=103, height=103)
 
     c.setFillColor(cyan)
     c.setFont('Helvetica-Bold', 7.5)
-    c.drawCentredString(297, 118, 'SCAN TO VERIFY  |  VMP')
+    c.drawCentredString(297, 124, 'SCAN TO VERIFY  |  VMP')
     c.setFillColor(HexColor('#FFFFFF'))
     c.setFont('Helvetica-Bold', 9)
-    c.drawCentredString(297, 103, f"CÓDIGO: {student['code_display_short']}")
+    c.drawCentredString(297, 111, f"CÓDIGO: {student['code_display_short']}")
 
-    # Instructor Line (Positioned safely BELOW QR card at y=72, no overlap!)
+    # Instructor Line (Positioned safely BELOW QR card at y=88, no overlap!)
     c.setFillColor(text_muted)
     c.setFont('Helvetica', 8.5)
-    c.drawCentredString(297, 72, 'Acreditado por: Pedro Orejas - Instructor VMP | Mat. N° 2206823')
+    c.drawCentredString(297, 88, 'Acreditado por: Pedro Orejas - Instructor VMP | Mat. N° 2206823')
 
-    # Bottom Logos (Positioned safely at y=33)
-    if os.path.exists('scratch/logo_p2_0.png'):
-        c.drawImage('scratch/logo_p2_0.png', 30, 33, width=535, height=34, preserveAspectRatio=True)
+    # --- Official Bottom Logos (User Uploaded Exact Images) ---
+    # Left Logo: República Argentina + Safety Council
+    if os.path.exists(logo_arg_safety):
+        c.drawImage(logo_arg_safety, 30, 32, width=180, height=44, preserveAspectRatio=True)
+
+    # Center Hours Pill
+    c.setFillColor(navy)
+    c.roundRect(225, 42, 145, 20, 10, fill=True, stroke=False)
+    c.setFillColor(cyan)
+    c.setFont('Helvetica-Bold', 7.5)
+    c.drawCentredString(297, 48, 'CARGA HORARIA: 8 HORAS')
+
+    # Right Logo: OLDELVAL + TGS
+    if os.path.exists(logo_oldelval_tgs):
+        c.drawImage(logo_oldelval_tgs, 385, 32, width=180, height=44, preserveAspectRatio=True)
 
     # Bottom Footer Bar
     c.setFillColor(navy)
@@ -205,7 +222,7 @@ def build_student_pdf_clean(student):
     c.showPage()
     c.save()
 
-    print(f"✅ Generated Clean Vector PDF: {pdf_path}")
+    print(f"✅ Generated Clean Vector PDF with Official Logos: {pdf_path}")
 
     # Export PNG Previews for Artifact
     doc = fitz.open(pdf_path)
@@ -287,4 +304,4 @@ for p in pdf_files:
 
 master_pdf_path = os.path.join(output_dir, 'Credenciales_VMP_TRANSPORTE_YACCOS_COMPLETO.pdf')
 master_doc.save(master_pdf_path)
-print(f"🎉 Created Clean Master Combined PDF (8 pages): {master_pdf_path}")
+print(f"🎉 Created Master Combined PDF with Official Logos (8 pages): {master_pdf_path}")
