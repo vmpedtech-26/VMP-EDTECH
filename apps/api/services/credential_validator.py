@@ -1,7 +1,7 @@
 """
 Servicio para validar credenciales públicamente.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from core.database import prisma
 
@@ -19,9 +19,25 @@ class CredentialValidator:
         Returns:
             Dict con información pública de la credencial
         """
+        # Normalizar término de búsqueda
+        clean_num = numero.strip().upper()
+        raw_code = clean_num.replace('BLT-RT/', '').replace('BLT-RT-', '').replace('VMP-2026-', '').replace('BLT-RT', '')
+        
+        possible_numbers = [
+            clean_num,
+            f"BLT-RT/{raw_code}",
+            f"BLT-RT-{raw_code}",
+            f"VMP-2026-{raw_code}",
+            raw_code
+        ]
+        
         # Buscar credencial
-        credencial = await prisma.credencial.find_unique(
-            where={"numero": numero},
+        credencial = await prisma.credencial.find_first(
+            where={
+                "numero": {
+                    "in": possible_numbers
+                }
+            },
             include={
                 "alumno": {
                     "include": {
@@ -42,7 +58,9 @@ class CredentialValidator:
         # Verificar expiración
         is_expired = False
         if credencial.fechaVencimiento:
-            is_expired = datetime.utcnow() > credencial.fechaVencimiento
+            now = datetime.now(timezone.utc)
+            vencimiento = credencial.fechaVencimiento if credencial.fechaVencimiento.tzinfo else credencial.fechaVencimiento.replace(tzinfo=timezone.utc)
+            is_expired = now > vencimiento
         
         # Preparar respuesta con datos públicos
         return {

@@ -47,7 +47,8 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
             setIsLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_URL}/api/public/validar/${params.codigo}`);
+            const cleanCode = encodeURIComponent(params.codigo.replace('/', '-'));
+            const response = await fetch(`${API_URL}/api/credenciales/validar/${cleanCode}`);
 
             if (!response.ok) {
                 throw new Error('Error al validar la credencial');
