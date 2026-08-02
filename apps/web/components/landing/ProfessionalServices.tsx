@@ -104,7 +104,7 @@ export function ProfessionalServices() {
         {/* Background Image: Realistic Organic Inspection Scene */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/servicios_tecnicos_bg.jpg"
+            src="/images/servicios_vmp_4k_real.jpg"
             alt="Inspección Técnica de Seguridad e Higiene en Neuquén y Vaca Muerta, Argentina"
             fill
             sizes="100vw"

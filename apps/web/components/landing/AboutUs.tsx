@@ -17,7 +17,7 @@ export default function AboutUs() {
             {/* Background Image: Realistic Corporate Operations & Control Center */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/images/sobre_la_empresa_bg.jpg"
+                    src="/images/empresa_vmp_4k_real.jpg"
                     alt="Operaciones de Seguridad e Higiene en Yacimiento Vaca Muerta, Patagonia Argentina"
                     fill
                     sizes="100vw"

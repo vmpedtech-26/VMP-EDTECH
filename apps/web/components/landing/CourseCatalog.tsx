@@ -98,8 +98,23 @@ export default function CourseCatalog() {
     };
 
     return (
-        <section id="cursos" className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="cursos" className="py-24 relative overflow-hidden bg-[#0A192F] border-b border-slate-800">
+            {/* Background 4K Real Image: Fleet Simulator Training Facility */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/cursos_vmp_4k_real.jpg"
+                    alt="Centro de Capacitación y Simuladores Profesionales VMP"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0A192F]/95 via-[#0A192F]/90 to-[#0A192F]/96 backdrop-blur-[2px]" />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <motion.div
                     className="text-center mb-12"
@@ -108,11 +123,11 @@ export default function CourseCatalog() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2 className="font-heading font-bold text-4xl md:text-5xl text-[#0A192F] mb-4">
-                        Nuestros Cursos de Capacitación
+                    <h2 className="font-heading font-bold text-4xl md:text-5xl text-white mb-4">
+                        Nuestros Cursos de <span className="gradient-text">Capacitación</span>
                     </h2>
-                    <p className="text-xl text-[#4A5568] max-w-3xl mx-auto">
-                        Programas diseñados según normativas ANSV vigentes
+                    <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        Programas diseñados según normativas ANSV vigentes con simulaciones reales
                     </p>
                 </motion.div>
 

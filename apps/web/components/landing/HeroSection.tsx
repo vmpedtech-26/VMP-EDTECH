@@ -54,12 +54,20 @@ export default function HeroSection() {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-[#0A192F] via-[#1E3A5F] to-[#0A192F] overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.1) 35px, rgba(255,215,0,0.1) 70px)`
-                }} />
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden border-b border-slate-800">
+            {/* Background 4K Real Image: Patagonia Convoy */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/hero_vmp_4k_real.jpg"
+                    alt="Capacitación y Seguridad Vial de Flotas en Rutas de Argentina"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0A192F]/92 via-[#0A192F]/85 to-[#0A192F]/95 backdrop-blur-[2px]" />
             </div>
 
             {/* Animated particles */}
