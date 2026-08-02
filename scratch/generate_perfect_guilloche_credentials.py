@@ -18,12 +18,17 @@ f2 = os.path.join(user_uploaded_dir, 'media__1785698117873.png') # Oldelval + TG
 # Convert logos to transparent PNGs
 def make_transparent_logo(img_path, out_path):
     img = Image.open(img_path).convert('RGBA')
-    pixels = img.load()
-    for y in range(img.height):
-        for x in range(img.width):
-            r, g, b, a = pixels[x, y]
-            if r > 230 and g > 230 and b > 230:
-                pixels[x, y] = (255, 255, 255, 0)
+    pix = img.load()
+    w, h = img.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = pix[x, y]
+            lum = (r * 299 + g * 587 + b * 114) / 1000
+            if lum > 195:
+                pix[x, y] = (0, 0, 0, 0)
+            elif lum > 150:
+                alpha = int(255 * ((195 - lum) / 45))
+                pix[x, y] = (r, g, b, alpha)
     img.save(out_path, 'PNG')
 
 logo_left_trans = 'scratch/logo_arg_safety_trans.png'
