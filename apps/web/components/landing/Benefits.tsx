@@ -128,7 +128,7 @@ export function Benefits() {
 
                         <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
-                                src="/images/ventaja_competitiva_bg.jpg" 
+                                src="/images/soluciones_vmp_4k_real.jpg" 
                                 alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
                                 fill
                                 quality={95}

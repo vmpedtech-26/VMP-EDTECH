@@ -147,7 +147,7 @@ export default function AboutUs() {
                     
                     <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-700/80 shadow-[0_25px_60px_rgba(0,0,0,0.5)] bg-slate-950">
                         <Image
-                            src="/images/sobre_la_empresa_bg.jpg"
+                            src="/images/empresa_vmp_4k_real.jpg"
                             alt="Operaciones de Seguridad Vial e Industrial en Yacimiento Vaca Muerta, Patagonia Argentina"
                             fill
                             quality={95}

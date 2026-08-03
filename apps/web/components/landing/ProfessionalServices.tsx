@@ -210,7 +210,7 @@ export function ProfessionalServices() {
         {/* Background Image: Realistic Organic Corporate Executive Scene */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/soluciones_corporativas_bg.jpg"
+            src="/images/soluciones_vmp_4k_real.jpg"
             alt="Consultoría Técnica Corporativa de Seguridad e Higiene en Planta Industrial de Argentina"
             fill
             sizes="100vw"
