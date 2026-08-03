@@ -55,7 +55,7 @@ export function Benefits() {
                     fill
                     sizes="100vw"
                     quality={95}
-                    className="object-cover object-center"
+                    className="object-cover object-center scale-[0.6]"
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}

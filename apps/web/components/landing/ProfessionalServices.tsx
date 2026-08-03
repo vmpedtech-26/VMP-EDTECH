@@ -109,7 +109,7 @@ export function ProfessionalServices() {
             fill
             sizes="100vw"
             quality={95}
-            className="object-cover object-center brightness-[0.85] contrast-[1.1]"
+            className="object-cover object-center brightness-[0.85] contrast-[1.1] scale-[0.6]"
             priority
           />
           {/* Ambient Lighting Gradient for Sharp Contrast */}
@@ -215,7 +215,7 @@ export function ProfessionalServices() {
             fill
             sizes="100vw"
             quality={95}
-            className="object-cover object-center"
+            className="object-cover object-center scale-[0.6]"
             priority
           />
           {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}
