@@ -101,15 +101,15 @@ export function ProfessionalServices() {
     <>
       {/* Servicios Técnicos Section (Seguridad e Higiene) */}
       <section id="servicios" className="py-16 md:py-20 relative overflow-hidden border-b border-slate-800">
-        {/* Background Image: Realistic Organic Inspection Scene */}
-        <div className="absolute inset-0 z-0">
+        {/* Background Image: Framed & Proportionate */}
+        <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
           <Image
             src="/images/servicios_tecnicos_bg.jpg"
             alt="Inspección Técnica de Seguridad e Higiene en Neuquén y Vaca Muerta, Argentina"
             fill
             sizes="100vw"
             quality={95}
-            className="object-cover object-center brightness-[0.85] contrast-[1.1] scale-[0.6]"
+            className="object-cover object-center brightness-[0.85] contrast-[1.1]"
             priority
           />
           {/* Ambient Lighting Gradient for Sharp Contrast */}
@@ -207,15 +207,15 @@ export function ProfessionalServices() {
 
       {/* Soluciones Corporativas Section */}
       <section id="servicios-profesionales" className="py-16 md:py-20 relative overflow-hidden border-t border-slate-800">
-        {/* Background Image: Realistic Organic Corporate Executive Scene */}
-        <div className="absolute inset-0 z-0">
+        {/* Background Image: Framed & Proportionate */}
+        <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
           <Image
             src="/images/soluciones_corporativas_bg.jpg"
             alt="Consultoría Técnica Corporativa de Seguridad e Higiene en Planta Industrial de Argentina"
             fill
             sizes="100vw"
             quality={95}
-            className="object-cover object-center scale-[0.6]"
+            className="object-cover object-center"
             priority
           />
           {/* Organic Dark Overlay for Maximum Legibility & Cinematic Atmosphere */}

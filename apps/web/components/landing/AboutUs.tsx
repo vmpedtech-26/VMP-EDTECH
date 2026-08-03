@@ -14,19 +14,19 @@ export default function AboutUs() {
 
     return (
         <section id="sobre-nosotros" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
-            {/* Background Image: Realistic Corporate Operations & Control Center */}
-            <div className="absolute inset-0 z-0">
+            {/* Background Image: Framed & Proportionate */}
+            <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
                 <Image
                     src="/images/sobre_la_empresa_bg.jpg"
                     alt="Operaciones de Seguridad e Higiene en Yacimiento Vaca Muerta, Patagonia Argentina"
                     fill
                     sizes="100vw"
                     quality={95}
-                    className="object-cover object-center scale-[0.6]"
+                    className="object-cover object-center"
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/90 backdrop-blur-[1px]" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12 md:space-y-16">
