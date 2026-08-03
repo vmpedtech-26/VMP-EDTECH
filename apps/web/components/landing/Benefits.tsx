@@ -46,7 +46,7 @@ export function Benefits() {
     };
 
     return (
-        <section id="beneficios" className="py-24 relative overflow-hidden border-b border-slate-800">
+        <section id="beneficios" className="py-14 relative overflow-hidden border-b border-slate-800">
             {/* Background Image: Realistic Industrial Transport Scene */}
             <div className="absolute inset-0 z-0">
                 <Image
