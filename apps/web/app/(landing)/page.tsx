@@ -1,29 +1,31 @@
-import HeroSection from '@/components/landing/HeroSection';
-import ValueProposition from '@/components/landing/ValueProposition';
-import { Benefits } from '@/components/landing/Benefits';
-import CourseCatalog from '@/components/landing/CourseCatalog';
-import { CredentialSection } from '@/components/landing/CredentialSection';
-import Quoter from '@/components/landing/Quoter';
-import { Testimonials } from '@/components/landing/Testimonials';
-import FAQ from '@/components/landing/FAQ';
-import FinalCTA from '@/components/landing/FinalCTA';
+import dynamic from 'next/dynamic';
 import Header from '@/components/landing/Header';
+import CourseCatalog from '@/components/landing/CourseCatalog';
 import Footer from '@/components/landing/Footer';
-
+const ProfessionalServices = dynamic(() => import('@/components/landing/ProfessionalServices').then(mod => mod.ProfessionalServices));
+const ValueProposition = dynamic(() => import('@/components/landing/ValueProposition'));
+const AboutUs = dynamic(() => import('@/components/landing/AboutUs'));
+const Benefits = dynamic(() => import('@/components/landing/Benefits').then(mod => mod.Benefits));
+const Alianzas = dynamic(() => import('@/components/landing/Alianzas').then(mod => mod.Alianzas));
+const ContactSection = dynamic(() => import('@/components/landing/ContactSection'));
+const Testimonials = dynamic(() => import('@/components/landing/Testimonials').then(mod => mod.Testimonials));
+const FinalCTA = dynamic(() => import('@/components/landing/FinalCTA'));
+const LegalSection = dynamic(() => import('@/components/landing/LegalSection'));
 
 export default function LandingPage() {
     return (
         <main className="min-h-screen">
             <Header />
-            <HeroSection />
-            <ValueProposition />
-            <Benefits />
             <CourseCatalog />
-            <CredentialSection />
-            <Quoter />
+            <ProfessionalServices />
+            <ValueProposition />
+            <AboutUs />
+            <Benefits />
+            <Alianzas />
+            <ContactSection />
             <Testimonials />
-            <FAQ />
             <FinalCTA />
+            <LegalSection />
             <Footer />
         </main>
     );

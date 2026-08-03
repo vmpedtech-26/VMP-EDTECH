@@ -1,102 +1,118 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/Card';
-import {
-    TrendingUp,
-    Clock,
-    Shield,
-    BarChart3,
-    CheckCircle,
-    Users,
-} from 'lucide-react';
+import Image from 'next/image';
+import { TrendingUp, Clock, FileCheck, BarChart3, QrCode, Layers } from 'lucide-react';
 
 const benefits = [
     {
-        icon: TrendingUp,
+        icon: <TrendingUp className="h-5 w-5 text-primary" />,
         title: 'Aumenta la Productividad',
-        description: 'Personal capacitado rinde más y comete menos errores',
+        description: 'Personal capacitado rinde más y comete menos errores en campo.',
     },
     {
-        icon: Clock,
+        icon: <Clock className="h-5 w-5 text-primary" />,
         title: 'Ahorra Tiempo',
-        description: 'Automatiza la gestión de capacitaciones y certificaciones',
+        description: 'Automatiza la gestión de capacitaciones y vencimiento de credenciales.',
     },
     {
-        icon: Shield,
-        title: 'Cumplimiento Legal',
-        description: 'Credenciales oficiales que cumplen normativas vigentes',
+        icon: <FileCheck className="h-5 w-5 text-primary" />,
+        title: 'Cumplimiento Normativo',
+        description: 'Credenciales oficiales homologadas bajo reglamentación vigente.',
     },
     {
-        icon: BarChart3,
+        icon: <BarChart3 className="h-5 w-5 text-primary" />,
         title: 'Reportes en Tiempo Real',
-        description: 'Métricas y estadísticas de progreso de tus equipos',
+        description: 'Visualiza métricas, estados de cursos y avance técnico de tus equipos.',
     },
     {
-        icon: CheckCircle,
+        icon: <QrCode className="h-5 w-5 text-primary" />,
         title: 'Verificación Instantánea',
-        description: 'Valida credenciales escaneando el código QR',
+        description: 'Valida la autenticidad de cualquier credencial de operador escaneando su código QR.',
     },
     {
-        icon: Users,
-        title: 'Escalable',
-        description: 'Capacita desde 10 hasta 1000+ empleados sin límites',
+        icon: <Layers className="h-5 w-5 text-primary" />,
+        title: 'Escalabilidad Absoluta',
+        description: 'Capacita desde pequeños equipos de campo hasta corporaciones completas sin límites.',
     },
 ];
 
 export function Benefits() {
+    const fadeIn = {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 }
+    };
+
     return (
-        <section id="beneficios" className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                        Beneficios para tu Empresa
-                    </h2>
-                    <p className="text-xl text-gray-600">
-                        Digitaliza la capacitación de tu equipo y obtén resultados medibles
-                    </p>
-                </div>
+        <section id="beneficios" className="py-24 relative overflow-hidden border-b border-slate-800">
+            {/* Background Image: Realistic Industrial Transport Scene */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/ventaja_competitiva_bg.jpg"
+                    alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
+                    priority
+                />
+                {/* Organic Dark Overlay for Contrast & Readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95 backdrop-blur-[2px]" />
+            </div>
 
-                {/* Grid de beneficios */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {benefits.map((benefit, index) => {
-                        const Icon = benefit.icon;
-                        return (
-                            <Card key={index} className="flex flex-col items-start">
-                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-success/10 mb-4">
-                                    <Icon className="h-6 w-6 text-success" />
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                    {benefit.title}
-                                </h3>
-                                <p className="text-gray-600">{benefit.description}</p>
-                            </Card>
-                        );
-                    })}
-                </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                    
+                    {/* Left Column: Title and Benefit Grid */}
+                    <div className="lg:col-span-7 flex flex-col justify-center">
+                        <motion.div 
+                            initial={fadeIn.initial}
+                            whileInView={fadeIn.whileInView}
+                            viewport={fadeIn.viewport}
+                            transition={fadeIn.transition}
+                            className="mb-10 text-left"
+                        >
+                            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4 py-1.5 mb-4 shadow-sm backdrop-blur-md">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">Ventaja Competitiva</span>
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-heading font-black text-white mb-4 tracking-tight leading-tight">
+                                Beneficios de nuestra <span className="text-teal-400 italic relative inline-block">
+                                    Solución Corporativa
+                                    <span className="absolute bottom-1 left-0 w-full h-2.5 bg-teal-500/25 -z-10 rounded-sm" />
+                                </span>
+                            </h2>
+                            <p className="text-base text-slate-200 font-medium max-w-2xl leading-relaxed">
+                                Digitaliza la formación obligatoria de tu equipo, reduce costes operacionales y obtén visibilidad técnica en tiempo real.
+                            </p>
+                        </motion.div>
 
-                {/* Estadísticas */}
-                <div className="mt-16 bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 sm:p-12 text-white">
-                    <div className="grid sm:grid-cols-3 gap-8 text-center">
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">95%</div>
-                            <div className="text-primary-light opacity-90">
-                                Satisfacción de Empresas
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">-40%</div>
-                            <div className="text-primary-light opacity-90">
-                                Reducción de Incidentes
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl sm:text-5xl font-bold mb-2">24/7</div>
-                            <div className="text-primary-light opacity-90">
-                                Acceso a Plataforma
-                            </div>
+                        {/* Grid of benefits */}
+                        <div className="grid sm:grid-cols-2 gap-5">
+                            {benefits.map((benefit, index) => {
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5, delay: index * 0.08 }}
+                                        className="group bg-slate-900/70 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 hover:border-emerald-400/40 hover:bg-slate-900/90 transition-all duration-300 flex flex-col shadow-md"
+                                    >
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 group-hover:border-emerald-400/30 transition-colors duration-300">
+                                            {benefit.icon}
+                                        </div>
+                                        <h3 className="text-base font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                                            {benefit.title}
+                                        </h3>
+                                        <p className="text-slate-300 text-xs font-medium leading-relaxed">
+                                            {benefit.description}
+                                        </p>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     </div>
 

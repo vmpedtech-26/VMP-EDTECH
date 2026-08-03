@@ -1,5 +1,4 @@
-/* Google Fonts - Inter + Outfit for Headings */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap');
+/* Fonts are managed via next/font in layout.tsx */
 
 @tailwind base;
 @tailwind components;
@@ -7,57 +6,90 @@
 
 @layer base {
 
-  /* CSS Variables - VMP Brand Colors */
+  /* CSS Variables - VMP EDTECH Brand Colors */
   :root {
-    /* Primary Colors */
-    --vmp-blue-dark: #0A192F;
-    --vmp-blue-medium: #1E3A5F;
-    --vmp-blue-light: #2D5A8C;
-    --vmp-gold: #FFD700;
-    --vmp-gold-light: #FFE44D;
-    --vmp-gold-dark: #E6C200;
+    /* Primary Colors - Teal/Green (Marca VMP) */
+    --vmp-primary: #3AAFA9;
+    --vmp-primary-light: #5CC8C1;
+    --vmp-primary-dark: #2D9E93;
+    --vmp-primary-50: #F0FDFA;
+    --vmp-primary-100: #CCFBF1;
+    --vmp-primary-200: #99F6E4;
+    --vmp-primary-600: #3AAFA9;
+    --vmp-primary-700: #2D9E93;
+
+    /* Secondary Colors - Navy/Slate */
+    --vmp-secondary: #0F172A;
+    --vmp-secondary-light: #1E293B;
+    --vmp-secondary-dark: #020617;
+    --vmp-secondary-50: #F8FAFC;
+    --vmp-secondary-100: #F1F5F9;
+    --vmp-secondary-200: #E2E8F0;
+
+    /* Accent Colors */
+    --vmp-accent-teal: #14B8A6;
+    --vmp-accent-emerald: #10B981;
+    --vmp-accent-blue: #3B82F6;
 
     /* Semantic Colors */
-    --vmp-success: #48BB78;
-    --vmp-warning: #F6AD55;
-    --vmp-error: #FC8181;
-    --vmp-info: #4299E1;
+    --vmp-success: #10B981;
+    --vmp-warning: #F59E0B;
+    --vmp-error: #EF4444;
+    --vmp-info: #06B6D4;
+    /* Keeping info from old set, as it's not in new */
+    --vmp-info-light: #22D3EE;
+    /* Keeping info-light from old set, as it's not in new */
 
-    /* Neutral Colors */
-    --vmp-gray-50: #F7FAFC;
-    --vmp-gray-100: #EDF2F7;
-    --vmp-gray-200: #E2E8F0;
-    --vmp-gray-300: #CBD5E0;
-    --vmp-gray-400: #A0AEC0;
-    --vmp-gray-500: #718096;
-    --vmp-gray-600: #4A5568;
-    --vmp-gray-700: #2D3748;
-    --vmp-gray-800: #1A202C;
-    --vmp-gray-900: #171923;
+    /* Neutral Colors - Slate */
+    --vmp-slate-50: #F8FAFC;
+    /* Keeping slate from old set, as it's not in new */
+    --vmp-slate-100: #F1F5F9;
+    --vmp-slate-200: #E2E8F0;
+    --vmp-slate-300: #CBD5E1;
+    --vmp-slate-400: #94A3B8;
+    --vmp-slate-500: #64748B;
+    --vmp-slate-600: #475569;
+    --vmp-slate-700: #334155;
+    --vmp-slate-800: #1E293B;
+    --vmp-slate-900: #0F172A;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--vmp-blue-dark) 0%, var(--vmp-blue-medium) 100%);
-    --gradient-gold: linear-gradient(135deg, var(--vmp-gold-dark) 0%, var(--vmp-gold) 50%, var(--vmp-gold-light) 100%);
-    --gradient-overlay: linear-gradient(180deg, rgba(10, 25, 47, 0.9) 0%, rgba(30, 58, 95, 0.8) 100%);
+    /* Gradients Profesionales */
+    --gradient-hero: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 50%, #E0F2FE 100%);
+    --gradient-primary: linear-gradient(135deg, #2D9E93 0%, #5CC8C1 100%);
+    --gradient-dark: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    --gradient-card: linear-gradient(135deg, rgba(58, 175, 169, 0.05) 0%, rgba(92, 200, 193, 0.05) 100%);
+    --gradient-soft: linear-gradient(to bottom, rgba(240, 253, 250, 0.8), rgba(255, 255, 255, 0.9));
+    --gradient-text: linear-gradient(135deg, #2D9E93 0%, #5CC8C1 100%);
+    --gradient-overlay: linear-gradient(180deg, rgba(79, 70, 229, 0.05), rgba(139, 92, 246, 0.1));
+    /* Keeping overlay from old set, as it's not in new */
+    --gradient-accent: linear-gradient(135deg, #FB7185 0%, #FBBF24 100%);
+    /* Keeping accent from old set, as it's not in new */
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-gold: 0 10px 30px -5px rgba(255, 215, 0, 0.3);
+    /* Shadows Profesionales */
+    --shadow-xs: 0 1px 2px 0 rgba(58, 175, 169, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(58, 175, 169, 0.1), 0 1px 2px 0 rgba(58, 175, 169, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(58, 175, 169, 0.1), 0 2px 4px -1px rgba(58, 175, 169, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(58, 175, 169, 0.1), 0 4px 6px -2px rgba(58, 175, 169, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(58, 175, 169, 0.1), 0 10px 10px -5px rgba(58, 175, 169, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(79, 70, 229, 0.2);
+    /* Keeping 2xl from old set, as it's not in new */
+    --shadow-glow: 0 0 30px -5px rgba(139, 92, 246, 0.3);
+    /* Keeping glow from old set, as it's not in new */
+    --shadow-soft: 0 2px 8px 0 rgba(15, 23, 42, 0.06);
+    /* Keeping soft from old set, as it's not in new */
 
     /* Animation Durations */
-    --duration-fast: 150ms;
+    --duration-fast: 200ms;
     --duration-normal: 300ms;
     --duration-slow: 500ms;
+    --duration-slower: 700ms;
 
     /* Easing Functions */
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --ease-in: cubic-bezier(0.4, 0, 1, 1);
     --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   * {
@@ -66,7 +98,7 @@
 
   body {
     @apply bg-white text-gray-900 antialiased;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -80,7 +112,7 @@
   h5,
   h6 {
     @apply font-bold text-gray-900;
-    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    font-family: var(--font-outfit), var(--font-inter), system-ui, sans-serif;
     letter-spacing: -0.02em;
   }
 
@@ -92,19 +124,28 @@
 
 @layer components {
 
-  /* Glassmorphism Effects */
+  /* Glassmorphism Effects Premium */
   .glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-soft);
   }
 
   .glass-dark {
-    background: rgba(10, 25, 47, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    background: rgba(79, 70, 229, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: var(--shadow-md);
   }
 
   /* Premium Gradients */
@@ -112,28 +153,44 @@
     background: var(--gradient-primary);
   }
 
-  .gradient-gold {
-    background: var(--gradient-gold);
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .gradient-soft {
+    background: var(--gradient-soft);
   }
 
   .gradient-text {
-    background: var(--gradient-gold);
+    background: var(--gradient-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Animated Buttons */
+  .gradient-text-accent {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animated Buttons Premium */
   .btn-primary {
-    @apply px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300;
-    background: var(--vmp-gold);
-    color: var(--vmp-blue-dark);
+    @apply px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300;
+    background: var(--vmp-primary);
+    color: white;
     box-shadow: var(--shadow-md);
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: var(--shadow-gold);
+    background: var(--vmp-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 
   .btn-primary:active {
@@ -141,28 +198,54 @@
   }
 
   .btn-secondary {
-    @apply px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300;
+    @apply px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300;
     background: transparent;
-    border: 2px solid var(--vmp-gold);
-    color: var(--vmp-gold);
+    border: 2px solid var(--vmp-primary);
+    color: var(--vmp-primary);
   }
 
   .btn-secondary:hover {
-    background: var(--vmp-gold);
-    color: var(--vmp-blue-dark);
+    background: var(--vmp-primary-50);
+    border-color: var(--vmp-primary-dark);
+    color: var(--vmp-primary-dark);
     transform: translateY(-2px);
   }
 
-  /* Card Styles */
-  .card-premium {
-    @apply rounded-xl overflow-hidden transition-all duration-300;
-    background: white;
+  .btn-accent {
+    @apply px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300;
+    background: var(--gradient-accent);
+    color: white;
     box-shadow: var(--shadow-md);
   }
 
+  .btn-accent:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Card Styles Premium */
+  .card-premium {
+    @apply rounded-2xl overflow-hidden transition-all duration-500;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--vmp-slate-100);
+  }
+
   .card-premium:hover {
-    box-shadow: var(--shadow-2xl);
+    box-shadow: var(--shadow-xl);
     transform: translateY(-8px);
+    border-color: var(--vmp-primary-200);
+  }
+
+  .card-soft {
+    @apply rounded-xl p-6 transition-all duration-300;
+    background: var(--gradient-soft);
+    border: 1px solid var(--vmp-slate-100);
+  }
+
+  .card-soft:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
   }
 }
 
