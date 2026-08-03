@@ -34,7 +34,7 @@ export default function ValueProposition() {
     };
 
     return (
-        <section className="py-14 relative overflow-hidden border-b border-slate-800">
+        <section className="py-16 md:py-20 relative overflow-hidden border-b border-slate-800">
             {/* Background Image: Realistic Driving Instruction Scene */}
             <div className="absolute inset-0 z-0">
                 <Image

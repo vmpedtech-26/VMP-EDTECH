@@ -144,7 +144,7 @@ export default function CourseCatalog() {
     return (
         <section
             id="cursos"
-            className="relative py-0 overflow-hidden bg-[#0a1628]"
+            className="relative py-16 md:py-20 overflow-hidden bg-[#0a1628]"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >

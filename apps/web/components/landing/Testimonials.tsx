@@ -66,7 +66,7 @@ export function Testimonials() {
     };
 
     return (
-        <section id="testimonios" className="py-24 bg-slate-50 overflow-hidden">
+        <section id="testimonios" className="py-16 md:py-20 bg-slate-50 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div 

@@ -20,7 +20,7 @@ const ALIANZAS = [
 
 export function Alianzas() {
   return (
-    <section id="alianzas" className="py-12 bg-slate-50 border-t border-b border-slate-100">
+    <section id="alianzas" className="py-16 md:py-20 bg-slate-50 border-t border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header - More compact */}
         <div className="text-center max-w-2xl mx-auto mb-8">

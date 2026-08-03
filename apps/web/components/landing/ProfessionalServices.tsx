@@ -100,7 +100,7 @@ export function ProfessionalServices() {
   return (
     <>
       {/* Servicios Técnicos Section (Seguridad e Higiene) */}
-      <section id="servicios" className="py-16 relative overflow-hidden border-b border-slate-800">
+      <section id="servicios" className="py-16 md:py-20 relative overflow-hidden border-b border-slate-800">
         {/* Background Image: Realistic Organic Inspection Scene */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -206,7 +206,7 @@ export function ProfessionalServices() {
       </section>
 
       {/* Soluciones Corporativas Section */}
-      <section id="servicios-profesionales" className="py-14 relative overflow-hidden border-t border-slate-800">
+      <section id="servicios-profesionales" className="py-16 md:py-20 relative overflow-hidden border-t border-slate-800">
         {/* Background Image: Realistic Organic Corporate Executive Scene */}
         <div className="absolute inset-0 z-0">
           <Image

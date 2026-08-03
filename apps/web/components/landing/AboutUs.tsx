@@ -13,7 +13,7 @@ export default function AboutUs() {
     };
 
     return (
-        <section id="sobre-nosotros" className="relative py-10 md:py-14 overflow-hidden border-b border-slate-800">
+        <section id="sobre-nosotros" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
             {/* Background Image: Realistic Corporate Operations & Control Center */}
             <div className="absolute inset-0 z-0">
                 <Image
