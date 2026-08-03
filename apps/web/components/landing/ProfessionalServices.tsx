@@ -101,8 +101,8 @@ export function ProfessionalServices() {
     <>
       {/* Servicios Técnicos Section (Seguridad e Higiene) */}
       <section id="servicios" className="py-16 md:py-20 relative overflow-hidden border-b border-slate-800">
-        {/* Background Image: Framed & Proportionate */}
-        <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
+        {/* Background Image: Full Section Cover */}
+        <div className="absolute inset-0 z-0">
           <Image
             src="/images/servicios_tecnicos_bg.jpg"
             alt="Inspección Técnica de Seguridad e Higiene en Neuquén y Vaca Muerta, Argentina"
@@ -207,8 +207,8 @@ export function ProfessionalServices() {
 
       {/* Soluciones Corporativas Section */}
       <section id="servicios-profesionales" className="py-16 md:py-20 relative overflow-hidden border-t border-slate-800">
-        {/* Background Image: Framed & Proportionate */}
-        <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
+        {/* Background Image: Full Section Cover */}
+        <div className="absolute inset-0 z-0">
           <Image
             src="/images/soluciones_corporativas_bg.jpg"
             alt="Consultoría Técnica Corporativa de Seguridad e Higiene en Planta Industrial de Argentina"

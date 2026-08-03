@@ -47,8 +47,8 @@ export function Benefits() {
 
     return (
         <section id="beneficios" className="py-16 md:py-20 relative overflow-hidden border-b border-slate-800">
-            {/* Background Image: Framed & Proportionate */}
-            <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
+            {/* Background Image: Full Section Cover */}
+            <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/ventaja_competitiva_bg.jpg"
                     alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
@@ -59,7 +59,7 @@ export function Benefits() {
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/90 backdrop-blur-[1px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

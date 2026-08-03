@@ -155,7 +155,7 @@ export default function CourseCatalog() {
                     src="/images/vmp_hero_winter.png"
                     alt="Background Winter Road"
                     fill
-                    className="object-cover opacity-[0.35] scale-[0.6]"
+                    className="object-cover opacity-[0.35]"
                     priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/70 via-[#0a1628]/50 to-[#0a1628]/90" />

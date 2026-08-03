@@ -14,8 +14,8 @@ export default function AboutUs() {
 
     return (
         <section id="sobre-nosotros" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
-            {/* Background Image: Framed & Proportionate */}
-            <div className="absolute inset-3 md:inset-6 lg:inset-10 z-0 rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl">
+            {/* Background Image: Full Section Cover */}
+            <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/sobre_la_empresa_bg.jpg"
                     alt="Operaciones de Seguridad e Higiene en Yacimiento Vaca Muerta, Patagonia Argentina"
@@ -26,7 +26,7 @@ export default function AboutUs() {
                     priority
                 />
                 {/* Organic Dark Overlay for Contrast & Readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/90 backdrop-blur-[1px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12 md:space-y-16">
