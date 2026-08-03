@@ -47,29 +47,14 @@ const benefits = [
 
 export function Benefits() {
     return (
-        <section id="beneficios" className="py-24 relative overflow-hidden bg-[#0A192F] border-b border-slate-800">
-            {/* Background 4K Real Image: Corporate Transport Fleet */}
-            <div className="absolute inset-0 z-0">
-                <Image
-                    src="/images/soluciones_vmp_4k_real.jpg"
-                    alt="Beneficios Corporativos de Capacitación Vial VMP"
-                    fill
-                    sizes="100vw"
-                    quality={95}
-                    className="object-cover object-center"
-                    priority
-                />
-                {/* Organic Dark Overlay for High Legibility */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0A192F]/94 via-[#0A192F]/88 to-[#0A192F]/95 backdrop-blur-[2px]" />
-            </div>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <section id="beneficios" className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                        Beneficios para tu <span className="gradient-text">Empresa</span>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                        Beneficios para tu Empresa
                     </h2>
-                    <p className="text-xl text-gray-300">
+                    <p className="text-xl text-gray-600">
                         Digitaliza la capacitación de tu equipo y obtén resultados medibles
                     </p>
                 </div>
@@ -128,7 +113,7 @@ export function Benefits() {
 
                         <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[3/4] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
-                                src="/images/soluciones_vmp_4k_real.jpg" 
+                                src="/images/ventaja_competitiva_bg.jpg" 
                                 alt="Conducción Preventiva en Climas Extremos y Rutas de la Patagonia Argentina"
                                 fill
                                 quality={95}

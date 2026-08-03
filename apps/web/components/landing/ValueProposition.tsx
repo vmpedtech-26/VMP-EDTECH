@@ -38,7 +38,7 @@ export default function ValueProposition() {
             {/* Background Image: Realistic Driving Instruction Scene */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/images/porque_vmp_4k_real.jpg"
+                    src="/images/porque_elegir_vmp_bg.jpg"
                     alt="Capacitación Vial Práctica de Flotas en Rutas y Terreno de Argentina"
                     fill
                     sizes="100vw"
@@ -66,7 +66,7 @@ export default function ValueProposition() {
                         
                         <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
-                                src="/images/porque_vmp_4k_real.jpg" 
+                                src="/images/porque_elegir_vmp_bg.jpg" 
                                 alt="Capacitación Vial Práctica de Flotas en Rutas de Argentina"
                                 fill
                                 sizes="(max-width: 1024px) 100vw, 50vw"
