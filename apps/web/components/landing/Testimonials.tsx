@@ -66,8 +66,23 @@ export function Testimonials() {
     };
 
     return (
-        <section id="testimonios" className="py-16 md:py-20 bg-slate-50 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="testimonios" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
+            {/* Background Image: Full Section Cover */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/confian_bg.jpg"
+                    alt="Ejecutivos y Directores que Confían en VMP EDTECH"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
+                    priority
+                />
+                {/* Organic Dark Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95" />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
@@ -75,10 +90,10 @@ export function Testimonials() {
                     viewport={{ once: true }}
                     className="text-center max-w-3xl mx-auto mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold font-heading text-slate-900 mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold font-heading text-white mb-6">
                         Confían en <span className="gradient-text">VMP - EDTECH</span>
                     </h2>
-                    <p className="text-xl text-slate-600">
+                    <p className="text-xl text-slate-300">
                         Empresas líderes que transformaron su cultura de seguridad
                     </p>
                 </motion.div>

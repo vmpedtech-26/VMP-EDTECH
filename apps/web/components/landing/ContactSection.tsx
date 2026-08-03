@@ -51,8 +51,23 @@ export default function ContactSection() {
     };
 
     return (
-        <section id="contacto" className="py-16 md:py-20 bg-gradient-to-b from-slate-50 to-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="contacto" className="relative py-16 md:py-20 overflow-hidden border-b border-slate-800">
+            {/* Background Image: Full Section Cover */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/contacto_bg.jpg"
+                    alt="Oficina de Asesoramiento e Inspección VMP EDTECH en Patagonia Argentina"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-cover object-center"
+                    priority
+                />
+                {/* Organic Dark Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95" />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <motion.div
                     className="text-center mb-10"
@@ -61,13 +76,13 @@ export default function ContactSection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
-                    <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
+                    <span className="inline-block px-4 py-1.5 bg-primary/20 text-primary-300 rounded-full text-sm font-semibold mb-4 border border-primary/30">
                         Contacto
                     </span>
-                    <h2 className="font-heading font-bold text-4xl md:text-5xl text-slate-900 mb-4">
+                    <h2 className="font-heading font-bold text-4xl md:text-5xl text-white mb-4">
                         Hablemos de tu Proyecto
                     </h2>
-                    <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                    <p className="text-xl text-slate-300 max-w-3xl mx-auto">
                         Contanos sobre tu flota y te armamos una propuesta a medida
                     </p>
                 </motion.div>
