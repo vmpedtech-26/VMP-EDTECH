@@ -55,7 +55,7 @@ export function Alianzas() {
                 src={alianza.logo}
                 alt={`Logo de ${alianza.name}`}
                 fill
-                className="object-contain p-2 filter grayscale opacity-85 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+                className="object-contain p-2 transition-all duration-300"
                 sizes="(max-width: 768px) 50vw, 20vw"
               />
             </motion.div>
