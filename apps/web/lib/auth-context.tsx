@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_URL } from '@/lib/api-client';
 
 interface User {
     id: string;
@@ -30,12 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        // 1. Trigger non-blocking API Auto-Warmup to wake up Render backend container if sleeping
-        fetch(`${API_URL}/`, { method: 'GET', mode: 'cors' }).catch(() => {
-            // Silence background warmup errors
-        });
-
-        // 2. Cargar sesión desde localStorage al iniciar
+        // Cargar sesión desde localStorage al iniciar
         const token = localStorage.getItem('vmp_token');
         const userData = localStorage.getItem('vmp_user');
 

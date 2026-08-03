@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { CursoForm } from '@/components/admin/CursoForm';
 import { cursosApi } from '@/lib/api/cursos';
 import { Curso } from '@/types/training';
-import { toast } from 'sonner';
 
 export default function NuevoCursoPage() {
     const router = useRouter();
@@ -15,11 +14,10 @@ export default function NuevoCursoPage() {
         setIsLoading(true);
         try {
             await cursosApi.crearCurso(data);
-            toast.success('Curso creado exitosamente');
             router.push('/dashboard/super/cursos');
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating curso:', error);
-            toast.error(error.message || 'Error al crear el curso. Por favor reintenta.');
+            alert('Error al crear el curso. Verifica que el código no esté duplicado.');
         } finally {
             setIsLoading(false);
         }
@@ -33,4 +31,3 @@ export default function NuevoCursoPage() {
         />
     );
 }
-

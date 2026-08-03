@@ -54,21 +54,9 @@ export default function HeroSection() {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center bg-[#0A192F] overflow-hidden">
-            {/* Background 4K Real Image */}
-            <div className="absolute inset-0 z-0 opacity-40">
-                <Image
-                    src="/images/hero_vmp_4k_real.jpg"
-                    alt="Capacitación y Seguridad Vial VMP"
-                    fill
-                    sizes="100vw"
-                    quality={95}
-                    className="object-cover object-center"
-                    priority
-                />
-            </div>
+        <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-[#0A192F] via-[#1E3A5F] to-[#0A192F] overflow-hidden">
             {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5 z-0 pointer-events-none">
+            <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0" style={{
                     backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.1) 35px, rgba(255,215,0,0.1) 70px)`
                 }} />
