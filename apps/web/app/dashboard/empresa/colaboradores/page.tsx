@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
-import { Users, UserPlus, Mail, AlertCircle, CheckCircle, Upload } from 'lucide-react';
+import { Users, UserPlus, Mail, AlertCircle, CheckCircle, Upload, QrCode } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ModalCargaMasiva } from '@/components/dashboard/ModalCargaMasiva';
+import { ModalQrCorporativo } from '@/components/dashboard/ModalQrCorporativo';
 
 interface Employee {
     id: string;
@@ -26,6 +27,7 @@ export default function ColaboradoresPage() {
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isMasivoOpen, setIsMasivoOpen] = useState(false);
+    const [isQrOpen, setIsQrOpen] = useState(false);
     const [formData, setFormData] = useState({ nombre: '', apellido: '', dni: '', email: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [tempPassword, setTempPassword] = useState<string | null>(null);
@@ -75,6 +77,13 @@ export default function ColaboradoresPage() {
                     <p className="text-sm text-gray-500 mt-1">Gestiona los conductores de tu empresa y dálos de alta.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                        onClick={() => setIsQrOpen(true)}
+                        className="flex items-center justify-center space-x-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm shadow-sm"
+                    >
+                        <QrCode className="w-4 h-4 text-primary-light" />
+                        <span>Link & QR Auto-registro</span>
+                    </button>
                     <button 
                         onClick={() => setIsMasivoOpen(true)}
                         className="flex items-center justify-center space-x-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors text-sm"
@@ -229,6 +238,13 @@ export default function ColaboradoresPage() {
                 onClose={() => setIsMasivoOpen(false)}
                 onSuccess={fetchEmployees}
                 empresaId={user?.empresaId}
+            />
+
+            <ModalQrCorporativo
+                isOpen={isQrOpen}
+                onClose={() => setIsQrOpen(false)}
+                empresaNombre={user?.nombre ? `${user.nombre} ${user.apellido || ''}` : 'Empresa Cliente'}
+                empresaSlug={user?.empresaId || 'oldelval'}
             />
         </div>
     );

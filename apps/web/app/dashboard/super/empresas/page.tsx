@@ -15,18 +15,21 @@ import {
     Trash2,
     Loader2,
     CheckCircle2,
-    XCircle
+    XCircle,
+    QrCode
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { empresasApi, Empresa } from '@/lib/api/empresas';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ModalQrCorporativo } from '@/components/dashboard/ModalQrCorporativo';
 
 export default function EmpresasPage() {
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [qrModalData, setQrModalData] = useState<{ nombre: string; slug: string } | null>(null);
 
     const fetchEmpresas = async () => {
         try {
@@ -149,11 +152,20 @@ export default function EmpresasPage() {
 
                             <div className="pt-6 border-t border-gray-50 flex items-center justify-between mt-auto">
                                 <div className="flex items-center gap-1">
+                                    <Button
+                                        variant="ghost"
+                                        size="xs"
+                                        className="h-8 w-8 p-0 rounded-full hover:bg-slate-100 text-slate-700"
+                                        title="Generar Link y Código QR de Auto-registro"
+                                        onClick={() => setQrModalData({
+                                            nombre: empresa.nombre,
+                                            slug: empresa.nombre.toLowerCase().replace(/[^a-z0-9]/g, '-')
+                                        })}
+                                    >
+                                        <QrCode className="h-4 w-4 text-primary" />
+                                    </Button>
                                     <Button variant="ghost" size="xs" className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-500" onClick={() => handleDelete(empresa.id)}>
                                         <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="xs" className="h-8 w-8 p-0 rounded-full">
-                                        <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </div>
                                 <Button variant="outline" size="sm" className="rounded-xl border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-bold">
@@ -223,6 +235,15 @@ export default function EmpresasPage() {
                     </>
                 )}
             </div>
+
+            {qrModalData && (
+                <ModalQrCorporativo
+                    isOpen={!!qrModalData}
+                    onClose={() => setQrModalData(null)}
+                    empresaNombre={qrModalData.nombre}
+                    empresaSlug={qrModalData.slug}
+                />
+            )}
         </div>
     );
 }
