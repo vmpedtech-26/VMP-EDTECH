@@ -9,13 +9,15 @@ import {
     Clock,
     ArrowUpRight,
     TrendingUp,
-    Star
+    Star,
+    UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { evidenciasApi } from '@/lib/api/evidencias';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ModalAltaCampoInstructor } from '@/components/dashboard/ModalAltaCampoInstructor';
 
 export default function InstructorDashboard() {
     const { user } = useAuth();
@@ -25,6 +27,7 @@ export default function InstructorDashboard() {
         activeAlumnos: 0
     });
     const [isLoading, setIsLoading] = useState(true);
+    const [isAltaCampoOpen, setIsAltaCampoOpen] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -88,15 +91,24 @@ export default function InstructorDashboard() {
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Panel de Instructor</h1>
-                    <p className="text-gray-600 mt-2">Bienvenido de nuevo, {user?.nombre}. Tienes {stats.pending} tareas pendientes de revisión.</p>
+                    <h1 className="text-2xl font-bold text-gray-900">Panel de Instructor</h1>
+                    <p className="text-gray-500 text-sm mt-1">Bienvenido de nuevo, {user?.nombre}. Tienes {stats.pending} tareas pendientes de revisión.</p>
                 </div>
-                <Button className="hidden md:flex gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Ver Reportes
-                </Button>
+                <div className="flex gap-3">
+                    <Button
+                        onClick={() => setIsAltaCampoOpen(true)}
+                        className="bg-primary hover:bg-primary-dark text-white font-bold gap-2 text-sm shadow-md shadow-primary/20"
+                    >
+                        <UserPlus className="h-4 w-4" />
+                        + Alta Rápida en Campo
+                    </Button>
+                    <Button variant="outline" className="hidden md:flex gap-2 bg-white border-gray-200 text-gray-700">
+                        <TrendingUp className="h-4 w-4" />
+                        Ver Reportes
+                    </Button>
+                </div>
             </div>
 
             {/* Stats Grid */}
@@ -195,6 +207,11 @@ export default function InstructorDashboard() {
                     </Card>
                 </div>
             </div>
+            <ModalAltaCampoInstructor
+                isOpen={isAltaCampoOpen}
+                onClose={() => setIsAltaCampoOpen(false)}
+                onSuccess={() => {}}
+            />
         </div>
     );
 }

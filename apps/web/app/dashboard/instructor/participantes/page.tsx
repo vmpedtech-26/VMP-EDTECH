@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Camera, Check, X, Upload, Users, Building2, Filter } from 'lucide-react';
+import { Camera, Check, X, Upload, Users, Building2, Filter, UserPlus } from 'lucide-react';
 import Image from 'next/image';
+import { ModalAltaCampoInstructor } from '@/components/dashboard/ModalAltaCampoInstructor';
 
 interface Alumno {
     id: string;
@@ -33,6 +34,7 @@ export default function ParticipantesPage() {
     const [filtroEstado, setFiltroEstado] = useState<string>('all');
     const [loading, setLoading] = useState(true);
     const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+    const [isAltaCampoOpen, setIsAltaCampoOpen] = useState(false);
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
@@ -194,9 +196,18 @@ export default function ParticipantesPage() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">Participantes</h1>
-                <p className="text-gray-600 mt-2">Gestiona las fotos de credencial de los alumnos</p>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Participantes</h1>
+                    <p className="text-gray-500 text-sm">Gestiona las fotos y nóminas de alumnos en campo.</p>
+                </div>
+                <button
+                    onClick={() => setIsAltaCampoOpen(true)}
+                    className="flex items-center justify-center space-x-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-md shadow-primary/20 text-sm shrink-0"
+                >
+                    <UserPlus className="h-4 w-4" />
+                    <span>+ Alta Rápida en Campo</span>
+                </button>
             </div>
 
             {/* Filtros */}
@@ -362,6 +373,12 @@ export default function ParticipantesPage() {
                     </p>
                 </div>
             )}
+
+            <ModalAltaCampoInstructor
+                isOpen={isAltaCampoOpen}
+                onClose={() => setIsAltaCampoOpen(false)}
+                onSuccess={fetchAlumnos}
+            />
         </div>
     );
 }
