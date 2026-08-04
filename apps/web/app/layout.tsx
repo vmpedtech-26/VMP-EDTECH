@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://vmp-edtech.com'),
     title: 'VMP Servicios - Capacitación Profesional Certificada',
     description:
         'Plataforma de capacitación profesional con credenciales verificables con código QR. Cursos teórico-prácticos con validez industrial.',
@@ -18,8 +19,8 @@ export const metadata: Metadata = {
         description:
             'Capacitación profesional con credenciales digitales verificables.',
         type: 'website',
+        url: 'https://vmp-edtech.com',
     },
-    viewport: 'width=device-width, initial-scale=1',
 };
 
 import { AuthProvider } from '@/lib/auth-context';
