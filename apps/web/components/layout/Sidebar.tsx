@@ -15,13 +15,25 @@ import {
     ChevronRight,
     ClipboardCheck,
     UserCog,
-    Sliders
+    Sliders,
+    Calculator,
+    FileText,
+    TrendingUp,
+    ShoppingBag,
+    PieChart,
+    BarChart3,
+    ShieldCheck,
+    Building2,
+    GraduationCap,
+    FileSpreadsheet,
+    Cpu,
+    Lock
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
 interface SidebarProps {
-    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR';
+    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'EMPRESA' | 'CONTADOR';
 }
 
 interface MenuItem {
@@ -40,12 +52,44 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Settings, label: 'Mi Perfil', href: '/dashboard/perfil' },
     ],
     SUPER_ADMIN: [
-        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/super' },
-        { icon: Users, label: 'Empresas', href: '/dashboard/super/empresas' },
-        { icon: Users, label: 'Alumnos', href: '/dashboard/super/alumnos' },
-        { icon: BookOpen, label: 'Cursos Globales', href: '/dashboard/super/cursos' },
-        { icon: Award, label: 'Todas las Credenciales', href: '/dashboard/super/credenciales' },
-        { icon: Settings, label: 'Sistema', href: '/dashboard/super/sistema' },
+        { icon: LayoutDashboard, label: 'Panel General', href: '/dashboard/super' },
+        {
+            icon: Calculator,
+            label: 'Sistema Contable (RT54)',
+            submenu: [
+                { icon: FileText, label: 'Resumen Contable', href: '/dashboard/super/contabilidad' },
+                { icon: BookOpen, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+                { icon: TrendingUp, label: 'Ventas y Facturación', href: '/dashboard/super/contabilidad/ventas' },
+                { icon: ShoppingBag, label: 'Compras y Gastos', href: '/dashboard/super/contabilidad/compras' },
+                { icon: PieChart, label: 'Plan de Cuentas', href: '/dashboard/super/contabilidad/cuentas' },
+                { icon: BarChart3, label: 'Reportes Financieros', href: '/dashboard/super/contabilidad/reportes' },
+                { icon: ShieldCheck, label: 'Balance RT54 (FACPCE)', href: '/dashboard/super/contabilidad/rt54' },
+            ]
+        },
+        { icon: Building2, label: 'Empresas B2B', href: '/dashboard/super/empresas' },
+        { icon: Users, label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos' },
+        { icon: GraduationCap, label: 'Gestión LMS Cursos', href: '/dashboard/super/cursos' },
+        { icon: Award, label: 'Credenciales & QR', href: '/dashboard/super/credenciales' },
+        { icon: FileSpreadsheet, label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones' },
+        { icon: Cpu, label: 'Telemetría OBD2', href: '/dashboard/super/control' },
+        { icon: BarChart3, label: 'Métricas & KPIs', href: '/dashboard/super/metrics' },
+        { icon: ShieldCheck, label: 'Compliance & Ética', href: '/dashboard/super/compliance' },
+        { icon: Lock, label: 'Seguridad & Logs', href: '/dashboard/super/seguridad' },
+        { icon: Settings, label: 'Configuración Sistema', href: '/dashboard/super/sistema' },
+    ],
+    EMPRESA: [
+        { icon: LayoutDashboard, label: 'Panel Empresa', href: '/dashboard/empresa' },
+        { icon: Users, label: 'Colaboradores', href: '/dashboard/empresa/colaboradores' },
+        { icon: GraduationCap, label: 'Asignar Cursos', href: '/dashboard/empresa/asignar' },
+    ],
+    CONTADOR: [
+        { icon: FileText, label: 'Resumen Contable', href: '/dashboard/super/contabilidad' },
+        { icon: BookOpen, label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+        { icon: TrendingUp, label: 'Ventas y Facturación', href: '/dashboard/super/contabilidad/ventas' },
+        { icon: ShoppingBag, label: 'Compras y Gastos', href: '/dashboard/super/contabilidad/compras' },
+        { icon: PieChart, label: 'Plan de Cuentas', href: '/dashboard/super/contabilidad/cuentas' },
+        { icon: BarChart3, label: 'Reportes Financieros', href: '/dashboard/super/contabilidad/reportes' },
+        { icon: ShieldCheck, label: 'Balance RT54', href: '/dashboard/super/contabilidad/rt54' },
     ],
     INSTRUCTOR: [
         { icon: LayoutDashboard, label: 'Inicio', href: '/dashboard/instructor' },
@@ -152,11 +196,13 @@ export function Sidebar({ userRole }: SidebarProps) {
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <div>
-                                <div className="text-lg font-bold text-gray-900">VMP</div>
-                                <div className="text-xs text-gray-500">
-                                    {userRole === 'ALUMNO' && 'Alumno'}
-                                    {userRole === 'SUPER_ADMIN' && 'Super Admin'}
-                                    {userRole === 'INSTRUCTOR' && 'Instructor'}
+                                <div className="text-lg font-bold text-gray-900">VMP EDTECH</div>
+                                <div className="text-xs text-gray-500 font-medium">
+                                    {userRole === 'ALUMNO' && 'Panel Alumno'}
+                                    {userRole === 'SUPER_ADMIN' && 'Super Admin & Contabilidad'}
+                                    {userRole === 'EMPRESA' && 'Panel Empresa B2B'}
+                                    {userRole === 'CONTADOR' && 'Sistema Contable RT54'}
+                                    {userRole === 'INSTRUCTOR' && 'Panel Instructor'}
                                 </div>
                             </div>
                         </Link>

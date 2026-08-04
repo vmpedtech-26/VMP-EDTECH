@@ -21,7 +21,7 @@ export default function DashboardLayout({
 
     return (
         <div className="flex min-h-screen bg-background-light">
-            <Sidebar userRole={(user?.rol || 'ALUMNO') as any} />
+            <Sidebar userRole={(user?.rol || 'SUPER_ADMIN') as any} />
             <main className="flex-1 lg:ml-0 overflow-y-auto">
                 <div className="p-6 lg:p-8">{children}</div>
             </main>

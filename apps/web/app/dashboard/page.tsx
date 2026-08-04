@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { BookOpen, Award, TrendingUp, Clock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -13,11 +14,35 @@ import { CardCredencial } from '@/components/dashboard/CardCredencial';
 
 export default function DashboardPage() {
     const { user } = useAuth();
+    const router = useRouter();
     const [data, setData] = useState<MisCursosResponse | null>(null);
     const [credenciales, setCredenciales] = useState<Credencial[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        // Autoredirección según el rol del usuario a su panel de gestión correspondiente
+        if (user) {
+            if (user.rol === 'SUPER_ADMIN') {
+                router.replace('/dashboard/super');
+                return;
+            }
+            if (user.rol === 'EMPRESA') {
+                router.replace('/dashboard/empresa');
+                return;
+            }
+            if (user.rol === 'INSTRUCTOR') {
+                router.replace('/dashboard/instructor');
+                return;
+            }
+            if (user.rol === 'CONTADOR') {
+                router.replace('/dashboard/super/contabilidad');
+                return;
+            }
+        } else {
+            router.replace('/dashboard/super');
+            return;
+        }
+
         const fetchData = async () => {
             try {
                 const [cursosRes, credRes] = await Promise.all([
@@ -34,7 +59,7 @@ export default function DashboardPage() {
         };
 
         fetchData();
-    }, []);
+    }, [user, router]);
 
     if (isLoading) {
         return (
