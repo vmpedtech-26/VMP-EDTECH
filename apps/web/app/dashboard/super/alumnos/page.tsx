@@ -14,7 +14,8 @@ import {
     Loader2,
     UserCircle,
     Building2,
-    ShieldCheck
+    ShieldCheck,
+    Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -22,11 +23,13 @@ import { usersApi, UserAdmin } from '@/lib/api/users';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ModalCargaMasiva } from '@/components/dashboard/ModalCargaMasiva';
 
 export default function AlumnosPage() {
     const [usuarios, setUsuarios] = useState<UserAdmin[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isMasivoOpen, setIsMasivoOpen] = useState(false);
 
     const fetchUsuarios = async () => {
         try {
@@ -69,12 +72,22 @@ export default function AlumnosPage() {
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Gestión de Alumnos</h1>
                     <p className="text-gray-500 text-sm">Administra los estudiantes registrados en todas las empresas.</p>
                 </div>
-                <Button className="w-full md:w-auto" asChild>
-                    <Link href="/dashboard/super/alumnos/nuevo">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nuevo Alumno
-                    </Link>
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsMasivoOpen(true)}
+                        className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold"
+                    >
+                        <Upload className="h-4 w-4 mr-2 text-primary" />
+                        Carga Masiva Excel / CSV
+                    </Button>
+                    <Button className="w-full sm:w-auto" asChild>
+                        <Link href="/dashboard/super/alumnos/nuevo">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nuevo Alumno
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Search and filters */}
@@ -208,6 +221,12 @@ export default function AlumnosPage() {
                     </div>
                 )}
             </div>
+
+            <ModalCargaMasiva
+                isOpen={isMasivoOpen}
+                onClose={() => setIsMasivoOpen(false)}
+                onSuccess={fetchUsuarios}
+            />
         </div>
     );
 }

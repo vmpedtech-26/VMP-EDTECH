@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
-import { Users, UserPlus, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { Users, UserPlus, Mail, AlertCircle, CheckCircle, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { ModalCargaMasiva } from '@/components/dashboard/ModalCargaMasiva';
 
 interface Employee {
     id: string;
@@ -24,6 +25,7 @@ export default function ColaboradoresPage() {
     
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMasivoOpen, setIsMasivoOpen] = useState(false);
     const [formData, setFormData] = useState({ nombre: '', apellido: '', dni: '', email: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [tempPassword, setTempPassword] = useState<string | null>(null);
@@ -67,18 +69,27 @@ export default function ColaboradoresPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-gray-900">Mi Flota</h1>
                     <p className="text-sm text-gray-500 mt-1">Gestiona los conductores de tu empresa y dálos de alta.</p>
                 </div>
-                <button 
-                    onClick={() => { setIsModalOpen(true); setTempPassword(null); }}
-                    className="flex items-center space-x-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                    <UserPlus className="w-5 h-5" />
-                    <span>Invitar Conductor</span>
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                        onClick={() => setIsMasivoOpen(true)}
+                        className="flex items-center justify-center space-x-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+                    >
+                        <Upload className="w-4 h-4 text-primary" />
+                        <span>Carga Masiva Excel</span>
+                    </button>
+                    <button 
+                        onClick={() => { setIsModalOpen(true); setTempPassword(null); }}
+                        className="flex items-center justify-center space-x-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+                    >
+                        <UserPlus className="w-4 h-4" />
+                        <span>Invitar Conductor</span>
+                    </button>
+                </div>
             </div>
 
             {/* Table */}
@@ -212,6 +223,13 @@ export default function ColaboradoresPage() {
                     </div>
                 </div>
             )}
+
+            <ModalCargaMasiva
+                isOpen={isMasivoOpen}
+                onClose={() => setIsMasivoOpen(false)}
+                onSuccess={fetchEmployees}
+                empresaId={user?.empresaId}
+            />
         </div>
     );
 }
