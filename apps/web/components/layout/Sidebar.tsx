@@ -169,9 +169,9 @@ function NavItem({ item, pathname, onNavigate, level = 0 }: {
 
 export function Sidebar({ userRole }: SidebarProps) {
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const { logout, switchRole } = useAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const items = menuItems[userRole];
+    const items = menuItems[userRole] || menuItems.SUPER_ADMIN;
 
     return (
         <>
@@ -189,23 +189,36 @@ export function Sidebar({ userRole }: SidebarProps) {
                     }`}
             >
                 <div className="flex flex-col h-full">
-                    {/* Logo */}
-                    <div className="p-6 border-b border-gray-200">
+                    {/* Logo & Role Selector */}
+                    <div className="p-5 border-b border-gray-200 space-y-3">
                         <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center shrink-0">
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <div>
-                                <div className="text-lg font-bold text-gray-900">VMP EDTECH</div>
-                                <div className="text-xs text-gray-500 font-medium">
-                                    {userRole === 'ALUMNO' && 'Panel Alumno'}
-                                    {userRole === 'SUPER_ADMIN' && 'Super Admin & Contabilidad'}
-                                    {userRole === 'EMPRESA' && 'Panel Empresa B2B'}
-                                    {userRole === 'CONTADOR' && 'Sistema Contable RT54'}
-                                    {userRole === 'INSTRUCTOR' && 'Panel Instructor'}
+                                <div className="text-lg font-bold text-gray-900 leading-none">VMP EDTECH</div>
+                                <div className="text-[11px] text-gray-500 font-semibold mt-1">
+                                    Plataforma Integral
                                 </div>
                             </div>
                         </Link>
+
+                        {/* Dropdown Selector de Vista / Perfil */}
+                        <div className="pt-1">
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                Modo de Sistema
+                            </label>
+                            <select
+                                value={userRole}
+                                onChange={(e) => switchRole(e.target.value as any)}
+                                className="w-full bg-slate-900 text-white font-medium text-xs rounded-lg px-2.5 py-2 border border-slate-800 outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-sm"
+                            >
+                                <option value="SUPER_ADMIN">👑 Super Admin & Contabilidad (RT54)</option>
+                                <option value="EMPRESA">🏢 Empresa B2B (Flotas)</option>
+                                <option value="INSTRUCTOR">👨‍🏫 Panel Instructor</option>
+                                <option value="ALUMNO">🎓 Portal Alumno</option>
+                            </select>
+                        </div>
                     </div>
 
                     {/* Navigation */}

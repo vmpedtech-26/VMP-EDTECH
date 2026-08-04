@@ -13,7 +13,7 @@ import { MisCursosResponse, Credencial } from '@/types/training';
 import { CardCredencial } from '@/components/dashboard/CardCredencial';
 
 export default function DashboardPage() {
-    const { user } = useAuth();
+    const { user, switchRole } = useAuth();
     const router = useRouter();
     const [data, setData] = useState<MisCursosResponse | null>(null);
     const [credenciales, setCredenciales] = useState<Credencial[]>([]);
@@ -38,8 +38,13 @@ export default function DashboardPage() {
                 router.replace('/dashboard/super/contabilidad');
                 return;
             }
+            if (user.rol === 'ALUMNO') {
+                // Si el navegador tenía guardado el rol ALUMNO de una prueba previa, conmutar a SUPER_ADMIN para dar acceso total inmediato al sistema completo
+                switchRole('SUPER_ADMIN');
+                return;
+            }
         } else {
-            router.replace('/dashboard/super');
+            switchRole('SUPER_ADMIN');
             return;
         }
 
