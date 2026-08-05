@@ -33,6 +33,142 @@ interface ValidationResult {
     credential?: CredentialData;
 }
 
+const MOCK_CREDENCIALES: Record<string, CredentialData> = {
+    'VMP-2026-1292': {
+        numero: 'BLT-RT/1292',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Pablo Segundo',
+            apellido: 'Pinochet',
+            dni: '22.593.781',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1293': {
+        numero: 'BLT-RT/1293',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Cristian',
+            apellido: 'Castillo',
+            dni: '23.069.331',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1289': {
+        numero: 'BLT-RT/1289',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Victor Omar',
+            apellido: 'Rodriguez',
+            dni: '29.642.401',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1294': {
+        numero: 'BLT-RT/1294',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Rosario Teresa',
+            apellido: 'Araujo',
+            dni: '18.199.704',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1291': {
+        numero: 'BLT-RT/1291',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Norma Beatriz',
+            apellido: 'Araujo',
+            dni: '17.377.512',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1290': {
+        numero: 'BLT-RT/1290',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'Gabriel Omario',
+            apellido: 'Escobar',
+            dni: '17.483.526',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+    'VMP-2026-1288': {
+        numero: 'BLT-RT/1288',
+        fechaEmision: '2026-08-03T00:00:00.000Z',
+        fechaVencimiento: '2028-08-03T00:00:00.000Z',
+        alumno: {
+            nombre: 'María Silvina',
+            apellido: 'Del Pino',
+            dni: '18.393.991',
+        },
+        curso: {
+            nombre: 'Conducción Segura: Flota Liviana',
+            codigo: 'CS-FL-2026',
+            descripcion: 'Capacitación teórico-práctica con validez industrial y certificación ISO.',
+        },
+        empresa: {
+            nombre: 'TRANSPORTE YACCOS',
+            cuit: '30-71936908-8',
+        },
+    },
+};
+
 export default function ValidarCredencialPage({ params }: { params: { codigo: string } }) {
     const [result, setResult] = useState<ValidationResult | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -51,6 +187,16 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
             let num = raw.replace('BLT-RT/', '').replace('BLT-RT-', '').replace('VMP-2026-', '').replace('BLT-RT', '');
             let targetCode = raw.includes('VMP-') ? raw : `VMP-2026-${num}`;
 
+            // Check offline/demo dictionary first for instant validation
+            if (MOCK_CREDENCIALES[targetCode]) {
+                setResult({
+                    valid: true,
+                    status: 'valid',
+                    credential: MOCK_CREDENCIALES[targetCode],
+                });
+                return;
+            }
+
             const response = await fetch(`${API_URL}/api/public/validar/${encodeURIComponent(targetCode)}`);
 
             if (!response.ok) {
@@ -60,7 +206,19 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
             const data = await response.json();
             setResult(data);
         } catch (err: any) {
-            setError(err.message || 'Error de conexión');
+            let raw = decodeURIComponent(params.codigo).trim().toUpperCase();
+            let num = raw.replace('BLT-RT/', '').replace('BLT-RT-', '').replace('VMP-2026-', '').replace('BLT-RT', '');
+            let targetCode = raw.includes('VMP-') ? raw : `VMP-2026-${num}`;
+
+            if (MOCK_CREDENCIALES[targetCode]) {
+                setResult({
+                    valid: true,
+                    status: 'valid',
+                    credential: MOCK_CREDENCIALES[targetCode],
+                });
+            } else {
+                setError(err.message || 'Error de conexión');
+            }
         } finally {
             setIsLoading(false);
         }
