@@ -172,6 +172,73 @@ async def update_training_request(id: str, data: dict, current_user=Depends(get_
     )
     return solicitud
 
+@router.get("/acta-curso/{cursoId}")
+async def obtener_acta_curso(cursoId: str, current_user=Depends(get_current_user)):
+    """Obtener acta de calificaciones y asistencias de una capacitación (Estilo Blister)"""
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        raise HTTPException(status_code=403, detail="No autorizado")
+        
+    inscripciones = await prisma.inscripcion.find_many(
+        where={"cursoId": cursoId},
+        include={"alumno": True, "curso": True}
+    )
+    
+    acta = []
+    for inc in inscripciones:
+        examen = await prisma.examen.find_first(
+            where={"alumnoId": inc.alumnoId, "cursoId": cursoId},
+            order={"realizadoAt": "desc"}
+        )
+        credencial = await prisma.credencial.find_first(
+            where={"alumnoId": inc.alumnoId, "cursoId": cursoId}
+        )
+        
+        acta.append({
+            "inscripcionId": inc.id,
+            "alumno": f"{inc.alumno.nombre} {inc.alumno.apellido}",
+            "dni": inc.alumno.dni,
+            "email": inc.alumno.email,
+            "estado": inc.estado,
+            "progreso": inc.progreso,
+            "nota": examen.calificacion if examen else None,
+            "aprobado": examen.aprobado if examen else False,
+            "credencialNumero": credencial.numero if credencial else None,
+            "qrUrl": credencial.qrCodeUrl if credencial else None
+        })
+        
+    return {"cursoId": cursoId, "alumnos": acta, "total": len(acta)}
+
+
+@router.post("/generar-examen-plantilla")
+async def generar_examen_desde_plantilla(plantillaId: str, current_user=Depends(get_current_user)):
+    """Generar set de examen aleatorio a partir de una plantilla del Banco de Preguntas (Estilo Blister)"""
+    plantilla = await prisma.plantillaevaluacion.find_unique(where={"id": plantillaId})
+    if not plantilla:
+        raise HTTPException(status_code=404, detail="Plantilla de evaluación no encontrada")
+        
+    preguntas_config = plantilla.preguntas or []
+    # Cargar preguntas del banco
+    preguntas_ids = [p.get("preguntaId") for p in preguntas_config if isinstance(p, dict) and "preguntaId" in p]
+    
+    banco_preguntas = await prisma.bancopregunta.find_many(
+        where={"id": {"in": preguntas_ids}, "activo": True}
+    )
+    
+    return {
+        "plantillaId": plantilla.id,
+        "nombre": plantilla.nombre,
+        "tiempoLimite": plantilla.tiempoLimite,
+        "notaMinima": plantilla.notaMinima,
+        "preguntas": [
+            {
+                "id": b.id,
+                "pregunta": b.pregunta,
+                "opciones": b.opciones,
+                "dificultad": b.dificultad
+            } for b in banco_preguntas
+        ]
+    }
+
 @router.get("/clientes/customers")
 async def clientes_customers(current_user=Depends(get_current_user)):
     """Clientes del módulo capacitaciones"""
