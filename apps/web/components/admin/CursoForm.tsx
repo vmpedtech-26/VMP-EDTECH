@@ -124,6 +124,52 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 onChange={handleChange}
                             />
                         </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Modalidad
+                            </label>
+                            <select
+                                name="modalidad"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700"
+                                value={(formData as any).modalidad || 'online'}
+                                onChange={handleChange as any}
+                            >
+                                <option value="online">Online Asincrónico</option>
+                                <option value="presencial">Presencial</option>
+                                <option value="mixta">Semipresencial / Mixto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Asignar a Empresa Cliente (Opcional)
+                            </label>
+                            <input
+                                type="text"
+                                name="empresaId"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                placeholder="ID o Código de la empresa"
+                                value={(formData as any).empresaId || ''}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Plantilla de Evaluación (Banco de Preguntas)
+                            </label>
+                            <input
+                                type="text"
+                                name="plantillaEvaluacionId"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                placeholder="Nombre o ID de plantilla"
+                                value={(formData as any).plantillaEvaluacionId || ''}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
 
                     <div className="pt-6 border-t border-gray-100 flex justify-end">
