@@ -61,6 +61,7 @@ app.add_middleware(
 
 
 from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics
+from routers import capacitaciones, hr, administracion, banco_preguntas, plantillas, notificaciones
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -73,6 +74,12 @@ app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(cotizaciones.router, prefix="/api/cotizaciones", tags=["cotizaciones"])
 app.include_router(public.router, prefix="/api/public", tags=["public"])
 app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
+app.include_router(capacitaciones.router, prefix="/api/capacitaciones", tags=["capacitaciones"])
+app.include_router(hr.router, prefix="/api/hr", tags=["hr"])
+app.include_router(administracion.router, prefix="/api/administration", tags=["administration"])
+app.include_router(banco_preguntas.router, prefix="/api/banco-preguntas", tags=["banco-preguntas"])
+app.include_router(plantillas.router, prefix="/api/plantillas-evaluacion", tags=["plantillas"])
+app.include_router(notificaciones.router, prefix="/api/notifications", tags=["notifications"])
 
 
 

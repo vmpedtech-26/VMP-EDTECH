@@ -15,11 +15,20 @@ export default function NuevaEmpresaPage() {
     const handleSubmit = async (data: any) => {
         setIsLoading(true);
         try {
-            await empresasApi.crearEmpresa(data);
+            // Normalizar CUIT quitando caracteres no numéricos antes de enviar
+            const cleanData = {
+                ...data,
+                cuit: data.cuit.replace(/\D/g, '')
+            };
+            await empresasApi.crearEmpresa(cleanData);
             router.push('/dashboard/super/empresas');
         } catch (error: any) {
             console.error('Error creating empresa:', error);
-            alert(error.response?.data?.detail || 'Error al registrar la empresa');
+            const detailMessage = error.response?.data?.detail;
+            const message = typeof detailMessage === 'string' 
+                ? detailMessage 
+                : (Array.isArray(detailMessage) ? detailMessage.map((e: any) => e.msg).join(', ') : 'Error al registrar la empresa');
+            alert(`No se pudo registrar la empresa: ${message}`);
         } finally {
             setIsLoading(false);
         }

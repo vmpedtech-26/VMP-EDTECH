@@ -23,15 +23,18 @@ async def crear_empresa(data: CreateEmpresaRequest, current_user=Depends(get_cur
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
+    # Normalizar CUIT
+    clean_cuit = "".join(filter(str.isdigit, data.cuit))
+    
     # Verificar CUIT único
-    existing = await prisma.company.find_unique(where={"cuit": data.cuit})
+    existing = await prisma.company.find_unique(where={"cuit": clean_cuit})
     if existing:
-        raise HTTPException(status_code=400, detail="El CUIT ya está registrado")
+        raise HTTPException(status_code=400, detail=f"El CUIT {clean_cuit} ya está registrado a nombre de '{existing.nombre}'")
         
     empresa = await prisma.company.create(
         data={
             "nombre": data.nombre,
-            "cuit": data.cuit,
+            "cuit": clean_cuit,
             "direccion": data.direccion,
             "telefono": data.telefono,
             "email": data.email,

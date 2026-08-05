@@ -61,6 +61,8 @@ model User {
   credenciales  Credencial[]
   fotoCredencial      FotoCredencial?  @relation("AlumnoFoto")
   fotosEvaluadas      FotoCredencial[] @relation("EvaluadorFoto")
+  sesionesInstruidas  Sesion[] @relation("InstructorSesiones")
+  notificaciones NotificacionItem[]
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -81,6 +83,7 @@ model Company {
   
   usuarios User[]
   cursos   Curso[]
+  solicitudes SolicitudCapacitacion[]
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -103,6 +106,8 @@ model Curso {
   examenes      Examen[]
   inscripciones Inscripcion[]
   credenciales  Credencial[]
+  solicitudes SolicitudCapacitacion[]
+  sesiones Sesion[]
   
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -280,4 +285,145 @@ model PasswordResetToken {
   @@index([token])
   @@index([userId])
   @@map("password_reset_tokens")
+}
+
+// ============= ORGANIZACIÓN =============
+
+enum EstadoSolicitud {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  EN_CURSO
+  COMPLETADA
+}
+
+model Sector {
+  id        String   @id @default(uuid())
+  nombre    String
+  activo    Boolean  @default(true)
+  puestos   Puesto[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("sectores")
+}
+
+model Puesto {
+  id        String   @id @default(uuid())
+  nombre    String
+  sectorId  String?  @map("sector_id")
+  activo    Boolean  @default(true)
+  sector    Sector?  @relation(fields: [sectorId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  @@map("puestos")
+}
+
+model Localidad {
+  id        String   @id @default(uuid())
+  nombre    String
+  provincia String?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@map("localidades")
+}
+
+model AreaOperativa {
+  id        String   @id @default(uuid())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@map("areas_operativas")
+}
+
+model SolicitudCapacitacion {
+  id               String          @id @default(uuid())
+  empresaId        String          @map("empresa_id")
+  cursoId          String          @map("curso_id")
+  solicitanteNombre String         @map("solicitante_nombre")
+  solicitanteEmail  String         @map("solicitante_email")
+  cantidadPersonas  Int            @map("cantidad_personas")
+  observaciones     String?        @db.Text
+  estado            EstadoSolicitud @default(PENDIENTE)
+  empresa           Company        @relation(fields: [empresaId], references: [id])
+  curso             Curso          @relation(fields: [cursoId], references: [id])
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  @@index([estado])
+  @@index([empresaId])
+  @@map("solicitudes_capacitacion")
+}
+
+model Sesion {
+  id           String    @id @default(uuid())
+  cursoId      String    @map("curso_id")
+  titulo       String
+  fechaInicio  DateTime  @map("fecha_inicio")
+  fechaFin     DateTime? @map("fecha_fin")
+  modalidad    String    @default("presencial") // presencial, online, mixta
+  ubicacion    String?
+  urlOnline    String?   @map("url_online")
+  capacidad    Int       @default(20)
+  instructorId String?   @map("instructor_id")
+  curso        Curso     @relation(fields: [cursoId], references: [id])
+  instructor   User?     @relation("InstructorSesiones", fields: [instructorId], references: [id])
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  @@index([fechaInicio])
+  @@index([cursoId])
+  @@map("sesiones")
+}
+
+model NotificacionItem {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  titulo    String
+  mensaje   String
+  tipo      String   @default("info") // info, warning, success, error
+  leida     Boolean  @default(false)
+  url       String?  // link de navegacion
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([userId])
+  @@index([leida])
+  @@map("notificaciones")
+}
+
+model BancoPregunta {
+  id               String   @id @default(uuid())
+  pregunta         String
+  opciones         Json     // Array de strings
+  respuestaCorrecta Int     @map("respuesta_correcta")
+  explicacion      String?
+  area             String?  // area temática
+  dificultad       String   @default("media") // facil, media, dificil
+  activo           Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  @@map("banco_preguntas")
+}
+
+model PlantillaEvaluacion {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String?
+  preguntas   Json     // Array de { preguntaId, orden }
+  tiempoLimite Int?    @map("tiempo_limite") // minutos
+  notaMinima  Float    @default(60) @map("nota_minima")
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  @@map("plantillas_evaluacion")
+}
+
+model OrgBranding {
+  id          String   @id @default(uuid())
+  nombre      String
+  codigo      String   @unique  // slug de la org
+  brandTag    String?  @map("brand_tag")
+  tagline     String?
+  logoUrl     String?  @map("logo_url")
+  faviconUrl  String?  @map("favicon_url")
+  tema        String   @default("light") // light, dark
+  colorPrimario String? @map("color_primario")
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  @@map("org_branding")
 }

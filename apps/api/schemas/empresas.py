@@ -5,8 +5,8 @@ from datetime import datetime
 class EmpresaBase(BaseModel):
     nombre: str
     cuit: str
-    direccion: Optional[str] = None
-    telefono: Optional[str] = None
+    direccion: Optional[str] = ""
+    telefono: Optional[str] = ""
     email: EmailStr
     activa: bool = True
 

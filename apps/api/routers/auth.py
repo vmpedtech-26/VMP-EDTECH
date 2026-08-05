@@ -245,3 +245,73 @@ async def reset_password(data: ResetPasswordRequest):
             detail="Error al restablecer la contraseña"
         )
 
+# ============= ORGANIZATIONS & CONTEXT (Blister-compatible) =============
+
+import secrets
+from typing import List
+
+CONTEXT_MENU = [
+    {"id": "cap-home", "label": "Inicio", "route": "/admin/capacitaciones", "icon": "home", "children": []},
+    {"id": "cap-catalogo", "label": "Capacitaciones", "route": "/admin/capacitaciones/catalogo", "icon": "school", "children": []},
+    {"id": "cap-clientes", "label": "Clientes", "route": "/admin/capacitaciones/clientes", "icon": "handshake", "children": []},
+    {"id": "cap-historico", "label": "Histórico", "route": "/admin/capacitaciones/historico", "icon": "history", "children": []},
+    {"id": "hr", "label": "Personal", "route": "/admin/hr/employees", "icon": "groups", "children": []},
+    {"id": "params", "label": "Parámetros", "route": "/admin/parameters", "icon": "tune", "children": [
+        {"id": "sectors", "label": "Sectores", "route": "/admin/administration/sectors", "icon": "account_tree", "children": []},
+        {"id": "puestos", "label": "Puestos", "route": "/admin/administration/job-positions", "icon": "work", "children": []},
+        {"id": "localidades", "label": "Localidades", "route": "/admin/administration/service-locations", "icon": "location_on", "children": []},
+        {"id": "areas", "label": "Áreas operativas", "route": "/admin/administration/operational-areas", "icon": "map", "children": []},
+        {"id": "banco", "label": "Banco de preguntas", "route": "/admin/capacitaciones/parametros/banco-preguntas", "icon": "quiz", "children": []},
+        {"id": "plantillas", "label": "Plantillas evaluación", "route": "/admin/capacitaciones/parametros/plantillas-evaluacion", "icon": "assignment", "children": []},
+    ]},
+    {"id": "admin", "label": "Administración", "route": "/admin/administration", "icon": "shield", "children": [
+        {"id": "users", "label": "Usuarios", "route": "/admin/users", "icon": "people", "children": []},
+        {"id": "appearance", "label": "Apariencia", "route": "/admin/administration/appearance", "icon": "palette", "children": []},
+    ]},
+]
+
+ROLE_PERMISSIONS = {
+    "SUPER_ADMIN": ["atlas.admin.access", "atlas.capacitaciones.read", "atlas.capacitaciones.content.manage", "atlas.users.read", "atlas.users.create", "atlas.hr.employees.read", "atlas.hr.employees.manage", "atlas.customers.read", "atlas.customers.manage", "atlas.dashboard.view"],
+    "INSTRUCTOR": ["atlas.capacitaciones.read", "atlas.capacitaciones.sessions.instruct", "atlas.hr.employees.read", "atlas.dashboard.view"],
+    "ALUMNO": ["atlas.capacitaciones.learning.read", "atlas.capacitaciones.learning.enroll"],
+}
+
+@router.get("/organizations")
+async def get_organizations(current_user=Depends(get_current_user)):
+    """Lista de organizaciones del usuario (compatible Blister)"""
+    return [{
+        "id": "vmp-org-001",
+        "code": "vmp-edtech",
+        "name": "VMP EdTech",
+        "brandTag": "VMP",
+        "isDefault": True
+    }]
+
+@router.post("/context")
+async def select_context(
+    data: dict,
+    current_user=Depends(get_current_user)
+):
+    """Seleccionar contexto organizacional y retornar permisos + menú (compatible Blister)"""
+    # Generate context-scoped access token
+    context_token = create_access_token(data={
+        "sub": current_user.id,
+        "org": "vmp-org-001",
+        "rol": current_user.rol
+    })
+    refresh_token = secrets.token_urlsafe(48)
+    
+    permissions = ROLE_PERMISSIONS.get(current_user.rol, [])
+    roles_map = {"SUPER_ADMIN": ["ORG_ADMIN", "TRAINING_MANAGER"], "INSTRUCTOR": ["TRAINING_MANAGER"], "ALUMNO": ["STUDENT"]}
+    
+    return {
+        "accessToken": context_token,
+        "refreshToken": refresh_token,
+        "systemId": "vmp-system-001",
+        "organizationId": "vmp-org-001",
+        "organization": {"id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP EdTech", "brandTag": "VMP", "tagline": "Capacitaciones Profesionales", "tema": "light"},
+        "roles": roles_map.get(current_user.rol, []),
+        "permissions": permissions,
+        "menu": CONTEXT_MENU,
+        "user": {"id": current_user.id, "displayName": f"{current_user.nombre} {current_user.apellido}", "email": current_user.email, "rol": current_user.rol}
+    }

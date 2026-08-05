@@ -29,3 +29,22 @@ async def validate_credential(request: Request, numero: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al validar la credencial"
         )
+
+@router.get("/organization/branding")
+async def get_org_branding():
+    """Branding público de la organización"""
+    try:
+        branding = await prisma.orgbranding.find_first(where={"activo": True})
+        if branding:
+            return {
+                "id": branding.id, "code": branding.codigo, "name": branding.nombre,
+                "brandTag": branding.brandTag, "tagline": branding.tagline,
+                "theme": branding.tema, "logoDataUrl": branding.logoUrl, "faviconDataUrl": branding.faviconUrl
+            }
+    except:
+        pass
+    return {
+        "id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP EdTech",
+        "brandTag": "VMP", "tagline": "Capacitaciones Profesionales",
+        "theme": "light", "logoDataUrl": None, "faviconDataUrl": None
+    }

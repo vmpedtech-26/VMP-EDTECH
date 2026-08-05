@@ -62,7 +62,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('vmp_token', token);
         localStorage.setItem('vmp_user', JSON.stringify(userData));
         setUser(userData);
-        router.push('/dashboard');
+        // Determine target based on role
+        const targetRole = userData.rol || 'ALUMNO';
+        if (['SUPER_ADMIN', 'INSTRUCTOR'].includes(targetRole)) {
+            router.push('/admin/capacitaciones');
+        } else {
+            router.push('/dashboard/cursos');
+        }
     };
 
     const logout = () => {
