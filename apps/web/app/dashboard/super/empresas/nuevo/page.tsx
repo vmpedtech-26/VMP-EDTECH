@@ -24,10 +24,7 @@ export default function NuevaEmpresaPage() {
             router.push('/dashboard/super/empresas');
         } catch (error: any) {
             console.error('Error creating empresa:', error);
-            const detailMessage = error.response?.data?.detail;
-            const message = typeof detailMessage === 'string' 
-                ? detailMessage 
-                : (Array.isArray(detailMessage) ? detailMessage.map((e: any) => e.msg).join(', ') : 'Error al registrar la empresa');
+            const message = error.message || 'Verifica que el CUIT contenga 11 dígitos (ej: 30-77722364-5) y no esté registrado.';
             alert(`No se pudo registrar la empresa: ${message}`);
         } finally {
             setIsLoading(false);

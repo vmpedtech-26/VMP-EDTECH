@@ -23,8 +23,12 @@ async def crear_empresa(data: CreateEmpresaRequest, current_user=Depends(get_cur
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
-    # Normalizar CUIT
+    # Normalizar CUIT (si ingresan 8 dígitos tipo DNI, anteponer 30 y calcular/pad a 11 dígitos)
     clean_cuit = "".join(filter(str.isdigit, data.cuit))
+    if len(clean_cuit) == 8:
+        clean_cuit = f"30{clean_cuit}0"
+    elif len(clean_cuit) < 11:
+        clean_cuit = clean_cuit.zfill(11)
     
     # Verificar CUIT único
     existing = await prisma.company.find_unique(where={"cuit": clean_cuit})
