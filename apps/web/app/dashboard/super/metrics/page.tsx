@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+import { api } from '@/lib/api-client';
 
 interface OverviewMetrics {
     totals: {
@@ -64,35 +64,18 @@ export default function MetricsPage() {
             setIsLoading(true);
             setError(null);
 
-            const token = localStorage.getItem('vmp_token');
-            if (!token) {
-                throw new Error('No autenticado');
-            }
-
-            // Fetch overview metrics
-            const overviewResponse = await fetch(`${API_URL}/api/metrics/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!overviewResponse.ok) {
-                throw new Error('Error al cargar métricas');
-            }
-
-            const overviewData = await overviewResponse.json();
+            // Fetch overview metrics using centralized API client
+            const overviewData = await api.get('/metrics/overview');
             setOverview(overviewData);
 
             // Fetch course metrics
-            const coursesResponse = await fetch(`${API_URL}/api/metrics/courses`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            try {
+                const coursesData = await api.get('/metrics/courses');
+                if (coursesData && coursesData.courses) {
+                    setCourses(coursesData.courses);
                 }
-            });
-
-            if (coursesResponse.ok) {
-                const coursesData = await coursesResponse.json();
-                setCourses(coursesData.courses);
+            } catch (courseErr) {
+                console.warn('Could not fetch course metrics:', courseErr);
             }
 
         } catch (err: any) {
