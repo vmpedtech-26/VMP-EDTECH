@@ -5,19 +5,44 @@ import Link from 'next/link';
 import './admin.css';
 
 const NAV_ITEMS = [
-  { icon: 'school', label: 'Capacitaciones', href: '/admin/capacitaciones',
+  { 
+    icon: 'school', 
+    label: 'Capacitaciones LMS', 
+    href: '/admin/capacitaciones',
     children: [
       { icon: 'home', label: 'Inicio', href: '/admin/capacitaciones' },
-      { icon: 'event', label: 'Agenda', href: '/admin/capacitaciones/catalogo/sessions' },
+      { icon: 'event', label: 'Agenda & Sesiones', href: '/admin/capacitaciones/catalogo/sessions' },
       { icon: 'inbox', label: 'Solicitudes', href: '/admin/capacitaciones/clientes/solicitudes' },
-      { icon: 'handshake', label: 'Clientes', href: '/admin/capacitaciones/clientes' },
-      { icon: 'tune', label: 'Parámetros', href: '/admin/parameters' },
+      { icon: 'handshake', label: 'Clientes B2B', href: '/admin/capacitaciones/clientes' },
+      { icon: 'tune', label: 'Parámetros LMS', href: '/admin/parameters' },
       { icon: 'history', label: 'Histórico', href: '/admin/capacitaciones/historico' },
     ]
   },
-  { icon: 'groups', label: 'Personal', href: '/admin/hr/employees', children: [] },
+  {
+    icon: 'calculate',
+    label: 'Sistema Contable (RT54)',
+    href: '/dashboard/super/contabilidad',
+    children: [
+      { icon: 'assessment', label: 'Resumen Contable', href: '/dashboard/super/contabilidad' },
+      { icon: 'book', label: 'Libro Diario', href: '/dashboard/super/contabilidad/diario' },
+      { icon: 'trending_up', label: 'Ventas y Facturación', href: '/dashboard/super/contabilidad/ventas' },
+      { icon: 'shopping_bag', label: 'Compras y Gastos', href: '/dashboard/super/contabilidad/compras' },
+      { icon: 'pie_chart', label: 'Plan de Cuentas', href: '/dashboard/super/contabilidad/cuentas' },
+      { icon: 'bar_chart', label: 'Reportes Financieros', href: '/dashboard/super/contabilidad/reportes' },
+      { icon: 'verified_user', label: 'Balance RT54', href: '/dashboard/super/contabilidad/rt54' },
+    ]
+  },
+  { icon: 'business', label: 'Empresas B2B', href: '/dashboard/super/empresas', children: [] },
+  { icon: 'people', label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos', children: [] },
+  { icon: 'workspace_premium', label: 'Credenciales & QR', href: '/dashboard/super/credenciales', children: [] },
+  { icon: 'request_quote', label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones', children: [] },
+  { icon: 'directions_car', label: 'Telemetría OBD2', href: '/dashboard/super/control', children: [] },
+  { icon: 'insights', label: 'Métricas & KPIs', href: '/dashboard/super/metrics', children: [] },
+  { icon: 'gavel', label: 'Compliance & Ética', href: '/dashboard/super/compliance', children: [] },
+  { icon: 'security', label: 'Seguridad & Logs', href: '/dashboard/super/seguridad', children: [] },
+  { icon: 'groups', label: 'Personal (HR)', href: '/admin/hr/employees', children: [] },
   { icon: 'tune', label: 'Parámetros', href: '/admin/parameters', pinned: true, children: [] },
-  { icon: 'shield', label: 'Administración', href: '/admin/administration', pinned: true, children: [] },
+  { icon: 'shield', label: 'Administración System', href: '/admin/administration', pinned: true, children: [] },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
