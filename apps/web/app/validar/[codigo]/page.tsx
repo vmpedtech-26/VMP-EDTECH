@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, Building2, User, Calendar, Award, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+import { api } from '@/lib/api-client';
 
 interface CredentialData {
     numero: string;
@@ -197,13 +197,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                 return;
             }
 
-            const response = await fetch(`${API_URL}/api/public/validar/${encodeURIComponent(targetCode)}`);
-
-            if (!response.ok) {
-                throw new Error('Error al validar la credencial');
-            }
-
-            const data = await response.json();
+            const data = await api.get(`/public/validar/${targetCode}`);
             setResult(data);
         } catch (err: any) {
             let raw = decodeURIComponent(params.codigo).trim().toUpperCase();

@@ -35,7 +35,6 @@ export default function ParticipantesPage() {
     const [loading, setLoading] = useState(true);
     const [uploadingFor, setUploadingFor] = useState<string | null>(null);
     const [isAltaCampoOpen, setIsAltaCampoOpen] = useState(false);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
         fetchEmpresas();
@@ -44,15 +43,8 @@ export default function ParticipantesPage() {
 
     const fetchEmpresas = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/empresas`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
-                }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setEmpresas(data);
-            }
+            const data = await api.get('/empresas');
+            setEmpresas(data);
         } catch (error) {
             console.error('Error fetching empresas:', error);
         }

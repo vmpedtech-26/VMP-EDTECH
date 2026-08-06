@@ -23,11 +23,12 @@ interface Examen {
     };
 }
 
+import { api } from '@/lib/api-client';
+
 export default function EvaluacionesPage() {
     const [examenes, setExamenes] = useState<Examen[]>([]);
     const [busqueda, setBusqueda] = useState('');
     const [loading, setLoading] = useState(true);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
     useEffect(() => {
         fetchExamenes();
@@ -36,16 +37,8 @@ export default function EvaluacionesPage() {
     const fetchExamenes = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/examenes/all`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('vmp_token')}`
-                }
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                setExamenes(data);
-            }
+            const data = await api.get('/examenes/all');
+            setExamenes(data || []);
         } catch (error) {
             console.error('Error fetching examenes:', error);
         } finally {

@@ -4,36 +4,27 @@ import { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+import { api } from '@/lib/api-client';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
         setIsLoading(true);
+        setError(null);
+        setMessage(null);
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || 'Error al procesar la solicitud');
-            }
-
+            const data = await api.post('/auth/forgot-password', { email });
+            setMessage(data.message || 'Se ha enviado un enlace a tu correo.');
             setIsSuccess(true);
         } catch (err: any) {
-            setError(err.message || 'Error de conexión. Intenta nuevamente.');
+            setError(err.message || 'Error al procesar la solicitud.');
         } finally {
             setIsLoading(false);
         }

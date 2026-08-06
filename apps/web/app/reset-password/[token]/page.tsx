@@ -5,13 +5,7 @@ import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
-
-interface ResetPasswordPageProps {
-    params: {
-        token: string;
-    };
-}
+import { api } from '@/lib/api-client';
 
 export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
     const router = useRouter();
@@ -23,54 +17,31 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const validatePassword = () => {
-        if (newPassword.length < 6) {
-            return 'La contraseña debe tener al menos 6 caracteres';
-        }
-        if (newPassword !== confirmPassword) {
-            return 'Las contraseñas no coinciden';
-        }
-        return null;
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
 
-        const validationError = validatePassword();
-        if (validationError) {
-            setError(validationError);
+        if (newPassword !== confirmPassword) {
+            setError('Las contraseñas no coinciden.');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres.');
             return;
         }
 
         setIsLoading(true);
+        setError(null);
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/reset-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: params.token,
-                    new_password: newPassword,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.detail || 'Error al restablecer la contraseña');
-            }
-
+            await api.post('/auth/reset-password', { token: params.token, new_password: newPassword });
             setIsSuccess(true);
-
-            // Redirect to login after 3 seconds
+            
             setTimeout(() => {
-                router.push('/login');
+                router.push('/auth/login');
             }, 3000);
         } catch (err: any) {
-            setError(err.message || 'Error de conexión. Intenta nuevamente.');
+            setError(err.message || 'El enlace no es válido o ha expirado.');
         } finally {
             setIsLoading(false);
         }
