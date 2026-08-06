@@ -159,7 +159,53 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
 
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
-                                Plantilla de Evaluación (Banco de Preguntas)
+                                Cupo Máximo / Cantidad Participantes
+                            </label>
+                            <input
+                                type="number"
+                                name="maxParticipantes"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                placeholder="Ej: 25"
+                                value={(formData as any).maxParticipantes || 20}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                            Enlace / Link de la Clase Virtual (Zoom, Teams, Meet)
+                        </label>
+                        <input
+                            type="url"
+                            name="linkClase"
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                            placeholder="https://zoom.us/j/123456789 o https://teams.microsoft.com/..."
+                            value={(formData as any).linkClase || ''}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Tipo de Evaluación
+                            </label>
+                            <select
+                                name="tipoEvaluacion"
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700"
+                                value={(formData as any).tipoEvaluacion || 'QUIZ'}
+                                onChange={handleChange as any}
+                            >
+                                <option value="QUIZ">Múltiple Opción / Quiz (Banco de Preguntas)</option>
+                                <option value="PRACTICA">Evaluación Práctica (Evidencia / Foto / Certificación en Terreno)</option>
+                                <option value="NINGUNA">Sin Evaluación (Solo Asistencia)</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Plantilla de Evaluación (Opcional)
                             </label>
                             <input
                                 type="text"
