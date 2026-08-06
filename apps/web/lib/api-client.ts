@@ -51,8 +51,24 @@ async function request(path: string, options: RequestInit & { params?: Record<st
             }
 
             if (!response.ok) {
-                const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
-                throw new Error(error.detail || `Error ${response.status} en la petición`);
+                const errorData = await response.json().catch(() => ({ detail: 'Error desconocido en el servidor' }));
+                let errorMessage = 'Ocurrió un error al procesar la solicitud.';
+
+                if (typeof errorData.detail === 'string') {
+                    errorMessage = errorData.detail;
+                } else if (Array.isArray(errorData.detail)) {
+                    // Errores de validación Pydantic/FastAPI
+                    const fieldErrors = errorData.detail.map((err: any) => {
+                        const loc = Array.isArray(err.loc) ? err.loc.slice(1).join('.') : 'campo';
+                        let msg = err.msg || 'Dato inválido';
+                        if (msg.includes('value is not a valid email')) msg = 'Email con formato inválido';
+                        if (msg.includes('field required')) msg = 'Campo obligatorio requerido';
+                        return `• ${loc.toUpperCase()}: ${msg}`;
+                    });
+                    errorMessage = `Revise los siguientes campos:\n${fieldErrors.join('\n')}`;
+                }
+
+                throw new Error(errorMessage);
             }
 
             return await response.json();
