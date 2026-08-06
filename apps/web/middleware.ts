@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('vmp_token')?.value;
-    const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard');
+    const token = request.cookies.get('vmp_token')?.value || request.headers.get('vmp_token');
+    const { pathname } = request.nextUrl;
 
-    if (isDashboardPage && !token) {
-        return NextResponse.redirect(new URL('/login', request.url));
+    if (!token && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
+        return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
-    if (request.nextUrl.pathname === '/login' && token) {
+    if ((pathname === '/login' || pathname === '/auth/login') && token) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
