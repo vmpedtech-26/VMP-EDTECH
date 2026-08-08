@@ -19,7 +19,7 @@ export default function NuevoAlumnoPage() {
             router.push('/dashboard/super/alumnos');
         } catch (error: any) {
             console.error('Error creating user:', error);
-            alert(error.response?.data?.detail || 'Error al registrar el alumno');
+            alert(error.message || 'Error al registrar el alumno');
         } finally {
             setIsLoading(false);
         }
