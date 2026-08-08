@@ -1,5 +1,6 @@
 import bleach
 from typing import Any, Dict, List, Union
+from pydantic import BaseModel, field_validator
 
 ALLOWED_TAGS = [
     'a', 'abbr', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol',
@@ -57,3 +58,13 @@ def sanitize_data(data: Union[str, Dict, List]) -> Any:
     elif isinstance(data, list):
         return [sanitize_data(i) for i in data]
     return data
+
+class SanitizedBaseModel(BaseModel):
+    """Pydantic request model that HTML-sanitizes every string field before validation."""
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def _sanitize_strings(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            return sanitize_data(v)
+        return v

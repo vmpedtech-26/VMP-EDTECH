@@ -83,9 +83,9 @@ async def list_sessions(
 ):
     """Sesiones programadas"""
     try:
-        sesiones = await prisma.sesion.find_many(
+        sesiones = await prisma.sesioncapacitacion.find_many(
             include={"curso": True, "instructor": True},
-            order_by={"fechaInicio": "asc"},
+            order={"fechaInicio": "asc"},
             take=limit
         )
         items = []
@@ -96,10 +96,10 @@ async def list_sessions(
                 "curso": {"id": s.curso.id, "nombre": s.curso.nombre},
                 "fechaInicio": s.fechaInicio.isoformat(),
                 "fechaFin": s.fechaFin.isoformat() if s.fechaFin else None,
-                "modalidad": s.modalidad,
-                "ubicacion": s.ubicacion,
-                "urlOnline": s.urlOnline,
-                "capacidad": s.capacidad,
+                "modalidad": s.curso.modalidad if s.curso else None,
+                "ubicacion": s.lugar,
+                "urlOnline": s.meetLink,
+                "capacidad": None,
                 "instructor": {"nombre": f"{s.instructor.nombre} {s.instructor.apellido}"} if s.instructor else None
             })
         return {"items": items}
@@ -109,13 +109,14 @@ async def list_sessions(
 @router.post("/sessions")
 async def create_session(data: dict, current_user=Depends(get_current_user)):
     """Crear sesión"""
-    sesion = await prisma.sesion.create(data={
+    fecha_inicio = datetime.fromisoformat(data["fechaInicio"])
+    sesion = await prisma.sesioncapacitacion.create(data={
         "cursoId": data["cursoId"],
         "titulo": data["titulo"],
-        "fechaInicio": datetime.fromisoformat(data["fechaInicio"]),
-        "modalidad": data.get("modalidad", "presencial"),
-        "ubicacion": data.get("ubicacion"),
-        "capacidad": data.get("capacidad", 20),
+        "fechaInicio": fecha_inicio,
+        "fechaFin": datetime.fromisoformat(data["fechaFin"]) if data.get("fechaFin") else fecha_inicio,
+        "lugar": data.get("ubicacion"),
+        "plataforma": data.get("modalidad"),
     })
     return sesion
 
