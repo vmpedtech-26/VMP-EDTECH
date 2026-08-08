@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 # ============= CURSO SCHEMAS =============
 
@@ -12,7 +12,13 @@ class CursoListItem(BaseModel):
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     activo: bool
-    
+    empresaId: Optional[str] = None
+    modalidad: Literal["ONLINE", "IN_COMPANY", "HYBRID"] = "ONLINE"
+    maxParticipantes: Optional[int] = None
+    linkClase: Optional[str] = None
+    tipoEvaluacion: str = "QUIZ"
+    plantillaEvaluacionId: Optional[str] = None
+
     class Config:
         from_attributes = True
 
@@ -23,6 +29,11 @@ class CreateCursoRequest(BaseModel):
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     empresaId: Optional[str] = None
+    modalidad: Literal["ONLINE", "IN_COMPANY", "HYBRID"] = "ONLINE"
+    maxParticipantes: Optional[int] = None
+    linkClase: Optional[str] = None
+    tipoEvaluacion: str = "QUIZ"
+    plantillaEvaluacionId: Optional[str] = None
 
 class UpdateCursoRequest(BaseModel):
     nombre: Optional[str] = None
@@ -31,6 +42,12 @@ class UpdateCursoRequest(BaseModel):
     duracionHoras: Optional[int] = None
     vigenciaMeses: Optional[int] = None
     activo: Optional[bool] = None
+    empresaId: Optional[str] = None
+    modalidad: Optional[Literal["ONLINE", "IN_COMPANY", "HYBRID"]] = None
+    maxParticipantes: Optional[int] = None
+    linkClase: Optional[str] = None
+    tipoEvaluacion: Optional[str] = None
+    plantillaEvaluacionId: Optional[str] = None
 
 class ModuloSummary(BaseModel):
     """Resumen de módulo para detalle de curso"""
@@ -51,8 +68,14 @@ class CursoDetail(BaseModel):
     duracionHoras: int
     vigenciaMeses: Optional[int] = None
     activo: bool
+    empresaId: Optional[str] = None
+    modalidad: Literal["ONLINE", "IN_COMPANY", "HYBRID"] = "ONLINE"
+    maxParticipantes: Optional[int] = None
+    linkClase: Optional[str] = None
+    tipoEvaluacion: str = "QUIZ"
+    plantillaEvaluacionId: Optional[str] = None
     modulos: List[ModuloSummary]
-    
+
     class Config:
         from_attributes = True
 

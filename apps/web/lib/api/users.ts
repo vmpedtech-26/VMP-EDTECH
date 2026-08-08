@@ -19,7 +19,7 @@ export const usersApi = {
      * Listar usuarios con filtros
      */
     async listarUsuarios(params?: { rol?: string; empresaId?: string }): Promise<UserAdmin[]> {
-        return api.get('/users/', { params });
+        return api.get('/users', { params });
     },
 
     /**
@@ -33,7 +33,7 @@ export const usersApi = {
      * Crear un nuevo usuario
      */
     async crearUsuario(data: any): Promise<UserAdmin> {
-        return api.post('/users/', data);
+        return api.post('/users', data);
     },
 
     /**
@@ -59,7 +59,7 @@ export const usersApi = {
         } catch (error) {
             // Fallback resiliente: creación en batch si el servidor mock no tiene endpoint masivo
             const resultados = await Promise.allSettled(
-                alumnos.map(a => api.post('/users/', { ...a, rol: 'ALUMNO' }))
+                alumnos.map(a => api.post('/users', { ...a, rol: 'ALUMNO' }))
             );
             const creados = resultados.filter(r => r.status === 'fulfilled').length;
             return { creados, errores: [] };

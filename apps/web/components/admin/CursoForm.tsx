@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import { Curso } from '@/types/training';
+import { empresasApi, Empresa } from '@/lib/api/empresas';
+import { api } from '@/lib/api-client';
 import Link from 'next/link';
 
 interface CursoFormProps {
@@ -12,6 +14,11 @@ interface CursoFormProps {
     onSubmit: (data: Partial<Curso>) => Promise<void>;
     isLoading?: boolean;
     title: string;
+}
+
+interface PlantillaOption {
+    id: string;
+    nombre: string;
 }
 
 export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoFormProps) {
@@ -23,8 +30,17 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         vigenciaMeses: 12,
         activo: true,
     });
+    const [empresas, setEmpresas] = useState<Empresa[]>([]);
+    const [plantillas, setPlantillas] = useState<PlantillaOption[]>([]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    useEffect(() => {
+        empresasApi.listarEmpresas().then(setEmpresas).catch(() => setEmpresas([]));
+        api.get('/plantillas-evaluacion')
+            .then((res: { items: PlantillaOption[] }) => setPlantillas(res.items || []))
+            .catch(() => setPlantillas([]));
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -132,12 +148,12 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                             <select
                                 name="modalidad"
                                 className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700"
-                                value={(formData as any).modalidad || 'online'}
+                                value={formData.modalidad || 'ONLINE'}
                                 onChange={handleChange as any}
                             >
-                                <option value="online">Online Asincrónico</option>
-                                <option value="presencial">Presencial</option>
-                                <option value="mixta">Semipresencial / Mixto</option>
+                                <option value="ONLINE">Online Asincrónico</option>
+                                <option value="IN_COMPANY">Presencial (In-Company)</option>
+                                <option value="HYBRID">Semipresencial / Híbrido</option>
                             </select>
                         </div>
                     </div>
@@ -147,14 +163,17 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                             <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Asignar a Empresa Cliente (Opcional)
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 name="empresaId"
-                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                placeholder="ID o Código de la empresa"
-                                value={(formData as any).empresaId || ''}
-                                onChange={handleChange}
-                            />
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700"
+                                value={formData.empresaId || ''}
+                                onChange={handleChange as any}
+                            >
+                                <option value="">Curso general (sin empresa)</option>
+                                {empresas.map(emp => (
+                                    <option key={emp.id} value={emp.id}>{emp.nombre}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="space-y-2">
@@ -207,14 +226,17 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                             <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Plantilla de Evaluación (Opcional)
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 name="plantillaEvaluacionId"
-                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                placeholder="Nombre o ID de plantilla"
-                                value={(formData as any).plantillaEvaluacionId || ''}
-                                onChange={handleChange}
-                            />
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700"
+                                value={formData.plantillaEvaluacionId || ''}
+                                onChange={handleChange as any}
+                            >
+                                <option value="">Sin plantilla asignada</option>
+                                {plantillas.map(p => (
+                                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

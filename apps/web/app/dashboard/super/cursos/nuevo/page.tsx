@@ -17,7 +17,7 @@ export default function NuevoCursoPage() {
             router.push('/dashboard/super/cursos');
         } catch (error) {
             console.error('Error creating curso:', error);
-            alert('Error al crear el curso. Verifica que el código no esté duplicado.');
+            alert('Error al crear el curso: ' + (error instanceof Error ? error.message : String(error)));
         } finally {
             setIsLoading(false);
         }

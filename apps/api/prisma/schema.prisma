@@ -32,6 +32,12 @@ enum EstadoEvidencia {
   RECHAZADA
 }
 
+enum ModalidadCurso {
+  ONLINE
+  IN_COMPANY
+  HYBRID
+}
+
 enum EstadoInscripcion {
   NO_INICIADO
   EN_PROGRESO
@@ -100,15 +106,22 @@ model Curso {
   vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
   empresaId      String? @map("empresa_id")
   activo         Boolean @default(true)
-  
+
+  modalidad          ModalidadCurso  @default(ONLINE) @map("modalidad")
+  maxParticipantes    Int?    @map("max_participantes")
+  linkClase           String? @map("link_clase")
+  tipoEvaluacion       String  @default("QUIZ") @map("tipo_evaluacion") // QUIZ, PRACTICA, NINGUNA
+  plantillaEvaluacionId String? @map("plantilla_evaluacion_id")
+
   empresa       Company?      @relation(fields: [empresaId], references: [id])
+  plantillaEvaluacion PlantillaEvaluacion? @relation(fields: [plantillaEvaluacionId], references: [id])
   modulos       Modulo[]
   examenes      Examen[]
   inscripciones Inscripcion[]
   credenciales  Credencial[]
   solicitudes SolicitudCapacitacion[]
   sesiones Sesion[]
-  
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -409,6 +422,7 @@ model PlantillaEvaluacion {
   notaMinima  Float    @default(60) @map("nota_minima")
   activa      Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
+  cursos      Curso[]
   @@map("plantillas_evaluacion")
 }
 

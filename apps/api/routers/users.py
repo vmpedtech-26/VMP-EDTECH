@@ -7,7 +7,7 @@ from auth.jwt import hash_password
 
 router = APIRouter()
 
-@router.get("/", response_model=List[UserWithEmpresaResponse])
+@router.get("", response_model=List[UserWithEmpresaResponse])
 async def listar_usuarios(
     rol: Optional[str] = None, 
     empresaId: Optional[str] = None,
@@ -45,7 +45,7 @@ async def listar_usuarios(
     return result
 
 
-@router.post("/", response_model=UserAdminResponse)
+@router.post("", response_model=UserAdminResponse)
 async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
     

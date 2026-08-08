@@ -17,6 +17,12 @@ export interface Curso {
     duracionHoras: number;
     vigenciaMeses?: number;
     activo: boolean;
+    empresaId?: string | null;
+    modalidad?: 'ONLINE' | 'IN_COMPANY' | 'HYBRID';
+    maxParticipantes?: number | null;
+    linkClase?: string | null;
+    tipoEvaluacion?: 'QUIZ' | 'PRACTICA' | 'NINGUNA';
+    plantillaEvaluacionId?: string | null;
 }
 
 export interface ModuloSummary {

@@ -6,7 +6,7 @@ from core.database import prisma
 
 router = APIRouter()
 
-@router.get("/", response_model=List[EmpresaResponse])
+@router.get("", response_model=List[EmpresaResponse])
 async def listar_empresas(current_user=Depends(get_current_user)):
     """Listar todas las empresas (Solo SUPER_ADMIN)"""
     
@@ -16,7 +16,7 @@ async def listar_empresas(current_user=Depends(get_current_user)):
     return await prisma.company.find_many(order={"nombre": "asc"})
 
 
-@router.post("/", response_model=EmpresaResponse)
+@router.post("", response_model=EmpresaResponse)
 async def crear_empresa(data: CreateEmpresaRequest, current_user=Depends(get_current_user)):
     """Crear una nueva empresa (Solo SUPER_ADMIN)"""
     

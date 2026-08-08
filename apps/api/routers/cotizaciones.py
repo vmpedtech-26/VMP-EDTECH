@@ -85,7 +85,7 @@ async def get_db():
         await db.disconnect()
 
 
-@router.post("/", response_model=CotizacionResponse, status_code=201)
+@router.post("", response_model=CotizacionResponse, status_code=201)
 @rate_limit_public()
 async def create_cotizacion(
     request: Request,
@@ -169,7 +169,7 @@ async def create_cotizacion(
         )
 
 
-@router.get("/", response_model=list[CotizacionResponse])
+@router.get("", response_model=list[CotizacionResponse])
 async def get_cotizaciones(
     skip: int = 0,
     limit: int = 100,

@@ -17,7 +17,7 @@ from core.security_utils import sanitize_rich_html
 
 router = APIRouter()
 
-@router.get("/", response_model=List[CursoListItem])
+@router.get("", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """
     Listar todos los cursos activos
@@ -41,18 +41,28 @@ async def listar_cursos(current_user=Depends(get_current_user)):
     return cursos
 
 
-@router.post("/", response_model=CursoListItem)
+@router.post("", response_model=CursoListItem)
 async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current_user)):
     """Crear un nuevo curso (Solo SUPER_ADMIN)"""
-    
+
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos para crear cursos")
-    
+
     # Verificar si el código ya existe
     existing = await prisma.curso.find_unique(where={"codigo": data.codigo})
     if existing:
         raise HTTPException(status_code=400, detail="El código de curso ya existe")
-    
+
+    if data.empresaId:
+        empresa = await prisma.company.find_unique(where={"id": data.empresaId})
+        if not empresa:
+            raise HTTPException(status_code=400, detail="La empresa seleccionada no existe")
+
+    if data.plantillaEvaluacionId:
+        plantilla = await prisma.plantillaevaluacion.find_unique(where={"id": data.plantillaEvaluacionId})
+        if not plantilla:
+            raise HTTPException(status_code=400, detail="La plantilla de evaluación seleccionada no existe")
+
     curso = await prisma.curso.create(
         data={
             "nombre": data.nombre,
@@ -61,10 +71,15 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "duracionHoras": data.duracionHoras,
             "vigenciaMeses": data.vigenciaMeses,
             "empresaId": data.empresaId,
+            "modalidad": data.modalidad,
+            "maxParticipantes": data.maxParticipantes,
+            "linkClase": data.linkClase,
+            "tipoEvaluacion": data.tipoEvaluacion,
+            "plantillaEvaluacionId": data.plantillaEvaluacionId,
             "activo": True
         }
     )
-    
+
     return curso
 
 
@@ -100,12 +115,22 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos para editar cursos")
-    
+
     # Verificar si existe
     existing = await prisma.curso.find_unique(where={"id": id})
     if not existing:
         raise HTTPException(status_code=404, detail="Curso no encontrado")
-    
+
+    if data.empresaId is not None and data.empresaId != "":
+        empresa = await prisma.company.find_unique(where={"id": data.empresaId})
+        if not empresa:
+            raise HTTPException(status_code=400, detail="La empresa seleccionada no existe")
+
+    if data.plantillaEvaluacionId is not None and data.plantillaEvaluacionId != "":
+        plantilla = await prisma.plantillaevaluacion.find_unique(where={"id": data.plantillaEvaluacionId})
+        if not plantilla:
+            raise HTTPException(status_code=400, detail="La plantilla de evaluación seleccionada no existe")
+
     # Preparar datos para actualizar
     update_data = {}
     if data.nombre is not None: update_data["nombre"] = data.nombre
@@ -114,7 +139,13 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     if data.duracionHoras is not None: update_data["duracionHoras"] = data.duracionHoras
     if data.vigenciaMeses is not None: update_data["vigenciaMeses"] = data.vigenciaMeses
     if data.activo is not None: update_data["activo"] = data.activo
-    
+    if data.empresaId is not None: update_data["empresaId"] = data.empresaId or None
+    if data.modalidad is not None: update_data["modalidad"] = data.modalidad
+    if data.maxParticipantes is not None: update_data["maxParticipantes"] = data.maxParticipantes
+    if data.linkClase is not None: update_data["linkClase"] = data.linkClase
+    if data.tipoEvaluacion is not None: update_data["tipoEvaluacion"] = data.tipoEvaluacion
+    if data.plantillaEvaluacionId is not None: update_data["plantillaEvaluacionId"] = data.plantillaEvaluacionId or None
+
     curso = await prisma.curso.update(
         where={"id": id},
         data=update_data
