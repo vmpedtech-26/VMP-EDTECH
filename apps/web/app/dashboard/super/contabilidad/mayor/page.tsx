@@ -56,7 +56,7 @@ export default function LibroMayorPage() {
             setMayorData(data);
         } catch (error: any) {
             console.error('Error fetching mayor:', error);
-            const msg = error.response?.data?.detail || 'No se pudo cargar el Libro Mayor de esta cuenta.';
+            const msg = error.message || 'No se pudo cargar el Libro Mayor de esta cuenta.';
             toast.error(msg);
         } finally {
             setIsLoading(false);

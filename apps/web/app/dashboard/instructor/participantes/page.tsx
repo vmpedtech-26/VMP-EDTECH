@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Camera, Check, X, Upload, Users, Building2, Filter, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import { ModalAltaCampoInstructor } from '@/components/dashboard/ModalAltaCampoInstructor';
+import { api, API_URL } from '@/lib/api-client';
 
 interface Alumno {
     id: string;

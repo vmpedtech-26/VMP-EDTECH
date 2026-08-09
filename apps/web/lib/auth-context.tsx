@@ -42,18 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.removeItem('vmp_token');
                 localStorage.removeItem('vmp_user');
             }
-        } else {
-            // Sesión por defecto: Super Admin con acceso completo a LMS y Contabilidad RT54
-            const defaultAdmin: User = {
-                id: 'demo-admin',
-                email: 'admin@vmp-edtech.com',
-                nombre: 'Administrador',
-                apellido: 'VMP EDTECH',
-                rol: 'SUPER_ADMIN',
-                dni: '00000000',
-            };
-            setUser(defaultAdmin);
-            localStorage.setItem('vmp_user', JSON.stringify(defaultAdmin));
         }
         setIsLoading(false);
     }, []);

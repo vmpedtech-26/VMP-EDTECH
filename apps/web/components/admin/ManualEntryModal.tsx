@@ -129,7 +129,7 @@ export default function ManualEntryModal({ isOpen, onClose, onSuccess }: ManualE
             onClose();
         } catch (error: any) {
             console.error('Error registrando asiento manual:', error);
-            const errMsg = error.response?.data?.detail || 'Ocurrió un error al registrar el asiento.';
+            const errMsg = error.message || 'Ocurrió un error al registrar el asiento.';
             toast.error(errMsg);
         } finally {
             setIsSaving(false);

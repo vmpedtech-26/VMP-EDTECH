@@ -90,7 +90,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             <div className="space-y-4">
                 {tareas.map((tarea, idx) => (
                     <Card key={tarea.id} className="relative overflow-hidden border-0 shadow-md ring-1 ring-gray-100">
-                        {uploaded[tarea.id] && (
+                        {evidencias[tarea.id] && (
                             <div className="absolute top-0 right-0 p-4">
                                 <CheckCircle2 className="h-6 w-6 text-success" />
                             </div>

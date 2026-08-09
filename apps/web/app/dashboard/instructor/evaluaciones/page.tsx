@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Eye, CheckCircle, XCircle, Search, Download } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Search, Download, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface Examen {
@@ -183,10 +183,10 @@ export default function EvaluacionesPage() {
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
                                             <div className="text-sm font-medium text-gray-900">
-                                                {examen.modulo.curso.nombre}
+                                                {examen.curso.nombre}
                                             </div>
                                             <div className="text-sm text-gray-500">
-                                                {examen.modulo.nombre}
+                                                {examen.curso.codigo}
                                             </div>
                                         </div>
                                     </td>
@@ -229,7 +229,7 @@ export default function EvaluacionesPage() {
                             <ClipboardCheck className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay evaluaciones</h3>
                             <p className="text-gray-600">
-                                {busqueda || filtroEstado !== 'all'
+                                {busqueda
                                     ? 'No se encontraron evaluaciones con los filtros seleccionados'
                                     : 'No hay evaluaciones registradas'}
                             </p>
