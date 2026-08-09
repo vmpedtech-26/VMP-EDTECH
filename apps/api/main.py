@@ -63,6 +63,7 @@ app.add_middleware(
 from routers import auth, examenes, cursos, inscripciones, fotos_credencial, empresas, users, cotizaciones, public, metrics
 from routers import capacitaciones, hr, administracion, banco_preguntas, plantillas, notificaciones, security_mgmt, admin_ops
 from routers import sesiones
+from routers import contact, audit, automation, obd2, compliance, b2b, fotos_validation
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -84,6 +85,13 @@ app.include_router(notificaciones.router, prefix="/api/notifications", tags=["no
 app.include_router(security_mgmt.router, prefix="/api/admin", tags=["security"])
 app.include_router(admin_ops.router, prefix="/api/admin", tags=["admin-ops"])
 app.include_router(sesiones.router, prefix="/api/sesiones", tags=["sesiones"])
+app.include_router(contact.router, tags=["contact"])
+app.include_router(audit.router, prefix="/api/admin", tags=["audit"])
+app.include_router(automation.router, prefix="/api/automation", tags=["automation"])
+app.include_router(obd2.router, prefix="/api", tags=["obd2"])
+app.include_router(compliance.router, prefix="/api/compliance", tags=["compliance"])
+app.include_router(b2b.router, prefix="/api/b2b", tags=["b2b"])
+app.include_router(fotos_validation.router, prefix="/api/fotos-validation", tags=["fotos-validation"])
 
 
 

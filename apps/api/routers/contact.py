@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 import logging
+import os
 from services.email_service import email_service
 
 logger = logging.getLogger(__name__)

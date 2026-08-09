@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     EMAIL_VENTAS: str = "ventas@vmpservicios.com"
     ADMIN_URL: str = "http://localhost:3000"
     
+    # Automation / n8n
+    N8N_WEBHOOK_URL: str = ""
+    N8N_WEBHOOK_SECRET: str = ""
+
     # Monitoring
     SENTRY_DSN: str = ""
     

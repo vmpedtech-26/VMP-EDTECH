@@ -79,3 +79,8 @@ def rate_limit_public():
 def rate_limit_api():
     """Rate limit general para API: 60 requests por minuto"""
     return limiter.limit("60/minute")
+
+
+def rate_limit_ia():
+    """Rate limit para endpoints de validación con IA (costo por llamada externa): 10 requests por minuto"""
+    return limiter.limit("10/minute")

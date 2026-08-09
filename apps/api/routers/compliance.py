@@ -5,6 +5,7 @@ Soporta denuncias públicas anónimas y gestión por parte de administradores.
 from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import Optional, List
 from datetime import datetime
+import os
 import secrets
 import string
 import json

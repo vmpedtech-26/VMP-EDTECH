@@ -8,6 +8,7 @@ from datetime import datetime
 # Assuming the main app uses prisma client initialized globally or injected
 from prisma.models import Obd2Session, Inscripcion
 from core.database import prisma
+from auth.dependencies import get_current_user
 router = APIRouter(prefix="/obd2", tags=["obd2"])
 
 class Obd2MetricInput(BaseModel):
@@ -18,13 +19,16 @@ class Obd2MetricInput(BaseModel):
     raw_data: Optional[str] = None
 
 @router.post("/metrics/{inscripcion_id}")
-async def upload_metrics(inscripcion_id: str, data: Obd2MetricInput):
+async def upload_metrics(inscripcion_id: str, data: Obd2MetricInput, current_user=Depends(get_current_user)):
     """
     Sube métricas OBD2 para una inscripción específica (alumno + curso).
     """
     inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id})
     if not inscripcion:
         raise HTTPException(status_code=404, detail="Inscripción no encontrada")
+
+    if current_user.rol == "ALUMNO" and inscripcion.alumnoId != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
 
     session = await prisma.obd2session.create(
         data={
@@ -39,10 +43,17 @@ async def upload_metrics(inscripcion_id: str, data: Obd2MetricInput):
     return {"status": "success", "session_id": session.id}
 
 @router.get("/metrics/{inscripcion_id}")
-async def get_metrics(inscripcion_id: str):
+async def get_metrics(inscripcion_id: str, current_user=Depends(get_current_user)):
     """
     Devuelve las sesiones OBD2 registradas para la inscripción de un alumno en un curso.
     """
+    inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id})
+    if not inscripcion:
+        raise HTTPException(status_code=404, detail="Inscripción no encontrada")
+
+    if current_user.rol == "ALUMNO" and inscripcion.alumnoId != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
+
     sessions = await prisma.obd2session.find_many(
         where={"inscripcionId": inscripcion_id},
         order={"fecha": "desc"}
