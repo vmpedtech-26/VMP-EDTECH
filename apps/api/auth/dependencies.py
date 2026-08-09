@@ -50,3 +50,17 @@ async def require_super_admin(current_user = Depends(get_current_user)):
             detail="Super admin permissions required",
         )
     return current_user
+
+class RequireRole:
+    """Dependency factory: require the current user's rol to be one of `roles`."""
+
+    def __init__(self, roles: list[str]):
+        self.roles = roles
+
+    async def __call__(self, current_user = Depends(get_current_user)):
+        if current_user.rol not in self.roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permisos para acceder a este recurso",
+            )
+        return current_user

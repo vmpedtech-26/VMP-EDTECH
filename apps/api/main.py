@@ -65,6 +65,7 @@ from routers import capacitaciones, hr, administracion, banco_preguntas, plantil
 from routers import sesiones
 from routers import contact, audit, automation, obd2, compliance, b2b, fotos_validation
 from routers import credenciales
+from routers import accounting
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -94,6 +95,7 @@ app.include_router(compliance.router, prefix="/api/compliance", tags=["complianc
 app.include_router(b2b.router, prefix="/api/b2b", tags=["b2b"])
 app.include_router(fotos_validation.router, prefix="/api/fotos-validation", tags=["fotos-validation"])
 app.include_router(credenciales.router, prefix="/api/credenciales", tags=["credenciales"])
+app.include_router(accounting.router, prefix="/api/accounting", tags=["accounting"])
 
 
 
