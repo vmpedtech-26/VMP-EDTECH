@@ -59,8 +59,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const token = localStorage.getItem('vmp_token');
     const userData = localStorage.getItem('vmp_user');
     if (!token) { router.push('/auth/login'); return; }
-    if (userData) setUser(JSON.parse(userData));
-    
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      // Este panel expone contabilidad, HR y administración del sistema completos,
+      // sin filtrado por sección: solo SUPER_ADMIN puede acceder.
+      if (parsedUser.rol !== 'SUPER_ADMIN') {
+        router.push('/dashboard');
+        return;
+      }
+      setUser(parsedUser);
+    } else {
+      router.push('/auth/login');
+      return;
+    }
+
     // Load notifications
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://vmp-edtech-6wgw.onrender.com'}/api/notifications?limit=12`, {
       headers: { Authorization: `Bearer ${token}` }
