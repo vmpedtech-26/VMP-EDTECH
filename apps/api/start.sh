@@ -26,5 +26,20 @@ if [ -n "$PRISMA_BINARY_CACHE_DIR" ] && [ -d "$PRISMA_BINARY_CACHE_DIR" ]; then
 fi
 find . -maxdepth 1 -type f -name 'prisma-query-engine-*' -exec chmod +x {} \;
 
+# --- DIAGNÓSTICO TEMPORAL: sacar una vez resuelto el problema de arranque ---
+echo "🔍 DEBUG PRISMA_BINARY_CACHE_DIR=$PRISMA_BINARY_CACHE_DIR"
+echo "🔍 DEBUG pwd=$(pwd)"
+echo "🔍 DEBUG buscando binarios del query engine:"
+find / -maxdepth 8 -iname 'prisma-query-engine-*' -exec ls -la {} \; 2>/dev/null
+echo "🔍 DEBUG intentando ejecutar el binario encontrado directamente:"
+BIN=$(find / -maxdepth 8 -iname 'prisma-query-engine-*' -type f 2>/dev/null | head -n1)
+if [ -n "$BIN" ]; then
+    echo "🔍 DEBUG binario: $BIN"
+    "$BIN" --version || echo "🔍 DEBUG el binario no pudo ejecutarse (exit code $?)"
+else
+    echo "🔍 DEBUG no se encontró ningún binario prisma-query-engine-*"
+fi
+# --- FIN DIAGNÓSTICO TEMPORAL ---
+
 echo "📡 Starting Uvicorn on 0.0.0.0:${PORT:-8000}..."
 exec uvicorn main:app --host 0.0.0.0 --port "${PORT:-8000}" --proxy-headers --forwarded-allow-ips="*"
