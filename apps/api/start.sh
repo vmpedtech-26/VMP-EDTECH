@@ -18,28 +18,28 @@
 
 echo "🚀 Starting VMP API Service..."
 
+# --- DIAGNÓSTICO TEMPORAL: sacar una vez resuelto el problema de arranque ---
+# NO usar `find /` (cuelga el arranque en este entorno) -- solo miramos las
+# carpetas puntuales donde puede estar el binario.
+echo "🔍 DEBUG pwd=$(pwd)"
+echo "🔍 DEBUG PRISMA_BINARY_CACHE_DIR=$PRISMA_BINARY_CACHE_DIR"
+for d in "." "$PRISMA_BINARY_CACHE_DIR" "$HOME/.cache/prisma-python" "/opt/render/.cache/prisma-python"; do
+    if [ -n "$d" ] && [ -d "$d" ]; then
+        echo "🔍 DEBUG contenido de $d (hasta 3 niveles):"
+        find "$d" -maxdepth 3 2>/dev/null
+    else
+        echo "🔍 DEBUG $d no existe"
+    fi
+done
+# --- FIN DIAGNÓSTICO TEMPORAL ---
+
 echo "📦 Verificando binario del Prisma Query Engine..."
-python3 -m prisma py fetch || true
+timeout 20 python3 -m prisma py fetch || echo "🔍 DEBUG prisma py fetch fallo o tardo demasiado (exit $?)"
 
 if [ -n "$PRISMA_BINARY_CACHE_DIR" ] && [ -d "$PRISMA_BINARY_CACHE_DIR" ]; then
     find "$PRISMA_BINARY_CACHE_DIR" -type f -name 'prisma-query-engine-*' -exec chmod +x {} \;
 fi
 find . -maxdepth 1 -type f -name 'prisma-query-engine-*' -exec chmod +x {} \;
-
-# --- DIAGNÓSTICO TEMPORAL: sacar una vez resuelto el problema de arranque ---
-echo "🔍 DEBUG PRISMA_BINARY_CACHE_DIR=$PRISMA_BINARY_CACHE_DIR"
-echo "🔍 DEBUG pwd=$(pwd)"
-echo "🔍 DEBUG buscando binarios del query engine:"
-find / -maxdepth 8 -iname 'prisma-query-engine-*' -exec ls -la {} \; 2>/dev/null
-echo "🔍 DEBUG intentando ejecutar el binario encontrado directamente:"
-BIN=$(find / -maxdepth 8 -iname 'prisma-query-engine-*' -type f 2>/dev/null | head -n1)
-if [ -n "$BIN" ]; then
-    echo "🔍 DEBUG binario: $BIN"
-    "$BIN" --version || echo "🔍 DEBUG el binario no pudo ejecutarse (exit code $?)"
-else
-    echo "🔍 DEBUG no se encontró ningún binario prisma-query-engine-*"
-fi
-# --- FIN DIAGNÓSTICO TEMPORAL ---
 
 echo "📡 Starting Uvicorn on 0.0.0.0:${PORT:-8000}..."
 exec uvicorn main:app --host 0.0.0.0 --port "${PORT:-8000}" --proxy-headers --forwarded-allow-ips="*"
