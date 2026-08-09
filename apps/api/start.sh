@@ -27,6 +27,11 @@ if [ -n "$SRC" ]; then
     cp "$SRC" "$DEST"
     chmod +x "$DEST"
     echo "📦 Copiado $SRC -> $DEST"
+    echo "🔍 DEBUG file: $(file "$DEST" 2>&1)"
+    echo "🔍 DEBUG ls -la: $(ls -la "$DEST" 2>&1)"
+    echo "🔍 DEBUG intentando --version:"
+    "$DEST" --version 2>&1
+    echo "🔍 DEBUG exit code de --version: $?"
 else
     echo "⚠️  No se encontró el binario del query engine en $PRISMA_BINARY_CACHE_DIR; intentando prisma py fetch como respaldo..."
     python3 -m prisma py fetch || true
