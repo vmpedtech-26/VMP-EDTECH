@@ -32,6 +32,20 @@ if [ -n "$SRC" ]; then
     echo "🔍 DEBUG intentando --version:"
     "$DEST" --version 2>&1
     echo "🔍 DEBUG exit code de --version: $?"
+
+    echo "🔍 DEBUG probando arrancarlo como servidor (igual que lo hace el cliente Python)..."
+    SCHEMA=$(python3 -c "import prisma, os; print(os.path.join(os.path.dirname(prisma.__file__), 'schema.prisma'))" 2>/dev/null)
+    echo "🔍 DEBUG PRISMA_DML_PATH=$SCHEMA (existe: $([ -f "$SCHEMA" ] && echo si || echo no))"
+    PRISMA_DML_PATH="$SCHEMA" RUST_LOG=info RUST_LOG_FORMAT=json PRISMA_CLIENT_ENGINE_TYPE=binary PRISMA_ENGINE_PROTOCOL=graphql \
+        "$DEST" -p 5899 --enable-metrics --enable-raw-queries > /tmp/engine_debug.log 2>&1 &
+    ENGINE_PID=$!
+    sleep 4
+    echo "🔍 DEBUG engine sigue vivo? $(kill -0 $ENGINE_PID 2>/dev/null && echo si || echo no, exit_status=$?)"
+    echo "🔍 DEBUG curl a /status:"
+    curl -s -m 3 http://localhost:5899/status 2>&1 || echo "🔍 DEBUG curl fallo (exit $?)"
+    echo "🔍 DEBUG salida del engine (/tmp/engine_debug.log):"
+    cat /tmp/engine_debug.log 2>&1
+    kill $ENGINE_PID 2>/dev/null
 else
     echo "⚠️  No se encontró el binario del query engine en $PRISMA_BINARY_CACHE_DIR; intentando prisma py fetch como respaldo..."
     python3 -m prisma py fetch || true
