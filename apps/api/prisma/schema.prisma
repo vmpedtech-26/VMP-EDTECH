@@ -84,6 +84,8 @@ model User {
   cursosInstruidos          Curso[]
   sesionesCapacitacion      SesionCapacitacion[]
   asistenciasSesion         AsistenciaSesion[]
+  evidenciasSubidas         Evidencia[] @relation("EvidenciaAlumno")
+  evidenciasEvaluadas       Evidencia[] @relation("EvidenciaEvaluador")
   notificaciones NotificacionItem[]
   
   createdAt DateTime @default(now()) @map("created_at")
@@ -165,7 +167,8 @@ model Modulo {
   
   curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   preguntas        Pregunta[]
-  
+  tareasPracticas  TareaPractica[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -460,6 +463,41 @@ model BancoPregunta {
   activo           Boolean  @default(true)
   createdAt        DateTime @default(now()) @map("created_at")
   @@map("banco_preguntas")
+}
+
+model TareaPractica {
+  id           String   @id @default(uuid())
+  moduloId     String   @map("modulo_id")
+  descripcion  String
+  requiereFoto Boolean  @default(true) @map("requiere_foto")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  modulo     Modulo      @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  evidencias Evidencia[]
+
+  @@map("tareas_practicas")
+}
+
+model Evidencia {
+  id          String          @id @default(uuid())
+  tareaId     String          @map("tarea_id")
+  alumnoId    String          @map("alumno_id")
+  fotoUrl     String          @map("foto_url")
+  comentario  String?
+  estado      EstadoEvidencia @default(PENDIENTE)
+  feedback    String?
+  evaluadorId String?         @map("evaluador_id")
+  uploadedAt  DateTime        @default(now()) @map("uploaded_at")
+  updatedAt   DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  tarea     TareaPractica @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  alumno    User          @relation("EvidenciaAlumno", fields: [alumnoId], references: [id])
+  evaluador User?         @relation("EvidenciaEvaluador", fields: [evaluadorId], references: [id])
+
+  @@index([alumnoId])
+  @@index([tareaId])
+  @@map("evidencias")
 }
 
 model Account {

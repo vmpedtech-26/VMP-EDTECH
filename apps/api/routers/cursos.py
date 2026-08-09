@@ -224,7 +224,8 @@ async def obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True
+            "preguntas": True,
+            "tareasPracticas": True
         }
     )
     
@@ -277,11 +278,22 @@ async def crear_modulo(
                     "explicacion": p.explicacion
                 }
             )
-            
+
+    # 3. Si tiene tareas prácticas (Practica)
+    if data.tipo == "PRACTICA" and data.tareasPracticas:
+        for t in data.tareasPracticas:
+            await prisma.tareapractica.create(
+                data={
+                    "moduloId": modulo.id,
+                    "descripcion": t.descripcion,
+                    "requiereFoto": t.requiereFoto
+                }
+            )
+
     # Re-obtener con relaciones
     return await prisma.modulo.find_unique(
         where={"id": modulo.id},
-        include={"preguntas": True}
+        include={"preguntas": True, "tareasPracticas": True}
     )
 
 
@@ -300,13 +312,14 @@ async def admin_obtener_modulo(
     modulo = await prisma.modulo.find_unique(
         where={"id": moduloId},
         include={
-            "preguntas": True
+            "preguntas": True,
+            "tareasPracticas": True
         }
     )
-    
+
     if not modulo or modulo.cursoId != cursoId:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
-        
+
     return modulo
 
 
@@ -352,10 +365,24 @@ async def actualizar_modulo(
                     "explicacion": p.explicacion
                 }
             )
-            
+
+    # 3. Si se envían tareas prácticas (Sincronización completa para este módulo)
+    if data.tareasPracticas is not None:
+        # Borrar anteriores (las evidencias ya subidas se borran en cascada)
+        await prisma.tareapractica.delete_many(where={"moduloId": moduloId})
+        # Crear nuevas
+        for t in data.tareasPracticas:
+            await prisma.tareapractica.create(
+                data={
+                    "moduloId": moduloId,
+                    "descripcion": t.descripcion,
+                    "requiereFoto": t.requiereFoto
+                }
+            )
+
     return await prisma.modulo.find_unique(
         where={"id": moduloId},
-        include={"preguntas": True}
+        include={"preguntas": True, "tareasPracticas": True}
     )
 
 

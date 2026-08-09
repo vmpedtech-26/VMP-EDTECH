@@ -6,11 +6,13 @@ from typing import Optional
 
 # Configuración
 UPLOAD_DIR = Path("uploads/credenciales")
+EVIDENCE_UPLOAD_DIR = Path("uploads/evidencias")
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 # Crear directorio si no existe
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+EVIDENCE_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 async def save_credencial_photo(file: UploadFile) -> str:
     """
@@ -58,10 +60,10 @@ async def save_credencial_photo(file: UploadFile) -> str:
 def delete_credencial_photo(file_url: str) -> bool:
     """
     Eliminar foto de credencial del sistema de archivos
-    
+
     Args:
         file_url: URL de la foto a eliminar
-        
+
     Returns:
         bool: True si se eliminó exitosamente
     """
@@ -69,7 +71,65 @@ def delete_credencial_photo(file_url: str) -> bool:
         # Extraer filename de URL
         filename = file_url.split("/")[-1]
         file_path = UPLOAD_DIR / filename
-        
+
+        if file_path.exists():
+            file_path.unlink()
+            return True
+        return False
+    except Exception:
+        return False
+
+
+async def save_evidence_photo(file: UploadFile) -> str:
+    """
+    Guardar foto de evidencia de tarea práctica y retornar URL
+
+    Args:
+        file: Archivo subido desde FastAPI
+
+    Returns:
+        str: URL del archivo guardado
+
+    Raises:
+        HTTPException: Si el archivo no es válido
+    """
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Formato de archivo no permitido. Use: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
+    content = await file.read()
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Archivo demasiado grande. Máximo: {MAX_FILE_SIZE / 1024 / 1024} MB"
+        )
+
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = EVIDENCE_UPLOAD_DIR / unique_filename
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    return f"/uploads/evidencias/{unique_filename}"
+
+
+def delete_evidence_photo(file_url: str) -> bool:
+    """
+    Eliminar foto de evidencia del sistema de archivos
+
+    Args:
+        file_url: URL de la foto a eliminar
+
+    Returns:
+        bool: True si se eliminó exitosamente
+    """
+    try:
+        filename = file_url.split("/")[-1]
+        file_path = EVIDENCE_UPLOAD_DIR / filename
+
         if file_path.exists():
             file_path.unlink()
             return True

@@ -124,7 +124,8 @@ class ModuloDetail(BaseModel):
     liveClassDate: Optional[str] = None
     liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaResponse]] = None  # Solo si tipo == QUIZ
-    
+    tareasPracticas: Optional[List[TareaPracticaResponse]] = None  # Solo si tipo == PRACTICA
+
     class Config:
         from_attributes = True
 
@@ -140,7 +141,8 @@ class ModuloDetailAdmin(BaseModel):
     liveClassDate: Optional[str] = None
     liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaDetailAdmin]] = None
-    
+    tareasPracticas: Optional[List[TareaPracticaResponse]] = None
+
     class Config:
         from_attributes = True
 
@@ -175,6 +177,8 @@ class UpdateModuloRequest(BaseModel):
     liveClassUrl: Optional[str] = None
     # Optional sync for Quiz preguntas
     preguntas: Optional[List[PreguntaCreate]] = None
+    # Optional sync for Practica tareas
+    tareasPracticas: Optional[List[TareaCreate]] = None
 
 class UpdatePreguntaRequest(BaseModel):
     pregunta: Optional[str] = None
