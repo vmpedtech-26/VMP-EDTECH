@@ -60,19 +60,21 @@ async def generate_credential_for_student(
         raise ValueError("Curso no encontrado")
     
     # Verificar duplicados
-    if not force:
-        existing = await prisma.credencial.find_first(
-            where={
-                "alumnoId": alumno_id,
-                "cursoId": curso_id
-            }
-        )
-        if existing:
+    existing = await prisma.credencial.find_first(
+        where={
+            "alumnoId": alumno_id,
+            "cursoId": curso_id
+        }
+    )
+    if existing:
+        if not force:
             return {
                 "credencial": existing,
                 "pdfUrl": existing.pdfUrl,
                 "already_existed": True
             }
+        # force=True: reemplazar la credencial anterior en vez de duplicarla
+        await prisma.credencial.delete(where={"id": existing.id})
     
     # Buscar foto aprobada del alumno
     foto_path = None
