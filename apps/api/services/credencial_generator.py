@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
 from io import BytesIO
-import qrcode
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import mm
-from reportlab.lib.pagesizes import landscape
-from reportlab.lib.utils import ImageReader
 from core.config import settings
+
+# qrcode/reportlab se importan recién dentro de las funciones que los usan:
+# son librerías pesadas (~50-80MB en memoria) que de otro modo se cargarían
+# en cada arranque del proceso aunque no se genere ninguna credencial, y en
+# el plan free de Render (512MB) ese margen le hace falta al motor de Prisma
+# para poder levantar durante el startup.
 
 def generate_credencial_number(year: int, sequential: int) -> str:
     """Generate unique credencial number: VMP-2026-00123"""
@@ -14,6 +15,8 @@ def generate_credencial_number(year: int, sequential: int) -> str:
 
 def generate_qr_code(data: str) -> BytesIO:
     """Generate QR code image"""
+    import qrcode
+
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -48,12 +51,16 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     foto_path: Optional path to student photo (if approved)
     """
     
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.units import mm
+    from reportlab.lib.utils import ImageReader
+
     buffer = BytesIO()
-    
+
     # ID Card size
     width = 85.60 * mm
     height = 53.98 * mm
-    
+
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
     # Background gradient effect (simplified as solid color)

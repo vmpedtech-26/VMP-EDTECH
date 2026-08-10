@@ -34,6 +34,15 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
+    try:
+        import os
+
+        import psutil
+
+        rss_mb = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+        print(f"📊 DEBUG memoria del proceso Python antes de conectar Prisma: {rss_mb:.1f} MB (límite del contenedor: 512 MB)")
+    except Exception as e:
+        print(f"📊 DEBUG no se pudo medir memoria: {e}")
     await connect_db()
 
 @app.on_event("shutdown")

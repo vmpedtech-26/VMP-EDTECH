@@ -1,11 +1,10 @@
 import os
 from datetime import datetime
 from io import BytesIO
-import qrcode
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import mm
-from reportlab.lib.pagesizes import landscape
 from core.config import settings
+
+# qrcode/reportlab se importan recién dentro de las funciones que los usan,
+# ver services/credencial_generator.py para el motivo (memoria en el arranque).
 
 def generate_credencial_number(year: int, sequential: int) -> str:
     """Generate unique credencial number: VMP-2026-00123"""
@@ -13,6 +12,8 @@ def generate_credencial_number(year: int, sequential: int) -> str:
 
 def generate_qr_code(data: str) -> BytesIO:
     """Generate QR code image"""
+    import qrcode
+
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -45,12 +46,15 @@ def create_credencial_pdf(credencial_data: dict) -> bytes:
     - qr_url: str
     """
     
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.units import mm
+
     buffer = BytesIO()
-    
+
     # ID Card size
     width = 85.60 * mm
     height = 53.98 * mm
-    
+
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
     # Background gradient effect (simplified as solid color)
