@@ -167,6 +167,120 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
             cuit: '30-71936908-8',
         },
     },
+    'VMP-2026-6772': {
+        numero: 'BLT-RT/772',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Jairo Andres',
+            apellido: 'Alarcon Ulloa',
+            dni: '33.336.772',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
+    'VMP-2026-0624': {
+        numero: 'BLT-RT/624',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Carlos Andres',
+            apellido: 'Ovalle',
+            dni: '33.187.004',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
+    'VMP-2026-9824': {
+        numero: 'BLT-RT/824',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Oscar Eduardo',
+            apellido: 'Retamal',
+            dni: '32.119.824',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
+    'VMP-2026-0207': {
+        numero: 'BLT-RT/207',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Cristhian Braian',
+            apellido: 'Saez',
+            dni: '40.444.102',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
+    'VMP-2026-0337': {
+        numero: 'BLT-RT/337',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Daniel Eleazar',
+            apellido: 'Jara',
+            dni: '27.349.202',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
+    'VMP-2026-0918': {
+        numero: 'BLT-RT/918',
+        fechaEmision: '2026-08-05T00:00:00.000Z',
+        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        alumno: {
+            nombre: 'Daniel Ricardo',
+            apellido: 'Lagos',
+            dni: '37.348.291',
+        },
+        curso: {
+            nombre: 'Trabajo en Altura',
+            codigo: 'TA-2026',
+            descripcion: 'Capacitación teórica y práctica sobre trabajo seguro en altura y prevención de caídas.',
+        },
+        empresa: {
+            nombre: 'JV SERVICIOS',
+            cuit: '30-71000000-0',
+        },
+    },
 };
 
 export default function ValidarCredencialPage({ params }: { params: { codigo: string } }) {
