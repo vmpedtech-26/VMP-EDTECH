@@ -169,8 +169,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-6772': {
         numero: 'BLT-RT/772',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Jairo Andres',
             apellido: 'Alarcon Ulloa',
@@ -188,8 +188,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-0624': {
         numero: 'BLT-RT/624',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Carlos Andres',
             apellido: 'Ovalle',
@@ -207,8 +207,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-9824': {
         numero: 'BLT-RT/824',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Oscar Eduardo',
             apellido: 'Retamal',
@@ -226,8 +226,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-0207': {
         numero: 'BLT-RT/207',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Cristhian Braian',
             apellido: 'Saez',
@@ -245,8 +245,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-0337': {
         numero: 'BLT-RT/337',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Daniel Eleazar',
             apellido: 'Jara',
@@ -264,8 +264,8 @@ const MOCK_CREDENCIALES: Record<string, CredentialData> = {
     },
     'VMP-2026-0918': {
         numero: 'BLT-RT/918',
-        fechaEmision: '2026-08-05T00:00:00.000Z',
-        fechaVencimiento: '2027-08-05T00:00:00.000Z',
+        fechaEmision: '2026-08-05T12:00:00.000Z',
+        fechaVencimiento: '2027-08-05T12:00:00.000Z',
         alumno: {
             nombre: 'Daniel Ricardo',
             apellido: 'Lagos',
@@ -498,7 +498,8 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                                         {new Date(result.credential.fechaEmision).toLocaleDateString('es-AR', {
                                             day: '2-digit',
                                             month: 'long',
-                                            year: 'numeric'
+                                            year: 'numeric',
+                                            timeZone: 'UTC'
                                         })}
                                     </p>
                                 </div>
@@ -512,7 +513,8 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                                             {new Date(result.credential.fechaVencimiento).toLocaleDateString('es-AR', {
                                                 day: '2-digit',
                                                 month: 'long',
-                                                year: 'numeric'
+                                                year: 'numeric',
+                                                timeZone: 'UTC'
                                             })}
                                         </p>
                                     </div>
