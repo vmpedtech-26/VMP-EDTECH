@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Users,
     BookOpen,
     Award,
-    TrendingUp,
     Building2,
     ArrowRight,
     Calculator
@@ -13,13 +12,39 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { metricsApi, MetricsOverview, RecentActivityItem } from '@/lib/api/metrics';
 
 export default function SuperDashboardPage() {
+    const [overview, setOverview] = useState<MetricsOverview | null>(null);
+    const [activity, setActivity] = useState<RecentActivityItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [overviewRes, activityRes] = await Promise.all([
+                    metricsApi.overview(),
+                    metricsApi.recentActivity(5),
+                ]);
+                setOverview(overviewRes);
+                setActivity(activityRes.items);
+            } catch (error) {
+                console.error('Error fetching dashboard metrics:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const stats = [
-        { label: 'Empresas Activas', value: '12', icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Cursos Globales', value: '8', icon: BookOpen, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Alumnos Totales', value: '1,240', icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
-        { label: 'Credenciales Emitidas', value: '856', icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        { label: 'Empresas Activas', value: overview?.totals.companies ?? 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Cursos Globales', value: overview?.totals.courses ?? 0, icon: BookOpen, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'Alumnos Totales', value: overview?.totals.users ?? 0, icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
+        { label: 'Credenciales Emitidas', value: overview?.totals.credentials ?? 0, icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     ];
 
     return (
@@ -38,15 +63,13 @@ export default function SuperDashboardPage() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">
+                                        {isLoading ? '—' : stat.value.toLocaleString('es-AR')}
+                                    </p>
                                 </div>
                                 <div className={`${stat.bg} ${stat.color} p-4 rounded-2xl`}>
                                     <Icon className="h-6 w-6" />
                                 </div>
-                            </div>
-                            <div className="mt-4 flex items-center text-xs font-bold text-success">
-                                <TrendingUp className="h-3 w-3 mr-1" />
-                                <span>+12% este mes</span>
                             </div>
                         </Card>
                     );
@@ -149,16 +172,21 @@ export default function SuperDashboardPage() {
                 <div className="space-y-6">
                     <h2 className="text-xl font-bold text-gray-900">Actividad Reciente</h2>
                     <Card className="border-none shadow-sm ring-1 ring-gray-100 divide-y divide-gray-50">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="p-4 flex items-start gap-3">
+                        {!isLoading && activity.length === 0 && (
+                            <div className="p-4 text-sm text-gray-400">Todavía no hay inscripciones registradas.</div>
+                        )}
+                        {activity.map((item) => (
+                            <div key={item.id} className="p-4 flex items-start gap-3">
                                 <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                                     <Users className="h-4 w-4 text-gray-400" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-900">
-                                        <span className="font-bold">Juan Pérez</span> se inscribió al curso <span className="font-bold text-primary">Seguridad Vial</span>
+                                        <span className="font-bold">{item.alumnoNombre}</span> se inscribió al curso <span className="font-bold text-primary">{item.cursoNombre}</span>
                                     </p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Hace {i * 10} minutos</p>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">
+                                        {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true, locale: es })}
+                                    </p>
                                 </div>
                             </div>
                         ))}

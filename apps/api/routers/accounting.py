@@ -900,6 +900,49 @@ async def obtener_balance(current_user=Depends(get_current_user)):
         
     return result
 
+@router.get("/summary")
+async def obtener_resumen(current_user=Depends(get_current_user)):
+    """Resumen para el Centro Contable: ingresos/egresos del mes, saldo en caja/banco y últimos movimientos."""
+    now = datetime.now()
+    inicio_mes = datetime(now.year, now.month, 1)
+
+    ventas_mes = await prisma.venta.find_many(where={"fecha": {"gte": inicio_mes}})
+    compras_mes = await prisma.compra.find_many(where={"fecha": {"gte": inicio_mes}})
+
+    ingresos_mes = sum(v.total for v in ventas_mes)
+    egresos_mes = sum(c.total for c in compras_mes)
+    rentabilidad = round((ingresos_mes - egresos_mes) / ingresos_mes * 100, 1) if ingresos_mes > 0 else 0
+
+    cuentas_caja = await prisma.account.find_many(
+        where={"code": {"in": ["1.1.01", "1.1.02"]}},
+        include={"ledgerEntries": True}
+    )
+    saldo_caja = sum(
+        sum(e.debit for e in cuenta.ledgerEntries) - sum(e.credit for e in cuenta.ledgerEntries)
+        for cuenta in cuentas_caja
+    )
+
+    ultimas_ventas = await prisma.venta.find_many(take=5, order={"fecha": "desc"})
+    ultimas_compras = await prisma.compra.find_many(take=5, order={"fecha": "desc"})
+
+    movimientos = [
+        {"fecha": v.fecha.isoformat(), "descripcion": f"Venta {v.numero}", "monto": v.total, "tipo": "in"}
+        for v in ultimas_ventas
+    ] + [
+        {"fecha": c.fecha.isoformat(), "descripcion": f"Compra {c.proveedor}", "monto": c.total, "tipo": "out"}
+        for c in ultimas_compras
+    ]
+    movimientos.sort(key=lambda m: m["fecha"], reverse=True)
+
+    return {
+        "ingresosMensuales": ingresos_mes,
+        "egresosMensuales": egresos_mes,
+        "saldoCaja": saldo_caja,
+        "rentabilidad": rentabilidad,
+        "movimientos": movimientos[:5],
+    }
+
+
 # --- Inicialización ---
 
 @router.post("/seed")

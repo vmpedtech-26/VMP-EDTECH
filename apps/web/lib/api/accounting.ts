@@ -65,7 +65,10 @@ export const accountingApi = {
   getBalance: async () => {
     return await api.get('/accounting/reports/balance');
   },
-  
+  getSummary: async () => {
+    return await api.get('/accounting/summary');
+  },
+
   // Journal
   getJournal: async (desde?: string, hasta?: string) => {
     let url = '/accounting/journal';

@@ -76,6 +76,47 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
         )
 
 
+@router.get("/recent-activity")
+async def get_recent_activity(
+    limit: int = 5,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    """
+    Últimas inscripciones registradas, para el feed de actividad reciente
+    del panel de Super Admin.
+    """
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos para ver esta información"
+        )
+
+    try:
+        inscripciones = await prisma.inscripcion.find_many(
+            take=limit,
+            order={"createdAt": "desc"},
+            include={"alumno": True, "curso": True}
+        )
+
+        return {
+            "items": [
+                {
+                    "id": i.id,
+                    "alumnoNombre": f"{i.alumno.nombre} {i.alumno.apellido}",
+                    "cursoNombre": i.curso.nombre,
+                    "createdAt": i.createdAt.isoformat(),
+                }
+                for i in inscripciones
+            ]
+        }
+    except Exception as e:
+        print(f"Error getting recent activity: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al obtener actividad reciente"
+        )
+
+
 @router.get("/conversions")
 async def get_conversion_metrics(
     days: int = 30,
