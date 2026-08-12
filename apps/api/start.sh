@@ -16,15 +16,6 @@
 # busca primero en cwd). Copiamos ese binario ya descargado al nombre y
 # ubicación exactos que el cliente Python revisa primero, evitando así
 # cualquier invocación del CLI de Prisma en el arranque.
-#
-# NOTA (2026-08-09): confirmado que el binario copiado es un ELF válido y
-# funcional (--version responde OK), pero al arrancarlo como servidor el
-# proceso muere en silencio (sin traceback, sin código de salida) dentro
-# del límite de 512MB/0.15CPU del plan free -- firma característica de un
-# OOM-kill del kernel, no un bug de código: correr Uvicorn + el motor de
-# Prisma (un segundo proceso en Rust, con su propio pool de conexiones) a
-# la vez no entra en ese presupuesto de memoria. La solución de fondo es
-# subir el plan de Render (plan Starter o superior).
 
 echo "🚀 Starting VMP API Service..."
 
