@@ -11,6 +11,8 @@ import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { examenesApi } from '@/lib/api/examenes';
 import { MisCursosResponse, Credencial } from '@/types/training';
 import { CardCredencial } from '@/components/dashboard/CardCredencial';
+import { PhotoCaptureModal } from '@/components/dashboard/PhotoCaptureModal';
+import { fotosCredencialApi, FotoCredencial } from '@/lib/api/fotos-credencial';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -18,6 +20,7 @@ export default function DashboardPage() {
     const [data, setData] = useState<MisCursosResponse | null>(null);
     const [credenciales, setCredenciales] = useState<Credencial[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [foto, setFoto] = useState<FotoCredencial | null | undefined>(undefined);
 
     useEffect(() => {
         // Autoredirección según el rol del usuario a su panel de gestión correspondiente
@@ -44,14 +47,17 @@ export default function DashboardPage() {
             return;
         }
 
+        const alumnoId = user.id;
         const fetchData = async () => {
             try {
-                const [cursosRes, credRes] = await Promise.all([
+                const [cursosRes, credRes, fotoRes] = await Promise.all([
                     inscripcionesApi.misCursos(),
                     examenesApi.misCredenciales(),
+                    fotosCredencialApi.miFoto(alumnoId),
                 ]);
                 setData(cursosRes);
                 setCredenciales(credRes);
+                setFoto(fotoRes);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {
@@ -61,6 +67,8 @@ export default function DashboardPage() {
 
         fetchData();
     }, [user, router]);
+
+    const requiereFoto = foto === null || foto?.estado === 'RECHAZADA';
 
     if (isLoading) {
         return (
@@ -109,7 +117,15 @@ export default function DashboardPage() {
     const cursosActivos = data?.cursos || [];
 
     return (
-        <div className="space-y-8">
+        <>
+            {requiereFoto && user && (
+                <PhotoCaptureModal
+                    alumnoId={user.id}
+                    feedback={foto?.estado === 'RECHAZADA' ? foto.feedback : null}
+                    onUploaded={async () => setFoto(await fotosCredencialApi.miFoto(user.id))}
+                />
+            )}
+            <div className="space-y-8">
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -248,6 +264,7 @@ export default function DashboardPage() {
                     )}
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }

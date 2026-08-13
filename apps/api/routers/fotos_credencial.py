@@ -22,17 +22,24 @@ async def upload_foto_credencial(
     current_user=Depends(get_current_user)
 ):
     """
-    Subir foto de credencial para un alumno
-    Solo INSTRUCTOR y SUPER_ADMIN pueden subir fotos
+    Subir foto de credencial para un alumno.
+    El propio ALUMNO puede subir únicamente la suya; INSTRUCTOR y
+    SUPER_ADMIN pueden subir la de cualquier alumno (de su empresa).
     """
-    
+
     # Verificar permisos
-    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+    if current_user.rol == "ALUMNO":
+        if current_user.id != alumnoId:
+            raise HTTPException(
+                status_code=403,
+                detail="Solo podés subir tu propia foto"
+            )
+    elif current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
         raise HTTPException(
             status_code=403,
-            detail="Solo instructores pueden subir fotos de credencial"
+            detail="No tenés permisos para subir esta foto"
         )
-    
+
     # Verificar que el alumno existe
     alumno = await prisma.user.find_unique(where={"id": alumnoId})
     if not alumno:
