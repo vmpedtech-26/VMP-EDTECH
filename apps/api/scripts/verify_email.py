@@ -12,7 +12,7 @@ async def main():
     load_dotenv()
     
     print("="*60)
-    print("📧 VMP EdTech - Email Verification Script")
+    print("📧 VMP - EDTECH - Email Verification Script")
     print("="*60)
     
     smtp_host = os.getenv("SMTP_HOST")
@@ -39,8 +39,8 @@ async def main():
     try:
         success = await email_service.send_email(
             to_email=recipient,
-            subject="Test Email from VMP EdTech",
-            html_content="<h1>It Works!</h1><p>This is a test email from the VMP EdTech platform verifying Hostinger SMTP configuration.</p>"
+            subject="Test Email from VMP - EDTECH",
+            html_content="<h1>It Works!</h1><p>This is a test email from the VMP - EDTECH platform verifying Hostinger SMTP configuration.</p>"
         )
         
         if success:

@@ -25,7 +25,7 @@ export default function AppearancePage() {
       <div className="atlas-card" style={{maxWidth:520}}>
         <div className="atlas-card__header"><span className="atlas-card__title">Identidad de marca</span></div>
         <div className="atlas-card__body">
-          {[['nombre','Nombre de la organización','VMP EdTech'],['brandTag','Tag/Sigla','VMP'],['tagline','Eslogan','Capacitaciones Profesionales']].map(([key,label,ph]) => (
+          {[['nombre','Nombre de la organización','VMP - EDTECH'],['brandTag','Tag/Sigla','VMP'],['tagline','Eslogan','Capacitaciones Profesionales']].map(([key,label,ph]) => (
             <div className="atlas-form-group" key={key}>
               <label className="atlas-label">{label}</label>
               <input className="atlas-input" placeholder={ph} value={data[key] || ''} onChange={e => setData({...data,[key]:e.target.value})} />

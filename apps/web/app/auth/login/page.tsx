@@ -71,7 +71,7 @@ export default function LoginPage() {
         <div className="auth-logo">
           <div className="auth-logo__mark">V</div>
           <div>
-            <div className="auth-logo__name">VMP EdTech</div>
+            <div className="auth-logo__name">VMP - EDTECH</div>
             <div className="auth-logo__tagline">Capacitaciones Profesionales</div>
           </div>
         </div>

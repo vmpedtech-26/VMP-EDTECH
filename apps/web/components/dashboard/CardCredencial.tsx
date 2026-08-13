@@ -33,7 +33,7 @@ export function CardCredencial({ credencial }: CardCredencialProps) {
                     <div className="relative flex justify-between items-start">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center font-black text-[10px]">V</div>
-                            <span className="text-[10px] font-black tracking-[0.2em] text-white/90">VMP EDTECH</span>
+                            <span className="text-[10px] font-black tracking-[0.2em] text-white/90">VMP - EDTECH</span>
                         </div>
                         <Shield className="h-5 w-5 text-primary-light opacity-50" />
                     </div>

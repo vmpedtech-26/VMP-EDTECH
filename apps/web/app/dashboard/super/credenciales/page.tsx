@@ -78,7 +78,7 @@ export default function SuperCredencialesPage() {
     const handleExportPDF = () => {
         const doc = new jsPDF();
         doc.setFontSize(16);
-        doc.text('Reporte de Credenciales - VMP EDTECH', 14, 15);
+        doc.text('Reporte de Credenciales - VMP - EDTECH', 14, 15);
         doc.setFontSize(10);
         doc.text(`Total de registros: ${filteredCredenciales.length}`, 14, 22);
 

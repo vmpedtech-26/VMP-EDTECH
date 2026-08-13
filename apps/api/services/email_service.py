@@ -1,5 +1,5 @@
 """
-Email Service for VMP EdTech
+Email Service for VMP - EDTECH
 Handles all email sending with HTML templates
 """
 
@@ -100,7 +100,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_cotizacion_cliente.html")
         html_content = template.render(cotizacion=cotizacion)
         
-        subject = "Recibimos tu solicitud de cotización - VMP EdTech"
+        subject = "Recibimos tu solicitud de cotización - VMP - EDTECH"
         
         return await self.send_email(
             to_email=cotizacion['email'],
@@ -115,7 +115,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_bienvenida.html")
         html_content = template.render(user=user, temp_password=temp_password)
         
-        subject = "Bienvenido a VMP EdTech - Acceso a tu cuenta"
+        subject = "Bienvenido a VMP - EDTECH - Acceso a tu cuenta"
         
         return await self.send_email(
             to_email=user['email'],
@@ -146,7 +146,7 @@ class EmailService:
         template = self.jinja_env.get_template("email_reset_password.html")
         html_content = template.render(reset_url=reset_url, reset_token=reset_token)
         
-        subject = "Restablecer tu contraseña - VMP EdTech"
+        subject = "Restablecer tu contraseña - VMP - EDTECH"
         
         return await self.send_email(
             to_email=email,
@@ -180,7 +180,7 @@ class EmailService:
             admin_url=admin_url
         )
         
-        subject = f"Bienvenido a VMP EdTech - Credenciales de Acceso para {empresa_data['nombre']}"
+        subject = f"Bienvenido a VMP - EDTECH - Credenciales de Acceso para {empresa_data['nombre']}"
         
         return await self.send_email(
             to_email=empresa_data['email'],

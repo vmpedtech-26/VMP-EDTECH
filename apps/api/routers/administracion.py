@@ -105,7 +105,7 @@ async def get_appearance(current_user=Depends(get_current_user)):
             return {"nombre": branding.nombre, "brandTag": branding.brandTag, "tagline": branding.tagline, "tema": branding.tema, "colorPrimario": branding.colorPrimario}
     except:
         pass
-    return {"nombre": "VMP EdTech", "brandTag": "VMP", "tagline": "Capacitaciones Profesionales", "tema": "light", "colorPrimario": "#3AAFA9"}
+    return {"nombre": "VMP - EDTECH", "brandTag": "VMP", "tagline": "Capacitaciones Profesionales", "tema": "light", "colorPrimario": "#3AAFA9"}
 
 @router.patch("/appearance")
 async def update_appearance(data: dict, current_user=Depends(get_current_user)):
@@ -114,7 +114,7 @@ async def update_appearance(data: dict, current_user=Depends(get_current_user)):
         if existing:
             updated = await prisma.orgbranding.update(where={"id": existing.id}, data=data)
         else:
-            updated = await prisma.orgbranding.create(data={"nombre": data.get("nombre", "VMP EdTech"), "codigo": "vmp", **data})
+            updated = await prisma.orgbranding.create(data={"nombre": data.get("nombre", "VMP - EDTECH"), "codigo": "vmp", **data})
         return updated
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

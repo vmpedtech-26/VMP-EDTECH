@@ -62,7 +62,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🚗 VMP EDTECH
+                        🚗 VMP - EDTECH
                     </h1>
                     <p className="text-gray-600">Capacitación Profesional</p>
                 </div>

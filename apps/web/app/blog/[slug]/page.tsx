@@ -111,7 +111,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     <div className="text-center md:text-left">
                         <h4 className="text-lg font-bold text-gray-900 mb-2">Escrito por {post.author}</h4>
                         <p className="text-gray-600">
-                            Especialista en seguridad vial con más de 15 años de experiencia capacitando a flotas corporativas en Argentina y el Cono Sur. Colaborador habitual de VMP EdTech.
+                            Especialista en seguridad vial con más de 15 años de experiencia capacitando a flotas corporativas en Argentina y el Cono Sur. Colaborador habitual de VMP - EDTECH.
                         </p>
                     </div>
                 </div>

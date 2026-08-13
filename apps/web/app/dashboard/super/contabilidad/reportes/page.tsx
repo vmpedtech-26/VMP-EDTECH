@@ -41,7 +41,7 @@ export default function ReportesContablesPage() {
         const doc = new jsPDF();
         
         doc.setFontSize(18);
-        doc.text('Balance de Sumas y Saldos - VMP EDTECH', 14, 22);
+        doc.text('Balance de Sumas y Saldos - VMP - EDTECH', 14, 22);
         doc.setFontSize(11);
         doc.text(`Generado el: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}`, 14, 30);
 

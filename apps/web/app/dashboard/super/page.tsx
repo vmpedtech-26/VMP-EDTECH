@@ -51,7 +51,7 @@ export default function SuperDashboardPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div>
                 <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Panel de Control</h1>
-                <p className="text-gray-500 mt-1">Bienvenido al centro de administración global de VMP EdTech</p>
+                <p className="text-gray-500 mt-1">Bienvenido al centro de administración global de VMP - EDTECH</p>
             </div>
 
             {/* Stats Grid */}

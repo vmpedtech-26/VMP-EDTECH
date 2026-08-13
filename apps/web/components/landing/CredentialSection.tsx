@@ -10,7 +10,7 @@ export function CredentialSection() {
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-primary-light/30 rounded-3xl blur-3xl group-hover:blur-[120px] transition-all duration-700 opacity-50"></div>
                         <div className="relative">
-                            {/* Credencial Estilo VMP EdTech 2026 */}
+                            {/* Credencial Estilo VMP - EDTECH 2026 */}
                             <div className="bg-white rounded-3xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] overflow-hidden border border-slate-100 max-w-[650px] mx-auto transform hover:scale-[1.02] transition-all duration-500">
                                 {/* Header del Carnet */}
                                 <div className="bg-[#0A1120] px-8 py-5 flex justify-between items-center border-b-[3px] border-cyan-400">

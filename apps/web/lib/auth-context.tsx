@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: user?.id || 'demo-admin',
             email: user?.email || 'admin@vmp-edtech.com',
             nombre: user?.nombre || 'Administrador',
-            apellido: user?.apellido || 'VMP EDTECH',
+            apellido: user?.apellido || 'VMP - EDTECH',
             dni: user?.dni || '00000000',
             rol: newRole,
             empresaId: user?.empresaId || (newRole === 'EMPRESA' ? 'oldelval' : undefined),

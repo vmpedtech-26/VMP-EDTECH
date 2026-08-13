@@ -21,7 +21,7 @@ export default function JsonLd({ type = 'Organization', courseData, breadcrumbs 
         '@type': ['Organization', 'EducationalOrganization', 'ProfessionalService'],
         '@id': `${siteUrl}/#organization`,
         name: 'VMP - EDTECH',
-        alternateName: 'VMP EdTech Capacitación Vial y Seguridad Industrial',
+        alternateName: 'VMP - EDTECH Capacitación Vial y Seguridad Industrial',
         url: siteUrl,
         logo: `${siteUrl}/images/vmp_official.png`,
         image: `${siteUrl}/images/og-image.png`,

@@ -44,7 +44,7 @@ async def get_org_branding():
     except:
         pass
     return {
-        "id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP EdTech",
+        "id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP - EDTECH",
         "brandTag": "VMP", "tagline": "Capacitaciones Profesionales",
         "theme": "light", "logoDataUrl": None, "faviconDataUrl": None
     }

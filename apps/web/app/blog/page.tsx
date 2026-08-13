@@ -8,7 +8,7 @@ import { blogPosts } from '@/lib/blog-data';
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 
 export const metadata = {
-    title: 'Blog de Seguridad Vial | VMP EdTech',
+    title: 'Blog de Seguridad Vial | VMP - EDTECH',
     description: 'Información de alto valor sobre seguridad vial, normativas ANSV y consejos para conductores profesionales en Argentina y Latam.',
 };
 

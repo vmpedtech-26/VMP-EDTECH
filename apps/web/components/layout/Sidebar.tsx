@@ -196,7 +196,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <div>
-                                <div className="text-lg font-bold text-gray-900 leading-none">VMP EDTECH</div>
+                                <div className="text-lg font-bold text-gray-900 leading-none">VMP - EDTECH</div>
                                 <div className="text-[11px] text-gray-500 font-semibold mt-1">
                                     Plataforma Integral
                                 </div>

@@ -56,7 +56,7 @@ export default function ContactSection() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/contacto_bg.jpg"
-                    alt="Oficina de Asesoramiento e Inspección VMP EDTECH en Patagonia Argentina"
+                    alt="Oficina de Asesoramiento e Inspección VMP - EDTECH en Patagonia Argentina"
                     fill
                     sizes="100vw"
                     quality={95}

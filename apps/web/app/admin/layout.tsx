@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="sidebar__header">
           <div className="sidebar__logo">
             <div className="sidebar__logo-mark">V</div>
-            {sidebarOpen && <span className="sidebar__logo-text">VMP EdTech</span>}
+            {sidebarOpen && <span className="sidebar__logo-text">VMP - EDTECH</span>}
           </div>
           <button className="sidebar__toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <span className="material-icons">{sidebarOpen ? 'menu_open' : 'menu'}</span>

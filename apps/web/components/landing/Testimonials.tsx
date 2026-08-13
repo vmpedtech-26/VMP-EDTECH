@@ -71,7 +71,7 @@ export function Testimonials() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/confian_bg.jpg"
-                    alt="Ejecutivos y Directores que Confían en VMP EDTECH"
+                    alt="Ejecutivos y Directores que Confían en VMP - EDTECH"
                     fill
                     sizes="100vw"
                     quality={95}

@@ -72,7 +72,7 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     
     # Logo area (top-left)
     c.setFont("Helvetica-Bold", 8)
-    c.drawString(5*mm, 48*mm, "VMP EDTECH")
+    c.drawString(5*mm, 48*mm, "VMP - EDTECH")
     c.setFont("Helvetica", 6)
     c.drawString(5*mm, 45*mm, "Credencial Profesional")
     

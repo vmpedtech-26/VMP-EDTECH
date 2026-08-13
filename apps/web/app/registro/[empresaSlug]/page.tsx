@@ -102,7 +102,7 @@ export default function EmpresaRegisterPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
                             <span className="text-white font-bold text-2xl">V</span>
                         </div>
-                        <span className="text-2xl font-bold text-white tracking-tight">VMP EDTECH</span>
+                        <span className="text-2xl font-bold text-white tracking-tight">VMP - EDTECH</span>
                     </Link>
 
                     <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 text-white text-xs font-semibold shadow-inner">
@@ -235,7 +235,7 @@ export default function EmpresaRegisterPage() {
                             <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                                 <span className="flex items-center">
                                     <ShieldCheck className="h-4 w-4 text-emerald-600 mr-1.5" />
-                                    Acceso seguro VMP EDTECH
+                                    Acceso seguro VMP - EDTECH
                                 </span>
                                 <Link href="/login" className="text-primary font-semibold hover:underline">
                                     ¿Ya tenés cuenta? Iniciar Sesión
@@ -246,7 +246,7 @@ export default function EmpresaRegisterPage() {
                 </div>
 
                 <p className="text-center text-xs text-gray-400 mt-6">
-                    © {new Date().getFullYear()} VMP EDTECH Servicios. Todos los derechos reservados.
+                    © {new Date().getFullYear()} VMP - EDTECH. Todos los derechos reservados.
                 </p>
             </div>
         </div>

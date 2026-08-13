@@ -4,7 +4,7 @@ import CourseCatalog from '@/components/landing/CourseCatalog';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata = {
-    title: 'Catálogo de Cursos | VMP EdTech',
+    title: 'Catálogo de Cursos | VMP - EDTECH',
     description: 'Explora nuestra amplia oferta de cursos de capacitación profesional certificados por la ANSV.',
 };
 

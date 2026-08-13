@@ -282,7 +282,7 @@ async def get_organizations(current_user=Depends(get_current_user)):
     return [{
         "id": "vmp-org-001",
         "code": "vmp-edtech",
-        "name": "VMP EdTech",
+        "name": "VMP - EDTECH",
         "brandTag": "VMP",
         "isDefault": True
     }]
@@ -309,7 +309,7 @@ async def select_context(
         "refreshToken": refresh_token,
         "systemId": "vmp-system-001",
         "organizationId": "vmp-org-001",
-        "organization": {"id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP EdTech", "brandTag": "VMP", "tagline": "Capacitaciones Profesionales", "tema": "light"},
+        "organization": {"id": "vmp-org-001", "code": "vmp-edtech", "name": "VMP - EDTECH", "brandTag": "VMP", "tagline": "Capacitaciones Profesionales", "tema": "light"},
         "roles": roles_map.get(current_user.rol, []),
         "permissions": permissions,
         "menu": CONTEXT_MENU,
