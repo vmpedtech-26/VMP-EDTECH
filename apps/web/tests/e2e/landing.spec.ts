@@ -11,7 +11,7 @@ test.describe('Landing Page', () => {
         await expect(page).toHaveTitle(/VMP/i);
 
         // Verificar que el logo está visible
-        await expect(page.locator('text=VMP SERVICIOS')).toBeVisible();
+        await expect(page.locator('text=VMP - EDTECH')).toBeVisible();
     });
 
     test('should display course catalog', async ({ page }) => {

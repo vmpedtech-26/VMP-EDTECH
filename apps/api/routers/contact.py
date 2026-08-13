@@ -125,7 +125,7 @@ async def submit_contact_form(data: ContactFormRequest):
             <div style="background: white; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
                 <p style="color: #1e293b; font-size: 16px;">Hola <strong>{data.nombre}</strong>,</p>
                 <p style="color: #475569; line-height: 1.6;">
-                    Gracias por contactarte con <strong>VMP Servicios</strong>. Recibimos tu consulta sobre
+                    Gracias por contactarte con <strong>VMP EdTech</strong>. Recibimos tu consulta sobre
                     capacitación vial para <strong>{data.empresa}</strong>.
                 </p>
                 <p style="color: #475569; line-height: 1.6;">

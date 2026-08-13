@@ -27,7 +27,7 @@ if settings.SENTRY_DSN:
     )
 
 app = FastAPI(
-    title="VMP Servicios API",
+    title="VMP EdTech API",
     description="API para plataforma de capacitación profesional con credenciales verificables",
     version="0.1.0-beta",
 )
@@ -104,7 +104,7 @@ app.include_router(evidencias.router, prefix="/api/evidencias", tags=["evidencia
 @app.get("/")
 async def root():
     return {
-        "message": "VMP Servicios API",
+        "message": "VMP EdTech API",
         "version": "0.1.0-beta",
         "docs": "/docs"
     }

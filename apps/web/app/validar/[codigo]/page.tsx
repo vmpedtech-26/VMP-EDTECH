@@ -99,7 +99,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🚗 VMP SERVICIOS
+                        🚗 VMP EDTECH
                     </h1>
                     <p className="text-gray-600">Validación de Credencial</p>
                 </div>
@@ -251,7 +251,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
                             {/* Footer de verificación */}
                             <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white text-center">
-                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP Servicios</p>
+                                <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP EdTech</p>
                                 <p className="text-xs opacity-90">
                                     Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
                                 </p>
@@ -275,11 +275,11 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
                 {/* Info adicional */}
                 <div className="mt-6 text-center text-xs text-gray-500">
-                    <p>VMP Servicios - Capacitación Profesional</p>
+                    <p>VMP EdTech - Capacitación Profesional</p>
                     <p className="mt-1">
                         Contacto:{' '}
-                        <a href="mailto:info@vmpservicios.com" className="text-orange-500 hover:underline">
-                            info@vmpservicios.com
+                        <a href="mailto:administracion@vmp-edtech.com" className="text-orange-500 hover:underline">
+                            administracion@vmp-edtech.com
                         </a>
                     </p>
                 </div>

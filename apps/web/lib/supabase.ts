@@ -146,7 +146,7 @@ export const supabase = {
             data: {
                 user: {
                     id: 'usr-demo-123',
-                    email: 'demo@vmpservicios.com',
+                    email: 'demo@vmp-edtech.com',
                 }
             }
         })

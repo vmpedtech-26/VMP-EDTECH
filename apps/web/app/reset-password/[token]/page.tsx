@@ -62,7 +62,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🚗 VMP SERVICIOS
+                        🚗 VMP EDTECH
                     </h1>
                     <p className="text-gray-600">Capacitación Profesional</p>
                 </div>
@@ -250,8 +250,8 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
                 {/* Footer */}
                 <p className="text-center text-sm text-gray-500 mt-6">
                     ¿Necesitas ayuda? Contacta a{' '}
-                    <a href="mailto:soporte@vmpservicios.com" className="text-orange-500 hover:underline">
-                        soporte@vmpservicios.com
+                    <a href="mailto:administracion@vmp-edtech.com" className="text-orange-500 hover:underline">
+                        administracion@vmp-edtech.com
                     </a>
                 </p>
             </div>

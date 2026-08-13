@@ -28,9 +28,6 @@ class Settings(BaseSettings):
             return [
                 "https://www.vmp-edtech.com",
                 "https://vmp-edtech.com",
-                "https://vmpservicios.com",
-                "https://www.vmpservicios.com",
-                "https://app.vmpservicios.com",
                 "http://localhost:3000",
                 "http://localhost:3001",
             ]
@@ -51,8 +48,8 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    EMAIL_FROM: str = "noreply@vmpservicios.com"
-    EMAIL_VENTAS: str = "ventas@vmpservicios.com"
+    EMAIL_FROM: str = "noreply@vmp-edtech.com"
+    EMAIL_VENTAS: str = "administracion@vmp-edtech.com"
     ADMIN_URL: str = "http://localhost:3000"
     
     # Automation / n8n

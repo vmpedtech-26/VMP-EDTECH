@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://vmp-edtech.com'),
-    title: 'VMP Servicios - Capacitación Profesional Certificada',
+    title: 'VMP EdTech - Capacitación Profesional Certificada',
     description:
         'Plataforma de capacitación profesional con credenciales verificables con código QR. Cursos teórico-prácticos con validez industrial.',
     keywords: [
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'cursos',
     ],
     openGraph: {
-        title: 'VMP Servicios - Capacitación Profesional',
+        title: 'VMP EdTech - Capacitación Profesional',
         description:
             'Capacitación profesional con credenciales digitales verificables.',
         type: 'website',

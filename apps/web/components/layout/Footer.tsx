@@ -13,7 +13,7 @@ export function Footer() {
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <span className="text-xl font-bold text-white">
-                                VMP Servicios
+                                VMP EdTech
                             </span>
                         </div>
                         <p className="text-sm text-gray-400">
@@ -71,8 +71,8 @@ export function Footer() {
                         <ul className="space-y-3 text-sm">
                             <li className="flex items-center space-x-2">
                                 <Mail className="h-4 w-4 text-primary" />
-                                <a href="mailto:info@vmpservicios.com" className="hover:text-primary transition-colors">
-                                    info@vmpservicios.com
+                                <a href="mailto:administracion@vmp-edtech.com" className="hover:text-primary transition-colors">
+                                    administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-center space-x-2">
@@ -124,7 +124,7 @@ export function Footer() {
                 {/* Copyright */}
                 <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-400">
                     <p>
-                        © {new Date().getFullYear()} VMP Servicios. Todos los derechos
+                        © {new Date().getFullYear()} VMP EdTech. Todos los derechos
                         reservados.
                     </p>
                 </div>
