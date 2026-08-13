@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { usersApi } from '@/lib/api/users';
+import * as XLSX from 'xlsx';
 
 interface ModalCargaMasivaProps {
     isOpen: boolean;
@@ -46,49 +47,73 @@ export function ModalCargaMasiva({
 
     if (!isOpen) return null;
 
+    // Convierte filas crudas (arrays de celdas) en la lista validada de alumnos
+    const rowsToParsedAlumnos = (rows: string[][]): AlumnoParsed[] => {
+        return rows
+            .filter((row) => row.some((cell) => String(cell ?? '').trim().length > 0))
+            .map((row) => {
+                const dni = row[0] ? String(row[0]).replace(/\D/g, '') : '';
+                const nombre = String(row[1] ?? '').trim();
+                const apellido = String(row[2] ?? '').trim();
+                const email = String(row[3] ?? '').trim() || `${dni || 'alumno'}@alumnos.vmp-edtech.com`;
+
+                let valido = true;
+                let motivoError = '';
+
+                if (!dni || dni.length < 7) {
+                    valido = false;
+                    motivoError = 'DNI inválido (mín. 7 dígitos)';
+                } else if (!nombre || !apellido) {
+                    valido = false;
+                    motivoError = 'Falta Nombre o Apellido';
+                }
+
+                return { dni, nombre, apellido, email, valido, motivoError };
+            });
+    };
+
     // Procesar texto pegado (formato CSV / TSV / separado por comas o tabulaciones)
     const handleParseText = (text: string) => {
         setRawText(text);
-        const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
-        
-        const rows: AlumnoParsed[] = lines.map((line) => {
-            // Separa por coma, punto y coma o tabulación
-            const parts = line.split(/[,;\t]/).map(p => p.trim());
-            const dni = parts[0] ? parts[0].replace(/\D/g, '') : '';
-            const nombre = parts[1] || '';
-            const apellido = parts[2] || '';
-            const email = parts[3] || `${dni || 'alumno'}@vmp-edtech.com`;
-
-            let valido = true;
-            let motivoError = '';
-
-            if (!dni || dni.length < 7) {
-                valido = false;
-                motivoError = 'DNI inválido (mín. 7 dígitos)';
-            } else if (!nombre || !apellido) {
-                valido = false;
-                motivoError = 'Falta Nombre o Apellido';
-            }
-
-            return { dni, nombre, apellido, email, valido, motivoError };
-        });
-
-        setParsedAlumnos(rows);
+        const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
+        // Si la primera fila parece un encabezado (no empieza con dígitos), la descartamos
+        const filasSinHeader =
+            lines.length > 0 && !/^\s*\d/.test(lines[0]) ? lines.slice(1) : lines;
+        const rows = filasSinHeader.map((line) => line.split(/[,;\t]/).map((p) => p.trim()));
+        setParsedAlumnos(rowsToParsedAlumnos(rows));
     };
 
-    // Procesar archivo Excel / CSV cargado
+    // Procesar archivo Excel (.xlsx/.xls) o CSV/TSV/TXT cargado
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const content = event.target?.result as string;
-            if (content) {
-                handleParseText(content);
-            }
-        };
-        reader.readAsText(file);
+        const esExcelBinario = /\.(xlsx|xls)$/i.test(file.name);
+
+        if (esExcelBinario) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const data = event.target?.result;
+                if (!data) return;
+                const workbook = XLSX.read(data, { type: 'array' });
+                const primeraHoja = workbook.Sheets[workbook.SheetNames[0]];
+                const filas: string[][] = XLSX.utils.sheet_to_json(primeraHoja, { header: 1, raw: false });
+                // Si la primera fila parece un encabezado (no empieza con dígitos), la descartamos
+                const filasSinHeader =
+                    filas.length > 0 && !/^\s*\d/.test(String(filas[0]?.[0] ?? '')) ? filas.slice(1) : filas;
+                setParsedAlumnos(rowsToParsedAlumnos(filasSinHeader));
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const content = event.target?.result as string;
+                if (content) {
+                    handleParseText(content);
+                }
+            };
+            reader.readAsText(file);
+        }
     };
 
     // Descargar plantilla CSV de muestra
@@ -120,15 +145,25 @@ export function ModalCargaMasiva({
                 nombre: a.nombre,
                 apellido: a.apellido,
                 email: a.email,
-                empresaId: empresaId || undefined,
             }));
 
-            const result = await usersApi.crearMasivo(payload);
-            setStatusMessage(`¡Éxito! Se importaron ${result.creados} alumnos correctamente.`);
-            setTimeout(() => {
-                onSuccess();
-                onClose();
-            }, 1200);
+            const result = await usersApi.crearMasivo(payload, empresaId);
+
+            if (result.errores.length > 0) {
+                const detalle = result.errores.map(e => `DNI ${e.dni}: ${e.motivo}`).join('\n');
+                setStatusMessage(
+                    `Se importaron ${result.creados} de ${validos.length} alumnos.\n${result.errores.length} no se pudieron cargar:\n${detalle}`
+                );
+            } else {
+                setStatusMessage(`¡Éxito! Se importaron ${result.creados} alumnos correctamente.`);
+            }
+
+            if (result.creados > 0) {
+                setTimeout(() => {
+                    onSuccess();
+                    onClose();
+                }, result.errores.length > 0 ? 3000 : 1200);
+            }
         } catch (error: any) {
             console.error('Error importando alumnos:', error);
             setStatusMessage(error.message || 'Ocurrió un error durante la importación masiva.');
@@ -301,7 +336,7 @@ export function ModalCargaMasiva({
                     )}
 
                     {statusMessage && (
-                        <div className="p-4 rounded-xl text-xs font-semibold bg-gray-100 border border-gray-200 text-gray-800">
+                        <div className="p-4 rounded-xl text-xs font-semibold bg-gray-100 border border-gray-200 text-gray-800 whitespace-pre-line">
                             {statusMessage}
                         </div>
                     )}

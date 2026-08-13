@@ -24,6 +24,7 @@ import { empresasApi, Empresa } from '@/lib/api/empresas';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ModalQrCorporativo } from '@/components/dashboard/ModalQrCorporativo';
+import { slugify } from '@/lib/slugify';
 
 export default function EmpresasPage() {
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -159,7 +160,7 @@ export default function EmpresasPage() {
                                         title="Generar Link y Código QR de Auto-registro"
                                         onClick={() => setQrModalData({
                                             nombre: empresa.nombre,
-                                            slug: empresa.nombre.toLowerCase().replace(/[^a-z0-9]/g, '-')
+                                            slug: slugify(empresa.nombre)
                                         })}
                                     >
                                         <QrCode className="h-4 w-4 text-primary" />

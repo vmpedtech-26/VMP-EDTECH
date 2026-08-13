@@ -15,6 +15,7 @@ class UserRegister(BaseModel):
     dni: str
     telefono: str | None = None
     empresaId: str | None = None
+    empresaSlug: str | None = None
 
     @validator('nombre', 'apellido', 'dni', 'telefono', pre=True)
     def sanitize_text(cls, v):

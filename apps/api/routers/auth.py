@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post("/register", response_model=TokenResponse)
 async def register(data: UserRegister):
     """Registrar nuevo usuario"""
-    
+
     # Verificar si email ya existe
     existing_user = await prisma.user.find_unique(where={"email": data.email})
     if existing_user:
@@ -18,7 +18,7 @@ async def register(data: UserRegister):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     # Verificar si DNI ya existe
     existing_dni = await prisma.user.find_unique(where={"dni": data.dni})
     if existing_dni:
@@ -26,10 +26,24 @@ async def register(data: UserRegister):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="DNI already registered"
         )
-    
+
+    # Resolver empresaSlug (link de auto-registro /registro/{slug}) a un empresaId real
+    empresa_id = data.empresaId
+    if data.empresaSlug and not empresa_id:
+        from routers.public import slugify
+        slug_normalizado = data.empresaSlug.lower().strip()
+        empresas = await prisma.company.find_many(where={"activa": True})
+        empresa_match = next((e for e in empresas if slugify(e.nombre) == slug_normalizado), None)
+        if not empresa_match:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="El enlace de registro no corresponde a ninguna empresa activa"
+            )
+        empresa_id = empresa_match.id
+
     # Hash password
     hashed_password = hash_password(data.password)
-    
+
     # Crear usuario
     user = await prisma.user.create(
         data={
@@ -39,7 +53,7 @@ async def register(data: UserRegister):
             "apellido": data.apellido,
             "dni": data.dni,
             "telefono": data.telefono,
-            "empresaId": data.empresaId,
+            "empresaId": empresa_id,
             "rol": "ALUMNO",  # Default role
         }
     )

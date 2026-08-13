@@ -48,3 +48,32 @@ class UserAdminResponse(UserAdminBase):
 
 class UserWithEmpresaResponse(UserAdminResponse):
     empresa_nombre: Optional[str] = None
+
+
+class AlumnoMasivoItem(BaseModel):
+    dni: str
+    nombre: str
+    apellido: str
+    email: Optional[EmailStr] = None
+
+    @validator('nombre', 'apellido', 'dni', pre=True)
+    def sanitize_text(cls, v):
+        if isinstance(v, str):
+            return sanitize_data(v)
+        return v
+
+
+class CargaMasivaRequest(BaseModel):
+    alumnos: List[AlumnoMasivoItem]
+    empresaId: Optional[str] = None
+    cursoId: Optional[str] = None
+
+
+class CargaMasivaError(BaseModel):
+    dni: str
+    motivo: str
+
+
+class CargaMasivaResponse(BaseModel):
+    creados: int
+    errores: List[CargaMasivaError]

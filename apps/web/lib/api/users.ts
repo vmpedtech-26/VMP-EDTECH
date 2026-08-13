@@ -51,18 +51,13 @@ export const usersApi = {
     },
 
     /**
-     * Cargar lote masivo de alumnos
+     * Cargar lote masivo de alumnos (nómina). Todos los alumnos del lote
+     * quedan vinculados a la misma empresa.
      */
-    async crearMasivo(alumnos: Array<{ dni: string; nombre: string; apellido: string; email?: string; empresaId?: string }>): Promise<{ creados: number; errores: any[] }> {
-        try {
-            return await api.post('/users/masivo', { alumnos });
-        } catch (error) {
-            // Fallback resiliente: creación en batch si el servidor mock no tiene endpoint masivo
-            const resultados = await Promise.allSettled(
-                alumnos.map(a => api.post('/users', { ...a, rol: 'ALUMNO' }))
-            );
-            const creados = resultados.filter(r => r.status === 'fulfilled').length;
-            return { creados, errores: [] };
-        }
+    async crearMasivo(
+        alumnos: Array<{ dni: string; nombre: string; apellido: string; email?: string }>,
+        empresaId?: string
+    ): Promise<{ creados: number; errores: Array<{ dni: string; motivo: string }> }> {
+        return api.post('/users/masivo', { alumnos, empresaId });
     },
 };

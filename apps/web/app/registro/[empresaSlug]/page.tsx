@@ -1,30 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
-import { Building2, ShieldCheck, CheckCircle2, UserCheck, ArrowRight } from 'lucide-react';
+import { Building2, ShieldCheck, CheckCircle2, UserCheck, ArrowRight, Loader2, XCircle } from 'lucide-react';
 
-const EMPRESAS_MAPPING: Record<string, { nombre: string; logo?: string; color?: string }> = {
-    oldelval: { nombre: 'Oleoductos del Valle (Oldelval)', color: '#1E8DBB' },
-    tgs: { nombre: 'Transportadora de Gas del Sur (TGS)', color: '#00529B' },
-    coivalsa: { nombre: 'Coivalsa S.A.', color: '#0F172A' },
-    yaccos: { nombre: 'Transporte Yaccos', color: '#1E3A8A' },
-};
+interface EmpresaInfo {
+    id: string;
+    nombre: string;
+}
 
 export default function EmpresaRegisterPage() {
     const params = useParams();
     const router = useRouter();
     const { login } = useAuth();
 
-    const empresaSlug = (params?.empresaSlug as string) || 'empresa';
-    const empresaInfo = EMPRESAS_MAPPING[empresaSlug.toLowerCase()] || {
-        nombre: empresaSlug.replace(/-/g, ' ').toUpperCase(),
-    };
+    const empresaSlug = (params?.empresaSlug as string) || '';
+
+    const [empresaInfo, setEmpresaInfo] = useState<EmpresaInfo | null>(null);
+    const [isLoadingEmpresa, setIsLoadingEmpresa] = useState(true);
+    const [empresaNoEncontrada, setEmpresaNoEncontrada] = useState(false);
+
+    useEffect(() => {
+        api.get(`/public/empresa/${empresaSlug}`)
+            .then((data) => setEmpresaInfo(data))
+            .catch(() => setEmpresaNoEncontrada(true))
+            .finally(() => setIsLoadingEmpresa(false));
+    }, [empresaSlug]);
 
     const [formData, setFormData] = useState({
         dni: '',
@@ -55,24 +61,10 @@ export default function EmpresaRegisterPage() {
                 ...formData,
                 email: emailFinal,
                 password: passwordFinal,
-                rol: 'ALUMNO',
                 empresaSlug: empresaSlug,
             };
 
-            const response = await api.post('/auth/register', payload).catch(() => {
-                // Fallback resiliente si el servidor mock está local
-                return {
-                    access_token: 'demo-token-' + Date.now(),
-                    user: {
-                        id: 'usr-' + Date.now(),
-                        email: emailFinal,
-                        nombre: formData.nombre,
-                        apellido: formData.apellido,
-                        dni: formData.dni,
-                        rol: 'ALUMNO',
-                    }
-                };
-            });
+            const response = await api.post('/auth/register', payload);
 
             document.cookie = `vmp_token=${response.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`;
             login(response.access_token, response.user);
@@ -88,6 +80,34 @@ export default function EmpresaRegisterPage() {
             setIsLoading(false);
         }
     };
+
+    if (isLoadingEmpresa) {
+        return (
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                <Loader2 className="h-10 w-10 text-white animate-spin" />
+            </div>
+        );
+    }
+
+    if (empresaNoEncontrada) {
+        return (
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 text-center space-y-4">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-600">
+                        <XCircle className="h-10 w-10" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Enlace no válido</h2>
+                    <p className="text-gray-600 text-sm">
+                        No encontramos ninguna empresa asociada a este enlace de registro. Verificá que la
+                        dirección sea correcta o contactá a VMP - EDTECH.
+                    </p>
+                    <Button asChild className="w-full">
+                        <Link href="/login">Ir a Iniciar Sesión</Link>
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 py-12 relative overflow-hidden">
@@ -107,7 +127,7 @@ export default function EmpresaRegisterPage() {
 
                     <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 text-white text-xs font-semibold shadow-inner">
                         <Building2 className="h-4 w-4 text-primary-light" />
-                        <span>Portal Oficial de Auto-registro: <strong>{empresaInfo.nombre}</strong></span>
+                        <span>Portal Oficial de Auto-registro: <strong>{empresaInfo?.nombre}</strong></span>
                     </div>
                 </div>
 
@@ -120,7 +140,7 @@ export default function EmpresaRegisterPage() {
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900">¡Registro Exitoso!</h2>
                             <p className="text-gray-600 text-sm max-w-md mx-auto">
-                                Te has vinculado correctamente a <strong>{empresaInfo.nombre}</strong>. Redirigiendo a tu aula virtual...
+                                Te has vinculado correctamente a <strong>{empresaInfo?.nombre}</strong>. Redirigiendo a tu aula virtual...
                             </p>
                             <div className="pt-4">
                                 <Button asChild className="bg-primary hover:bg-primary-dark">

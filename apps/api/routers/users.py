@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List, Optional
-from schemas.users import UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse
+from schemas.users import (
+    UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse,
+    CargaMasivaRequest, CargaMasivaResponse
+)
 from auth.dependencies import get_current_user
 from core.database import prisma
 from auth.jwt import hash_password
@@ -80,6 +83,65 @@ async def crear_usuario(data: CreateUserRequest, current_user=Depends(get_curren
     )
     
     return user
+
+
+@router.post("/masivo", response_model=CargaMasivaResponse)
+async def crear_usuarios_masivo(data: CargaMasivaRequest, current_user=Depends(get_current_user)):
+    """
+    Carga masiva de alumnos (nómina subida por Excel/CSV o pegada a mano).
+    SUPER_ADMIN puede cargar para cualquier empresa (indicando empresaId);
+    INSTRUCTOR y EMPRESA solo pueden cargar alumnos de su propia empresa.
+    """
+    if current_user.rol == "SUPER_ADMIN":
+        empresa_objetivo = data.empresaId
+    elif current_user.rol in ["INSTRUCTOR", "EMPRESA"]:
+        if not current_user.empresaId:
+            raise HTTPException(status_code=400, detail="Tu usuario no está vinculado a ninguna empresa")
+        empresa_objetivo = current_user.empresaId
+    else:
+        raise HTTPException(status_code=403, detail="No tienes permisos para cargar alumnos")
+
+    if data.cursoId:
+        curso = await prisma.curso.find_unique(where={"id": data.cursoId})
+        if not curso:
+            raise HTTPException(status_code=404, detail="El curso indicado no existe")
+
+    creados = 0
+    errores = []
+
+    for alumno in data.alumnos:
+        try:
+            if await prisma.user.find_unique(where={"dni": alumno.dni}):
+                errores.append({"dni": alumno.dni, "motivo": "El DNI ya está registrado"})
+                continue
+
+            email = alumno.email or f"{alumno.dni}@alumnos.vmp-edtech.com"
+            if await prisma.user.find_unique(where={"email": email}):
+                errores.append({"dni": alumno.dni, "motivo": "El email ya está registrado"})
+                continue
+
+            nuevo_usuario = await prisma.user.create(
+                data={
+                    "email": email,
+                    "passwordHash": hash_password(alumno.dni),
+                    "nombre": alumno.nombre,
+                    "apellido": alumno.apellido,
+                    "dni": alumno.dni,
+                    "rol": "ALUMNO",
+                    "empresaId": empresa_objetivo,
+                }
+            )
+
+            if data.cursoId:
+                await prisma.inscripcion.create(
+                    data={"alumnoId": nuevo_usuario.id, "cursoId": data.cursoId}
+                )
+
+            creados += 1
+        except Exception as e:
+            errores.append({"dni": alumno.dni, "motivo": str(e)})
+
+    return CargaMasivaResponse(creados=creados, errores=errores)
 
 
 @router.put("/{id}", response_model=UserAdminResponse)
