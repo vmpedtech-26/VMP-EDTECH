@@ -1,7 +1,5 @@
-import os
-from datetime import datetime
 from io import BytesIO
-from core.config import settings
+from services import storage_service
 
 # qrcode/reportlab se importan recién dentro de las funciones que los usan,
 # ver services/credencial_generator.py para el motivo (memoria en el arranque).
@@ -105,14 +103,5 @@ def create_credencial_pdf(credencial_data: dict) -> bytes:
     return buffer.getvalue()
 
 async def save_credencial_pdf(pdf_bytes: bytes, filename: str) -> str:
-    """Save PDF to storage and return URL"""
-    storage_path = os.path.join(settings.STORAGE_PATH, "credenciales")
-    os.makedirs(storage_path, exist_ok=True)
-    
-    file_path = os.path.join(storage_path, filename)
-    
-    with open(file_path, 'wb') as f:
-        f.write(pdf_bytes)
-    
-    # Return relative URL (for production, this would be S3 URL)
-    return f"/storage/credenciales/{filename}"
+    """Sube el PDF de la credencial al almacenamiento y devuelve su URL pública."""
+    return storage_service.upload_bytes(pdf_bytes, f"credenciales-pdf/{filename}", "application/pdf")

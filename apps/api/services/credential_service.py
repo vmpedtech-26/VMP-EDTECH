@@ -76,8 +76,8 @@ async def generate_credential_for_student(
         # force=True: reemplazar la credencial anterior en vez de duplicarla
         await prisma.credencial.delete(where={"id": existing.id})
     
-    # Buscar foto aprobada del alumno
-    foto_path = None
+    # Buscar foto aprobada del alumno (su URL pública real en el storage S3)
+    foto_url = None
     try:
         foto_credencial = await prisma.fotocredencial.find_first(
             where={
@@ -86,10 +86,7 @@ async def generate_credential_for_student(
             }
         )
         if foto_credencial and foto_credencial.fotoUrl:
-            # La URL es /storage/uploads/credenciales/uuid.jpg
-            # Queremos el path local dentro de STOAGE_PATH
-            filename = foto_credencial.fotoUrl.split("/")[-1]
-            foto_path = os.path.join(settings.STORAGE_PATH, "uploads", "credenciales", filename)
+            foto_url = foto_credencial.fotoUrl
     except Exception as e:
         print(f"Error buscando foto para credencial: {e}")
         pass  # Si no hay foto, continuar sin ella
@@ -151,7 +148,7 @@ async def generate_credential_for_student(
     }
     
     # Generar PDF
-    pdf_bytes = await create_credencial_pdf(pdf_data, foto_path)
+    pdf_bytes = await create_credencial_pdf(pdf_data, foto_url)
     filename = f"{numero_credencial}.pdf"
     pdf_url = await save_credencial_pdf(pdf_bytes, filename)
     

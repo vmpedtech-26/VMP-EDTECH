@@ -1,7 +1,6 @@
-import os
 from datetime import datetime
 from io import BytesIO
-from core.config import settings
+from services import storage_service
 
 # qrcode/reportlab se importan recién dentro de las funciones que los usan:
 # son librerías pesadas (~50-80MB en memoria) que de otro modo se cargarían
@@ -34,10 +33,10 @@ def generate_qr_code(data: str) -> BytesIO:
     
     return buffer
 
-async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) -> bytes:
+async def create_credencial_pdf(credencial_data: dict, foto_url: str = None) -> bytes:
     """
     Create Credencial PDF in ID card format (85.60 x 53.98 mm)
-    
+
     credencial_data should contain:
     - numero_credencial: str
     - alumno_nombre: str
@@ -47,8 +46,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     - fecha_emision: str (DD/MM/YYYY)
     - fecha_vencimiento: str or None (DD/MM/YYYY)
     - qr_url: str
-    
-    foto_path: Optional path to student photo (if approved)
+
+    foto_url: URL pública (S3) de la foto aprobada del alumno, si existe
     """
     
     from reportlab.pdfgen import canvas
@@ -77,10 +76,14 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     c.drawString(5*mm, 45*mm, "Credencial Profesional")
     
     # Student photo (if available) - top right
-    if foto_path and os.path.exists(foto_path):
+    if foto_url:
         try:
+            import requests
+            resp = requests.get(foto_url, timeout=5)
+            resp.raise_for_status()
+            foto_reader = ImageReader(BytesIO(resp.content))
             # Draw photo in top-right corner (20mm x 25mm)
-            c.drawImage(foto_path, 60*mm, 28*mm, 20*mm, 25*mm, mask='auto')
+            c.drawImage(foto_reader, 60*mm, 28*mm, 20*mm, 25*mm, mask='auto')
         except Exception as e:
             print(f"Error loading photo: {e}")
             # Continue without photo if there's an error
@@ -121,14 +124,5 @@ async def create_credencial_pdf(credencial_data: dict, foto_path: str = None) ->
     return buffer.getvalue()
 
 async def save_credencial_pdf(pdf_bytes: bytes, filename: str) -> str:
-    """Save PDF to storage and return URL"""
-    storage_path = os.path.join(settings.STORAGE_PATH, "credenciales")
-    os.makedirs(storage_path, exist_ok=True)
-    
-    file_path = os.path.join(storage_path, filename)
-    
-    with open(file_path, 'wb') as f:
-        f.write(pdf_bytes)
-    
-    # Return relative URL (for production, this would be S3 URL)
-    return f"/storage/credenciales/{filename}"
+    """Sube el PDF de la credencial al almacenamiento y devuelve su URL pública."""
+    return storage_service.upload_bytes(pdf_bytes, f"credenciales-pdf/{filename}", "application/pdf")

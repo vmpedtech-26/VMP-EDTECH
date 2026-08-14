@@ -40,9 +40,21 @@ class Settings(BaseSettings):
                 "http://127.0.0.1:3001",
             ]
     
-    # Storage
+    # Storage local (legado, ya no se usa para servir archivos -- ver S3_*)
     STORAGE_PATH: str = "./storage"
-    
+
+    # Storage S3-compatible (Cloudflare R2, AWS S3, etc.) para fotos de
+    # credencial, evidencias y PDFs de credenciales. El disco del contenedor
+    # en Render es efímero y nunca hubo un StaticFiles sirviendo /storage o
+    # /uploads, así que estos archivos deben vivir en un bucket con URL
+    # pública propia.
+    S3_ENDPOINT_URL: str = ""
+    S3_ACCESS_KEY_ID: str = ""
+    S3_SECRET_ACCESS_KEY: str = ""
+    S3_BUCKET_NAME: str = ""
+    S3_REGION: str = "auto"
+    S3_PUBLIC_URL_BASE: str = ""
+
     # Email
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
