@@ -4,7 +4,7 @@ pydantic==2.10.6
 pydantic-settings==2.7.1
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-bcrypt==4.0.1
+bcrypt==3.2.2
 python-multipart==0.0.20
 prisma==0.15.0
 reportlab==4.2.5

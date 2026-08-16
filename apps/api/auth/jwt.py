@@ -2,23 +2,28 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
-from passlib.context import CryptContext
 from core.config import settings
 
-# Monkeypatch for passlib + bcrypt + Python 3.14 compatibility
-if not hasattr(bcrypt, "__about__"):
-    bcrypt.__about__ = type("About", (), {"__version__": bcrypt.__version__})
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Se usa la librería bcrypt directamente en vez de passlib.CryptContext: el
+# self-test interno de passlib (detect_wrap_bug, que corre una sola vez por
+# proceso para detectar un bug histórico de bcrypt) rompe con "password
+# cannot be longer than 72 bytes" en algunas combinaciones de versión de
+# bcrypt -- no tiene relación con las contraseñas reales de los usuarios,
+# es un test interno con un string fijo. bcrypt.hashpw/checkpw producen el
+# mismo formato de hash estándar ($2b$...) que ya usa passlib, así que es
+# compatible con los hashes ya guardados en la base sin migrar nada.
+MAX_PASSWORD_BYTES = 72
 
 
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt"""
-    return pwd_context.hash(password)
+    password_bytes = password.encode("utf-8")[:MAX_PASSWORD_BYTES]
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    password_bytes = plain_password.encode("utf-8")[:MAX_PASSWORD_BYTES]
+    return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
