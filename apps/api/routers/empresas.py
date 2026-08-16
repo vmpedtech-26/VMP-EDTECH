@@ -51,11 +51,12 @@ async def crear_empresa(data: CreateEmpresaRequest, current_user=Depends(get_cur
 
 @router.get("/{id}", response_model=EmpresaResponse)
 async def obtener_empresa(id: str, current_user=Depends(get_current_user)):
-    """Obtener detalle de una empresa (Solo SUPER_ADMIN)"""
-    
-    if current_user.rol != "SUPER_ADMIN":
+    """Obtener detalle de una empresa (SUPER_ADMIN, o el propio usuario de esa empresa)"""
+
+    if current_user.rol != "SUPER_ADMIN" and current_user.empresaId != id:
         raise HTTPException(status_code=403, detail="No tienes permisos")
-        
+
+
     empresa = await prisma.company.find_unique(where={"id": id})
     if not empresa:
         raise HTTPException(status_code=404, detail="Empresa no encontrada")

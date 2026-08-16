@@ -19,7 +19,6 @@ interface AuthContextType {
     isLoading: boolean;
     login: (token: string, userData: User) => void;
     logout: () => void;
-    switchRole: (newRole: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'EMPRESA' | 'CONTADOR') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,26 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push('/login');
     };
 
-    const switchRole = (newRole: 'ALUMNO' | 'INSTRUCTOR' | 'SUPER_ADMIN' | 'EMPRESA' | 'CONTADOR') => {
-        const updatedUser: User = {
-            id: user?.id || 'demo-admin',
-            email: user?.email || 'admin@vmp-edtech.com',
-            nombre: user?.nombre || 'Administrador',
-            apellido: user?.apellido || 'VMP - EDTECH',
-            dni: user?.dni || '00000000',
-            rol: newRole,
-            empresaId: user?.empresaId || (newRole === 'EMPRESA' ? 'oldelval' : undefined),
-        };
-        localStorage.setItem('vmp_user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
-
-        if (newRole === 'SUPER_ADMIN') router.push('/dashboard/super');
-        else if (newRole === 'EMPRESA') router.push('/dashboard/empresa');
-        else if (newRole === 'INSTRUCTOR') router.push('/dashboard/instructor');
-        else if (newRole === 'CONTADOR') router.push('/dashboard/super/contabilidad');
-        else router.push('/dashboard/cursos');
-    };
-
     return (
         <AuthContext.Provider
             value={{
@@ -96,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isLoading,
                 login,
                 logout,
-                switchRole,
             }}
         >
             {children}

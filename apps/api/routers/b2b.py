@@ -99,8 +99,8 @@ class EmpleadoCreate(BaseModel):
 
 @router.post("/empleados")
 async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_user)):
-    """Alta de un chofer/empleado en la flota (Solo SUPERVISOR)"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] or not current_user.empresaId:
+    """Alta de un chofer/empleado en la flota (SUPERVISOR/SUPER_ADMIN/INSTRUCTOR, o cualquier usuario de una empresa B2B)"""
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
         raise HTTPException(status_code=403, detail="Sin permisos B2B")
     
     from auth.jwt import hash_password
@@ -141,7 +141,7 @@ async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_
 @router.get("/cursos")
 async def listar_cursos_b2b(current_user=Depends(get_current_user)):
     """Listar cursos disponibles para asignar"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"]:
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
         raise HTTPException(status_code=403, detail="Sin permisos")
         
     cursos = await prisma.curso.find_many(where={"activo": True})
@@ -154,7 +154,7 @@ class AsignacionMasiva(BaseModel):
 @router.post("/asignar-curso")
 async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_current_user)):
     """Asigna un curso a múltiples choferes de la flota"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] or not current_user.empresaId:
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
         raise HTTPException(status_code=403, detail="Sin permisos B2B")
     
     curso = await prisma.curso.find_unique(where={"id": data.cursoId})

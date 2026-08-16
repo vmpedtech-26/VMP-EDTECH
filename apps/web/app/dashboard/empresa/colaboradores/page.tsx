@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ModalCargaMasiva } from '@/components/dashboard/ModalCargaMasiva';
 import { ModalQrCorporativo } from '@/components/dashboard/ModalQrCorporativo';
+import { empresasApi } from '@/lib/api/empresas';
+import { slugify } from '@/lib/slugify';
 
 interface Employee {
     id: string;
@@ -31,11 +33,17 @@ export default function ColaboradoresPage() {
     const [formData, setFormData] = useState({ nombre: '', apellido: '', dni: '', email: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [tempPassword, setTempPassword] = useState<string | null>(null);
+    const [empresaNombre, setEmpresaNombre] = useState<string>('');
 
     useEffect(() => {
         if (!isAuthenticated) return;
         fetchEmployees();
-    }, [isAuthenticated]);
+        if (user?.empresaId) {
+            empresasApi.obtenerEmpresa(user.empresaId)
+                .then((empresa) => setEmpresaNombre(empresa.nombre))
+                .catch((error) => console.error('Error fetching empresa:', error));
+        }
+    }, [isAuthenticated, user?.empresaId]);
 
     const fetchEmployees = async () => {
         try {
@@ -243,8 +251,8 @@ export default function ColaboradoresPage() {
             <ModalQrCorporativo
                 isOpen={isQrOpen}
                 onClose={() => setIsQrOpen(false)}
-                empresaNombre={user?.nombre ? `${user.nombre} ${user.apellido || ''}` : 'Empresa Cliente'}
-                empresaSlug={user?.empresaId || 'oldelval'}
+                empresaNombre={empresaNombre || 'Empresa Cliente'}
+                empresaSlug={empresaNombre ? slugify(empresaNombre) : ''}
             />
         </div>
     );

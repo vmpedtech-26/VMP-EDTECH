@@ -36,6 +36,14 @@ interface SidebarProps {
     userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'EMPRESA' | 'CONTADOR';
 }
 
+const ROLE_LABELS: Record<string, string> = {
+    SUPER_ADMIN: '👑 Super Admin & Contabilidad (RT54)',
+    EMPRESA: '🏢 Empresa B2B (Flotas)',
+    INSTRUCTOR: '👨‍🏫 Panel Instructor',
+    CONTADOR: '📊 Contador',
+    ALUMNO: '🎓 Portal Alumno',
+};
+
 interface MenuItem {
     icon: any;
     label: string;
@@ -169,7 +177,7 @@ function NavItem({ item, pathname, onNavigate, level = 0 }: {
 
 export function Sidebar({ userRole }: SidebarProps) {
     const pathname = usePathname();
-    const { logout, switchRole } = useAuth();
+    const { logout } = useAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const items = menuItems[userRole] || menuItems.SUPER_ADMIN;
 
@@ -203,21 +211,14 @@ export function Sidebar({ userRole }: SidebarProps) {
                             </div>
                         </Link>
 
-                        {/* Dropdown Selector de Vista / Perfil */}
+                        {/* Rol de la sesión actual (informativo, no editable: lo determina el backend) */}
                         <div className="pt-1">
                             <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
                                 Modo de Sistema
                             </label>
-                            <select
-                                value={userRole}
-                                onChange={(e) => switchRole(e.target.value as any)}
-                                className="w-full bg-slate-900 text-white font-medium text-xs rounded-lg px-2.5 py-2 border border-slate-800 outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-sm"
-                            >
-                                <option value="SUPER_ADMIN">👑 Super Admin & Contabilidad (RT54)</option>
-                                <option value="EMPRESA">🏢 Empresa B2B (Flotas)</option>
-                                <option value="INSTRUCTOR">👨‍🏫 Panel Instructor</option>
-                                <option value="ALUMNO">🎓 Portal Alumno</option>
-                            </select>
+                            <div className="w-full bg-slate-900 text-white font-medium text-xs rounded-lg px-2.5 py-2 border border-slate-800">
+                                {ROLE_LABELS[userRole] || userRole}
+                            </div>
                         </div>
                     </div>
 

@@ -31,31 +31,15 @@ export default function BulkAssignPage() {
     const fetchData = async () => {
         try {
             const [cursosRes, b2bRes] = await Promise.all([
-                api.get('/b2b/cursos').catch(() => null),
-                api.get('/b2b/dashboard').catch(() => null)
+                api.get('/b2b/cursos'),
+                api.get('/b2b/dashboard'),
             ]);
 
-            const defaultCursos = [
-                { id: 'cur-1', nombre: 'Conducción Preventiva', codigo: 'PREV-2026' },
-                { id: 'cur-2', nombre: 'Conducción Invernal (Patagonia / Vaca Muerta)', codigo: 'INV-2026' },
-                { id: 'cur-3', nombre: 'Operación 4x4 Doble Tracción', codigo: '4X4-2026' },
-                { id: 'cur-4', nombre: 'Gestión de Flota Liviana y Pesada', codigo: 'FLOTA-2026' },
-                { id: 'cur-5', nombre: 'Conducción Segura y Renovaciones', codigo: 'SEG-2026' },
-                { id: 'cur-6', nombre: 'Trabajo en Altura', codigo: 'ALT-2026' },
-            ];
-
-            setCursos(cursosRes && Array.isArray(cursosRes) && cursosRes.length > 0 ? cursosRes : defaultCursos);
-            
-            const defaultEmployees = [
-                { id: 'emp-1', nombre: 'Gabriel', apellido: 'Escobar', dni: '38123456' },
-                { id: 'emp-2', nombre: 'Rosario', apellido: 'Araujo', dni: '35987654' },
-                { id: 'emp-3', nombre: 'Silvina', apellido: 'Del Pino', dni: '40112233' },
-                { id: 'emp-4', nombre: 'Norma', apellido: 'Araujo', dni: '32456789' },
-            ];
-
-            setEmpleados(b2bRes?.employees && b2bRes.employees.length > 0 ? b2bRes.employees : defaultEmployees);
-        } catch (error) {
+            setCursos(Array.isArray(cursosRes) ? cursosRes : []);
+            setEmpleados(b2bRes?.employees || []);
+        } catch (error: any) {
             console.error(error);
+            toast.error(error.message || 'No se pudieron cargar los cursos y colaboradores.');
         } finally {
             setLoading(false);
         }
@@ -125,18 +109,24 @@ export default function BulkAssignPage() {
                                 <Book className="w-5 h-5 mr-2 text-primary" />
                                 Selecciona el Curso
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {cursos.map(c => (
-                                    <div 
-                                        key={c.id} 
-                                        onClick={() => setSelectedCursoId(c.id)}
-                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedCursoId === c.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'}`}
-                                    >
-                                        <h3 className="font-bold text-gray-900">{c.nombre}</h3>
-                                        <p className="text-sm text-gray-500 mt-1">Cód: {c.codigo}</p>
-                                    </div>
-                                ))}
-                            </div>
+                            {cursos.length === 0 ? (
+                                <div className="p-8 text-center text-gray-500 border-2 border-dashed border-gray-200 rounded-xl">
+                                    No hay cursos activos disponibles todavía.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {cursos.map(c => (
+                                        <div
+                                            key={c.id}
+                                            onClick={() => setSelectedCursoId(c.id)}
+                                            className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedCursoId === c.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'}`}
+                                        >
+                                            <h3 className="font-bold text-gray-900">{c.nombre}</h3>
+                                            <p className="text-sm text-gray-500 mt-1">Cód: {c.codigo}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end pt-6">
                                 <button 
                                     onClick={() => setStep(2)}
