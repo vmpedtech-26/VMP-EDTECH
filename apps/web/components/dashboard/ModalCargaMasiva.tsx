@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     X,
     Upload,
@@ -11,10 +11,12 @@ import {
     Download,
     Sparkles,
     Loader2,
-    Users
+    Users,
+    Building2
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { usersApi } from '@/lib/api/users';
+import { empresasApi, Empresa } from '@/lib/api/empresas';
 import * as XLSX from 'xlsx';
 
 interface ModalCargaMasivaProps {
@@ -44,6 +46,24 @@ export function ModalCargaMasiva({
     const [parsedAlumnos, setParsedAlumnos] = useState<AlumnoParsed[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+    // Si no viene una empresa fija por prop (ej. panel Super Admin), hay que
+    // elegir a qué empresa pertenece la nómina antes de poder importar.
+    const [empresas, setEmpresas] = useState<Empresa[]>([]);
+    const [selectedEmpresaId, setSelectedEmpresaId] = useState('');
+    const [isLoadingEmpresas, setIsLoadingEmpresas] = useState(false);
+    const requiereSeleccionEmpresa = !empresaId;
+    const empresaIdFinal = empresaId || selectedEmpresaId;
+
+    useEffect(() => {
+        if (isOpen && requiereSeleccionEmpresa) {
+            setIsLoadingEmpresas(true);
+            empresasApi.listarEmpresas()
+                .then(setEmpresas)
+                .catch((error) => console.error('Error fetching empresas:', error))
+                .finally(() => setIsLoadingEmpresas(false));
+        }
+    }, [isOpen, requiereSeleccionEmpresa]);
 
     if (!isOpen) return null;
 
@@ -135,6 +155,10 @@ export function ModalCargaMasiva({
             setStatusMessage('No hay registros válidos para importar.');
             return;
         }
+        if (requiereSeleccionEmpresa && !empresaIdFinal) {
+            setStatusMessage('Elegí a qué empresa pertenece esta nómina antes de importar.');
+            return;
+        }
 
         setIsProcessing(true);
         setStatusMessage(null);
@@ -147,7 +171,7 @@ export function ModalCargaMasiva({
                 email: a.email,
             }));
 
-            const result = await usersApi.crearMasivo(payload, empresaId);
+            const result = await usersApi.crearMasivo(payload, empresaIdFinal);
 
             if (result.errores.length > 0) {
                 const detalle = result.errores.map(e => `DNI ${e.dni}: ${e.motivo}`).join('\n');
@@ -197,6 +221,31 @@ export function ModalCargaMasiva({
                         <X className="h-5 w-5" />
                     </button>
                 </div>
+
+                {/* Selector de empresa (solo si no viene una empresa fija por prop) */}
+                {requiereSeleccionEmpresa && (
+                    <div className="px-6 pt-5 pb-1 bg-gray-50 border-b border-gray-200">
+                        <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                            <Building2 className="h-3.5 w-3.5 text-primary" />
+                            Empresa a la que pertenece esta nómina
+                        </label>
+                        <select
+                            value={selectedEmpresaId}
+                            onChange={(e) => setSelectedEmpresaId(e.target.value)}
+                            disabled={isLoadingEmpresas}
+                            className="w-full p-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+                        >
+                            <option value="">
+                                {isLoadingEmpresas ? 'Cargando empresas...' : 'Seleccioná una empresa...'}
+                            </option>
+                            {empresas.map((empresa) => (
+                                <option key={empresa.id} value={empresa.id}>
+                                    {empresa.nombre}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 {/* Tabs selection */}
                 <div className="flex border-b border-gray-200 bg-gray-50 px-6 pt-3 space-x-4">
@@ -356,7 +405,7 @@ export function ModalCargaMasiva({
                     <Button
                         type="button"
                         onClick={handleImportar}
-                        disabled={isProcessing || validosCount === 0}
+                        disabled={isProcessing || validosCount === 0 || (requiereSeleccionEmpresa && !empresaIdFinal)}
                         className="bg-primary hover:bg-primary-dark text-white px-6"
                     >
                         {isProcessing ? (
