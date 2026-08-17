@@ -22,7 +22,7 @@ export default function InstructorLayout({
         if (mounted && !isLoading) {
             // Solo INSTRUCTOR y SUPER_ADMIN pueden acceder al área de capacitación del instructor.
             if (!user || (user.rol !== 'INSTRUCTOR' && user.rol !== 'SUPER_ADMIN')) {
-                router.replace(user ? '/dashboard' : '/auth/login');
+                router.replace(user ? '/dashboard' : '/login');
             }
         }
     }, [user, isLoading, router, mounted]);

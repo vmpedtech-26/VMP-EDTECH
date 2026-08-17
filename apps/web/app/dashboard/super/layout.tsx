@@ -23,7 +23,7 @@ export default function SuperLayout({
         if (mounted && !isLoading) {
             // Sin sesión, o sin permisos de SUPER_ADMIN/CONTADOR: no hay acceso a este panel.
             if (!user || (user.rol !== 'SUPER_ADMIN' && user.rol !== 'CONTADOR')) {
-                router.replace(user ? '/dashboard' : '/auth/login');
+                router.replace(user ? '/dashboard' : '/login');
                 return;
             }
 

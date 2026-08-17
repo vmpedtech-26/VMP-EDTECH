@@ -38,7 +38,7 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
             setIsSuccess(true);
             
             setTimeout(() => {
-                router.push('/auth/login');
+                router.push('/login');
             }, 3000);
         } catch (err: any) {
             setError(err.message || 'El enlace no es válido o ha expirado.');

@@ -58,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const token = localStorage.getItem('vmp_token');
     const userData = localStorage.getItem('vmp_user');
-    if (!token) { router.push('/auth/login'); return; }
+    if (!token) { router.push('/login'); return; }
     if (userData) {
       const parsedUser = JSON.parse(userData);
       // Este panel expone contabilidad, HR y administración del sistema completos,
@@ -69,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
       setUser(parsedUser);
     } else {
-      router.push('/auth/login');
+      router.push('/login');
       return;
     }
 
@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const logout = () => {
     localStorage.removeItem('vmp_token');
     localStorage.removeItem('vmp_user');
-    router.push('/auth/login');
+    router.push('/login');
   };
 
   const displayName = user ? `${user.nombre || ''} ${user.apellido || ''}`.trim() : 'Usuario';

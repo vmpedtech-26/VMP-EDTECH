@@ -43,7 +43,7 @@ export default function DashboardPage() {
             }
             // ALUMNO: sigue de largo y ve su propio dashboard (fetchData abajo)
         } else {
-            router.replace('/auth/login');
+            router.replace('/login');
             return;
         }
 

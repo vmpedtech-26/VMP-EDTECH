@@ -24,7 +24,7 @@ export default function EmpresaLayout({
     useEffect(() => {
         if (mounted && !isLoading) {
             if (!user) {
-                router.replace('/auth/login');
+                router.replace('/login');
                 return;
             }
             if (!hasAccess(user)) {
