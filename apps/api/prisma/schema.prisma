@@ -107,7 +107,13 @@ model Company {
   telefono  String?
   email     String
   activa    Boolean  @default(true)
-  
+
+  ssoActive   Boolean @default(false) @map("sso_active")
+  ssoDomain   String? @map("sso_domain")
+  ssoProvider String? @map("sso_provider")
+  ssoClientId String? @map("sso_client_id")
+  ssoTenantId String? @map("sso_tenant_id")
+
   usuarios User[]
   cursos   Curso[]
   solicitudes SolicitudCapacitacion[]
@@ -128,6 +134,8 @@ model Curso {
   vigenciaMeses  Int?    @map("vigencia_meses") // null = sin vencimiento
   empresaId      String? @map("empresa_id")
   activo         Boolean @default(true)
+  alumnosEsperados Int   @default(0) @map("alumnos_esperados")
+  minimoAprobacion Int   @default(70) @map("minimo_aprobacion")
 
   modalidad          ModalidadCurso  @default(ONLINE) @map("modalidad")
   maxParticipantes    Int?    @map("max_participantes")
@@ -203,6 +211,7 @@ model Inscripcion {
   estado    EstadoInscripcion  @default(NO_INICIADO)
   inicioDate DateTime?         @map("inicio_date")
   finDate    DateTime?         @map("fin_date")
+  modulosCompletados String    @default("[]") @map("modulos_completados") // JSON array de IDs de módulo
   
   alumno User  @relation(fields: [alumnoId], references: [id])
   curso  Curso @relation(fields: [cursoId], references: [id])
