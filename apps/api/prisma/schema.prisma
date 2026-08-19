@@ -108,11 +108,12 @@ model Company {
   email     String
   activa    Boolean  @default(true)
 
-  ssoActive   Boolean @default(false) @map("sso_active")
-  ssoDomain   String? @map("sso_domain")
-  ssoProvider String? @map("sso_provider")
-  ssoClientId String? @map("sso_client_id")
-  ssoTenantId String? @map("sso_tenant_id")
+  ssoActive       Boolean @default(false) @map("sso_active")
+  ssoDomain       String? @unique @map("sso_domain")
+  ssoProvider     String? @map("sso_provider")
+  ssoClientId     String? @map("sso_client_id")
+  ssoTenantId     String? @map("sso_tenant_id")
+  ssoClientSecret String? @map("sso_client_secret") // cifrado con Fernet (SSO_ENCRYPTION_KEY), nunca en texto plano
 
   usuarios User[]
   cursos   Curso[]

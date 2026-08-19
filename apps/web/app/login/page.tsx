@@ -6,28 +6,53 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
+import { ssoApi, SsoCheckResponse } from '@/lib/api/sso';
+
+const PROVIDER_LABELS: Record<string, string> = {
+    AZURE_AD: 'Microsoft',
+    GOOGLE: 'Google',
+    OKTA: 'Okta',
+};
+
+type Step = 'email' | 'password' | 'sso';
 
 export default function LoginPage() {
     const { login } = useAuth();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [step, setStep] = useState<Step>('email');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [ssoInfo, setSsoInfo] = useState<SsoCheckResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleContinue = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+        try {
+            const check = await ssoApi.check(email);
+            if (check.sso_active) {
+                setSsoInfo(check);
+                setStep('sso');
+            } else {
+                setStep('password');
+            }
+        } catch {
+            // Si falla el chequeo de SSO, no bloqueamos el login normal.
+            setStep('password');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePasswordLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await api.post('/auth/login', formData);
-
-            // Set cookie for Next.js middleware
-            document.cookie = `vmp_token=${response.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
-
-            // Also save to localStorage for the auth context
+            const response = await api.post('/auth/login', { email, password });
+            document.cookie = `vmp_token=${response.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`;
             login(response.access_token, response.user);
         } catch (error: any) {
             console.error('Login error:', error);
@@ -35,6 +60,18 @@ export default function LoginPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSsoRedirect = () => {
+        if (!ssoInfo?.domain) return;
+        window.location.href = ssoApi.loginUrl(ssoInfo.domain);
+    };
+
+    const resetToEmail = () => {
+        setStep('email');
+        setPassword('');
+        setSsoInfo(null);
+        setError(null);
     };
 
     return (
@@ -63,46 +100,85 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <Input
-                            type="email"
-                            label="Email"
-                            placeholder="tu@email.com"
-                            required
-                            value={formData.email}
-                            onChange={(e) =>
-                                setFormData({ ...formData, email: e.target.value })
-                            }
-                        />
+                    {step === 'email' && (
+                        <form onSubmit={handleContinue} className="space-y-6">
+                            <Input
+                                type="email"
+                                label="Email"
+                                placeholder="tu@email.com"
+                                required
+                                autoFocus
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                                {isLoading ? 'Verificando...' : 'Continuar'}
+                            </Button>
+                        </form>
+                    )}
 
-                        <Input
-                            type="password"
-                            label="Contraseña"
-                            placeholder="••••••••"
-                            required
-                            value={formData.password}
-                            onChange={(e) =>
-                                setFormData({ ...formData, password: e.target.value })
-                            }
-                        />
-
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-gray-700">Recordarme</span>
-                            </label>
-                            <Link
-                                href="/forgot-password"
-                                className="text-primary hover:underline"
+                    {step === 'sso' && ssoInfo && (
+                        <div className="space-y-6">
+                            <div className="p-4 bg-slate-50 rounded-lg text-sm text-slate-700">
+                                <p>
+                                    <strong>{ssoInfo.empresa_nombre}</strong> usa inicio de sesión corporativo.
+                                    Vas a continuar con {PROVIDER_LABELS[ssoInfo.provider || ''] || ssoInfo.provider}.
+                                </p>
+                            </div>
+                            <Button type="button" size="lg" className="w-full" onClick={handleSsoRedirect}>
+                                Continuar con {PROVIDER_LABELS[ssoInfo.provider || ''] || ssoInfo.provider}
+                            </Button>
+                            <button
+                                type="button"
+                                onClick={resetToEmail}
+                                className="w-full text-center text-sm text-gray-600 hover:underline"
                             >
-                                ¿Olvidaste tu contraseña?
-                            </Link>
+                                Usar otro email
+                            </button>
                         </div>
+                    )}
 
-                        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-                        </Button>
-                    </form>
+                    {step === 'password' && (
+                        <form onSubmit={handlePasswordLogin} className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">{email}</span>
+                                <button
+                                    type="button"
+                                    onClick={resetToEmail}
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    Cambiar
+                                </button>
+                            </div>
+
+                            <Input
+                                type="password"
+                                label="Contraseña"
+                                placeholder="••••••••"
+                                required
+                                autoFocus
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="flex items-center space-x-2">
+                                    <input type="checkbox" className="rounded" />
+                                    <span className="text-gray-700">Recordarme</span>
+                                </label>
+                                <Link
+                                    href="/forgot-password"
+                                    className="text-primary hover:underline"
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            </div>
+
+                            <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                                {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                            </Button>
+                        </form>
+                    )}
 
                     <div className="mt-6 text-center text-sm text-gray-600">
                         ¿No tenés cuenta?{' '}

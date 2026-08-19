@@ -22,6 +22,8 @@ export default function EditarEmpresaPage() {
     const [ssoProvider, setSsoProvider] = useState('AZURE_AD');
     const [ssoClientId, setSsoClientId] = useState('');
     const [ssoTenantId, setSsoTenantId] = useState('');
+    const [ssoClientSecret, setSsoClientSecret] = useState('');
+    const [ssoClientSecretSet, setSsoClientSecretSet] = useState(false);
 
     const fetchEmpresa = async () => {
         try {
@@ -34,6 +36,8 @@ export default function EditarEmpresaPage() {
             setSsoProvider(anyData.ssoProvider || 'AZURE_AD');
             setSsoClientId(anyData.ssoClientId || '');
             setSsoTenantId(anyData.ssoTenantId || '');
+            setSsoClientSecretSet(!!anyData.ssoClientSecretSet);
+            setSsoClientSecret('');
         } catch (error) {
             console.error('Error fetching empresa:', error);
         } finally {
@@ -69,6 +73,8 @@ export default function EditarEmpresaPage() {
                 ssoProvider,
                 ssoClientId: ssoClientId || null,
                 ssoTenantId: ssoTenantId || null,
+                // Vacío = no tocar el secret ya guardado (el backend lo interpreta así)
+                ...(ssoClientSecret ? { ssoClientSecret } : {}),
             } as any);
             alert('Configuración de SSO guardada correctamente');
             await fetchEmpresa();
@@ -202,6 +208,27 @@ export default function EditarEmpresaPage() {
                                     />
                                 </div>
                             )}
+
+                            {/* Client Secret */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                                    <Key className="h-3 w-3" /> Client Secret
+                                </label>
+                                <input
+                                    required={ssoActive && !ssoClientSecretSet}
+                                    type="password"
+                                    autoComplete="new-password"
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                                    placeholder={ssoClientSecretSet ? '•••••••••••••••• (ya configurado, dejar vacío para no cambiarlo)' : 'Pegar el client secret generado en Azure AD'}
+                                    value={ssoClientSecret}
+                                    onChange={(e) => setSsoClientSecret(e.target.value)}
+                                />
+                                <p className="text-[11px] text-slate-500">
+                                    {ssoClientSecretSet
+                                        ? 'Ya hay un secret guardado (cifrado). Completá este campo solo si querés reemplazarlo.'
+                                        : 'Se cifra antes de guardarse y nunca se vuelve a mostrar en pantalla.'}
+                                </p>
+                            </div>
                         </div>
                     )}
 

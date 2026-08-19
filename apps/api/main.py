@@ -67,9 +67,11 @@ from routers import contact, audit, automation, obd2, compliance, b2b, fotos_val
 from routers import credenciales
 from routers import accounting
 from routers import evidencias
+from routers import sso
 
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(sso.router, prefix="/api/auth/sso", tags=["sso"])
 app.include_router(examenes.router, prefix="/api/examenes", tags=["examenes"])
 app.include_router(cursos.router, prefix="/api/cursos", tags=["cursos"])
 app.include_router(inscripciones.router, prefix="/api/inscripciones", tags=["inscripciones"])

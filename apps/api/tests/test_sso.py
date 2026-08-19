@@ -1,10 +1,22 @@
+from unittest.mock import patch
+
 import pytest
+
+from core.config import settings as app_settings
 from core.database import prisma
-from auth.jwt import create_access_token
+from routers.sso import _sign_state
+from services.sso_crypto import encrypt_secret
+
+# Los tests no pegan contra Azure AD real: el canje de código y la validación
+# del id_token se mockean (services.sso_service). Lo que se prueba de punta a
+# punta es la lógica propia -- check por dominio, validación del state
+# firmado, y el JIT provisioning / vínculo de usuarios existentes.
+app_settings.SSO_ENCRYPTION_KEY = "test-sso-encryption-key"
+
 
 @pytest.fixture
 async def test_sso_company(db):
-    """Fixture to create a company with SSO active"""
+    """Empresa con SSO activo (Azure AD) para los tests."""
     company = await prisma.company.create(
         data={
             "nombre": "Empresa Test B2B",
@@ -14,24 +26,30 @@ async def test_sso_company(db):
             "ssoDomain": "empresasob.com",
             "ssoProvider": "AZURE_AD",
             "ssoClientId": "client-id-xyz",
-            "ssoTenantId": "tenant-id-abc"
+            "ssoTenantId": "tenant-id-abc",
+            "ssoClientSecret": encrypt_secret("super-secreto"),
         }
     )
     yield company
-    # Cleanup
     await prisma.company.delete(where={"id": company.id})
+
+
+def _mock_claims(email: str, given_name="Nuevo", family_name="Operario"):
+    return patch(
+        "services.sso_service.validate_id_token",
+        return_value={"email": email, "given_name": given_name, "family_name": family_name},
+    )
+
 
 @pytest.mark.asyncio
 async def test_sso_check_inactive(client):
-    """Test checking domain without active SSO"""
     response = await client.post("/api/auth/sso/check", json={"email": "user@nonexistent.com"})
     assert response.status_code == 200
-    data = response.json()
-    assert data["sso_active"] is False
+    assert response.json()["sso_active"] is False
+
 
 @pytest.mark.asyncio
 async def test_sso_check_active(client, test_sso_company):
-    """Test checking domain with active SSO"""
     response = await client.post("/api/auth/sso/check", json={"email": "empleado@empresasob.com"})
     assert response.status_code == 200
     data = response.json()
@@ -40,46 +58,67 @@ async def test_sso_check_active(client, test_sso_company):
     assert data["provider"] == "AZURE_AD"
     assert data["empresa_nombre"] == "Empresa Test B2B"
 
+
+@pytest.mark.asyncio
+async def test_sso_login_redirects_to_azure(client, test_sso_company):
+    response = await client.get(
+        "/api/auth/sso/login", params={"domain": "empresasob.com"}, follow_redirects=False
+    )
+    assert response.status_code == 307
+    location = response.headers["location"]
+    assert "login.microsoftonline.com/tenant-id-abc" in location
+    assert "client_id=client-id-xyz" in location
+    assert "state=" in location
+
+
+@pytest.mark.asyncio
+async def test_sso_login_unknown_domain(client):
+    response = await client.get(
+        "/api/auth/sso/login", params={"domain": "no-existe.com"}, follow_redirects=False
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_sso_callback_invalid_state(client, test_sso_company):
+    response = await client.post(
+        "/api/auth/sso/callback", json={"code": "irrelevante", "state": "no-es-un-jwt-valido"}
+    )
+    assert response.status_code == 400
+
+
 @pytest.mark.asyncio
 async def test_sso_callback_jit_provision(client, test_sso_company):
-    """Test callback with new user to verify Just-In-Time provisioning"""
     email = "nuevo.operario@empresasob.com"
-    
-    # Verify user does not exist
-    user = await prisma.user.find_unique(where={"email": email})
-    assert user is None
-    
-    # Callback
-    response = await client.post(
-        "/api/auth/sso/callback",
-        json={
-            "code": f"mock_{email}",
-            "provider": "AZURE_AD",
-            "domain": "empresasob.com"
-        }
-    )
-    
+
+    existing = await prisma.user.find_unique(where={"email": email})
+    assert existing is None
+
+    state = _sign_state("empresasob.com")
+
+    with patch("services.sso_service.exchange_code_for_id_token", return_value="fake-id-token"), \
+         _mock_claims(email):
+        response = await client.post("/api/auth/sso/callback", json={"code": "auth-code-real", "state": state})
+
     assert response.status_code == 200
     data = response.json()
     assert "access_token" in data
     assert data["user"]["email"] == email
     assert data["user"]["empresaId"] == test_sso_company.id
-    
-    # Verify user was created in database
+    assert data["user"]["rol"] == "ALUMNO"
+
     db_user = await prisma.user.find_unique(where={"email": email})
     assert db_user is not None
-    assert db_user.nombre == "Usuario"
+    assert db_user.nombre == "Nuevo"
     assert db_user.rol == "ALUMNO"
-    
-    # Cleanup user
+
     await prisma.user.delete(where={"id": db_user.id})
 
+
 @pytest.mark.asyncio
-async def test_sso_callback_existing_user(client, test_sso_company):
-    """Test callback with an existing user who is not linked to the company yet"""
+async def test_sso_callback_existing_user_gets_linked(client, test_sso_company):
     email = "existente@empresasob.com"
-    
-    # Create user manually without companyId
+
     existing_user = await prisma.user.create(
         data={
             "email": email,
@@ -88,27 +127,30 @@ async def test_sso_callback_existing_user(client, test_sso_company):
             "apellido": "Perez",
             "dni": "55555555",
             "rol": "ALUMNO",
-            "activo": True
+            "activo": True,
         }
     )
-    
-    # Callback
-    response = await client.post(
-        "/api/auth/sso/callback",
-        json={
-            "code": email,
-            "provider": "AZURE_AD",
-            "domain": "empresasob.com"
-        }
-    )
-    
+
+    state = _sign_state("empresasob.com")
+
+    with patch("services.sso_service.exchange_code_for_id_token", return_value="fake-id-token"), \
+         _mock_claims(email, given_name="Juan", family_name="Perez"):
+        response = await client.post("/api/auth/sso/callback", json={"code": "auth-code-real", "state": state})
+
     assert response.status_code == 200
-    data = response.json()
-    assert "access_token" in data
-    
-    # Verify user was linked to company
-    db_user = await prisma.user.find_unique(where={"email": email})
+
+    db_user = await prisma.user.find_unique(where={"id": existing_user.id})
     assert db_user.empresaId == test_sso_company.id
-    
-    # Cleanup user
-    await prisma.user.delete(where={"id": db_user.id})
+
+    await prisma.user.delete(where={"id": existing_user.id})
+
+
+@pytest.mark.asyncio
+async def test_sso_callback_rejects_email_outside_domain(client, test_sso_company):
+    state = _sign_state("empresasob.com")
+
+    with patch("services.sso_service.exchange_code_for_id_token", return_value="fake-id-token"), \
+         _mock_claims("atacante@otro-dominio.com"):
+        response = await client.post("/api/auth/sso/callback", json={"code": "auth-code-real", "state": state})
+
+    assert response.status_code == 403

@@ -9,6 +9,15 @@ export interface Empresa {
     email: string;
     activa: boolean;
     createdAt: string;
+
+    // SSO corporativo (Azure AD / Entra ID)
+    ssoActive?: boolean;
+    ssoDomain?: string | null;
+    ssoProvider?: string | null;
+    ssoClientId?: string | null;
+    ssoTenantId?: string | null;
+    ssoClientSecret?: string | null; // solo de escritura: para guardar uno nuevo
+    ssoClientSecretSet?: boolean; // informa si ya hay uno guardado, sin revelarlo
 }
 
 export const empresasApi = {

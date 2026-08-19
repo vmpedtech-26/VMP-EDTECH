@@ -21,9 +21,28 @@ class UpdateEmpresaRequest(BaseModel):
     email: Optional[EmailStr] = None
     activa: Optional[bool] = None
 
+    # SSO corporativo (Azure AD / Entra ID)
+    ssoActive: Optional[bool] = None
+    ssoDomain: Optional[str] = None
+    ssoProvider: Optional[str] = None
+    ssoClientId: Optional[str] = None
+    ssoTenantId: Optional[str] = None
+    # Secret en texto plano recibido del formulario -- se cifra antes de
+    # guardar y nunca se devuelve. Si se omite o llega vacío, se conserva
+    # el secret ya guardado (no se pisa).
+    ssoClientSecret: Optional[str] = None
+
 class EmpresaResponse(EmpresaBase):
     id: str
     createdAt: datetime
-    
+
+    ssoActive: bool = False
+    ssoDomain: Optional[str] = None
+    ssoProvider: Optional[str] = None
+    ssoClientId: Optional[str] = None
+    ssoTenantId: Optional[str] = None
+    # No incluye ssoClientSecret: nunca se expone, ni cifrado.
+    ssoClientSecretSet: Optional[bool] = None
+
     class Config:
         from_attributes = True

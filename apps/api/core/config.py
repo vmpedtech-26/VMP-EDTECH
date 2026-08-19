@@ -68,6 +68,11 @@ class Settings(BaseSettings):
     N8N_WEBHOOK_URL: str = ""
     N8N_WEBHOOK_SECRET: str = ""
 
+    # SSO Corporativo (Microsoft Entra ID / Azure AD)
+    # Clave usada para cifrar (Fernet) el client secret de cada empresa antes
+    # de guardarlo en la base -- nunca se persiste en texto plano.
+    SSO_ENCRYPTION_KEY: str = ""
+
     # Monitoring
     SENTRY_DSN: str = ""
     

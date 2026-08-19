@@ -2,23 +2,20 @@
 Configuración de pytest para tests de la API.
 """
 import pytest
-import asyncio
 from typing import Generator, AsyncGenerator
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from fastapi.testclient import TestClient
 from main import app
 from core.database import prisma
 
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create an instance of the default event loop for the test session."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# No se define un fixture `event_loop` propio: pytest-asyncio >= 0.23 crea y
+# gestiona su propio loop por test en modo "auto", y un fixture de sesión
+# manual quedaba desincronizado con ese loop ("bound to a different event
+# loop"). Por eso `db` es function-scoped: conecta/desconecta en el mismo
+# loop que usa cada test.
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def db():
     """
     Fixture para conectar a la base de datos de prueba.
@@ -33,7 +30,7 @@ async def client(db) -> AsyncGenerator:
     """
     Fixture para cliente HTTP de prueba.
     """
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
 
