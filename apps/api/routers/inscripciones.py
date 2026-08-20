@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime
@@ -13,11 +14,30 @@ from auth.dependencies import get_current_user
 from core.database import prisma
 from services.progreso_calculator import (
     calcular_progreso_curso,
-    verificar_curso_completado,
+    calcular_modulos_completados,
+    marcar_teoria_vista,
     obtener_proxima_actividad
 )
 
 router = APIRouter()
+
+
+def _serialize_inscripcion(inscripcion) -> dict:
+    try:
+        modulos_completados = json.loads(inscripcion.modulosCompletados) if inscripcion.modulosCompletados else []
+    except (json.JSONDecodeError, TypeError):
+        modulos_completados = []
+
+    return {
+        "id": inscripcion.id,
+        "progreso": inscripcion.progreso,
+        "estado": inscripcion.estado,
+        "inicioDate": inscripcion.inicioDate,
+        "finDate": inscripcion.finDate,
+        "cursoId": inscripcion.cursoId,
+        "alumnoId": inscripcion.alumnoId,
+        "modulosCompletados": modulos_completados,
+    }
 
 @router.get("/mis-cursos", response_model=MisCursosResponse)
 async def obtener_mis_cursos(current_user=Depends(get_current_user)):
@@ -119,8 +139,8 @@ async def inscribirse_en_curso(cursoId: str, current_user=Depends(get_current_us
             "estado": "NO_INICIADO"
         }
     )
-    
-    return inscripcion
+
+    return _serialize_inscripcion(inscripcion)
 
 
 @router.get("/{cursoId}", response_model=InscripcionDetailResponse)
@@ -139,8 +159,8 @@ async def obtener_inscripcion(cursoId: str, current_user=Depends(get_current_use
             status_code=404,
             detail="No estás inscrito en este curso"
         )
-    
-    return inscripcion
+
+    return _serialize_inscripcion(inscripcion)
 
 
 @router.post("/{cursoId}/modulos/{moduloId}/completar", response_model=CompletarModuloResponse)
@@ -177,18 +197,30 @@ async def completar_modulo(
                 "inicioDate": datetime.now()
             }
         )
-    
-    # Calcular nuevo progreso
-    nuevo_progreso = await calcular_progreso_curso(current_user.id, cursoId)
-    
-    # Actualizar inscripción
+
+    # Los módulos de teoría no tienen nada que "aprobar": el alumno decide
+    # cuándo terminó de leer. Para QUIZ/PRACTICA no se registra nada acá --
+    # su cumplimiento se verifica siempre contra Examen/Evidencia reales,
+    # nunca contra lo que mande el cliente en este request.
+    if modulo.tipo == "TEORIA":
+        await marcar_teoria_vista(current_user.id, cursoId, moduloId)
+
+    # Recalcular el progreso a partir de las fuentes reales de cada módulo,
+    # y guardar la lista de completados para que el frontend pueda mostrar
+    # el desbloqueo secuencial y los checks de "completado".
+    total_modulos = await prisma.modulo.count(where={"cursoId": cursoId})
+    modulos_completados_ids = await calcular_modulos_completados(current_user.id, cursoId)
+    nuevo_progreso = int((len(modulos_completados_ids) / total_modulos) * 100) if total_modulos else 0
+
     await prisma.inscripcion.update(
         where={"id": inscripcion.id},
-        data={"progreso": nuevo_progreso}
+        data={
+            "progreso": nuevo_progreso,
+            "modulosCompletados": json.dumps(modulos_completados_ids),
+        }
     )
-    
-    # Verificar si el curso está completado
-    curso_completado = await verificar_curso_completado(current_user.id, cursoId)
+
+    curso_completado = nuevo_progreso >= 100
     
     credencial_generada = False
     credencial_numero = None

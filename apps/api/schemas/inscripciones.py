@@ -13,6 +13,7 @@ class InscripcionDetailResponse(BaseModel):
     finDate: Optional[datetime] = None
     cursoId: str
     alumnoId: str
+    modulosCompletados: List[str] = []
     
     class Config:
         from_attributes = True
