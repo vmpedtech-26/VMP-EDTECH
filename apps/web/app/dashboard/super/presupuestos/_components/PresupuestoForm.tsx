@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronUp, Save, FileText, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp, Save, FileText, Sparkles, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { CuadroTarifario } from './CuadroTarifario';
 import { AsistenteIA } from './AsistenteIA';
-import { presupuestosHseApi, PresupuestoHSE, ItemTarifario } from '@/lib/api/presupuestos-hse';
+import { presupuestosHseApi, PresupuestoHSE, ItemTarifario, PlantillaPresupuesto } from '@/lib/api/presupuestos-hse';
 import { toast } from 'sonner';
 
 interface Props {
@@ -31,6 +31,38 @@ export function PresupuestoForm({ initialData = {} }: Props) {
         contenido: true
     });
     const [isSaving, setIsSaving] = useState(false);
+    const [plantillas, setPlantillas] = useState<PlantillaPresupuesto[]>([]);
+    const [selectedPlantillaId, setSelectedPlantillaId] = useState('');
+
+    useEffect(() => {
+        presupuestosHseApi.obtenerPlantillas()
+            .then(setPlantillas)
+            .catch(() => setPlantillas([]));
+    }, []);
+
+    const handleAplicarPlantilla = (plantillaId: string) => {
+        setSelectedPlantillaId(plantillaId);
+        if (!plantillaId) return;
+
+        const plantilla = plantillas.find(p => p.id === plantillaId);
+        if (!plantilla) return;
+
+        const tieneContenido = (formData.items && formData.items.length > 0) || formData.alcance_tecnico;
+        if (tieneContenido && !confirm(`Aplicar la plantilla "${plantilla.nombre}" va a reemplazar el cuadro tarifario y el contenido del documento actual. ¿Continuar?`)) {
+            setSelectedPlantillaId('');
+            return;
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            items: plantilla.items,
+            alcance_tecnico: plantilla.alcance_tecnico || prev.alcance_tecnico,
+            entregables: plantilla.entregables || prev.entregables,
+            exclusiones: plantilla.exclusiones || prev.exclusiones,
+            condiciones_comerciales: plantilla.condiciones_comerciales || prev.condiciones_comerciales,
+        }));
+        toast.success(`Plantilla "${plantilla.nombre}" aplicada`);
+    };
 
     const toggleSection = (section: keyof typeof expandedSections) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -291,10 +323,26 @@ export function PresupuestoForm({ initialData = {} }: Props) {
                 <Card className="rounded-xl overflow-hidden border-gray-200">
                     <SectionHeader title="4. Cuadro Tarifario" section="tarifario" />
                     {expandedSections.tarifario && (
-                        <div className="p-5">
-                            <CuadroTarifario 
-                                items={formData.items || []} 
-                                onChange={(items) => handleChange('items', items)} 
+                        <div className="p-5 space-y-4">
+                            {plantillas.length > 0 && (
+                                <div className="flex items-center gap-3 p-3 bg-[#0D9488]/5 border border-[#0D9488]/20 rounded-lg">
+                                    <ClipboardList className="h-4 w-4 text-[#0D9488] shrink-0" />
+                                    <label className="text-sm font-semibold text-gray-700 shrink-0">Plantilla de servicio:</label>
+                                    <select
+                                        className="flex-1 p-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] outline-none"
+                                        value={selectedPlantillaId}
+                                        onChange={(e) => handleAplicarPlantilla(e.target.value)}
+                                    >
+                                        <option value="">Seleccionar plantilla...</option>
+                                        {plantillas.map(p => (
+                                            <option key={p.id} value={p.id}>{p.nombre}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                            <CuadroTarifario
+                                items={formData.items || []}
+                                onChange={(items) => handleChange('items', items)}
                             />
                         </div>
                     )}

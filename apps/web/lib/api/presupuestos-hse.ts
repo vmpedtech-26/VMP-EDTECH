@@ -36,9 +36,24 @@ export interface PresupuestoHSE {
     createdAt: string;
 }
 
+export interface PlantillaPresupuesto {
+    id: string;
+    nombre: string;
+    descripcion?: string | null;
+    items: ItemTarifario[];
+    alcance_tecnico?: string | null;
+    entregables?: string | null;
+    exclusiones?: string | null;
+    condiciones_comerciales?: string | null;
+}
+
 export const presupuestosHseApi = {
     async listar(): Promise<PresupuestoHSE[]> {
         return api.get('/presupuestos-hse');
+    },
+
+    async obtenerPlantillas(): Promise<PlantillaPresupuesto[]> {
+        return api.get('/presupuestos-hse/plantillas');
     },
 
     async obtener(id: string): Promise<PresupuestoHSE> {
