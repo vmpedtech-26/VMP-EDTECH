@@ -9,7 +9,7 @@ import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { Modulo } from '@/types/training';
 import { TheoriaViewer } from '@/components/training/TheoriaViewer';
-import { QuizViewer } from '@/components/training/QuizViewer';
+import { ModuloQuiz } from '@/components/training/ModuloQuiz';
 import { PracticaViewer } from '@/components/training/PracticaViewer';
 
 export default function ModuloDetailPage() {
@@ -118,9 +118,10 @@ export default function ModuloDetailPage() {
                 )}
 
                 {modulo.tipo === 'QUIZ' && (
-                    <QuizViewer
-                        preguntas={modulo.preguntas || []}
-                        onComplete={handleComplete}
+                    <ModuloQuiz
+                        modulo={modulo}
+                        cursoId={id as string}
+                        onCompletar={() => router.push(`/dashboard/cursos/${id}`)}
                     />
                 )}
 

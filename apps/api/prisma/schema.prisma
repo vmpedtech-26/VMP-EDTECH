@@ -180,6 +180,7 @@ model Modulo {
   curso            Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   preguntas        Pregunta[]
   tareasPracticas  TareaPractica[]
+  examenes         Examen[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -232,17 +233,20 @@ model Examen {
   id           String   @id @default(uuid())
   alumnoId     String   @map("alumno_id")
   cursoId      String   @map("curso_id")
+  moduloId     String   @map("modulo_id")
   respuestas   Json // { preguntaId: respuestaIndex }
   calificacion Float?
   aprobado     Boolean?
-  
-  alumno User  @relation(fields: [alumnoId], references: [id])
-  curso  Curso @relation(fields: [cursoId], references: [id])
-  
+
+  alumno User   @relation(fields: [alumnoId], references: [id])
+  curso  Curso  @relation(fields: [cursoId], references: [id])
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+
   realizadoAt DateTime @default(now()) @map("realizado_at")
 
   @@index([alumnoId])
   @@index([cursoId])
+  @@index([moduloId])
   @@map("examenes")
 }
 

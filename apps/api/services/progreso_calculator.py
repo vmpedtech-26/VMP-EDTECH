@@ -34,13 +34,11 @@ async def calcular_progreso_curso(alumno_id: str, curso_id: str) -> int:
             pass
             
         elif modulo.tipo == "QUIZ":
-            # Verificar si existe examen aprobado para este módulo
+            # Verificar si existe examen aprobado para este módulo específico
             examen = await prisma.examen.find_first(
                 where={
                     "alumnoId": alumno_id,
-                    "cursoId": curso_id,
-                    # Falta moduloId en el schema actual de Examen
-                    # Por ahora verificamos que haya aprobado
+                    "moduloId": modulo.id,
                     "aprobado": True
                 }
             )
@@ -122,7 +120,7 @@ async def obtener_proxima_actividad(alumno_id: str, curso_id: str) -> Optional[s
             examen = await prisma.examen.find_first(
                 where={
                     "alumnoId": alumno_id,
-                    "cursoId": curso_id,
+                    "moduloId": modulo.id,
                     "aprobado": True
                 }
             )

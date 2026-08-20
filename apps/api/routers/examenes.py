@@ -9,6 +9,7 @@ from schemas.models import (
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
+from prisma import Json
 from core.config import settings
 from services.credencial_generator import (
     generate_credencial_number,
@@ -220,7 +221,7 @@ async def enviar_quiz(
     
     if modulo.cursoId != data.cursoId:
         raise HTTPException(status_code=400, detail="Módulo no pertenece a este curso")
-    
+
     # Verificar inscripción
     inscripcion = await prisma.inscripcion.find_first(
         where={
@@ -228,9 +229,14 @@ async def enviar_quiz(
             "cursoId": data.cursoId
         }
     )
-    
+
     if not inscripcion:
         raise HTTPException(status_code=403, detail="No estás inscrito en este curso")
+
+    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
+    if not curso:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+    minimo_aprobacion = curso.minimoAprobacion or 70
     
     # Calificar quiz
     preguntas = modulo.preguntas
@@ -265,15 +271,17 @@ async def enviar_quiz(
     
     # Calcular calificación (0-100)
     calificacion = (respuestas_correctas / total_preguntas) * 100 if total_preguntas > 0 else 0
-    
-    # Determinar si aprobó (70% mínimo)
-    aprobado = calificacion >= 70
-    
-    # Contar intentos previas del alumno para este curso
+
+    # Determinar si aprobó (según el mínimo configurado en el curso)
+    aprobado = calificacion >= minimo_aprobacion
+
+    # Contar intentos previos del alumno para este módulo específico
+    # (un curso puede tener más de un módulo QUIZ)
     intentos_previos = await prisma.examen.count(
         where={
             "alumnoId": current_user.id,
-            "cursoId": data.cursoId
+            "cursoId": data.cursoId,
+            "moduloId": data.moduloId
         }
     )
     intento_actual = intentos_previos + 1
@@ -283,17 +291,18 @@ async def enviar_quiz(
         data={
             "alumnoId": current_user.id,
             "cursoId": data.cursoId,
-            "respuestas": data.respuestas,
+            "moduloId": data.moduloId,
+            "respuestas": Json(data.respuestas),
             "calificacion": calificacion,
             "aprobado": aprobado
         }
     )
-    
+
     # Generar mensaje con información de intento
     if aprobado:
         message = f"¡Felicitaciones! Aprobaste en el intento #{intento_actual} con {calificacion:.1f}%"
     else:
-        message = f"Intento #{intento_actual}: Obtuviste {calificacion:.1f}%. Necesitas 70% para aprobar. Puedes intentarlo nuevamente."
+        message = f"Intento #{intento_actual}: Obtuviste {calificacion:.1f}%. Necesitas {minimo_aprobacion:.0f}% para aprobar. Puedes intentarlo nuevamente."
     
     return QuizFeedbackResponse(
         calificacion=calificacion,

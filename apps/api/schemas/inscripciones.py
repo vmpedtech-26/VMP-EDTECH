@@ -9,8 +9,8 @@ class InscripcionDetailResponse(BaseModel):
     id: str
     progreso: int  # 0-100
     estado: str  # NO_INICIADO, EN_PROGRESO, COMPLETADO, APROBADO, REPROBADO
-    inicioDate: Optional[str] = None
-    finDate: Optional[str] = None
+    inicioDate: Optional[datetime] = None
+    finDate: Optional[datetime] = None
     cursoId: str
     alumnoId: str
     
