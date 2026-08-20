@@ -708,3 +708,71 @@ model OrgBranding {
   updatedAt   DateTime @updatedAt @map("updated_at")
   @@map("org_branding")
 }
+
+// ============= PRESUPUESTOS HSE =============
+
+enum EstadoPresupuesto {
+  BORRADOR
+  ENVIADO
+  ACEPTADO
+  RECHAZADO
+}
+
+model PresupuestoHSE {
+  id                String             @id @default(uuid())
+  numeroCotizacion  String             @unique @map("numero_cotizacion") // VMP-2026-145
+  clienteNombre     String             @map("cliente_nombre")
+  clienteCuit       String             @map("cliente_cuit")
+  recursoNombre     String             @map("recurso_nombre")
+  recursoTitulo     String             @map("recurso_titulo")
+  recursoMatricula  String             @map("recurso_matricula")
+  fechaEmision      DateTime           @default(now()) @map("fecha_emision")
+  fechaDesde        DateTime           @map("fecha_desde")
+  fechaHasta        DateTime           @map("fecha_hasta")
+  jornadas          Int
+  horario           String             @default("09:00 a 18:00 hs")
+  lugar             String
+  importeNeto       Float              @map("importe_neto")
+  iva               Float
+  total             Float
+  estado            EstadoPresupuesto  @default(BORRADOR)
+  itemsJson         String             @map("items_json") @db.Text // JSON array de items tarifarios
+  alcanceTexto      String?            @map("alcance_texto") @db.Text
+  entregablesTexto  String?            @map("entregables_texto") @db.Text
+  exclusionesTexto  String?            @map("exclusiones_texto") @db.Text
+  condicionesTexto  String?            @map("condiciones_texto") @db.Text
+  pdfUrl            String?            @map("pdf_url")
+  createdBy         String?            @map("created_by")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  @@index([estado])
+  @@index([clienteNombre])
+  @@index([createdAt])
+  @@map("presupuestos_hse")
+}
+
+model PlantillaPresupuesto {
+  id              String   @id @default(uuid())
+  nombre          String
+  descripcion     String?
+  itemsDefaultJson String  @map("items_default_json") @db.Text // JSON array de items default
+  alcanceDefault  String?  @map("alcance_default") @db.Text
+  entregablesDefault String? @map("entregables_default") @db.Text
+  exclusionesDefault String? @map("exclusiones_default") @db.Text
+  condicionesDefault String? @map("condiciones_default") @db.Text
+  activa          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("plantillas_presupuesto")
+}
+
+model ContadorCotizacion {
+  id       String @id @default(uuid())
+  anio     Int
+  contador Int    @default(144)
+
+  @@unique([anio])
+  @@map("contadores_cotizacion")
+}
