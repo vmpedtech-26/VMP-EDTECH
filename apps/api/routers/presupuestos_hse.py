@@ -1,15 +1,13 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
-from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, HTTPException, Depends, Response
+from pydantic import BaseModel
+from typing import Optional, List
 from datetime import datetime
 from prisma import Prisma
 from prisma.models import User
 import logging
-import os
 import json
 
-from auth.jwt import get_current_user
+from auth.dependencies import get_current_user
 
 async def get_db():
     db = Prisma()
@@ -21,11 +19,16 @@ async def get_db():
 
 from services.pdf_presupuesto import generar_pdf_presupuesto
 from services.ia_presupuesto import completar_formulario_desde_texto, redactar_alcance, sugerir_tarifas
+from services import storage_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # ─── SCHEMAS ───
+# Los nombres de campo acá coinciden con los que ya usa el frontend
+# (PresupuestoForm/CuadroTarifario/lib/api/presupuestos-hse.ts), no con los
+# nombres de columna internos de Prisma -- este router es el único punto de
+# traducción entre ambos.
 
 class ItemPresupuesto(BaseModel):
     codigo: str
@@ -39,59 +42,100 @@ class PresupuestoCreate(BaseModel):
     cliente_nombre: str
     cliente_cuit: str
     recurso_nombre: str
-    recurso_titulo: str = "Técnico en Higiene y Seguridad"
+    recurso_cargo: str = "Técnico en Higiene y Seguridad"
     recurso_matricula: str
     fecha_desde: datetime
     fecha_hasta: datetime
-    jornadas: int
+    cantidad_jornadas: int
     horario: str = "09:00 a 18:00 hs"
-    lugar: str
-    importe_neto: float
-    iva: float
-    total: float
-    items: List[ItemPresupuesto]
-    alcance_texto: Optional[str] = None
-    entregables_texto: Optional[str] = None
-    exclusiones_texto: Optional[str] = None
-    condiciones_texto: Optional[str] = None
+    lugar_prestacion: str
+    items: List[ItemPresupuesto] = []
+    alcance_tecnico: Optional[str] = None
+    entregables: Optional[str] = None
+    exclusiones: Optional[str] = None
+    condiciones_comerciales: Optional[str] = None
+    estado: Optional[str] = None
 
 class PresupuestoUpdate(BaseModel):
     estado: Optional[str] = None
     cliente_nombre: Optional[str] = None
     cliente_cuit: Optional[str] = None
     recurso_nombre: Optional[str] = None
-    recurso_titulo: Optional[str] = None
+    recurso_cargo: Optional[str] = None
     recurso_matricula: Optional[str] = None
     fecha_desde: Optional[datetime] = None
     fecha_hasta: Optional[datetime] = None
-    jornadas: Optional[int] = None
+    cantidad_jornadas: Optional[int] = None
     horario: Optional[str] = None
-    lugar: Optional[str] = None
-    importe_neto: Optional[float] = None
-    iva: Optional[float] = None
-    total: Optional[float] = None
+    lugar_prestacion: Optional[str] = None
     items: Optional[List[ItemPresupuesto]] = None
-    alcance_texto: Optional[str] = None
-    entregables_texto: Optional[str] = None
-    exclusiones_texto: Optional[str] = None
-    condiciones_texto: Optional[str] = None
+    alcance_tecnico: Optional[str] = None
+    entregables: Optional[str] = None
+    exclusiones: Optional[str] = None
+    condiciones_comerciales: Optional[str] = None
 
 class IATextoRequest(BaseModel):
     texto: str
 
-class IAAcanceRequest(BaseModel):
-    tipo_servicio: str
-    datos: dict
-
-class IATarifasRequest(BaseModel):
-    tipo_servicio: str
-
 # ─── AUTH DEPENDENCY ───
 
 def check_super_admin(current_user: User = Depends(get_current_user)):
-    if current_user.rol.value != "SUPER_ADMIN":
+    if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     return current_user
+
+
+# ─── SERIALIZACIÓN (Prisma camelCase -> contrato snake_case del frontend) ───
+
+def _calcular_totales(items: List[ItemPresupuesto]):
+    subtotal = sum(item.importe for item in items)
+    iva = round(subtotal * 0.21, 2)
+    total = round(subtotal + iva, 2)
+    return round(subtotal, 2), iva, total
+
+
+def serialize_presupuesto(p) -> dict:
+    try:
+        items = json.loads(p.itemsJson) if p.itemsJson else []
+    except (json.JSONDecodeError, TypeError):
+        items = []
+
+    return {
+        "id": p.id,
+        "numero_cotizacion": p.numeroCotizacion,
+        "cliente_nombre": p.clienteNombre,
+        "cliente_cuit": p.clienteCuit,
+        "recurso_nombre": p.recursoNombre,
+        "recurso_cargo": p.recursoTitulo,
+        "recurso_matricula": p.recursoMatricula,
+        "fecha_desde": p.fechaDesde,
+        "fecha_hasta": p.fechaHasta,
+        "cantidad_jornadas": p.jornadas,
+        "horario": p.horario,
+        "lugar_prestacion": p.lugar,
+        "alcance_tecnico": p.alcanceTexto,
+        "entregables": p.entregablesTexto,
+        "exclusiones": p.exclusionesTexto,
+        "condiciones_comerciales": p.condicionesTexto,
+        "items": items,
+        "subtotal": p.importeNeto,
+        "iva": p.iva,
+        "total": p.total,
+        "estado": p.estado,
+        "fecha_emision": p.fechaEmision,
+        "pdf_url": p.pdfUrl,
+        "createdAt": p.createdAt,
+    }
+
+
+async def _siguiente_numero(db: Prisma) -> tuple[str, object]:
+    anio = datetime.now().year
+    contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
+    if not contador_obj:
+        contador_obj = await db.contadorcotizacion.create(data={"anio": anio, "contador": 144})
+    nuevo_contador = contador_obj.contador + 1
+    await db.contadorcotizacion.update(where={"id": contador_obj.id}, data={"contador": nuevo_contador})
+    return f"VMP-{anio}-{nuevo_contador}", contador_obj
 
 
 # ─── RUTAS ESTÁTICAS (deben ir ANTES de /{id}) ───
@@ -126,7 +170,7 @@ async def list_presupuestos(
             take=limit,
             order={"createdAt": "desc"}
         )
-        return presupuestos
+        return [serialize_presupuesto(p) for p in presupuestos]
     except Exception as e:
         logger.error(f"Error list_presupuestos: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -139,16 +183,8 @@ async def create_presupuesto(
     db: Prisma = Depends(get_db)
 ):
     try:
-        anio = datetime.now().year
-        contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
-        if not contador_obj:
-            contador_obj = await db.contadorcotizacion.create(data={"anio": anio, "contador": 144})
-
-        nuevo_contador = contador_obj.contador + 1
-        await db.contadorcotizacion.update(where={"id": contador_obj.id}, data={"contador": nuevo_contador})
-        numero = f"VMP-{anio}-{nuevo_contador}"
-
-        items_json = json.dumps([item.dict() for item in data.items])
+        numero, _ = await _siguiente_numero(db)
+        subtotal, iva, total = _calcular_totales(data.items)
 
         presupuesto = await db.presupuestohse.create(
             data={
@@ -156,45 +192,42 @@ async def create_presupuesto(
                 "clienteNombre": data.cliente_nombre,
                 "clienteCuit": data.cliente_cuit,
                 "recursoNombre": data.recurso_nombre,
-                "recursoTitulo": data.recurso_titulo,
+                "recursoTitulo": data.recurso_cargo,
                 "recursoMatricula": data.recurso_matricula,
                 "fechaDesde": data.fecha_desde,
                 "fechaHasta": data.fecha_hasta,
-                "jornadas": data.jornadas,
+                "jornadas": data.cantidad_jornadas,
                 "horario": data.horario,
-                "lugar": data.lugar,
-                "importeNeto": data.importe_neto,
-                "iva": data.iva,
-                "total": data.total,
-                "itemsJson": items_json,
-                "alcanceTexto": data.alcance_texto,
-                "entregablesTexto": data.entregables_texto,
-                "exclusionesTexto": data.exclusiones_texto,
-                "condicionesTexto": data.condiciones_texto,
+                "lugar": data.lugar_prestacion,
+                "importeNeto": subtotal,
+                "iva": iva,
+                "total": total,
+                "itemsJson": json.dumps([item.dict() for item in data.items]),
+                "alcanceTexto": data.alcance_tecnico,
+                "entregablesTexto": data.entregables,
+                "exclusionesTexto": data.exclusiones,
+                "condicionesTexto": data.condiciones_comerciales,
                 "createdBy": current_user.email,
-                "estado": "BORRADOR"
+                "estado": data.estado or "BORRADOR",
             }
         )
-        return presupuesto
+        return serialize_presupuesto(presupuesto)
     except Exception as e:
         logger.error(f"Error create_presupuesto: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/siguiente-numero")
-async def siguiente_numero(
+async def siguiente_numero_preview(
     current_user: User = Depends(check_super_admin),
     db: Prisma = Depends(get_db)
 ):
-    try:
-        anio = datetime.now().year
-        contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
-        cont = 144
-        if contador_obj:
-            cont = contador_obj.contador + 1
-        return {"siguiente": f"VMP-{anio}-{cont}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    anio = datetime.now().year
+    contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
+    cont = 144
+    if contador_obj:
+        cont = contador_obj.contador + 1
+    return {"siguiente": f"VMP-{anio}-{cont}"}
 
 
 @router.get("/plantillas")
@@ -202,50 +235,44 @@ async def get_plantillas_route(
     current_user: User = Depends(check_super_admin),
     db: Prisma = Depends(get_db)
 ):
-    try:
-        plantillas = await db.plantillapresupuesto.find_many(where={"activa": True})
-        return plantillas
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    plantillas = await db.plantillapresupuesto.find_many(where={"activa": True})
+    return [
+        {
+            "id": pl.id,
+            "nombre": pl.nombre,
+            "descripcion": pl.descripcion,
+            "items": json.loads(pl.itemsDefaultJson) if pl.itemsDefaultJson else [],
+            "alcance_tecnico": pl.alcanceDefault,
+            "entregables": pl.entregablesDefault,
+            "exclusiones": pl.exclusionesDefault,
+            "condiciones_comerciales": pl.condicionesDefault,
+        }
+        for pl in plantillas
+    ]
 
 
 @router.post("/ia/completar")
 async def ia_completar(
     data: IATextoRequest,
     current_user: User = Depends(check_super_admin),
-    db: Prisma = Depends(get_db)
 ):
-    try:
-        res = await completar_formulario_desde_texto(data.texto, [])
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await completar_formulario_desde_texto(data.texto)
 
 
 @router.post("/ia/redactar-alcance")
 async def ia_redactar_alcance(
-    data: IAAcanceRequest,
+    data: IATextoRequest,
     current_user: User = Depends(check_super_admin),
-    db: Prisma = Depends(get_db)
 ):
-    try:
-        res = await redactar_alcance(data.tipo_servicio, data.datos)
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await redactar_alcance(data.texto)
 
 
 @router.post("/ia/sugerir-tarifas")
 async def ia_sugerir_tarifas(
-    data: IATarifasRequest,
+    data: IATextoRequest,
     current_user: User = Depends(check_super_admin),
-    db: Prisma = Depends(get_db)
 ):
-    try:
-        res = await sugerir_tarifas(data.tipo_servicio, [])
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await sugerir_tarifas(data.texto)
 
 
 # ─── RUTAS DINÁMICAS /{id} (siempre al final) ───
@@ -259,7 +286,7 @@ async def get_presupuesto(
     presupuesto = await db.presupuestohse.find_unique(where={"id": id})
     if not presupuesto:
         raise HTTPException(status_code=404, detail="No encontrado")
-    return presupuesto
+    return serialize_presupuesto(presupuesto)
 
 
 @router.put("/{id}")
@@ -270,42 +297,49 @@ async def update_presupuesto(
     db: Prisma = Depends(get_db)
 ):
     try:
-        update_data = {}
-        for key, value in data.dict(exclude_unset=True).items():
-            if key == "items":
-                update_data["itemsJson"] = json.dumps([i.dict() for i in value])
-            elif key == "cliente_nombre":
-                update_data["clienteNombre"] = value
-            elif key == "cliente_cuit":
-                update_data["clienteCuit"] = value
-            elif key == "recurso_nombre":
-                update_data["recursoNombre"] = value
-            elif key == "recurso_titulo":
-                update_data["recursoTitulo"] = value
-            elif key == "recurso_matricula":
-                update_data["recursoMatricula"] = value
-            elif key == "fecha_desde":
-                update_data["fechaDesde"] = value
-            elif key == "fecha_hasta":
-                update_data["fechaHasta"] = value
-            elif key == "importe_neto":
-                update_data["importeNeto"] = value
-            elif key == "alcance_texto":
-                update_data["alcanceTexto"] = value
-            elif key == "entregables_texto":
-                update_data["entregablesTexto"] = value
-            elif key == "exclusiones_texto":
-                update_data["exclusionesTexto"] = value
-            elif key == "condiciones_texto":
-                update_data["condicionesTexto"] = value
-            else:
-                update_data[key] = value
+        existing = await db.presupuestohse.find_unique(where={"id": id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="No encontrado")
 
-        presupuesto = await db.presupuestohse.update(
-            where={"id": id},
-            data=update_data
-        )
-        return presupuesto
+        payload = data.dict(exclude_unset=True)
+        update_data = {}
+
+        if "items" in payload and payload["items"] is not None:
+            items = data.items
+            update_data["itemsJson"] = json.dumps([i.dict() for i in items])
+            subtotal, iva, total = _calcular_totales(items)
+            update_data["importeNeto"] = subtotal
+            update_data["iva"] = iva
+            update_data["total"] = total
+
+        field_map = {
+            "cliente_nombre": "clienteNombre",
+            "cliente_cuit": "clienteCuit",
+            "recurso_nombre": "recursoNombre",
+            "recurso_cargo": "recursoTitulo",
+            "recurso_matricula": "recursoMatricula",
+            "fecha_desde": "fechaDesde",
+            "fecha_hasta": "fechaHasta",
+            "cantidad_jornadas": "jornadas",
+            "horario": "horario",
+            "lugar_prestacion": "lugar",
+            "alcance_tecnico": "alcanceTexto",
+            "entregables": "entregablesTexto",
+            "exclusiones": "exclusionesTexto",
+            "condiciones_comerciales": "condicionesTexto",
+            "estado": "estado",
+        }
+        for key, value in payload.items():
+            if key == "items":
+                continue
+            prisma_key = field_map.get(key)
+            if prisma_key:
+                update_data[prisma_key] = value
+
+        presupuesto = await db.presupuestohse.update(where={"id": id}, data=update_data)
+        return serialize_presupuesto(presupuesto)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error update_presupuesto: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -336,13 +370,7 @@ async def duplicar_presupuesto(
     if not original:
         raise HTTPException(status_code=404, detail="No encontrado")
 
-    anio = datetime.now().year
-    contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
-    if not contador_obj:
-        contador_obj = await db.contadorcotizacion.create(data={"anio": anio, "contador": 144})
-    nuevo_contador = contador_obj.contador + 1
-    await db.contadorcotizacion.update(where={"id": contador_obj.id}, data={"contador": nuevo_contador})
-    numero = f"VMP-{anio}-{nuevo_contador}"
+    numero, _ = await _siguiente_numero(db)
 
     nuevo = await db.presupuestohse.create(
         data={
@@ -369,7 +397,7 @@ async def duplicar_presupuesto(
             "estado": "BORRADOR"
         }
     )
-    return nuevo
+    return serialize_presupuesto(nuevo)
 
 
 @router.post("/{id}/generar-pdf")
@@ -407,15 +435,24 @@ async def generar_pdf(
     }
     try:
         pdf_bytes = generar_pdf_presupuesto(data)
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        storage_dir = os.path.join(base_dir, "storage", "presupuestos")
-        os.makedirs(storage_dir, exist_ok=True)
-        pdf_path = os.path.join(storage_dir, f"{presupuesto.numeroCotizacion}.pdf")
-        with open(pdf_path, "wb") as f:
-            f.write(pdf_bytes)
-        pdf_url = f"/storage/presupuestos/{presupuesto.numeroCotizacion}.pdf"
-        await db.presupuestohse.update(where={"id": id}, data={"pdfUrl": pdf_url})
-        return {"message": "PDF generado", "pdf_url": pdf_url}
+
+        if storage_service.is_configured():
+            pdf_url = storage_service.upload_bytes(
+                pdf_bytes,
+                f"presupuestos-hse/{presupuesto.numeroCotizacion}.pdf",
+                "application/pdf",
+            )
+            await db.presupuestohse.update(where={"id": id}, data={"pdfUrl": pdf_url})
+        else:
+            logger.warning("S3 no configurado: el PDF de presupuesto no se persiste entre deploys")
+
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="Presupuesto_{presupuesto.numeroCotizacion}.pdf"'
+            },
+        )
     except Exception as e:
         logger.error(f"Error generar_pdf: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -427,15 +464,9 @@ async def descargar_pdf(
     current_user: User = Depends(check_super_admin),
     db: Prisma = Depends(get_db)
 ):
+    from fastapi.responses import RedirectResponse
+
     presupuesto = await db.presupuestohse.find_unique(where={"id": id})
     if not presupuesto or not presupuesto.pdfUrl:
-        raise HTTPException(status_code=404, detail="PDF no encontrado")
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    file_path = os.path.join(base_dir, presupuesto.pdfUrl.lstrip("/"))
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Archivo físico no encontrado")
-    return FileResponse(
-        file_path,
-        media_type="application/pdf",
-        filename=f"Presupuesto_{presupuesto.numeroCotizacion}.pdf"
-    )
+        raise HTTPException(status_code=404, detail="PDF no encontrado. Generalo primero desde el detalle del presupuesto.")
+    return RedirectResponse(presupuesto.pdfUrl)

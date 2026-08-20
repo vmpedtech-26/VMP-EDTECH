@@ -101,7 +101,7 @@ export function PresupuestoForm({ initialData = {} }: Props) {
         setFormData(prev => ({ ...prev, ...data }));
     };
     
-    const onRedactarAlcance = (data: { alcance_tecnico: string; entregables: string; exclusiones: string }) => {
+    const onRedactarAlcance = (data: { alcance_tecnico: string; entregables: string; exclusiones: string; condiciones_comerciales: string }) => {
         setFormData(prev => ({ ...prev, ...data }));
     };
 
@@ -243,7 +243,7 @@ export function PresupuestoForm({ initialData = {} }: Props) {
                                 <input
                                     type="date"
                                     className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] outline-none"
-                                    value={formData.fecha_desde || ''}
+                                    value={formData.fecha_desde ? formData.fecha_desde.slice(0, 10) : ''}
                                     onChange={(e) => handleChange('fecha_desde', e.target.value)}
                                 />
                             </div>
@@ -252,7 +252,7 @@ export function PresupuestoForm({ initialData = {} }: Props) {
                                 <input
                                     type="date"
                                     className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] outline-none"
-                                    value={formData.fecha_hasta || ''}
+                                    value={formData.fecha_hasta ? formData.fecha_hasta.slice(0, 10) : ''}
                                     onChange={(e) => handleChange('fecha_hasta', e.target.value)}
                                 />
                             </div>

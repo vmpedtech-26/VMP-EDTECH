@@ -79,12 +79,12 @@ export const presupuestosHseApi = {
     },
 
     async iaCompletar(prompt: string): Promise<Partial<PresupuestoHSE>> {
-        return api.post('/presupuestos-hse/ia/completar', { prompt });
+        return api.post('/presupuestos-hse/ia/completar', { texto: prompt });
     },
-    async iaRedactarAlcance(prompt: string): Promise<{ alcance_tecnico: string; entregables: string; exclusiones: string }> {
-        return api.post('/presupuestos-hse/ia/redactar-alcance', { prompt });
+    async iaRedactarAlcance(prompt: string): Promise<{ alcance_tecnico: string; entregables: string; exclusiones: string; condiciones_comerciales: string }> {
+        return api.post('/presupuestos-hse/ia/redactar-alcance', { texto: prompt });
     },
     async iaSugerirTarifas(prompt: string): Promise<{ items: ItemTarifario[] }> {
-        return api.post('/presupuestos-hse/ia/sugerir-tarifas', { prompt });
+        return api.post('/presupuestos-hse/ia/sugerir-tarifas', { texto: prompt });
     }
 };

@@ -5,154 +5,130 @@ Usa Google Gemini API.
 import os
 import json
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 
-async def completar_formulario_desde_texto(texto: str, historial_clientes: list = None) -> dict:
+def _parse_json_response(raw: str) -> dict:
+    raw = raw.strip()
+    if raw.startswith('```'):
+        raw = raw.split('```')[1]
+        if raw.startswith('json'):
+            raw = raw[4:]
+    raw = raw.strip().rstrip('```').strip()
+    return json.loads(raw)
+
+
+async def completar_formulario_desde_texto(texto: str) -> dict:
     """
     Dada una descripción en lenguaje natural, extrae los datos del presupuesto.
-    Retorna un dict con los campos del formulario completados.
+    Retorna un dict con los campos del formulario completados (mismos nombres
+    de campo que usa el formulario del frontend).
     """
     if not GEMINI_API_KEY:
         return {"error": "GEMINI_API_KEY no configurada"}
-    
+
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        
-        historial_ctx = ""
-        if historial_clientes:
-            historial_ctx = f"\n\nCLIENTES CONOCIDOS (para autocompletar CUIT y condiciones):\n{json.dumps(historial_clientes[:10], ensure_ascii=False)}"
-        
+        model = genai.GenerativeModel('gemini-2.5-flash')
+
         prompt = f"""Eres un asistente especializado en presupuestos técnicos HSE para VMP EDTECH (empresa de servicios técnicos en Higiene y Seguridad, Patagonia Argentina).
 
 El usuario describió en lenguaje natural el presupuesto que quiere crear:
 \"{texto}\"
-{historial_ctx}
 
 Extrae los datos y retorna SOLO un JSON válido con los siguientes campos (usa null para los que no tengas datos):
 {{
   "cliente_nombre": "nombre de la empresa cliente",
   "cliente_cuit": "CUIT si se menciona o se conoce",
   "recurso_nombre": "nombre del técnico asignado",
-  "recurso_titulo": "título profesional (ej: Técnico en Higiene y Seguridad)",
+  "recurso_cargo": "título profesional (ej: Técnico en Higiene y Seguridad)",
   "recurso_matricula": "matrícula profesional",
-  "fecha_desde": "fecha inicio formato DD/MM/YYYY",
-  "fecha_hasta": "fecha fin formato DD/MM/YYYY",
-  "jornadas": número_de_jornadas_entero,
+  "fecha_desde": "fecha inicio formato YYYY-MM-DD",
+  "fecha_hasta": "fecha fin formato YYYY-MM-DD",
+  "cantidad_jornadas": número_de_jornadas_entero,
   "horario": "horario (ej: 09:00 a 18:00 hs)",
-  "lugar": "ciudad/lugar de prestación",
-  "tipo_servicio": "descripción del servicio"
+  "lugar_prestacion": "ciudad/lugar de prestación"
 }}
 
 Retorna SOLO el JSON, sin markdown, sin explicaciones."""
-        
+
         response = model.generate_content(prompt)
-        raw = response.text.strip()
-        # Limpiar markdown si hay
-        if raw.startswith('```'):
-            raw = raw.split('```')[1]
-            if raw.startswith('json'):
-                raw = raw[4:]
-        raw = raw.strip().rstrip('```').strip()
-        return json.loads(raw)
+        return _parse_json_response(response.text)
     except Exception as e:
         logger.error(f"Error en IA completar_formulario: {e}")
         return {"error": str(e)}
 
 
-async def redactar_alcance(tipo_servicio: str, datos: dict) -> dict:
+async def redactar_alcance(texto: str) -> dict:
     """
-    Genera texto de alcance técnico, entregables, exclusiones y condiciones.
+    Genera texto de alcance técnico, entregables, exclusiones y condiciones
+    comerciales a partir de una descripción libre del servicio.
     """
     if not GEMINI_API_KEY:
         return {"error": "GEMINI_API_KEY no configurada"}
-    
+
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        
-        cliente = datos.get('cliente_nombre', 'el cliente')
-        lugar = datos.get('lugar', 'Neuquén')
-        jornadas = datos.get('jornadas', 1)
-        
+        model = genai.GenerativeModel('gemini-2.5-flash')
+
         prompt = f"""Eres redactor técnico especializado en documentos HSE para VMP EDTECH, empresa de servicios técnicos en Higiene y Seguridad de Patagonia Argentina.
 
-Redactá el texto para un presupuesto de:
-- Tipo de servicio: {tipo_servicio}
-- Cliente: {cliente}
-- Lugar: {lugar}
-- Duración: {jornadas} jornadas
+El usuario describió el servicio a presupuestar:
+\"{texto}\"
 
-Retorna SOLO un JSON con los siguientes campos en texto plano (bullets con •, sin markdown):
+Redactá el contenido del documento para ese servicio. Retorna SOLO un JSON con los siguientes campos en texto plano (bullets con •, sin markdown):
 {{
-  "alcance_texto": "texto del alcance técnico con bullets",
-  "entregables_texto": "texto de entregables con bullets",
-  "exclusiones_texto": "texto de exclusiones con bullets",
-  "condiciones_texto": "texto de condiciones comerciales con bullets"
+  "alcance_tecnico": "texto del alcance técnico con bullets",
+  "entregables": "texto de entregables con bullets",
+  "exclusiones": "texto de exclusiones con bullets",
+  "condiciones_comerciales": "texto de condiciones comerciales con bullets"
 }}
 
 El tono debe ser formal, técnico y profesional. Retorna SOLO el JSON."""
-        
+
         response = model.generate_content(prompt)
-        raw = response.text.strip()
-        if raw.startswith('```'):
-            raw = raw.split('```')[1]
-            if raw.startswith('json'):
-                raw = raw[4:]
-        raw = raw.strip().rstrip('```').strip()
-        return json.loads(raw)
+        return _parse_json_response(response.text)
     except Exception as e:
         logger.error(f"Error en IA redactar_alcance: {e}")
         return {"error": str(e)}
 
 
-async def sugerir_tarifas(tipo_servicio: str, historial_presupuestos: list = None) -> dict:
+async def sugerir_tarifas(texto: str) -> dict:
     """
-    Sugiere valores tarifarios basándose en el historial.
+    Sugiere una tabla tarifaria a partir de una descripción libre del servicio.
     """
     if not GEMINI_API_KEY:
         return {"error": "GEMINI_API_KEY no configurada"}
-    
+
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        
-        historial_ctx = ""
-        if historial_presupuestos:
-            historial_ctx = f"\n\nHISTORIAL DE PRESUPUESTOS PREVIOS:\n{json.dumps(historial_presupuestos[:5], ensure_ascii=False)}"
-        
+        model = genai.GenerativeModel('gemini-2.5-flash')
+
         prompt = f"""Eres asesor comercial de VMP EDTECH, empresa de servicios HSE en Patagonia Argentina.
 
-Servicio a cotizar: {tipo_servicio}{historial_ctx}
+Servicio a cotizar, descripto por el usuario:
+\"{texto}\"
 
-Basándote en el historial y en precios del mercado HSE argentino (agosto 2026), sugerí una tabla tarifaria.
+Basándote en precios del mercado HSE argentino (agosto 2026), sugerí una tabla tarifaria.
 Retorna SOLO un JSON:
 {{
   "items": [
-    {{"codigo": "SCIO-HSE-001", "concepto": "descripción", "unidad": "Días", "cantidad": 1, "precio_unitario": 840000}},
-    {{"codigo": "EXT-HSE-001", "concepto": "Hora adicional", "unidad": "Hora", "cantidad": 1, "precio_unitario": 140000}},
-    {{"codigo": "JOR-HSE-001", "concepto": "Jornada adicional", "unidad": "Jornada", "cantidad": 1, "precio_unitario": 840000}},
-    {{"codigo": "MOV-HSE-001", "concepto": "Viáticos/movilidad", "unidad": "Según corresponda", "cantidad": 0, "precio_unitario": 0}}
+    {{"codigo": "SCIO-HSE-001", "concepto": "descripción", "unidad": "Días", "cantidad": 1, "precio_unitario": 840000, "importe": 840000}},
+    {{"codigo": "EXT-HSE-001", "concepto": "Hora adicional", "unidad": "Hora", "cantidad": 1, "precio_unitario": 140000, "importe": 140000}}
   ],
   "justificacion": "breve explicación de los valores"
-}}"""
-        
+}}
+
+El campo "importe" de cada ítem debe ser igual a cantidad * precio_unitario."""
+
         response = model.generate_content(prompt)
-        raw = response.text.strip()
-        if raw.startswith('```'):
-            raw = raw.split('```')[1]
-            if raw.startswith('json'):
-                raw = raw[4:]
-        raw = raw.strip().rstrip('```').strip()
-        return json.loads(raw)
+        return _parse_json_response(response.text)
     except Exception as e:
         logger.error(f"Error en IA sugerir_tarifas: {e}")
         return {"error": str(e)}
