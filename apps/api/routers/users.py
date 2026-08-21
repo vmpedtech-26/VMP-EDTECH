@@ -124,6 +124,7 @@ async def listar_inscripciones_alumno(id: str, current_user=Depends(get_current_
             "curso_nombre": i.curso.nombre if i.curso else "",
             "progreso": i.progreso,
             "estado": i.estado,
+            "usa_telemetria_obd2": bool(i.curso and i.curso.usaTelemetriaObd2),
             "obd2_sessions_count": len(i.obd2Sessions or []),
         }
         for i in inscripciones

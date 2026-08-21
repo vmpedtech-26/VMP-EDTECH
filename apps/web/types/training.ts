@@ -22,6 +22,7 @@ export interface Curso {
     maxParticipantes?: number | null;
     linkClase?: string | null;
     tipoEvaluacion?: 'QUIZ' | 'PRACTICA' | 'NINGUNA';
+    usaTelemetriaObd2?: boolean;
     plantillaEvaluacionId?: string | null;
 }
 

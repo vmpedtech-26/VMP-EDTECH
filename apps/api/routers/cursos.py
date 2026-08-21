@@ -75,6 +75,7 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "maxParticipantes": data.maxParticipantes,
             "linkClase": data.linkClase,
             "tipoEvaluacion": data.tipoEvaluacion,
+            "usaTelemetriaObd2": data.usaTelemetriaObd2,
             "plantillaEvaluacionId": data.plantillaEvaluacionId,
             "activo": True
         }
@@ -144,6 +145,7 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     if data.maxParticipantes is not None: update_data["maxParticipantes"] = data.maxParticipantes
     if data.linkClase is not None: update_data["linkClase"] = data.linkClase
     if data.tipoEvaluacion is not None: update_data["tipoEvaluacion"] = data.tipoEvaluacion
+    if data.usaTelemetriaObd2 is not None: update_data["usaTelemetriaObd2"] = data.usaTelemetriaObd2
     if data.plantillaEvaluacionId is not None: update_data["plantillaEvaluacionId"] = data.plantillaEvaluacionId or None
 
     curso = await prisma.curso.update(

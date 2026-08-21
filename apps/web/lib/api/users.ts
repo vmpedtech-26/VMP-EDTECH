@@ -20,6 +20,7 @@ export interface InscripcionAlumno {
     curso_nombre: string;
     progreso: number;
     estado: string;
+    usa_telemetria_obd2: boolean;
     obd2_sessions_count: number;
 }
 

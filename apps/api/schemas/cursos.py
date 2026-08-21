@@ -18,6 +18,7 @@ class CursoListItem(BaseModel):
     maxParticipantes: Optional[int] = None
     linkClase: Optional[str] = None
     tipoEvaluacion: str = "QUIZ"
+    usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
 
     class Config:
@@ -34,6 +35,7 @@ class CreateCursoRequest(BaseModel):
     maxParticipantes: Optional[int] = None
     linkClase: Optional[str] = None
     tipoEvaluacion: str = "QUIZ"
+    usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
 
 class UpdateCursoRequest(BaseModel):
@@ -48,6 +50,7 @@ class UpdateCursoRequest(BaseModel):
     maxParticipantes: Optional[int] = None
     linkClase: Optional[str] = None
     tipoEvaluacion: Optional[str] = None
+    usaTelemetriaObd2: Optional[bool] = None
     plantillaEvaluacionId: Optional[str] = None
 
 class ModuloSummary(BaseModel):
@@ -74,6 +77,7 @@ class CursoDetail(BaseModel):
     maxParticipantes: Optional[int] = None
     linkClase: Optional[str] = None
     tipoEvaluacion: str = "QUIZ"
+    usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
     modulos: List[ModuloSummary]
 

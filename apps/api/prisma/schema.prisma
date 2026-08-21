@@ -143,6 +143,7 @@ model Curso {
   maxParticipantes    Int?    @map("max_participantes")
   linkClase           String? @map("link_clase")
   tipoEvaluacion       String  @default("QUIZ") @map("tipo_evaluacion") // QUIZ, PRACTICA, NINGUNA
+  usaTelemetriaObd2    Boolean @default(false) @map("usa_telemetria_obd2") // Solo aplica si tipoEvaluacion = PRACTICA
   plantillaEvaluacionId String? @map("plantilla_evaluacion_id")
   estado                EstadoCurso @default(BORRADOR)
   instructorId           String? @map("instructor_id")

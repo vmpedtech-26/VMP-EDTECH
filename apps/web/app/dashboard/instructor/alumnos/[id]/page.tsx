@@ -80,18 +80,20 @@ export default function AlumnoDetallePage({ params }: { params: Promise<{ id: st
                                         <span>{insc.progreso}% completado</span>
                                     </div>
                                 </div>
-                                <Link
-                                    href={`/dashboard/instructor/alumnos/${id}/obd2/${insc.id}`}
-                                    className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition-colors shrink-0"
-                                >
-                                    <Gauge className="h-4 w-4" />
-                                    Telemetría OBD2
-                                    {insc.obd2_sessions_count > 0 && (
-                                        <span className="bg-white/80 text-primary rounded-full px-1.5 text-xs font-bold">
-                                            {insc.obd2_sessions_count}
-                                        </span>
-                                    )}
-                                </Link>
+                                {insc.usa_telemetria_obd2 && (
+                                    <Link
+                                        href={`/dashboard/instructor/alumnos/${id}/obd2/${insc.id}`}
+                                        className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition-colors shrink-0"
+                                    >
+                                        <Gauge className="h-4 w-4" />
+                                        Telemetría OBD2
+                                        {insc.obd2_sessions_count > 0 && (
+                                            <span className="bg-white/80 text-primary rounded-full px-1.5 text-xs font-bold">
+                                                {insc.obd2_sessions_count}
+                                            </span>
+                                        )}
+                                    </Link>
+                                )}
                             </div>
                         ))}
                     </div>

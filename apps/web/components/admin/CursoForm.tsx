@@ -220,6 +220,18 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                 <option value="PRACTICA">Evaluación Práctica (Evidencia / Foto / Certificación en Terreno)</option>
                                 <option value="NINGUNA">Sin Evaluación (Solo Asistencia)</option>
                             </select>
+
+                            {(formData as any).tipoEvaluacion === 'PRACTICA' && (
+                                <label className="flex items-center gap-2 pt-1 text-sm text-gray-700 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={!!(formData as any).usaTelemetriaObd2}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, usaTelemetriaObd2: e.target.checked } as any))}
+                                        className="rounded border-gray-300 text-primary focus:ring-primary/20"
+                                    />
+                                    Este curso usa telemetría OBD2 (evaluación de manejo)
+                                </label>
+                            )}
                         </div>
 
                         <div className="space-y-2">
