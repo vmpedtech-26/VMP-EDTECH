@@ -85,6 +85,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: ShieldCheck, label: 'Compliance & Ética', href: '/dashboard/super/compliance' },
         { icon: Lock, label: 'Seguridad & Logs', href: '/dashboard/super/seguridad' },
         { icon: Settings, label: 'Configuración Sistema', href: '/dashboard/super/sistema' },
+        { icon: UserCog, label: 'Mi Perfil', href: '/dashboard/perfil' },
     ],
     EMPRESA: [
         { icon: LayoutDashboard, label: 'Panel Empresa', href: '/dashboard/empresa' },
@@ -111,6 +112,7 @@ const menuItems: Record<string, MenuItem[]> = {
                 { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },
             ]
         },
+        { icon: UserCog, label: 'Mi Perfil', href: '/dashboard/perfil' },
     ],
 };
 

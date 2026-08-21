@@ -45,21 +45,7 @@ export default function ProfileSignatureUpload() {
 
         setIsUploading(true);
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_API_URL || '';
-            const response = await fetch(`${backendUrl}/users/me/signature`, {
-                method: 'POST',
-                headers: {
-                    // El navegador asignará automáticamente multipart/form-data con el boundary correcto
-                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.detail || 'Error al subir firma');
-            }
-
+            await api.post('/users/me/signature', formData);
             toast.success('¡Firma digitalizada guardada correctamente!');
             checkSignature();
         } catch (error: any) {
@@ -90,9 +76,9 @@ export default function ProfileSignatureUpload() {
                         <span className="text-[10px] font-bold text-slate-600 uppercase mb-2">Vista Previa de tu Firma</span>
                         {/* Tablero estilo visor de firma con patrón de cuadrícula para denotar transparencia */}
                         <div className="h-32 w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-inner flex items-center justify-center relative overflow-hidden bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]">
-                            <img 
-                                src={`${process.env.NEXT_PUBLIC_API_URL || ''}${signatureUrl}`} 
-                                alt="Firma Instructor" 
+                            <img
+                                src={signatureUrl}
+                                alt="Firma Instructor"
                                 className="max-h-24 max-w-[80%] object-contain mix-blend-multiply"
                             />
                         </div>

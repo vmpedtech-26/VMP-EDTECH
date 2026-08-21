@@ -75,6 +75,7 @@ model User {
   rol          UserRole @default(ALUMNO)
   empresaId    String?  @map("empresa_id")
   avatar       String?
+  firmaUrl     String?  @map("firma_url")
   puesto       String?
   activo       Boolean  @default(true)
   

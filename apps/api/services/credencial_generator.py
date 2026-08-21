@@ -46,6 +46,8 @@ async def create_credencial_pdf(credencial_data: dict, foto_url: str = None) -> 
     - fecha_emision: str (DD/MM/YYYY)
     - fecha_vencimiento: str or None (DD/MM/YYYY)
     - qr_url: str
+    - instructor_nombre: str (opcional)
+    - instructor_firma_url: str (opcional, URL pública S3 de la firma PNG)
 
     foto_url: URL pública (S3) de la foto aprobada del alumno, si existe
     """
@@ -112,7 +114,22 @@ async def create_credencial_pdf(credencial_data: dict, foto_url: str = None) -> 
     # Número de credencial
     c.setFont("Helvetica-Bold", 6)
     c.drawString(5*mm, 3*mm, credencial_data['numero_credencial'])
-    
+
+    # Firma del instructor que emite (imagen + nombre), en el espacio libre
+    # entre el número de credencial y la fecha de vencimiento.
+    instructor_firma_url = credencial_data.get('instructor_firma_url')
+    if instructor_firma_url:
+        try:
+            import requests
+            resp = requests.get(instructor_firma_url, timeout=5)
+            resp.raise_for_status()
+            firma_reader = ImageReader(BytesIO(resp.content))
+            c.drawImage(firma_reader, 5*mm, 6.5*mm, 16*mm, 5*mm, mask='auto')
+            c.setFont("Helvetica", 4.5)
+            c.drawString(5*mm, 5.5*mm, (credencial_data.get('instructor_nombre') or '')[:28])
+        except Exception as e:
+            print(f"Error loading instructor signature: {e}")
+
     # QR Code (bottom-right)
     qr_buffer = generate_qr_code(credencial_data['qr_url'])
     qr_image_reader = ImageReader(qr_buffer)

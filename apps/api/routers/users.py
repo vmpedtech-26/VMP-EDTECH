@@ -1,14 +1,44 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
 from typing import List, Optional
 from schemas.users import (
     UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse,
     CargaMasivaRequest, CargaMasivaResponse
 )
-from auth.dependencies import get_current_user
+from auth.dependencies import get_current_user, require_admin
 from core.database import prisma
 from auth.jwt import hash_password
+from services import storage_service
 
 router = APIRouter()
+
+
+@router.get("/me/signature")
+async def obtener_mi_firma(current_user=Depends(require_admin)):
+    """Consultar si el instructor/admin actual ya tiene una firma digitalizada cargada."""
+    return {"exists": bool(current_user.firmaUrl), "url": current_user.firmaUrl}
+
+
+@router.post("/me/signature")
+async def subir_mi_firma(
+    file: UploadFile = File(...),
+    current_user=Depends(require_admin)
+):
+    """Subir (o reemplazar) la firma digitalizada del instructor/admin actual.
+
+    Se estampa automáticamente en las credenciales PDF que emita este usuario.
+    """
+    if file.content_type != "image/png":
+        raise HTTPException(status_code=400, detail="La firma debe ser una imagen PNG")
+
+    data = await file.read()
+    try:
+        url = storage_service.upload_bytes(data, f"firmas/{current_user.id}.png", "image/png")
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+
+    await prisma.user.update(where={"id": current_user.id}, data={"firmaUrl": url})
+
+    return {"exists": True, "url": url}
 
 @router.get("", response_model=List[UserWithEmpresaResponse])
 async def listar_usuarios(

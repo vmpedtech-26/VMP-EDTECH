@@ -119,13 +119,15 @@ async def generate_credential_for_student(
     instructor_nombre = "Pedro Orejas"
     instructor_info = "Instructor VMP | Mat. N° 2206823"
     instructor_id = emisor_id
-    
+    instructor_firma_url = None
+
     if emisor_id:
         try:
             instructor = await prisma.user.find_unique(where={"id": emisor_id})
             if instructor:
                 instructor_nombre = f"{instructor.nombre} {instructor.apellido}"
                 instructor_info = f"Instructor VMP | Mat. N° {instructor.dni or '2206823'}"
+                instructor_firma_url = instructor.firmaUrl
         except Exception as ex:
             print(f"Error fetching instructor: {ex}")
             pass
@@ -144,6 +146,7 @@ async def generate_credential_for_student(
         "instructor_nombre": instructor_nombre,
         "instructor_info": instructor_info,
         "instructor_id": instructor_id,
+        "instructor_firma_url": instructor_firma_url,
         "empresa_nombre": alumno.empresa.nombre if alumno.empresa else "VMP - EDTECH"
     }
     
