@@ -21,6 +21,12 @@ interface PreguntaEdit {
     explicacion: string;
 }
 
+interface TareaEdit {
+    id?: string;
+    descripcion: string;
+    requiereFoto: boolean;
+}
+
 interface ModuloEdit {
     id: string;
     titulo: string;
@@ -32,6 +38,7 @@ interface ModuloEdit {
     liveClassDate?: string;
     liveClassPlatform?: 'google_meet' | 'teams';
     preguntas?: PreguntaEdit[];
+    tareasPracticas?: TareaEdit[];
 }
 
 function PreguntaEditor({
@@ -165,6 +172,48 @@ function PreguntaEditor({
     );
 }
 
+function TareaEditor({
+    tarea,
+    index,
+    onChange,
+    onDelete,
+}: {
+    tarea: TareaEdit;
+    index: number;
+    onChange: (updated: TareaEdit) => void;
+    onDelete: () => void;
+}) {
+    return (
+        <Card className="p-5 space-y-3 border border-orange-100 bg-orange-50/30">
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2 text-orange-600 font-bold text-sm">
+                    <GripVertical className="h-4 w-4 text-gray-400" />
+                    Tarea {index + 1}
+                </div>
+                <button
+                    type="button"
+                    onClick={onDelete}
+                    className="text-red-400 hover:text-red-600 transition-colors"
+                    title="Eliminar tarea"
+                >
+                    <Trash2 className="h-4 w-4" />
+                </button>
+            </div>
+
+            <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Consigna *</label>
+                <textarea
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-orange-300 outline-none resize-none"
+                    rows={2}
+                    placeholder="Ej: Fotografiá el extintor de tu puesto de trabajo verificando que la carga esté vigente"
+                    value={tarea.descripcion}
+                    onChange={(e) => onChange({ ...tarea, descripcion: e.target.value })}
+                />
+            </div>
+        </Card>
+    );
+}
+
 export default function ModuloConfigPage() {
     const { id: cursoId, moduloId } = useParams();
     const router = useRouter();
@@ -185,7 +234,12 @@ export default function ModuloConfigPage() {
                     respuestaCorrecta: p.respuestaCorrecta ?? 0,
                     explicacion: p.explicacion || '',
                 }));
-                setModulo({ ...data, preguntas });
+                const tareasPracticas = (data.tareasPracticas || []).map((t: any) => ({
+                    id: t.id,
+                    descripcion: t.descripcion,
+                    requiereFoto: t.requiereFoto ?? true,
+                }));
+                setModulo({ ...data, preguntas, tareasPracticas });
             } catch (error) {
                 console.error('Error fetching modulo:', error);
             } finally {
@@ -198,6 +252,17 @@ export default function ModuloConfigPage() {
 
     const handleSave = async () => {
         if (!modulo) return;
+
+        // Guardar tareas prácticas reemplaza por completo la lista anterior en el
+        // backend, y eso borra en cascada las evidencias ya subidas por alumnos.
+        // Si ya había tareas guardadas (con id, es decir persistidas), confirmar.
+        if (modulo.tipo === 'PRACTICA' && (modulo.tareasPracticas || []).some(t => t.id)) {
+            const confirmado = confirm(
+                'Si ya hay alumnos con evidencias subidas para las tareas actuales, guardar estos cambios las va a eliminar. ¿Continuar?'
+            );
+            if (!confirmado) return;
+        }
+
         setIsSaving(true);
         setSaveStatus('idle');
         try {
@@ -216,6 +281,14 @@ export default function ModuloConfigPage() {
                     opciones: p.opciones,
                     respuestaCorrecta: p.respuestaCorrecta,
                     explicacion: p.explicacion || undefined,
+                }));
+            }
+
+            // Include tareas for PRACTICA modules
+            if (modulo.tipo === 'PRACTICA') {
+                payload.tareasPracticas = (modulo.tareasPracticas || []).map(t => ({
+                    descripcion: t.descripcion,
+                    requiereFoto: true,
                 }));
             }
 
@@ -264,6 +337,38 @@ export default function ModuloConfigPage() {
             return {
                 ...prev,
                 preguntas: prev.preguntas.filter((_, i) => i !== index)
+            };
+        });
+    };
+
+    const addTarea = () => {
+        setModulo(prev => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                tareasPracticas: [
+                    ...(prev.tareasPracticas || []),
+                    { descripcion: '', requiereFoto: true }
+                ]
+            };
+        });
+    };
+
+    const updateTarea = (index: number, updated: TareaEdit) => {
+        setModulo(prev => {
+            if (!prev || !prev.tareasPracticas) return prev;
+            const newTareas = [...prev.tareasPracticas];
+            newTareas[index] = updated;
+            return { ...prev, tareasPracticas: newTareas };
+        });
+    };
+
+    const deleteTarea = (index: number) => {
+        setModulo(prev => {
+            if (!prev || !prev.tareasPracticas) return prev;
+            return {
+                ...prev,
+                tareasPracticas: prev.tareasPracticas.filter((_, i) => i !== index)
             };
         });
     };
@@ -478,25 +583,84 @@ export default function ModuloConfigPage() {
 
             {/* Módulo PRACTICA */}
             {modulo.tipo === 'PRACTICA' && (
-                <Card className="p-6 space-y-4">
-                    <div className="flex items-center gap-2 text-orange-600 font-bold">
-                        <CheckCircle className="h-5 w-5" />
-                        Actividad Práctica
+                <div className="space-y-6">
+                    <Card className="p-6 space-y-4">
+                        <div className="flex items-center gap-2 text-orange-600 font-bold">
+                            <CheckCircle className="h-5 w-5" />
+                            Introducción del Módulo (opcional)
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-gray-400 uppercase">Contexto general para el alumno</label>
+                            <textarea
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 min-h-[100px] text-sm"
+                                placeholder="Ej: En este módulo vas a relevar los elementos de protección de tu puesto de trabajo..."
+                                value={modulo.contenidoHtml || ''}
+                                onChange={(e) => setModulo({ ...modulo, contenidoHtml: e.target.value })}
+                            />
+                        </div>
+                    </Card>
+
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <CheckCircle className="h-5 w-5 text-orange-600" />
+                                Tareas Prácticas
+                            </h2>
+                            <p className="text-sm text-gray-500 mt-1">
+                                {modulo.tareasPracticas?.length || 0} tarea(s) · cada una pide una foto de evidencia
+                            </p>
+                        </div>
+                        <Button
+                            onClick={addTarea}
+                            variant="outline"
+                            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nueva Tarea
+                        </Button>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase">Descripción / Consigna</label>
-                        <textarea
-                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-primary/20 min-h-[200px] text-sm"
-                            placeholder="Describe la tarea que el alumno debe realizar y evidenciar..."
-                            value={modulo.contenidoHtml || ''}
-                            onChange={(e) => setModulo({ ...modulo, contenidoHtml: e.target.value })}
+
+                    {(!modulo.tareasPracticas || modulo.tareasPracticas.length === 0) && (
+                        <Card className="p-10 text-center border-dashed border-2 border-orange-200 bg-orange-50/30">
+                            <CheckCircle className="h-12 w-12 text-orange-300 mx-auto mb-3" />
+                            <p className="text-gray-500 font-medium">No hay tareas todavía</p>
+                            <p className="text-sm text-gray-400 mb-4">Sin tareas, el alumno no tiene nada que evidenciar y el módulo nunca se puede completar</p>
+                            <Button
+                                onClick={addTarea}
+                                className="bg-orange-600 hover:bg-orange-700"
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Agregar Primera Tarea
+                            </Button>
+                        </Card>
+                    )}
+
+                    {(modulo.tareasPracticas || []).map((tarea, i) => (
+                        <TareaEditor
+                            key={i}
+                            index={i}
+                            tarea={tarea}
+                            onChange={(updated) => updateTarea(i, updated)}
+                            onDelete={() => deleteTarea(i)}
                         />
-                    </div>
+                    ))}
+
+                    {(modulo.tareasPracticas || []).length > 0 && (
+                        <Button
+                            onClick={addTarea}
+                            variant="outline"
+                            className="w-full border-dashed border-orange-300 text-orange-600 hover:bg-orange-50"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Agregar otra tarea
+                        </Button>
+                    )}
+
                     <div className="p-4 bg-orange-50 rounded-xl border border-orange-100 text-sm text-orange-700">
-                        💡 El alumno deberá subir una foto como evidencia de haber completado esta actividad.
-                        El instructor la revisará y aprobará o rechazará.
+                        💡 Por cada tarea, el alumno deberá subir una foto como evidencia. El instructor la revisará y
+                        la aprobará o rechazará; el módulo se completa recién cuando todas las evidencias están aprobadas.
                     </div>
-                </Card>
+                </div>
             )}
 
             {/* Botón guardar inferior */}
