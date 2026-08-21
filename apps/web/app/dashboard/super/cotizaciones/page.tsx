@@ -22,6 +22,7 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { getCotizaciones, updateCotizacionStatus, CotizacionResponse } from '@/lib/api';
+import { formatARS } from '@/lib/utils';
 import ConvertQuoteModal from '@/components/admin/ConvertQuoteModal';
 
 const STATUS_CONFIG = {
@@ -68,61 +69,6 @@ const MODALITY_LABELS: Record<string, string> = {
     mixto: 'Mixto'
 };
 
-const DEFAULT_COTIZACIONES: CotizacionResponse[] = [
-    {
-        id: 101,
-        empresa: 'Oleoductos del Valle (Oldelval)',
-        nombre: 'Martín Benítez',
-        email: 'mbenitez@oldelval.com',
-        telefono: '299 458-1234',
-        quantity: 45,
-        course: '4x4',
-        modality: 'mixto',
-        totalPrice: 2025000,
-        status: 'pending',
-        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-    },
-    {
-        id: 102,
-        empresa: 'Transportadora de Gas del Sur (TGS)',
-        nombre: 'Lucía Fernández',
-        email: 'lfernandez@tgs.com.ar',
-        telefono: '11 5421-9988',
-        quantity: 28,
-        course: 'defensivo',
-        modality: 'online',
-        totalPrice: 1120000,
-        status: 'contacted',
-        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-    },
-    {
-        id: 103,
-        empresa: 'Coivalsa S.A.',
-        nombre: 'Esteban Morales',
-        email: 'emorales@coivalsa.com.ar',
-        telefono: '299 673-1487',
-        quantity: 60,
-        course: 'completo',
-        modality: 'presencial',
-        totalPrice: 3300000,
-        status: 'converted',
-        createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    },
-    {
-        id: 104,
-        empresa: 'Transporte Yaccos',
-        nombre: 'Roberto Yaccos',
-        email: 'ryaccos@yaccos.com',
-        telefono: '299 537-0173',
-        quantity: 15,
-        course: 'carga_pesada',
-        modality: 'mixto',
-        totalPrice: 750000,
-        status: 'pending',
-        createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-    }
-];
-
 export default function CotizacionesPage() {
     const [cotizaciones, setCotizaciones] = useState<CotizacionResponse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -149,13 +95,11 @@ export default function CotizacionesPage() {
                 100,
                 filterStatus === 'all' ? undefined : filterStatus
             );
-            setCotizaciones(data && data.length > 0 ? data : DEFAULT_COTIZACIONES);
+            setCotizaciones(data || []);
         } catch (err) {
-            console.warn('Backend endpoint unavailable, showing demo cotizaciones:', err);
-            const filtered = filterStatus === 'all'
-                ? DEFAULT_COTIZACIONES
-                : DEFAULT_COTIZACIONES.filter(c => c.status === filterStatus);
-            setCotizaciones(filtered);
+            console.error('Error fetching cotizaciones:', err);
+            setError('No se pudieron cargar las cotizaciones. Verificá tu conexión e intentá nuevamente.');
+            setCotizaciones([]);
         } finally {
             setIsLoading(false);
         }
@@ -295,7 +239,7 @@ export default function CotizacionesPage() {
                         <div>
                             <p className="text-xs font-semibold text-purple-700 uppercase">Ingresos</p>
                             <p className="text-xl font-bold text-purple-900 mt-1">
-                                ${(stats.totalRevenue / 1000).toFixed(0)}k
+                                {formatARS(stats.totalRevenue)}
                             </p>
                         </div>
                         <TrendingUp className="h-8 w-8 text-purple-600" />
@@ -434,10 +378,10 @@ export default function CotizacionesPage() {
                                         <div className="text-right">
                                             <p className="text-xs text-gray-500 font-semibold uppercase">Valor Total</p>
                                             <p className="text-3xl font-bold text-primary mt-1">
-                                                ${(cot.totalPrice / 1000).toFixed(0)}k
+                                                {formatARS(cot.totalPrice)}
                                             </p>
                                             <p className="text-xs text-gray-500 mt-1">
-                                                ${Math.round(cot.totalPrice / cot.quantity).toLocaleString('es-AR')} por alumno
+                                                {formatARS(Math.round(cot.totalPrice / cot.quantity))} por alumno
                                             </p>
                                         </div>
 
@@ -535,7 +479,7 @@ export default function CotizacionesPage() {
                                         <p><span className="font-semibold">Conductores:</span> {selectedCotizacion.quantity}</p>
                                         <p><span className="font-semibold">Curso:</span> {COURSE_LABELS[selectedCotizacion.course]}</p>
                                         <p><span className="font-semibold">Modalidad:</span> {MODALITY_LABELS[selectedCotizacion.modality]}</p>
-                                        <p><span className="font-semibold">Precio Total:</span> ${selectedCotizacion.totalPrice.toLocaleString('es-AR')}</p>
+                                        <p><span className="font-semibold">Precio Total:</span> {formatARS(selectedCotizacion.totalPrice)}</p>
                                     </div>
                                 </div>
                             </div>

@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { accountingApi } from '@/lib/api/accounting';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { formatARS } from '@/lib/utils';
 
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -143,10 +144,10 @@ export default function ReportesContablesPage() {
                                         <tr key={row.accountCode} className="hover:bg-slate-50/50 transition-colors text-xs font-medium">
                                             <td className="py-3 px-2 text-slate-500">{row.accountCode}</td>
                                             <td className="py-3 px-2 text-slate-900 font-bold">{row.accountName}</td>
-                                            <td className="py-3 px-2 text-right text-slate-600">${row.debit.toLocaleString()}</td>
-                                            <td className="py-3 px-2 text-right text-slate-600">${row.credit.toLocaleString()}</td>
+                                            <td className="py-3 px-2 text-right text-slate-600">{formatARS(row.debit)}</td>
+                                            <td className="py-3 px-2 text-right text-slate-600">{formatARS(row.credit)}</td>
                                             <td className={`py-3 px-2 text-right font-black ${row.balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                                ${row.balance.toLocaleString()}
+                                                {formatARS(row.balance)}
                                             </td>
                                         </tr>
                                     ))

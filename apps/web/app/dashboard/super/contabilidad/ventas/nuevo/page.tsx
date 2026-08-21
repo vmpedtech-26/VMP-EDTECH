@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { accountingApi, VentaItem } from '@/lib/api/accounting';
 import { empresasApi, Empresa } from '@/lib/api/empresas';
+import { formatARS } from '@/lib/utils';
 
 export default function NuevaVentaPage() {
     const router = useRouter();
@@ -204,7 +205,7 @@ export default function NuevaVentaPage() {
                                     <div className="w-full md:w-32 space-y-2">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subtotal</label>
                                         <div className="h-10 flex items-center px-4 bg-slate-100 rounded-xl text-sm font-black text-slate-700">
-                                            ${item.subtotal.toLocaleString()}
+                                            {formatARS(item.subtotal)}
                                         </div>
                                     </div>
                                     {items.length > 1 && (
@@ -233,15 +234,15 @@ export default function NuevaVentaPage() {
                         <div className="space-y-4 font-medium">
                             <div className="flex justify-between text-slate-400">
                                 <span>Subtotal</span>
-                                <span>${subtotalGral.toLocaleString()}</span>
+                                <span>{formatARS(subtotalGral)}</span>
                             </div>
                             <div className="flex justify-between text-slate-400">
                                 <span>IVA (21%)</span>
-                                <span>${iva.toLocaleString()}</span>
+                                <span>{formatARS(iva)}</span>
                             </div>
                             <div className="pt-4 border-t border-slate-800 flex justify-between items-baseline">
                                 <span className="text-lg font-black">TOTAL</span>
-                                <span className="text-3xl font-black text-primary">${total.toLocaleString()}</span>
+                                <span className="text-3xl font-black text-primary">{formatARS(total)}</span>
                             </div>
                         </div>
 
