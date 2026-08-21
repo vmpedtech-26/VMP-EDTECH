@@ -15,6 +15,7 @@ interface PracticaViewerProps {
 export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
     const [submitting, setSubmitting] = useState(false);
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
+    const [confirming, setConfirming] = useState<Record<string, boolean>>({});
     const [evidencias, setEvidencias] = useState<Record<string, Evidencia>>({});
     const [isLoading, setIsLoading] = useState(true);
 
@@ -58,6 +59,21 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             alert('Error al subir la evidencia');
         } finally {
             setUploading({ ...uploading, [tareaId]: false });
+        }
+    };
+
+    const handleConfirmarSinFoto = async (tareaId: string) => {
+        setConfirming({ ...confirming, [tareaId]: true });
+        try {
+            const res = await evidenciasApi.confirmarSinFoto(tareaId);
+            if (res.success) {
+                setEvidencias({ ...evidencias, [tareaId]: res.evidencia });
+            }
+        } catch (error) {
+            console.error('Error confirming task:', error);
+            alert('Error al confirmar la tarea');
+        } finally {
+            setConfirming({ ...confirming, [tareaId]: false });
         }
     };
 
@@ -143,7 +159,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                             </div>
                                         )}
                                     </>
-                                ) : (
+                                ) : tarea.requiereFoto ? (
                                     <div className="relative">
                                         <input
                                             type="file"
@@ -167,6 +183,20 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                                             </span>
                                         </label>
                                     </div>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        disabled={confirming[tarea.id]}
+                                        onClick={() => handleConfirmarSinFoto(tarea.id)}
+                                        className="min-w-[120px]"
+                                    >
+                                        {confirming[tarea.id] ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            'Confirmar Realizada'
+                                        )}
+                                    </Button>
                                 )}
                             </div>
                         </div>
