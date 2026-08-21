@@ -6,6 +6,7 @@ from prisma import Prisma
 import logging
 from core.security_utils import sanitize_data
 from middleware.security import rate_limit_public
+from auth.dependencies import require_super_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -174,11 +175,12 @@ async def get_cotizaciones(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
-    db: Prisma = Depends(get_db)
+    db: Prisma = Depends(get_db),
+    current_user=Depends(require_super_admin)
 ):
     """
-    Obtener lista de cotizaciones (para panel administrativo).
-    
+    Obtener lista de cotizaciones (para panel administrativo, Solo SUPER_ADMIN).
+
     - **skip**: Número de registros a saltar (paginación)
     - **limit**: Número máximo de registros a retornar
     - **status**: Filtrar por estado (pending, contacted, converted, rejected)
@@ -208,10 +210,11 @@ async def get_cotizaciones(
 @router.get("/{cotizacion_id}", response_model=CotizacionResponse)
 async def get_cotizacion(
     cotizacion_id: int,
-    db: Prisma = Depends(get_db)
+    db: Prisma = Depends(get_db),
+    current_user=Depends(require_super_admin)
 ):
     """
-    Obtener una cotización específica por ID.
+    Obtener una cotización específica por ID (Solo SUPER_ADMIN).
     """
     try:
         cotizacion = await db.cotizacion.find_unique(
@@ -240,11 +243,12 @@ async def get_cotizacion(
 async def update_cotizacion_status(
     cotizacion_id: int,
     status: str,
-    db: Prisma = Depends(get_db)
+    db: Prisma = Depends(get_db),
+    current_user=Depends(require_super_admin)
 ):
     """
-    Actualizar el estado de una cotización.
-    
+    Actualizar el estado de una cotización (Solo SUPER_ADMIN).
+
     - **status**: Nuevo estado (pending, contacted, converted, rejected)
     """
     valid_statuses = ["pending", "contacted", "converted", "rejected"]
@@ -301,10 +305,11 @@ class ConvertCotizacionResponse(BaseModel):
 async def convert_cotizacion_to_client(
     cotizacion_id: int,
     data: ConvertCotizacionRequest,
-    db: Prisma = Depends(get_db)
+    db: Prisma = Depends(get_db),
+    current_user=Depends(require_super_admin)
 ):
     """
-    Convertir una cotización en cliente activo.
+    Convertir una cotización en cliente activo (Solo SUPER_ADMIN).
     
     Este endpoint realiza las siguientes acciones:
     1. Valida que la cotización exista y esté en estado 'contacted'

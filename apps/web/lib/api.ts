@@ -33,6 +33,11 @@ export interface CotizacionResponse {
     createdAt: string;
 }
 
+function authHeaders(): Record<string, string> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 class ApiError extends Error {
     constructor(public status: number, message: string, public details?: any) {
         super(message);
@@ -100,6 +105,7 @@ export async function getCotizaciones(
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             },
         });
 
@@ -138,6 +144,7 @@ export async function updateCotizacionStatus(
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             },
         });
 
@@ -216,6 +223,7 @@ export async function convertCotizacionToClient(
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             },
             body: JSON.stringify(data),
         });
