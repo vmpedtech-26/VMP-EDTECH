@@ -1,4 +1,5 @@
 import { Inter, Roboto_Condensed } from 'next/font/google';
+import CookieConsentBanner from '@/components/common/CookieConsentBanner';
 import './landing.css';
 
 const inter = Inter({
@@ -22,6 +23,7 @@ export default function LandingLayout({
     return (
         <div className={`${inter.variable} ${robotoCondensed.variable} font-sans`}>
             {children}
+            <CookieConsentBanner />
         </div>
     );
 }
