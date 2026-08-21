@@ -19,10 +19,12 @@ import {
     BookOpen,
     Sparkles,
     Trash2,
+    Filter,
 } from 'lucide-react';
 import { credencialesApi, CredencialListItem } from '@/lib/api/credenciales';
 import { usersApi, UserAdmin } from '@/lib/api/users';
 import { cursosApi } from '@/lib/api/cursos';
+import { empresasApi, Empresa } from '@/lib/api/empresas';
 import { useAuth } from '@/lib/auth-context';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -40,16 +42,23 @@ export default function SuperCredencialesPage() {
     const [showModal, setShowModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [empresas, setEmpresas] = useState<Empresa[]>([]);
+    const [empresaId, setEmpresaId] = useState('');
 
     const fetchCredenciales = useCallback(async () => {
+        setIsLoading(true);
         try {
-            const data = await credencialesApi.listar();
+            const data = await credencialesApi.listar({ empresaId: empresaId || undefined });
             setCredenciales(data);
         } catch (error) {
             console.error('Error fetching credenciales:', error);
         } finally {
             setIsLoading(false);
         }
+    }, [empresaId]);
+
+    useEffect(() => {
+        empresasApi.listarEmpresas().then(setEmpresas).catch(() => setEmpresas([]));
     }, []);
 
     useEffect(() => {
@@ -188,16 +197,31 @@ export default function SuperCredencialesPage() {
                 </Card>
             </div>
 
-            {/* Search */}
-            <div className="relative max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <input
-                    type="text"
-                    placeholder="Buscar por alumno, DNI, empresa, curso o número..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
+            {/* Search + filtro por empresa */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por alumno, DNI, empresa, curso o número..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                </div>
+                <div className="relative">
+                    <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                    <select
+                        value={empresaId}
+                        onChange={(e) => setEmpresaId(e.target.value)}
+                        className="pl-11 pr-8 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-slate-700 appearance-none cursor-pointer"
+                    >
+                        <option value="">Todas las empresas</option>
+                        {empresas.map((e) => (
+                            <option key={e.id} value={e.id}>{e.nombre}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* Table */}

@@ -73,15 +73,37 @@ async def mis_credenciales(current_user=Depends(get_current_user)):
 
 @router.get("/all", response_model=List[CredencialListItem])
 async def listar_credenciales(
+    empresaId: Optional[str] = None,
+    cursoId: Optional[str] = None,
+    alumnoId: Optional[str] = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(50, le=200),
     current_user=Depends(get_current_user)
 ):
-    """Listar todas las credenciales (Solo SUPER_ADMIN o INSTRUCTOR)"""
+    """Listar credenciales, filtrables por empresa/curso/alumno.
+
+    SUPER_ADMIN ve todas las empresas (o filtra por una en particular);
+    INSTRUCTOR solo ve las credenciales de alumnos de su propia empresa,
+    sin importar qué empresaId le pasen."""
     if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
         raise HTTPException(status_code=403, detail="No tienes permisos")
 
+    alumno_filter: dict = {}
+    if current_user.rol == "INSTRUCTOR":
+        alumno_filter["empresaId"] = current_user.empresaId
+    elif empresaId:
+        alumno_filter["empresaId"] = empresaId
+
+    where: dict = {}
+    if alumno_filter:
+        where["alumno"] = alumno_filter
+    if cursoId:
+        where["cursoId"] = cursoId
+    if alumnoId:
+        where["alumnoId"] = alumnoId
+
     credenciales = await prisma.credencial.find_many(
+        where=where,
         include={"alumno": {"include": {"empresa": True}}, "curso": True},
         order={"fechaEmision": "desc"},
         skip=skip,

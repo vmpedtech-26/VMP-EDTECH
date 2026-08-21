@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { usersApi, UserAdmin } from '@/lib/api/users';
+import { empresasApi, Empresa } from '@/lib/api/empresas';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -27,14 +28,17 @@ import { ModalCargaMasiva } from '@/components/dashboard/ModalCargaMasiva';
 
 export default function AlumnosPage() {
     const [usuarios, setUsuarios] = useState<UserAdmin[]>([]);
+    const [empresas, setEmpresas] = useState<Empresa[]>([]);
+    const [empresaId, setEmpresaId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isMasivoOpen, setIsMasivoOpen] = useState(false);
 
     const fetchUsuarios = async () => {
+        setIsLoading(true);
         try {
             // Filtrar solo por rol ALUMNO para esta vista
-            const data = await usersApi.listarUsuarios({ rol: 'ALUMNO' });
+            const data = await usersApi.listarUsuarios({ rol: 'ALUMNO', empresaId: empresaId || undefined });
             setUsuarios(data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -44,8 +48,12 @@ export default function AlumnosPage() {
     };
 
     useEffect(() => {
-        fetchUsuarios();
+        empresasApi.listarEmpresas().then(setEmpresas).catch(() => setEmpresas([]));
     }, []);
+
+    useEffect(() => {
+        fetchUsuarios();
+    }, [empresaId]);
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Seguro que deseas eliminar/desactivar este alumno?')) return;
@@ -102,10 +110,19 @@ export default function AlumnosPage() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline" className="bg-white border-gray-200">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filtrar por Empresa
-                </Button>
+                <div className="relative">
+                    <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <select
+                        value={empresaId}
+                        onChange={(e) => setEmpresaId(e.target.value)}
+                        className="pl-11 pr-8 py-3 bg-white border-none rounded-xl shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700 appearance-none cursor-pointer"
+                    >
+                        <option value="">Todas las empresas</option>
+                        {empresas.map((e) => (
+                            <option key={e.id} value={e.id}>{e.nombre}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* List */}
