@@ -86,6 +86,7 @@ async def upload_evidencia(
             alumnoId=evidencia.alumnoId,
             fotoUrl=evidencia.fotoUrl,
             comentario=evidencia.comentario,
+            estado=evidencia.estado,
             uploadedAt=evidencia.uploadedAt.isoformat()
         ),
         message="Evidencia subida exitosamente"
