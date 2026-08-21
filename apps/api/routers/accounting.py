@@ -595,7 +595,7 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
                 import google.generativeai as genai
                 
                 genai.configure(api_key=gemini_key)
-                model = genai.GenerativeModel('gemini-2.5-flash')
+                model = genai.GenerativeModel('gemini-3.6-flash')
                 prompt = f"""
                 Eres un auditor contable experto. Tu única tarea es extraer los datos reales de esta factura a partir del documento adjunto o del texto proporcionado.
                 REGLA CRÍTICA DE ORO: ¡NO INVENTES NINGÚN DATO! Si un dato no está explícitamente en el documento, usa un string vacío "" (o 0 para números). NUNCA uses nombres genéricos como "Librería" o "Proveedor" si no aparecen.

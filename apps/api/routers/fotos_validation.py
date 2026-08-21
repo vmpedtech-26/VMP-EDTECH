@@ -19,7 +19,7 @@ async def validar_foto_con_ia(
     current_user=Depends(get_current_user)
 ):
     """
-    Analiza una imagen subida mediante Gemini Vision (gemini-2.5-flash) para pre-validar
+    Analiza una imagen subida mediante Gemini Vision (gemini-3.6-flash) para pre-validar
     si cumple con los requerimientos contundentes para fotos de credencial oficial.
     """
     # 1. Validar extensión de archivo
@@ -54,7 +54,7 @@ async def validar_foto_con_ia(
         import google.generativeai as genai
         genai.configure(api_key=gemini_key)
         
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.6-flash')
         
         prompt = """
         Eres un auditor experto de credenciales de identificación oficial para la plataforma EdTech VMP.

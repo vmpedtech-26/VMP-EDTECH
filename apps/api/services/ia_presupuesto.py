@@ -33,7 +33,7 @@ async def completar_formulario_desde_texto(texto: str) -> dict:
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.6-flash')
 
         prompt = f"""Eres un asistente especializado en presupuestos técnicos HSE para VMP EDTECH (empresa de servicios técnicos en Higiene y Seguridad, Patagonia Argentina).
 
@@ -74,7 +74,7 @@ async def redactar_alcance(texto: str) -> dict:
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.6-flash')
 
         prompt = f"""Eres redactor técnico especializado en documentos HSE para VMP EDTECH, empresa de servicios técnicos en Higiene y Seguridad de Patagonia Argentina.
 
@@ -108,7 +108,7 @@ async def sugerir_tarifas(texto: str) -> dict:
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.6-flash')
 
         prompt = f"""Eres asesor comercial de VMP EDTECH, empresa de servicios HSE en Patagonia Argentina.
 
