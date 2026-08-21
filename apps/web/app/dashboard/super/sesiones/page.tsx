@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CalendarDays, Plus, Clock, MapPin, Video, Users, CheckCircle, XCircle, AlertCircle, ChevronRight, X } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { toast } from 'sonner';
+import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
 
 interface Sesion {
   id: string;
@@ -171,6 +172,7 @@ export default function SesionesPage() {
   };
 
   const filteredAlumnos = allAlumnos.filter(a => !form.empresaId || a.empresaId === form.empresaId);
+  const sesionEnCurso = sesiones.find(s => s.estado === 'EN_CURSO' && s.meetLink);
 
   if (loading) {
     return (
@@ -196,6 +198,15 @@ export default function SesionesPage() {
           Nueva Sesión
         </button>
       </div>
+
+      {sesionEnCurso && (
+        <LiveClassHub
+          platform={sesionEnCurso.plataforma || null}
+          url={sesionEnCurso.meetLink || null}
+          date={sesionEnCurso.fechaInicio}
+          courseName={sesionEnCurso.cursoNombre || sesionEnCurso.titulo}
+        />
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -492,7 +503,7 @@ export default function SesionesPage() {
                     <option value="presencial">Presencial</option>
                     <option value="zoom">Zoom</option>
                     <option value="teams">Microsoft Teams</option>
-                    <option value="meet">Google Meet</option>
+                    <option value="google_meet">Google Meet</option>
                   </select>
                 </div>
                 <div>

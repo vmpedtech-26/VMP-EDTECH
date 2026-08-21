@@ -38,8 +38,7 @@ async def listar_sesiones(
     if current_user.rol == "INSTRUCTOR":
         # Cursos asignados o sesiones asignadas directamente
         cursos_instructor = await prisma.curso.find_many(
-            where={"instructorId": current_user.id},
-            select={"id": True}
+            where={"instructorId": current_user.id}
         )
         ids_cursos = [c.id for c in cursos_instructor]
         where_clause["OR"] = [
@@ -53,8 +52,7 @@ async def listar_sesiones(
         # Esto garantiza que el banner EN VIVO aparezca aunque la sesión se haya
         # creado sin asignar alumnos manualmente.
         inscripciones_alumno = await prisma.inscripcion.find_many(
-            where={"alumnoId": current_user.id},
-            select={"cursoId": True}
+            where={"alumnoId": current_user.id}
         )
         cursos_inscripto = [i.cursoId for i in inscripciones_alumno]
 
@@ -123,8 +121,7 @@ async def obtener_proximas_sesiones(current_user=Depends(get_current_user)):
 
     if current_user.rol == "INSTRUCTOR":
         cursos_instructor = await prisma.curso.find_many(
-            where={"instructorId": current_user.id},
-            select={"id": True}
+            where={"instructorId": current_user.id}
         )
         ids_cursos = [c.id for c in cursos_instructor]
         where_clause["OR"] = [

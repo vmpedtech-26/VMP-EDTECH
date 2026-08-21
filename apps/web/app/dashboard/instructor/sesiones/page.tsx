@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CalendarDays, Clock, MapPin, Video, Users, CheckSquare, Square, Save, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api-client';
+import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
 
 interface Sesion {
   id: string;
@@ -200,7 +201,16 @@ export default function InstructorSesionesPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+            <div className="space-y-4">
+              {sesionActual?.meetLink && (
+                <LiveClassHub
+                  platform={sesionActual.plataforma || null}
+                  url={sesionActual.meetLink}
+                  date={sesionActual.fechaInicio}
+                  courseName={sesionActual.cursoNombre || sesionActual.titulo}
+                />
+              )}
+              <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
               {/* Header del panel */}
               <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
                 <div className="flex items-start justify-between gap-3">
@@ -210,17 +220,6 @@ export default function InstructorSesionesPage() {
                   </div>
                   {/* Controles de estado para instructor */}
                   <div className="flex gap-2 shrink-0">
-                    {sesionActual?.meetLink && (
-                      <a
-                        href={sesionActual.meetLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-medium transition-colors"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        🎥 Unirse
-                      </a>
-                    )}
                     {sesionActual?.estado === 'PROGRAMADA' && (
                       <button
                         onClick={() => cambiarEstado(sesionActual.id, 'EN_CURSO')}
@@ -324,6 +323,7 @@ export default function InstructorSesionesPage() {
                   </button>
                 </div>
               )}
+              </div>
             </div>
           )}
         </div>
