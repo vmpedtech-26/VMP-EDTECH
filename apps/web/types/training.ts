@@ -125,7 +125,7 @@ export interface Evidencia {
     id: string;
     tareaId: string;
     alumnoId: string;
-    fotoUrl: string;
+    fotoUrl?: string;
     comentario?: string;
     estado: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
     feedback?: string;

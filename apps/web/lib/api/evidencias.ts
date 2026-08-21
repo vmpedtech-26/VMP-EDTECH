@@ -21,6 +21,19 @@ export const evidenciasApi = {
     },
 
     /**
+     * Confirmar la realización de una tarea que no requiere foto de evidencia
+     */
+    async confirmarSinFoto(tareaId: string, comentario?: string): Promise<UploadEvidenciaResponse> {
+        const formData = new FormData();
+        formData.append('tareaId', tareaId);
+        if (comentario) {
+            formData.append('comentario', comentario);
+        }
+
+        return api.post('/evidencias/upload', formData);
+    },
+
+    /**
      * Obtener evidencias de una tarea
      */
     async obtenerEvidencias(tareaId: string): Promise<Evidencia[]> {

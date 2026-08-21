@@ -501,7 +501,7 @@ model Evidencia {
   id          String          @id @default(uuid())
   tareaId     String          @map("tarea_id")
   alumnoId    String          @map("alumno_id")
-  fotoUrl     String          @map("foto_url")
+  fotoUrl     String?         @map("foto_url")
   comentario  String?
   estado      EstadoEvidencia @default(PENDIENTE)
   feedback    String?

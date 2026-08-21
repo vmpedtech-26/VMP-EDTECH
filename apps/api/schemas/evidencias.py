@@ -15,7 +15,7 @@ class EvidenciaResponse(BaseModel):
     id: str
     tareaId: str
     alumnoId: str
-    fotoUrl: str
+    fotoUrl: Optional[str] = None
     comentario: Optional[str] = None
     estado: EstadoEvidencia = EstadoEvidencia.PENDIENTE
     feedback: Optional[str] = None

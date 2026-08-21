@@ -16,60 +16,68 @@ router = APIRouter()
 
 @router.post("/upload", response_model=UploadEvidenciaResponse)
 async def upload_evidencia(
-    file: UploadFile = File(...),
+    file: Optional[UploadFile] = File(None),
     tareaId: str = Form(...),
     comentario: Optional[str] = Form(None),
     current_user=Depends(get_current_user)
 ):
-    """Subir foto de evidencia para una tarea práctica"""
-    
+    """Subir foto de evidencia para una tarea práctica, o confirmar su
+    realización sin foto cuando la tarea no la requiere (`requiereFoto=False`)."""
+
     # Verificar que la tarea existe
     tarea = await prisma.tareapractica.find_unique(where={"id": tareaId})
     if not tarea:
         raise HTTPException(status_code=404, detail="Tarea no encontrada")
-    
+
     # Verificar que el usuario tiene acceso a esta tarea
     # (verificar que está inscrito en el curso del módulo de la tarea)
     modulo = await prisma.modulo.find_unique(
         where={"id": tarea.moduloId},
         include={"curso": True}
     )
-    
+
     if not modulo:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
-    
+
     inscripcion = await prisma.inscripcion.find_first(
         where={
             "alumnoId": current_user.id,
             "cursoId": modulo.cursoId
         }
     )
-    
+
     if not inscripcion:
         raise HTTPException(
             status_code=403,
             detail="No estás inscrito en el curso de esta tarea"
         )
-    
-    # Guardar archivo
-    try:
-        foto_url = await save_evidence_photo(file)
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al guardar archivo: {str(e)}")
-    
-    # Crear registro de evidencia
+
+    if tarea.requiereFoto and not file:
+        raise HTTPException(status_code=400, detail="Esta tarea requiere una foto de evidencia")
+
+    # Guardar archivo (si corresponde; las tareas sin foto se confirman sin archivo)
+    foto_url = None
+    if file:
+        try:
+            foto_url = await save_evidence_photo(file)
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error al guardar archivo: {str(e)}")
+
+    # Crear registro de evidencia. Las confirmaciones sin foto no requieren
+    # revisión del instructor (no hay nada que evaluar visualmente).
     evidencia = await prisma.evidencia.create(
         data={
             "tareaId": tareaId,
             "alumnoId": current_user.id,
             "fotoUrl": foto_url,
             "comentario": comentario,
+            "estado": "APROBADA" if not tarea.requiereFoto else "PENDIENTE",
             "uploadedAt": datetime.now()
         }
     )
-    
+
     return UploadEvidenciaResponse(
         success=True,
         evidencia=EvidenciaResponse(

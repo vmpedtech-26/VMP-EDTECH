@@ -32,30 +32,42 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
     const loadEvidencias = async () => {
         const tareasConEvidencia: TareaWithEvidence[] = await Promise.all(
             (modulo.tareasPracticas || []).map(async (tarea) => {
-                if (tarea.requiereFoto) {
-                    try {
-                        const evidencias = await evidenciasApi.obtenerEvidencias(tarea.id);
-                        if (evidencias.length > 0) {
-                            return {
-                                ...tarea,
-                                uploaded: true,
-                                evidenciaUrl: evidencias[0].fotoUrl,
-                                comentario: evidencias[0].comentario,
-                            };
-                        }
-                    } catch (error) {
-                        console.error('Error cargando evidencias:', error);
+                try {
+                    const evidencias = await evidenciasApi.obtenerEvidencias(tarea.id);
+                    if (evidencias.length > 0) {
+                        return {
+                            ...tarea,
+                            uploaded: true,
+                            evidenciaUrl: evidencias[0].fotoUrl,
+                            comentario: evidencias[0].comentario,
+                        };
                     }
+                } catch (error) {
+                    console.error('Error cargando evidencias:', error);
                 }
 
-                return {
-                    ...tarea,
-                    uploaded: !tarea.requiereFoto, // Si no requiere foto, automáticamente "completada"
-                };
+                return { ...tarea, uploaded: false };
             })
         );
 
         setTareas(tareasConEvidencia);
+    };
+
+    const handleConfirmarSinFoto = async (tareaId: string) => {
+        setUploadingTareaId(tareaId);
+        try {
+            const result = await evidenciasApi.confirmarSinFoto(tareaId);
+            setTareas(tareas.map(t =>
+                t.id === tareaId
+                    ? { ...t, uploaded: true, comentario: result.evidencia.comentario }
+                    : t
+            ));
+        } catch (error) {
+            console.error('Error confirmando tarea:', error);
+            alert('Error al confirmar la tarea');
+        } finally {
+            setUploadingTareaId(null);
+        }
     };
 
     const handleFileUpload = async (tareaId: string, file: File, comentario?: string) => {
@@ -149,6 +161,20 @@ export function ModuloPractica({ modulo, cursoId, onCompletar }: ModuloPracticaP
                                         onUpload={(file, comentario) => handleFileUpload(tarea.id, file, comentario)}
                                         loading={uploadingTareaId === tarea.id}
                                     />
+                                </div>
+                            )}
+
+                            {/* Confirmación sin foto */}
+                            {!tarea.requiereFoto && !tarea.uploaded && (
+                                <div className="ml-7">
+                                    <Button
+                                        onClick={() => handleConfirmarSinFoto(tarea.id)}
+                                        disabled={uploadingTareaId === tarea.id}
+                                        size="sm"
+                                        variant="outline"
+                                    >
+                                        {uploadingTareaId === tarea.id ? 'Confirmando...' : 'Confirmar Realizada'}
+                                    </Button>
                                 </div>
                             )}
 
