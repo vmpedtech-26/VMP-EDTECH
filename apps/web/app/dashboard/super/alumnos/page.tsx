@@ -175,6 +175,12 @@ export default function AlumnosPage() {
                             {/* Actions */}
                             <div className="flex items-center gap-2 border-t md:border-t-0 pt-4 md:pt-0">
                                 <Button variant="outline" size="sm" asChild>
+                                    <Link href={`/dashboard/instructor/alumnos/${user.id}`}>
+                                        <GraduationCap className="h-4 w-4 mr-1" />
+                                        Cursos
+                                    </Link>
+                                </Button>
+                                <Button variant="outline" size="sm" asChild>
                                     <Link href={`/dashboard/super/alumnos/${user.id}`}>
                                         Editar
                                     </Link>
