@@ -49,13 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('vmp_token', token);
         localStorage.setItem('vmp_user', JSON.stringify(userData));
         setUser(userData);
-        // Determine target based on role
-        const targetRole = userData.rol || 'ALUMNO';
-        if (['SUPER_ADMIN', 'INSTRUCTOR'].includes(targetRole)) {
-            router.push('/admin/capacitaciones');
-        } else {
-            router.push('/dashboard/cursos');
-        }
+        // /dashboard hace la auto-redirección definitiva según el rol
+        // (ver app/dashboard/page.tsx), así evitamos duplicar esa tabla acá.
+        router.push('/dashboard');
     };
 
     const logout = () => {
