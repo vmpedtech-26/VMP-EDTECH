@@ -26,7 +26,8 @@ import {
     Building2,
     GraduationCap,
     FileSpreadsheet,
-    Lock
+    Lock,
+    Presentation
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
@@ -75,6 +76,7 @@ const menuItems: Record<string, MenuItem[]> = {
         },
         { icon: Building2, label: 'Empresas B2B', href: '/dashboard/super/empresas' },
         { icon: Users, label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos' },
+        { icon: Presentation, label: 'Instructores', href: '/dashboard/super/instructores' },
         { icon: GraduationCap, label: 'Gestión LMS Cursos', href: '/dashboard/super/cursos' },
         { icon: Award, label: 'Credenciales & QR', href: '/dashboard/super/credenciales' },
         { icon: FileSpreadsheet, label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones' },

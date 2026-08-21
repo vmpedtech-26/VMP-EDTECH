@@ -25,9 +25,11 @@ interface UsuarioFormProps {
     isLoading?: boolean;
     title?: string;
     isSuperAdminView?: boolean;
+    /** Rol preseleccionado al crear un usuario nuevo (sin activar el modo edición). */
+    defaultRol?: string;
 }
 
-export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title, isSuperAdminView = true }: UsuarioFormProps) {
+export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title, isSuperAdminView = true, defaultRol }: UsuarioFormProps) {
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
     const [formData, setFormData] = useState({
         nombre: initialData?.nombre || '',
@@ -35,7 +37,7 @@ export function UsuarioForm({ initialData, onSubmit, onCancel, isLoading, title,
         email: initialData?.email || '',
         dni: initialData?.dni || '',
         telefono: initialData?.telefono || '',
-        rol: initialData?.rol || 'ALUMNO',
+        rol: initialData?.rol || defaultRol || 'ALUMNO',
         empresaId: initialData?.empresaId || '',
         password: '',
         activo: initialData?.activo !== undefined ? initialData.activo : true

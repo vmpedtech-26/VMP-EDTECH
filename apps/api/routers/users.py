@@ -273,13 +273,17 @@ async def eliminar_usuario(id: str, current_user=Depends(get_current_user)):
     elif current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
         
-    # Verificar si tiene inscripciones
+    # Verificar si tiene datos que impedirían un borrado limpio (FK sin
+    # onDelete definido -> un delete directo tira un error de constraint).
+    # Alumnos: inscripciones. Instructores: cursos o sesiones a su cargo.
     inscripciones_count = await prisma.inscripcion.count(where={"alumnoId": id})
-    
-    if inscripciones_count > 0:
-        # Desactivar
+    cursos_count = await prisma.curso.count(where={"instructorId": id})
+    sesiones_count = await prisma.sesioncapacitacion.count(where={"instructorId": id})
+
+    if inscripciones_count > 0 or cursos_count > 0 or sesiones_count > 0:
+        # Desactivar en vez de eliminar
         await prisma.user.update(where={"id": id}, data={"activo": False})
-        return {"message": "Usuario desactivado porque tiene inscripciones"}
-        
+        return {"message": "Usuario desactivado porque tiene datos asociados"}
+
     await prisma.user.delete(where={"id": id})
     return {"message": "Usuario eliminado exitosamente"}
