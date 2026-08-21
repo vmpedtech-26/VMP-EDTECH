@@ -32,7 +32,7 @@ export default function CursosPage() {
                         Ofrecemos planes especiales para empresas, con seguimiento detallado de alumnos y facturación corporativa.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="/#cotizar" className="btn-primary">
+                        <a href="/#cotizar" className="btn-brand-legacy">
                             Cotizar para mi Empresa
                         </a>
                         <a href="/#contacto" className="btn-secondary">

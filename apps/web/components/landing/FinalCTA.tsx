@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function FinalCTA() {
     return (
-        <section className="py-16 md:py-20 bg-gradient-to-r from-primary to-primary-600">
+        <section className="py-16 md:py-20 bg-gradient-to-r from-brand-legacy to-brand-legacy-600">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 className="font-heading font-bold text-4xl md:text-5xl text-[#0A192F] mb-4">
                     Comenzá a Capacitar tu Flota Hoy Mismo

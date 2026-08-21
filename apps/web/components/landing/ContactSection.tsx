@@ -76,7 +76,7 @@ export default function ContactSection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
-                    <span className="inline-block px-4 py-1.5 bg-primary/20 text-primary-300 rounded-full text-sm font-semibold mb-4 border border-primary/30">
+                    <span className="inline-block px-4 py-1.5 bg-brand-legacy/20 text-brand-legacy-300 rounded-full text-sm font-semibold mb-4 border border-brand-legacy/30">
                         Contacto
                     </span>
                     <h2 className="font-heading font-bold text-4xl md:text-5xl text-white mb-4">
@@ -96,7 +96,7 @@ export default function ContactSection() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        <div className="bg-gradient-to-br from-primary to-secondary p-8 rounded-2xl text-white shadow-lg">
+                        <div className="bg-gradient-to-br from-brand-legacy to-secondary p-8 rounded-2xl text-white shadow-lg">
                             <h3 className="font-heading font-bold text-2xl mb-6">
                                 Información de Contacto
                             </h3>
@@ -191,7 +191,7 @@ export default function ContactSection() {
                         {/* Quick stats */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-white rounded-xl p-5 border border-slate-200 text-center shadow-sm">
-                                <p className="text-3xl font-bold text-primary">24hs</p>
+                                <p className="text-3xl font-bold text-brand-legacy">24hs</p>
                                 <p className="text-sm text-slate-600 mt-1">Tiempo de respuesta</p>
                             </div>
                             <div className="bg-white rounded-xl p-5 border border-slate-200 text-center shadow-sm">
@@ -226,7 +226,7 @@ export default function ContactSection() {
                                     </p>
                                     <button
                                         onClick={() => setStatus('idle')}
-                                        className="text-primary font-semibold hover:underline"
+                                        className="text-brand-legacy font-semibold hover:underline"
                                     >
                                         Enviar otra consulta
                                     </button>
@@ -250,7 +250,7 @@ export default function ContactSection() {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder="Juan Pérez"
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none"
                                             />
                                         </div>
                                         <div>
@@ -265,7 +265,7 @@ export default function ContactSection() {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder="Transporte S.A."
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none"
                                             />
                                         </div>
                                     </div>
@@ -283,7 +283,7 @@ export default function ContactSection() {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder="juan@empresa.com"
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none"
                                             />
                                         </div>
                                         <div>
@@ -297,7 +297,7 @@ export default function ContactSection() {
                                                 value={form.telefono}
                                                 onChange={handleChange}
                                                 placeholder="+54 9 11 1234-5678"
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none"
                                             />
                                         </div>
                                     </div>
@@ -311,7 +311,7 @@ export default function ContactSection() {
                                             name="curso_interes"
                                             value={form.curso_interes}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none bg-white"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none bg-white"
                                         >
                                             <option value="">Seleccionar curso...</option>
                                             <option value="conduccion-preventiva">Conducción Preventiva (Inicial)</option>
@@ -338,7 +338,7 @@ export default function ContactSection() {
                                             rows={4}
                                             aria-describedby={status === 'error' ? 'contact-error-msg' : undefined}
                                             placeholder="Contanos sobre tu flota: cantidad de conductores, tipo de vehículos, modalidad preferida..."
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none resize-none"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-legacy/50 focus:border-brand-legacy transition-all outline-none resize-none"
                                         />
                                     </div>
 
@@ -364,7 +364,7 @@ export default function ContactSection() {
                                     <button
                                         type="submit"
                                         disabled={status === 'sending'}
-                                        className="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] focus:ring-4 focus:ring-primary/30 disabled:opacity-60 disabled:hover:scale-100 transition-all duration-300 flex items-center justify-center"
+                                        className="w-full py-4 bg-gradient-to-r from-brand-legacy to-secondary text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] focus:ring-4 focus:ring-brand-legacy/30 disabled:opacity-60 disabled:hover:scale-100 transition-all duration-300 flex items-center justify-center"
                                     >
                                         {status === 'sending' ? (
                                             <>

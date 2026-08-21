@@ -63,7 +63,7 @@ export default function BlogPage() {
                                 </div>
 
                                 <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                                    <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                                    <Link href={`/blog/${post.slug}`} className="hover:text-brand-legacy transition-colors">
                                         {post.title}
                                     </Link>
                                 </h2>
@@ -78,7 +78,7 @@ export default function BlogPage() {
                                     </div>
                                     <Link
                                         href={`/blog/${post.slug}`}
-                                        className="text-primary font-semibold text-sm flex items-center group"
+                                        className="text-brand-legacy font-semibold text-sm flex items-center group"
                                     >
                                         Leer más
                                         <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -90,7 +90,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Newsletter / CTA Section */}
-                <section className="mt-20 bg-primary/10 rounded-2xl p-8 md:p-12 text-center">
+                <section className="mt-20 bg-brand-legacy/10 rounded-2xl p-8 md:p-12 text-center">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">Mantené tu flota informada</h2>
                     <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                         Recibí las actualizaciones de la ANSV y consejos de seguridad vial directamente en tu email corporativo.
@@ -99,10 +99,10 @@ export default function BlogPage() {
                         <input
                             type="email"
                             placeholder="tu@email-corporativo.com"
-                            className="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-legacy"
                             required
                         />
-                        <button type="submit" className="btn-primary">
+                        <button type="submit" className="btn-brand-legacy">
                             Suscribirse
                         </button>
                     </form>

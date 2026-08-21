@@ -29,7 +29,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
             <section className="relative pt-24 pb-16 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0A192F] via-[#0F2444] to-[#162D50]" />
                 <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl" />
+                    <div className="absolute top-20 left-10 w-72 h-72 bg-brand-legacy rounded-full blur-3xl" />
                     <div className="absolute bottom-10 right-10 w-96 h-96 bg-secondary rounded-full blur-3xl" />
                 </div>
 
@@ -42,10 +42,10 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                                    <Icon className="h-6 w-6 text-primary" />
+                                <div className="h-12 w-12 rounded-xl bg-brand-legacy/20 flex items-center justify-center">
+                                    <Icon className="h-6 w-6 text-brand-legacy" />
                                 </div>
-                                <span className="text-primary font-semibold text-sm uppercase tracking-wider">
+                                <span className="text-brand-legacy font-semibold text-sm uppercase tracking-wider">
                                     {course.category}
                                 </span>
                             </div>
@@ -67,7 +67,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                     { icon: Target, label: 'Aprobación', value: course.minScore },
                                 ].map((stat) => (
                                     <div key={stat.label} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 text-center">
-                                        <stat.icon className="h-5 w-5 text-primary mx-auto mb-1" />
+                                        <stat.icon className="h-5 w-5 text-brand-legacy mx-auto mb-1" />
                                         <p className="text-xs text-slate-400">{stat.label}</p>
                                         <p className="text-sm font-bold text-white">{stat.value}</p>
                                     </div>
@@ -77,7 +77,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             <div className="flex flex-wrap gap-4">
                                 <Link
                                     href="/#contacto"
-                                    className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25 text-sm"
+                                    className="inline-flex items-center justify-center gap-2 bg-brand-legacy hover:bg-brand-legacy/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-brand-legacy/25 text-sm"
                                 >
                                     Consultar por este Curso
                                     <ArrowRight className="h-5 w-5" />
@@ -196,9 +196,9 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                                className="flex gap-4 p-5 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all"
+                                className="flex gap-4 p-5 rounded-xl bg-slate-50 border border-slate-100 hover:border-brand-legacy/20 hover:shadow-md transition-all"
                             >
-                                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-0.5" />
+                                <CheckCircle className="h-6 w-6 text-brand-legacy shrink-0 mt-0.5" />
                                 <p className="text-slate-700 font-medium">{benefit}</p>
                             </motion.div>
                         ))}
@@ -232,7 +232,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                 transition={{ duration: 0.4, delay: i * 0.1 }}
                                 className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                             >
-                                <div className="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+                                <div className="bg-gradient-to-r from-brand-legacy to-secondary px-6 py-4">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm">
                                             {i + 1}
@@ -246,7 +246,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                                     <ul className="space-y-3">
                                         {module.topics.map((topic, j) => (
                                             <li key={j} className="flex items-start gap-3">
-                                                <BookOpen className="h-4 w-4 text-primary shrink-0 mt-1" />
+                                                <BookOpen className="h-4 w-4 text-brand-legacy shrink-0 mt-1" />
                                                 <span className="text-slate-700 text-sm">{topic}</span>
                                             </li>
                                         ))}
@@ -320,15 +320,15 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             className="bg-slate-50 rounded-2xl p-8 border border-slate-100"
                         >
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <Users className="h-5 w-5 text-primary" />
+                                <div className="h-10 w-10 rounded-xl bg-brand-legacy/10 flex items-center justify-center">
+                                    <Users className="h-5 w-5 text-brand-legacy" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900">Requisitos</h3>
                             </div>
                             <ul className="space-y-3">
                                 {course.requirements.map((req, i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                        <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
+                                        <div className="h-2 w-2 rounded-full bg-brand-legacy mt-2 shrink-0" />
                                         <span className="text-slate-700">{req}</span>
                                     </li>
                                 ))}
@@ -340,20 +340,20 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 border border-primary/10"
+                            className="bg-gradient-to-br from-brand-legacy/5 to-secondary/5 rounded-2xl p-8 border border-brand-legacy/10"
                         >
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <FileCheck className="h-5 w-5 text-primary" />
+                                <div className="h-10 w-10 rounded-xl bg-brand-legacy/10 flex items-center justify-center">
+                                    <FileCheck className="h-5 w-5 text-brand-legacy" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900">Certificación</h3>
                             </div>
                             <p className="text-slate-700 leading-relaxed mb-6">
                                 {course.certification}
                             </p>
-                            <div className="bg-white rounded-xl p-4 border border-primary/10">
+                            <div className="bg-white rounded-xl p-4 border border-brand-legacy/10">
                                 <div className="flex items-center gap-3">
-                                    <Award className="h-8 w-8 text-primary" />
+                                    <Award className="h-8 w-8 text-brand-legacy" />
                                     <div>
                                         <p className="font-bold text-slate-900 text-sm">Vigencia: {course.validity}</p>
                                         <p className="text-slate-500 text-xs">Verificable con QR desde cualquier dispositivo</p>
@@ -382,7 +382,7 @@ export default function CourseDetailView({ course }: CourseDetailPageProps) {
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link
                                 href="/#contacto"
-                                className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25"
+                                className="inline-flex items-center justify-center gap-2 bg-brand-legacy hover:bg-brand-legacy/90 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-brand-legacy/25"
                             >
                                 Consultar por este Curso
                                 <ArrowRight className="h-5 w-5" />

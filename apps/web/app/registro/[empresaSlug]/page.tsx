@@ -101,7 +101,7 @@ export default function EmpresaRegisterPage() {
                         No encontramos ninguna empresa asociada a este enlace de registro. Verificá que la
                         dirección sea correcta o contactá a VMP - EDTECH.
                     </p>
-                    <Button asChild className="w-full">
+                    <Button legacy asChild className="w-full">
                         <Link href="/login">Ir a Iniciar Sesión</Link>
                     </Button>
                 </div>
@@ -112,21 +112,21 @@ export default function EmpresaRegisterPage() {
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 py-12 relative overflow-hidden">
             {/* Background decoration */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-legacy/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
 
             <div className="w-full max-w-xl relative z-10">
                 {/* Header Logo & Empresa Banner */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center space-x-3 mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
+                        <div className="w-12 h-12 bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-xl flex items-center justify-center shadow-lg shadow-brand-legacy/30">
                             <span className="text-white font-bold text-2xl">V</span>
                         </div>
                         <span className="text-2xl font-bold text-white tracking-tight">VMP - EDTECH</span>
                     </Link>
 
                     <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 text-white text-xs font-semibold shadow-inner">
-                        <Building2 className="h-4 w-4 text-primary-light" />
+                        <Building2 className="h-4 w-4 text-brand-legacy-light" />
                         <span>Portal Oficial de Auto-registro: <strong>{empresaInfo?.nombre}</strong></span>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ export default function EmpresaRegisterPage() {
                                 Te has vinculado correctamente a <strong>{empresaInfo?.nombre}</strong>. Redirigiendo a tu aula virtual...
                             </p>
                             <div className="pt-4">
-                                <Button asChild className="bg-primary hover:bg-primary-dark">
+                                <Button legacy asChild className="bg-brand-legacy hover:bg-brand-legacy-dark">
                                     <Link href="/dashboard/cursos">
                                         Ir a Mis Cursos Directamente
                                         <ArrowRight className="h-4 w-4 ml-2" />
@@ -173,7 +173,7 @@ export default function EmpresaRegisterPage() {
                                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                                         Identificación Principal
                                     </label>
-                                    <Input
+                                    <Input legacy
                                         type="text"
                                         label="DNI / Documento"
                                         placeholder="Ej: 38123456"
@@ -187,7 +187,7 @@ export default function EmpresaRegisterPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
+                                    <Input legacy
                                         type="text"
                                         label="Nombre"
                                         placeholder="Gabriel"
@@ -197,7 +197,7 @@ export default function EmpresaRegisterPage() {
                                             setFormData({ ...formData, nombre: e.target.value })
                                         }
                                     />
-                                    <Input
+                                    <Input legacy
                                         type="text"
                                         label="Apellido"
                                         placeholder="Escobar"
@@ -210,7 +210,7 @@ export default function EmpresaRegisterPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
+                                    <Input legacy
                                         type="email"
                                         label="Email (Opcional)"
                                         placeholder="nombre@empresa.com"
@@ -219,7 +219,7 @@ export default function EmpresaRegisterPage() {
                                             setFormData({ ...formData, email: e.target.value })
                                         }
                                     />
-                                    <Input
+                                    <Input legacy
                                         type="tel"
                                         label="Teléfono / Celular"
                                         placeholder="299 1234567"
@@ -230,7 +230,7 @@ export default function EmpresaRegisterPage() {
                                     />
                                 </div>
 
-                                <Input
+                                <Input legacy
                                     type="password"
                                     label="Contraseña (Opcional - por defecto será tu DNI)"
                                     placeholder="••••••••"
@@ -241,11 +241,11 @@ export default function EmpresaRegisterPage() {
                                 />
 
                                 <div className="pt-2">
-                                    <Button
+                                    <Button legacy
                                         type="submit"
                                         size="lg"
                                         disabled={isLoading}
-                                        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 text-base shadow-lg shadow-primary/20"
+                                        className="w-full bg-brand-legacy hover:bg-brand-legacy-dark text-white font-bold py-3 text-base shadow-lg shadow-brand-legacy/20"
                                     >
                                         {isLoading ? 'Registrando...' : 'Completar Registro e Ingresar al Aula'}
                                     </Button>
@@ -257,7 +257,7 @@ export default function EmpresaRegisterPage() {
                                     <ShieldCheck className="h-4 w-4 text-emerald-600 mr-1.5" />
                                     Acceso seguro VMP - EDTECH
                                 </span>
-                                <Link href="/login" className="text-primary font-semibold hover:underline">
+                                <Link href="/login" className="text-brand-legacy font-semibold hover:underline">
                                     ¿Ya tenés cuenta? Iniciar Sesión
                                 </Link>
                             </div>

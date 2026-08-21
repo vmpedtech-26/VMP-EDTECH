@@ -11,7 +11,7 @@ export default function Header() {
     return (
         <>
             {/* Top Banner */}
-            <div className="bg-gradient-to-r from-primary to-secondary text-white py-3 px-4 text-center text-sm">
+            <div className="bg-gradient-to-r from-brand-legacy to-secondary text-white py-3 px-4 text-center text-sm">
                 <span className="font-medium">
                     🎓 Capacitación Vial Profesional | Certificaciones con validez nacional
                 </span>
@@ -41,19 +41,19 @@ export default function Header() {
                         </Link>
 
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/#servicios" className="text-slate-800 hover:text-brand-legacy font-medium transition-colors border-b-2 border-transparent hover:border-brand-legacy pb-1">
                                 Servicios
                             </Link>
-                            <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/cursos" className="text-slate-800 hover:text-brand-legacy font-medium transition-colors border-b-2 border-transparent hover:border-brand-legacy pb-1">
                                 Cursos
                             </Link>
-                            <Link href="/validar" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/validar" className="text-slate-800 hover:text-brand-legacy font-medium transition-colors border-b-2 border-transparent hover:border-brand-legacy pb-1">
                                 Validar Credencial
                             </Link>
-                            <Link href="/blog" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/blog" className="text-slate-800 hover:text-brand-legacy font-medium transition-colors border-b-2 border-transparent hover:border-brand-legacy pb-1">
                                 Blog
                             </Link>
-                            <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                            <Link href="/#alianzas" className="text-slate-800 hover:text-brand-legacy font-medium transition-colors border-b-2 border-transparent hover:border-brand-legacy pb-1">
                                 Alianzas
                             </Link>
                         </div>
@@ -62,13 +62,13 @@ export default function Header() {
                         <div className="hidden md:flex items-center space-x-4">
                             <Link
                                 href="/login"
-                                className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300"
+                                className="px-6 py-2.5 border-2 border-brand-legacy text-brand-legacy rounded-xl font-semibold hover:bg-brand-legacy-50 transition-all duration-300"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/#contacto"
-                                className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300"
+                                className="px-6 py-2.5 bg-gradient-to-r from-brand-legacy to-secondary text-white rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition-all duration-300"
                             >
                                 Contacto
                             </Link>
@@ -87,32 +87,32 @@ export default function Header() {
                     {mobileMenuOpen && (
                         <div className="md:hidden py-4 border-t border-slate-200 animate-slideDown">
                             <div className="flex flex-col space-y-4">
-                                <Link href="/#servicios" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/#servicios" className="text-slate-800 hover:text-brand-legacy font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Servicios
                                 </Link>
-                                <Link href="/cursos" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/cursos" className="text-slate-800 hover:text-brand-legacy font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Cursos
                                 </Link>
-                                <Link href="/validar" className="text-primary font-bold py-2 flex items-center gap-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/validar" className="text-brand-legacy font-bold py-2 flex items-center gap-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     <ShieldCheck className="w-5 h-5" /> Validar Credencial
                                 </Link>
-                                <Link href="/blog" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/blog" className="text-slate-800 hover:text-brand-legacy font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Blog
                                 </Link>
-                                <Link href="/#alianzas" className="text-slate-800 hover:text-primary font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/#alianzas" className="text-slate-800 hover:text-brand-legacy font-medium py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Alianzas
                                 </Link>
                                 <Link
                                     href="/login"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-2.5 border-2 border-primary text-primary rounded-xl font-semibold text-center hover:bg-primary-50 transition-all"
+                                    className="px-6 py-2.5 border-2 border-brand-legacy text-brand-legacy rounded-xl font-semibold text-center hover:bg-brand-legacy-50 transition-all"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href="/#contacto"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-center hover:scale-105 transition-all"
+                                    className="px-6 py-2.5 bg-gradient-to-r from-brand-legacy to-secondary text-white rounded-xl font-semibold text-center hover:scale-105 transition-all"
                                 >
                                     Contacto
                                 </Link>

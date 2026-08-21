@@ -50,7 +50,7 @@ export default function RegisterPage() {
             <div className="w-full max-w-lg">
                 {/* Logo */}
                 <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">V</span>
                     </div>
                     <span className="text-2xl font-bold text-gray-900">VMP - EDTECH</span>
@@ -73,7 +73,7 @@ export default function RegisterPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input
+                            <Input legacy
                                 type="text"
                                 label="Nombre"
                                 placeholder="Juan"
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                                     setFormData({ ...formData, nombre: e.target.value })
                                 }
                             />
-                            <Input
+                            <Input legacy
                                 type="text"
                                 label="Apellido"
                                 placeholder="Pérez"
@@ -96,7 +96,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input
+                            <Input legacy
                                 type="text"
                                 label="DNI"
                                 placeholder="12.345.678"
@@ -106,7 +106,7 @@ export default function RegisterPage() {
                                     setFormData({ ...formData, dni: e.target.value })
                                 }
                             />
-                            <Input
+                            <Input legacy
                                 type="tel"
                                 label="Teléfono"
                                 placeholder="11 1234 5678"
@@ -117,7 +117,7 @@ export default function RegisterPage() {
                             />
                         </div>
 
-                        <Input
+                        <Input legacy
                             type="email"
                             label="Email"
                             placeholder="tu@email.com"
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                             }
                         />
 
-                        <Input
+                        <Input legacy
                             type="password"
                             label="Contraseña"
                             placeholder="••••••••"
@@ -140,17 +140,17 @@ export default function RegisterPage() {
                         />
 
                         <div className="pt-2 text-xs text-gray-500">
-                            Al registrarte, aceptás nuestros <Link href="/terminos" className="text-primary hover:underline">Términos y Condiciones</Link> y nuestra <Link href="/privacidad" className="text-primary hover:underline">Política de Privacidad</Link>.
+                            Al registrarte, aceptás nuestros <Link href="/terminos" className="text-brand-legacy hover:underline">Términos y Condiciones</Link> y nuestra <Link href="/privacidad" className="text-brand-legacy hover:underline">Política de Privacidad</Link>.
                         </div>
 
-                        <Button type="submit" size="lg" className="w-full pt-4" disabled={isLoading}>
+                        <Button legacy type="submit" size="lg" className="w-full pt-4" disabled={isLoading}>
                             {isLoading ? 'Creando cuenta...' : 'Registrarme'}
                         </Button>
                     </form>
 
                     <div className="mt-6 text-center text-sm text-gray-600">
                         ¿Ya tenés cuenta?{' '}
-                        <Link href="/login" className="text-primary font-semibold hover:underline">
+                        <Link href="/login" className="text-brand-legacy font-semibold hover:underline">
                             Iniciá sesión aquí
                         </Link>
                     </div>

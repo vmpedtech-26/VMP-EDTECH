@@ -10,14 +10,14 @@ export function Hero() {
                     {/* Content */}
                     <div className="space-y-8">
                         <div className="inline-block">
-                            <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
+                            <span className="bg-brand-legacy/10 text-brand-legacy px-4 py-2 rounded-full text-sm font-semibold">
                                 Plataforma de Capacitación Profesional
                             </span>
                         </div>
 
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                             Capacitación Profesional{' '}
-                            <span className="text-primary">Certificada</span>
+                            <span className="text-brand-legacy">Certificada</span>
                         </h1>
 
                         <p className="text-xl text-gray-600 leading-relaxed font-medium">
@@ -63,12 +63,12 @@ export function Hero() {
 
                     {/* Image/Visual */}
                     <div className="relative lg:h-[600px]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-light/20 rounded-2xl blur-3xl"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-legacy/20 to-brand-legacy-light/20 rounded-2xl blur-3xl"></div>
                         <div className="relative bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                             {/* Placeholder for hero image */}
-                            <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary-light/10 rounded-lg flex items-center justify-center">
+                            <div className="aspect-[4/3] bg-gradient-to-br from-brand-legacy/10 to-brand-legacy-light/10 rounded-lg flex items-center justify-center">
                                 <div className="text-center space-y-4">
-                                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-lg">
+                                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-2xl flex items-center justify-center shadow-lg">
                                         <svg
                                             className="w-12 h-12 text-white"
                                             fill="none"
@@ -94,15 +94,15 @@ export function Hero() {
                             {/* Stats */}
                             <div className="grid grid-cols-3 gap-4 mt-6">
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">500+</div>
+                                    <div className="text-2xl font-bold text-brand-legacy">500+</div>
                                     <div className="text-sm text-gray-600">Alumnos</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">98%</div>
+                                    <div className="text-2xl font-bold text-brand-legacy">98%</div>
                                     <div className="text-sm text-gray-600">Aprobación</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">50+</div>
+                                    <div className="text-2xl font-bold text-brand-legacy">50+</div>
                                     <div className="text-sm text-gray-600">Empresas</div>
                                 </div>
                             </div>

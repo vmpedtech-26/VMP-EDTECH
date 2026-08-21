@@ -33,14 +33,14 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <Link
                         href="/blog"
-                        className="inline-flex items-center text-gray-500 hover:text-primary mb-8 transition-colors text-sm font-medium"
+                        className="inline-flex items-center text-gray-500 hover:text-brand-legacy mb-8 transition-colors text-sm font-medium"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Volver al blog
                     </Link>
 
                     <div className="flex items-center space-x-2 mb-4">
-                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <span className="bg-brand-legacy/10 text-brand-legacy px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                             {post.category}
                         </span>
                         <span className="text-gray-400">•</span>
@@ -132,7 +132,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                                     </div>
                                     <div className="p-4">
                                         <h3 className="font-bold text-gray-900 line-clamp-2 mb-2">
-                                            <Link href={`/blog/${p.slug}`} className="hover:text-primary">
+                                            <Link href={`/blog/${p.slug}`} className="hover:text-brand-legacy">
                                                 {p.title}
                                             </Link>
                                         </h3>

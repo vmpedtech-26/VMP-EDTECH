@@ -7,6 +7,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     asChild?: boolean;
     children?: React.ReactNode;
     className?: string;
+    /** Usar la paleta azul original en vez del teal del panel interno (páginas públicas: login, registro, validar). */
+    legacy?: boolean;
 }
 
 export function Button({
@@ -14,21 +16,30 @@ export function Button({
     size = 'md',
     className,
     asChild = false,
+    legacy = false,
     children,
     ...props
 }: ButtonProps) {
     const buttonClasses = cn(
         'inline-flex items-center justify-center rounded-md font-semibold transition-all duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         'disabled:opacity-50 disabled:cursor-not-allowed',
+        legacy
+            ? 'focus:outline-none focus:ring-2 focus:ring-brand-legacy focus:ring-offset-2'
+            : 'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         {
-            // Variants
+            // Variants (teal, panel interno)
             'bg-gradient-to-r from-primary to-primary-light text-white hover:shadow-lg hover:-translate-y-0.5':
-                variant === 'primary',
+                variant === 'primary' && !legacy,
+            'border-2 border-primary text-primary hover:bg-primary hover:text-white':
+                variant === 'outline' && !legacy,
+            // Variants (azul, páginas públicas)
+            'bg-gradient-to-r from-brand-legacy to-brand-legacy-light text-white hover:shadow-lg hover:-translate-y-0.5':
+                variant === 'primary' && legacy,
+            'border-2 border-brand-legacy text-brand-legacy hover:bg-brand-legacy hover:text-white':
+                variant === 'outline' && legacy,
+            // Variants (comunes)
             'bg-secondary-light text-gray-900 hover:bg-secondary':
                 variant === 'secondary',
-            'border-2 border-primary text-primary hover:bg-primary hover:text-white':
-                variant === 'outline',
             'bg-transparent hover:bg-gray-100 text-gray-600':
                 variant === 'ghost',
             // Sizes

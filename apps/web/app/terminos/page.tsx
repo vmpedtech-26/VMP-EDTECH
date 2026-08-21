@@ -23,7 +23,7 @@ export default function TerminosPage() {
             {/* Main content */}
             <div className="flex-grow py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-8 md:p-10 space-y-8">
-                    <div className="flex items-center space-x-3 text-primary border-b border-slate-100 pb-4">
+                    <div className="flex items-center space-x-3 text-brand-legacy border-b border-slate-100 pb-4">
                         <FileText className="h-6 w-6" />
                         <h2 className="text-xl font-bold text-slate-900">Marco Legal de Contratación</h2>
                     </div>

@@ -8,7 +8,7 @@ export function CredentialSection() {
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Visual de la credencial */}
                     <div className="relative group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-primary-light/30 rounded-3xl blur-3xl group-hover:blur-[120px] transition-all duration-700 opacity-50"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-legacy/30 to-brand-legacy-light/30 rounded-3xl blur-3xl group-hover:blur-[120px] transition-all duration-700 opacity-50"></div>
                         <div className="relative">
                             {/* Credencial Estilo VMP - EDTECH 2026 */}
                             <div className="bg-white rounded-3xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] overflow-hidden border border-slate-100 max-w-[650px] mx-auto transform hover:scale-[1.02] transition-all duration-500">
@@ -112,14 +112,14 @@ export function CredentialSection() {
                     {/* Content Section */}
                     <div className="space-y-10">
                         <div className="space-y-4">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-legacy/10 border border-brand-legacy/20 text-brand-legacy text-[10px] font-black uppercase tracking-widest">
+                                <div className="w-1.5 h-1.5 rounded-full bg-brand-legacy animate-pulse"></div>
                                 Estándar Internacional
                             </div>
 
                             <h2 className="text-4xl sm:text-6xl font-black text-slate-900 leading-[1.1] tracking-tighter">
                                 Tu validación <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light italic">profesional</span> instantánea.
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-legacy to-brand-legacy-light italic">profesional</span> instantánea.
                             </h2>
 
                             <p className="text-lg text-slate-800 font-medium leading-relaxed max-w-lg">
@@ -130,32 +130,32 @@ export function CredentialSection() {
                         {/* Feature Grid */}
                         <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8">
                             <div className="group">
-                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:scale-110 group-hover:rotate-6">
-                                    <Shield className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand-legacy group-hover:scale-110 group-hover:rotate-6">
+                                    <Shield className="h-6 w-6 text-brand-legacy group-hover:text-white transition-colors" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-2">Seguridad Criptográfica</h3>
                                 <p className="text-xs text-slate-700 leading-relaxed font-medium">Cada credencial cuenta con una firma única e inalterable vinculada a tu DNI.</p>
                             </div>
 
                             <div className="group">
-                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:scale-110 group-hover:rotate-6">
-                                    <QrCode className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand-legacy group-hover:scale-110 group-hover:rotate-6">
+                                    <QrCode className="h-6 w-6 text-brand-legacy group-hover:text-white transition-colors" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-2">Acceso Instantáneo</h3>
                                 <p className="text-xs text-slate-700 leading-relaxed font-medium">Escanea el código QR para ver el historial de cursada y validez del certificado.</p>
                             </div>
 
                             <div className="group">
-                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:scale-110 group-hover:rotate-6">
-                                    <CreditCard className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand-legacy group-hover:scale-110 group-hover:rotate-6">
+                                    <CreditCard className="h-6 w-6 text-brand-legacy group-hover:text-white transition-colors" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-2">Ecosistema Digital</h3>
                                 <p className="text-xs text-slate-700 leading-relaxed font-medium">Lleva tu certificación en el móvil, lista para ser presentada en cualquier portal de ingreso.</p>
                             </div>
 
                             <div className="group">
-                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:scale-110 group-hover:rotate-6">
-                                    <Building className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                                <div className="mb-4 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand-legacy group-hover:scale-110 group-hover:rotate-6">
+                                    <Building className="h-6 w-6 text-brand-legacy group-hover:text-white transition-colors" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-2">Validez Industrial</h3>
                                 <p className="text-xs text-slate-700 leading-relaxed font-medium">Aceptada por las principales operadoras logísticas e industriales del país.</p>

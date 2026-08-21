@@ -26,8 +26,8 @@ export default function ValidarPage() {
             <div className="flex-grow flex items-center justify-center py-12 px-4">
                 <div className="max-w-md w-full">
                     <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
-                            <ShieldCheck className="h-10 w-10 text-primary" />
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-legacy/10 rounded-full mb-6">
+                            <ShieldCheck className="h-10 w-10 text-brand-legacy" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-4">
                             Validador de Certificaciones
@@ -50,7 +50,7 @@ export default function ValidarPage() {
                                     <input
                                         type="text"
                                         id="codigo"
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm uppercase"
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-legacy focus:border-brand-legacy sm:text-sm uppercase"
                                         placeholder="Ej: VMP-2026-XXXXX"
                                         value={codigo}
                                         onChange={(e) => setCodigo(e.target.value)}
@@ -59,7 +59,7 @@ export default function ValidarPage() {
                                 </div>
                             </div>
 
-                            <Button type="submit" size="lg" className="w-full">
+                            <Button legacy type="submit" size="lg" className="w-full">
                                 Verificar Ahora
                             </Button>
                         </form>

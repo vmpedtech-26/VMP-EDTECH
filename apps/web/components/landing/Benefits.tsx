@@ -6,32 +6,32 @@ import { TrendingUp, Clock, FileCheck, BarChart3, QrCode, Layers } from 'lucide-
 
 const benefits = [
     {
-        icon: <TrendingUp className="h-5 w-5 text-primary" />,
+        icon: <TrendingUp className="h-5 w-5 text-brand-legacy" />,
         title: 'Aumenta la Productividad',
         description: 'Personal capacitado rinde más y comete menos errores en campo.',
     },
     {
-        icon: <Clock className="h-5 w-5 text-primary" />,
+        icon: <Clock className="h-5 w-5 text-brand-legacy" />,
         title: 'Ahorra Tiempo',
         description: 'Automatiza la gestión de capacitaciones y vencimiento de credenciales.',
     },
     {
-        icon: <FileCheck className="h-5 w-5 text-primary" />,
+        icon: <FileCheck className="h-5 w-5 text-brand-legacy" />,
         title: 'Cumplimiento Normativo',
         description: 'Credenciales oficiales homologadas bajo reglamentación vigente.',
     },
     {
-        icon: <BarChart3 className="h-5 w-5 text-primary" />,
+        icon: <BarChart3 className="h-5 w-5 text-brand-legacy" />,
         title: 'Reportes en Tiempo Real',
         description: 'Visualiza métricas, estados de cursos y avance técnico de tus equipos.',
     },
     {
-        icon: <QrCode className="h-5 w-5 text-primary" />,
+        icon: <QrCode className="h-5 w-5 text-brand-legacy" />,
         title: 'Verificación Instantánea',
         description: 'Valida la autenticidad de cualquier credencial de operador escaneando su código QR.',
     },
     {
-        icon: <Layers className="h-5 w-5 text-primary" />,
+        icon: <Layers className="h-5 w-5 text-brand-legacy" />,
         title: 'Escalabilidad Absoluta',
         description: 'Capacita desde pequeños equipos de campo hasta corporaciones completas sin límites.',
     },

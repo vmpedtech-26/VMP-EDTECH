@@ -60,7 +60,7 @@ function SSOCallbackHandler() {
                     <p className="text-slate-600 mb-6 text-sm">{errorMessage}</p>
                     <button 
                         onClick={() => router.push('/login')} 
-                        className="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                        className="px-6 py-2 bg-brand-legacy text-white rounded-lg font-semibold hover:bg-brand-legacy-dark transition-colors"
                     >
                         Volver al inicio de sesión
                     </button>
@@ -73,7 +73,7 @@ function SSOCallbackHandler() {
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
             <div className="text-center">
                 {/* Spinner animado */}
-                <div className="w-16 h-16 border-4 border-primary border-t-transparent border-solid rounded-full animate-spin mx-auto mb-6"></div>
+                <div className="w-16 h-16 border-4 border-brand-legacy border-t-transparent border-solid rounded-full animate-spin mx-auto mb-6"></div>
                 <h1 className="text-xl font-semibold text-slate-800">Iniciando sesión de forma segura...</h1>
                 <p className="text-slate-500 mt-2 text-sm">Conectando con el proveedor de identidad corporativo.</p>
             </div>
@@ -88,7 +88,7 @@ export default function SSOCallbackPage() {
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-primary border-t-transparent border-solid rounded-full animate-spin mx-auto mb-6"></div>
+                    <div className="w-16 h-16 border-4 border-brand-legacy border-t-transparent border-solid rounded-full animate-spin mx-auto mb-6"></div>
                     <h1 className="text-xl font-semibold text-slate-800">Cargando...</h1>
                 </div>
             </div>

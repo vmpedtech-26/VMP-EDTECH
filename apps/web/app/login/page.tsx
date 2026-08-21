@@ -79,7 +79,7 @@ export default function LoginPage() {
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">V</span>
                     </div>
                     <span className="text-2xl font-bold text-gray-900">VMP - EDTECH</span>
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
                     {step === 'email' && (
                         <form onSubmit={handleContinue} className="space-y-6">
-                            <Input
+                            <Input legacy
                                 type="email"
                                 label="Email"
                                 placeholder="tu@email.com"
@@ -111,7 +111,7 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
-                            <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                            <Button legacy type="submit" size="lg" className="w-full" disabled={isLoading}>
                                 {isLoading ? 'Verificando...' : 'Continuar'}
                             </Button>
                         </form>
@@ -125,7 +125,7 @@ export default function LoginPage() {
                                     Vas a continuar con {PROVIDER_LABELS[ssoInfo.provider || ''] || ssoInfo.provider}.
                                 </p>
                             </div>
-                            <Button type="button" size="lg" className="w-full" onClick={handleSsoRedirect}>
+                            <Button legacy type="button" size="lg" className="w-full" onClick={handleSsoRedirect}>
                                 Continuar con {PROVIDER_LABELS[ssoInfo.provider || ''] || ssoInfo.provider}
                             </Button>
                             <button
@@ -145,13 +145,13 @@ export default function LoginPage() {
                                 <button
                                     type="button"
                                     onClick={resetToEmail}
-                                    className="text-xs text-primary hover:underline"
+                                    className="text-xs text-brand-legacy hover:underline"
                                 >
                                     Cambiar
                                 </button>
                             </div>
 
-                            <Input
+                            <Input legacy
                                 type="password"
                                 label="Contraseña"
                                 placeholder="••••••••"
@@ -168,13 +168,13 @@ export default function LoginPage() {
                                 </label>
                                 <Link
                                     href="/forgot-password"
-                                    className="text-primary hover:underline"
+                                    className="text-brand-legacy hover:underline"
                                 >
                                     ¿Olvidaste tu contraseña?
                                 </Link>
                             </div>
 
-                            <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                            <Button legacy type="submit" size="lg" className="w-full" disabled={isLoading}>
                                 {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                             </Button>
                         </form>
@@ -182,7 +182,7 @@ export default function LoginPage() {
 
                     <div className="mt-6 text-center text-sm text-gray-600">
                         ¿No tenés cuenta?{' '}
-                        <Link href="/registro" className="text-primary font-semibold hover:underline">
+                        <Link href="/registro" className="text-brand-legacy font-semibold hover:underline">
                             Registrate aquí
                         </Link>
                     </div>
@@ -190,7 +190,7 @@ export default function LoginPage() {
 
                 <p className="text-center mt-8 text-sm text-gray-600">
                     ¿Sos una empresa?{' '}
-                    <Link href="/#contacto" className="text-primary font-semibold hover:underline">
+                    <Link href="/#contacto" className="text-brand-legacy font-semibold hover:underline">
                         Solicitá una demo
                     </Link>
                 </p>

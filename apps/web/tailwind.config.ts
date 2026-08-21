@@ -9,11 +9,13 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                // Paleta VMP Corporativa (Dashboard)
+                // Paleta VMP Panel Interno (Dashboard/Admin) -- calcada de la
+                // sección Capacitaciones LMS (app/admin/admin.css) para que
+                // todo el panel autenticado comparta la misma estética.
                 primary: {
-                    DEFAULT: '#1e40af',
-                    light: '#3b82f6',
-                    dark: '#1e3a8a',
+                    DEFAULT: '#3AAFA9',
+                    light: '#5FC4BF',
+                    dark: '#2D9E93',
                 },
                 secondary: {
                     DEFAULT: '#64748b',
@@ -24,6 +26,18 @@ const config: Config = {
                 warning: '#f59e0b',
                 background: '#ffffff',
                 'background-light': '#f8fafc',
+
+                // Azul corporativo original -- se conserva solo para las
+                // páginas públicas (landing, login, registro, validador,
+                // legales) que no deben cambiar de paleta con el panel interno.
+                'brand-legacy': {
+                    DEFAULT: '#1e40af',
+                    light: '#3b82f6',
+                    dark: '#1e3a8a',
+                },
+
+                // Fondo oscuro del sidebar del panel interno (Atlas)
+                'sidebar-dark': '#0F172A',
 
                 // Paleta VMP Landing (Industrial Vial)
                 'azul-petroleo': '#0A192F',

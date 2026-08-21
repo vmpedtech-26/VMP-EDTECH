@@ -23,7 +23,7 @@ export default function Footer() {
                             Capacitación Vial Profesional
                         </p>
                         <div className="flex space-x-3">
-                            <a href="https://www.instagram.com/vmpservicios" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-primary/50 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
+                            <a href="https://www.instagram.com/vmpservicios" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-brand-legacy/50 flex items-center justify-center hover:bg-brand-legacy hover:border-brand-legacy transition-all duration-300">
                                 <Instagram className="h-5 w-5" />
                             </a>
                         </div>
@@ -35,22 +35,22 @@ export default function Footer() {
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">CURSOS</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/cursos/conduccion-preventiva" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos/conduccion-preventiva" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Conducción Preventiva
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/flota-liviana-pesada" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos/flota-liviana-pesada" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Conducción Flota Liviana / Pesada
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos/doble-traccion" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos/doble-traccion" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Conducción Doble Tracción
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/cursos" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/cursos" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Todos los Cursos
                                 </Link>
                             </li>
@@ -62,22 +62,22 @@ export default function Footer() {
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">RECURSOS</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/blog" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/blog" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Blog
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/validar" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/validar" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Validador de Certificaciones
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terminos" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/terminos" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Términos y Condiciones
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/privacidad" className="text-slate-300 hover:text-primary text-sm transition-colors">
+                                <Link href="/privacidad" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors">
                                     Política de Privacidad
                                 </Link>
                             </li>
@@ -89,18 +89,18 @@ export default function Footer() {
                         <h3 className="font-heading font-bold text-lg mb-4 text-white">CONTACTO</h3>
                         <ul className="space-y-4">
                             <li className="flex items-start space-x-3">
-                                <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-primary text-sm transition-colors hover:underline break-all">
+                                <Mail className="h-5 w-5 text-brand-legacy mt-0.5 flex-shrink-0" />
+                                <a href="mailto:administracion@vmp-edtech.com" className="text-slate-300 hover:text-brand-legacy text-sm transition-colors hover:underline break-all">
                                     administracion@vmp-edtech.com
                                 </a>
                             </li>
                             <li className="flex items-start space-x-3">
-                                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <MapPin className="h-5 w-5 text-brand-legacy mt-0.5 flex-shrink-0" />
                                 <div className="space-y-3">
                                     {/* Neuquén */}
                                     <div className="text-slate-300 text-xs">
                                         <span className="font-bold text-white block text-sm">🇦🇷 Neuquén (Central):</span>
-                                        <a href="tel:+5492995370173" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
+                                        <a href="tel:+5492995370173" className="hover:text-brand-legacy transition-colors block hover:underline font-semibold my-0.5">
                                             +54 9 299 537-0173
                                         </a>
                                         <p className="leading-relaxed">
@@ -111,7 +111,7 @@ export default function Footer() {
                                     {/* Cipolletti */}
                                     <div className="text-slate-300 text-xs">
                                         <span className="font-bold text-white block text-sm">🇦🇷 Cipolletti:</span>
-                                        <a href="tel:+5492996731487" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
+                                        <a href="tel:+5492996731487" className="hover:text-brand-legacy transition-colors block hover:underline font-semibold my-0.5">
                                             +54 9 299 673-1487
                                         </a>
                                         <p className="leading-relaxed">
@@ -122,7 +122,7 @@ export default function Footer() {
                                     {/* España */}
                                     <div className="text-slate-300 text-xs">
                                         <span className="font-bold text-white block text-sm">🇪🇸 España:</span>
-                                        <a href="tel:+34624536539" className="hover:text-primary transition-colors block hover:underline font-semibold my-0.5">
+                                        <a href="tel:+34624536539" className="hover:text-brand-legacy transition-colors block hover:underline font-semibold my-0.5">
                                             +34 624 536 539
                                         </a>
                                         <p className="leading-relaxed">

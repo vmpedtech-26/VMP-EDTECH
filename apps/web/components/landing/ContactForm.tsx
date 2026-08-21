@@ -72,7 +72,7 @@ export function ContactForm() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, nombre: e.target.value })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-colors"
                                     placeholder="Juan Pérez"
                                 />
                             </div>
@@ -92,7 +92,7 @@ export function ContactForm() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, email: e.target.value })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-colors"
                                     placeholder="juan@empresa.com"
                                 />
                             </div>
@@ -112,7 +112,7 @@ export function ContactForm() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, empresa: e.target.value })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-colors"
                                     placeholder="Mi Empresa SA"
                                 />
                             </div>
@@ -131,7 +131,7 @@ export function ContactForm() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, telefono: e.target.value })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-colors"
                                     placeholder="+54 9 11 1234-5678"
                                 />
                             </div>
@@ -151,7 +151,7 @@ export function ContactForm() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, mensaje: e.target.value })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-colors resize-none"
                                     placeholder="Cuéntanos sobre tus necesidades de capacitación..."
                                 />
                             </div>

@@ -7,11 +7,11 @@ export function BlisterSection() {
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     {/* Visual de la credencial */}
                     <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-light/20 rounded-2xl blur-2xl"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-legacy/20 to-brand-legacy-light/20 rounded-2xl blur-2xl"></div>
                         <div className="relative">
                             {/* Mock de credencial Blister */}
                             <div className="bg-white rounded-2xl shadow-2xl p-8 border border-slate-100">
-                                <div className="aspect-[1.6/1] bg-gradient-to-br from-primary to-primary-light rounded-xl p-6 text-white relative overflow-hidden">
+                                <div className="aspect-[1.6/1] bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-xl p-6 text-white relative overflow-hidden">
                                     {/* Pattern de fondo */}
                                     <div className="absolute inset-0 opacity-10">
                                         <div className="grid grid-cols-8 h-full">
@@ -44,7 +44,7 @@ export function BlisterSection() {
                                                     <div>Vence: 15/01/2028</div>
                                                 </div>
                                                 <div className="bg-white p-2 rounded">
-                                                    <QrCode className="h-12 w-12 text-primary" />
+                                                    <QrCode className="h-12 w-12 text-brand-legacy" />
                                                 </div>
                                             </div>
                                             <div className="text-xs font-mono">VMP-2026-00123</div>
@@ -64,7 +64,7 @@ export function BlisterSection() {
                         </div>
 
                         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-                            Credencial Digital <span className="text-primary">Blister</span>
+                            Credencial Digital <span className="text-brand-legacy">Blister</span>
                         </h2>
 
                         <p className="text-lg text-slate-800 leading-relaxed">
@@ -76,7 +76,7 @@ export function BlisterSection() {
                         {/* Características del Blister */}
                         <div className="grid sm:grid-cols-2 gap-4">
                             <div className="flex items-start space-x-3">
-                                <CreditCard className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <CreditCard className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">
                                         Formato ID Card
@@ -88,7 +88,7 @@ export function BlisterSection() {
                             </div>
 
                             <div className="flex items-start space-x-3">
-                                <User className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <User className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">
                                         Datos del Alumno
@@ -98,7 +98,7 @@ export function BlisterSection() {
                             </div>
 
                             <div className="flex items-start space-x-3">
-                                <Building className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <Building className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">
                                         Info del Curso
@@ -110,7 +110,7 @@ export function BlisterSection() {
                             </div>
 
                             <div className="flex items-start space-x-3">
-                                <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <Calendar className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">Vigencia</div>
                                     <div className="text-sm text-slate-800">
@@ -120,7 +120,7 @@ export function BlisterSection() {
                             </div>
 
                             <div className="flex items-start space-x-3">
-                                <QrCode className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <QrCode className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">
                                         Código QR
@@ -132,7 +132,7 @@ export function BlisterSection() {
                             </div>
 
                             <div className="flex items-start space-x-3">
-                                <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                <Shield className="h-5 w-5 text-brand-legacy flex-shrink-0 mt-1" />
                                 <div>
                                     <div className="font-semibold text-slate-900">
                                         Número Único

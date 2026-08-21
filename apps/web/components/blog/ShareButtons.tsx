@@ -68,7 +68,7 @@ export default function ShareButtons({ title, url, text }: ShareButtonsProps) {
         <div className="flex flex-wrap items-center gap-3">
             <button 
                 onClick={handleNativeShare}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-semibold text-sm shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-legacy text-white rounded-lg hover:bg-brand-legacy-dark transition-colors font-semibold text-sm shadow-sm"
                 title="Compartir"
             >
                 {isCopied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}

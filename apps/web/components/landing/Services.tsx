@@ -43,8 +43,8 @@ export function Services() {
                         const Icon = service.icon;
                         return (
                             <Card key={index} className="text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-                                    <Icon className="h-8 w-8 text-primary" />
+                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-legacy/10 mb-6">
+                                    <Icon className="h-8 w-8 text-brand-legacy" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-3">
                                     {service.title}

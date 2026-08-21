@@ -103,7 +103,7 @@ export function Testimonials() {
                     <div className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 z-20">
                         <button 
                             onClick={() => paginate(-1)}
-                            className="p-3 rounded-full bg-white shadow-lg border border-slate-100 text-slate-400 hover:text-primary transition-colors group"
+                            className="p-3 rounded-full bg-white shadow-lg border border-slate-100 text-slate-400 hover:text-brand-legacy transition-colors group"
                         >
                             <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
                         </button>
@@ -112,7 +112,7 @@ export function Testimonials() {
                     <div className="absolute top-1/2 -right-4 md:-right-12 -translate-y-1/2 z-20">
                         <button 
                             onClick={() => paginate(1)}
-                            className="p-3 rounded-full bg-white shadow-lg border border-slate-100 text-slate-400 hover:text-primary transition-colors group"
+                            className="p-3 rounded-full bg-white shadow-lg border border-slate-100 text-slate-400 hover:text-brand-legacy transition-colors group"
                         >
                             <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
                         </button>
@@ -134,7 +134,7 @@ export function Testimonials() {
                                 className="absolute w-full"
                             >
                                 <Card className="p-8 sm:p-12 border-slate-100 shadow-xl shadow-slate-200/50 bg-white rounded-3xl">
-                                    <Quote className="h-14 w-14 text-primary/10 mb-8" />
+                                    <Quote className="h-14 w-14 text-brand-legacy/10 mb-8" />
 
                                     <p className="text-xl md:text-2xl text-slate-700 leading-relaxed mb-10 italic font-medium">
                                         "{testimonials[currentIndex].quote}"
@@ -143,7 +143,7 @@ export function Testimonials() {
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                                         <div className="flex items-center space-x-5">
                                             {testimonials[currentIndex].image ? (
-                                                <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-primary/10 shadow-md">
+                                                <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-legacy/10 shadow-md">
                                                     <Image
                                                         src={testimonials[currentIndex].image}
                                                         alt={testimonials[currentIndex].name}
@@ -152,7 +152,7 @@ export function Testimonials() {
                                                     />
                                                 </div>
                                             ) : (
-                                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-legacy to-secondary flex items-center justify-center text-white font-bold text-2xl shadow-lg">
                                                     {testimonials[currentIndex].name.charAt(0)}
                                                 </div>
                                             )}
@@ -161,7 +161,7 @@ export function Testimonials() {
                                                     {testimonials[currentIndex].name}
                                                 </div>
                                                 <div className="text-sm text-slate-500 font-medium">
-                                                    {testimonials[currentIndex].role} <span className="text-primary mx-1">•</span> {testimonials[currentIndex].company}
+                                                    {testimonials[currentIndex].role} <span className="text-brand-legacy mx-1">•</span> {testimonials[currentIndex].company}
                                                 </div>
                                             </div>
                                         </div>
@@ -192,7 +192,7 @@ export function Testimonials() {
                                     setCurrentIndex(index);
                                 }}
                                 className={`h-2.5 rounded-full transition-all duration-500 ${index === currentIndex
-                                    ? 'w-10 bg-primary shadow-lg shadow-primary/20'
+                                    ? 'w-10 bg-brand-legacy shadow-lg shadow-brand-legacy/20'
                                     : 'w-2.5 bg-slate-300 hover:bg-slate-400'
                                     }`}
                                 aria-label={`Go to testimonial ${index + 1}`}

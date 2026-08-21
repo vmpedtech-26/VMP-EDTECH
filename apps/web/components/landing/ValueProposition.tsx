@@ -7,19 +7,19 @@ import { Award, Laptop, Users } from 'lucide-react';
 export default function ValueProposition() {
     const values = [
         {
-            icon: <Award className="h-6 w-6 text-primary" />,
+            icon: <Award className="h-6 w-6 text-brand-legacy" />,
             title: "Certificación Profesional Oficial",
             description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez y reconocimiento empresarial en todo el territorio argentino.",
             details: "Validez Nacional"
         },
         {
-            icon: <Laptop className="h-6 w-6 text-primary" />,
+            icon: <Laptop className="h-6 w-6 text-brand-legacy" />,
             title: "Plataforma Digital Moderna",
             description: "Tecnología educativa de última generación con modalidad 100% online, presencial o mixta. Validación QR instantánea de certificados.",
             details: "Online/Offline + QR"
         },
         {
-            icon: <Users className="h-6 w-6 text-primary" />,
+            icon: <Users className="h-6 w-6 text-brand-legacy" />,
             title: "Instructores Certificados",
             description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
             details: "+15 años experiencia"

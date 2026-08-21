@@ -38,12 +38,12 @@ export default function AboutUs() {
                         whileInView={fadeIn.whileInView}
                         viewport={fadeIn.viewport}
                         transition={fadeIn.transition}
-                        className="inline-flex items-center space-x-2 bg-white border border-primary/20 rounded-full px-4 py-1.5 mb-6 shadow-sm"
+                        className="inline-flex items-center space-x-2 bg-white border border-brand-legacy/20 rounded-full px-4 py-1.5 mb-6 shadow-sm"
                     >
                         <div className="w-6 h-6 rounded-full overflow-hidden relative">
                             <Image src="/images/icons/consulting.png" fill className="object-cover" alt="Empresa" />
                         </div>
-                        <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Sobre la Empresa</span>
+                        <span className="text-sm font-semibold bg-gradient-to-r from-brand-legacy to-secondary bg-clip-text text-transparent">Sobre la Empresa</span>
                     </motion.div>
                     
                     <motion.h2 
@@ -130,8 +130,8 @@ export default function AboutUs() {
                                     "Información técnica para la toma de decisiones operativas"
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-2.5">
-                                        <div className="w-5.5 h-5.5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                                        <div className="w-5.5 h-5.5 rounded-full bg-brand-legacy/10 flex items-center justify-center shrink-0 mt-0.5">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-brand-legacy" />
                                         </div>
                                         <span className="text-slate-700 text-sm font-medium">{item}</span>
                                     </li>
@@ -209,7 +209,7 @@ export default function AboutUs() {
                     {/* 10. Sectores (1 col width on lg) */}
                     <motion.div 
                         initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}
-                        className="bg-primary/5 rounded-3xl p-6 md:p-8 border border-primary/10 flex flex-col"
+                        className="bg-brand-legacy/5 rounded-3xl p-6 md:p-8 border border-brand-legacy/10 flex flex-col"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative">
@@ -227,7 +227,7 @@ export default function AboutUs() {
                                 "Servicios industriales",
                                 "Pymes en crecimiento"
                             ].map((sector, i) => (
-                                <span key={i} className="inline-block bg-white border border-primary/20 text-slate-700 text-xs px-3 py-1.5 rounded-xl shadow-sm font-medium hover:border-primary/50 transition-colors">
+                                <span key={i} className="inline-block bg-white border border-brand-legacy/20 text-slate-700 text-xs px-3 py-1.5 rounded-xl shadow-sm font-medium hover:border-brand-legacy/50 transition-colors">
                                     {sector}
                                 </span>
                             ))}

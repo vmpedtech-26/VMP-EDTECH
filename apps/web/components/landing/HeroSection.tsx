@@ -56,7 +56,7 @@ export default function HeroSection() {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-primary-50 to-secondary-50">
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-brand-legacy-50 to-secondary-50">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-30">
                 <div className="absolute inset-0" style={{
@@ -66,7 +66,7 @@ export default function HeroSection() {
             </div>
 
             {/* Gradient Orbs */}
-            <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" />
+            <div className="absolute top-0 -left-4 w-72 h-72 bg-brand-legacy/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" />
             <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" style={{ animationDelay: '2s' }} />
             <div className="absolute -bottom-8 left-20 w-72 h-72 bg-accent-emerald/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse-slow" style={{ animationDelay: '4s' }} />
 
@@ -75,7 +75,7 @@ export default function HeroSection() {
                 {[...Array(6)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full"
+                        className="absolute w-2 h-2 bg-gradient-to-r from-brand-legacy to-secondary rounded-full"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
@@ -104,10 +104,10 @@ export default function HeroSection() {
                         {/* Badge */}
                         <motion.div
                             variants={badgeVariants}
-                            className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full px-5 py-2.5 mb-6 backdrop-blur-sm"
+                            className="inline-flex items-center space-x-2 bg-gradient-to-r from-brand-legacy/10 to-secondary/10 border border-brand-legacy/20 rounded-full px-5 py-2.5 mb-6 backdrop-blur-sm"
                         >
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Certificación Profesional Verificable</span>
+                            <Sparkles className="h-5 w-5 text-brand-legacy" />
+                            <span className="text-sm font-semibold bg-gradient-to-r from-brand-legacy to-secondary bg-clip-text text-transparent">Certificación Profesional Verificable</span>
                         </motion.div>
 
                         {/* Headline */}
@@ -136,16 +136,16 @@ export default function HeroSection() {
                         >
                             <Link
                                 href="/login"
-                                className="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center justify-center group"
+                                className="px-8 py-4 bg-gradient-to-r from-brand-legacy to-secondary text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center justify-center group"
                             >
                                 Acceso Capacitación
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <button
                                 onClick={() => setIsVideoOpen(true)}
-                                className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-semibold text-lg hover:bg-slate-50 hover:border-primary/20 hover:text-primary transition-all duration-300 inline-flex items-center justify-center gap-2.5 group shadow-sm hover:shadow-md"
+                                className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-semibold text-lg hover:bg-slate-50 hover:border-brand-legacy/20 hover:text-brand-legacy transition-all duration-300 inline-flex items-center justify-center gap-2.5 group shadow-sm hover:shadow-md"
                             >
-                                <svg className="w-5 h-5 fill-current text-primary group-hover:scale-115 transition-transform duration-300" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 fill-current text-brand-legacy group-hover:scale-115 transition-transform duration-300" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z" />
                                 </svg>
                                 Ver Video Institucional
@@ -159,7 +159,7 @@ export default function HeroSection() {
                         >
                             {[
                                 { icon: CheckCircle, title: '+500 Conductores', subtitle: 'Certificados', color: 'text-success' },
-                                { icon: Award, title: 'Certificación', subtitle: 'Nacional', color: 'text-primary' },
+                                { icon: Award, title: 'Certificación', subtitle: 'Nacional', color: 'text-brand-legacy' },
                                 { icon: Smartphone, title: '100% Online', subtitle: 'o Presencial', color: 'text-secondary' },
                                 { icon: Users, title: 'Validación QR', subtitle: 'Instantánea', color: 'text-accent-cyan' }
                             ].map((badge, index) => {
@@ -212,9 +212,9 @@ export default function HeroSection() {
                                 {/* Botón interactivo central con pulsos de radar */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div className="relative flex items-center justify-center">
-                                        <span className="animate-ping absolute inline-flex h-20 w-20 rounded-full bg-primary/40 opacity-75"></span>
-                                        <span className="animate-pulse absolute inline-flex h-24 w-24 rounded-full bg-primary/20 opacity-40"></span>
-                                        <div className="relative w-16 h-16 rounded-full bg-primary hover:bg-primary-dark text-white flex items-center justify-center shadow-2xl transition-all duration-300 transform group-hover:scale-110">
+                                        <span className="animate-ping absolute inline-flex h-20 w-20 rounded-full bg-brand-legacy/40 opacity-75"></span>
+                                        <span className="animate-pulse absolute inline-flex h-24 w-24 rounded-full bg-brand-legacy/20 opacity-40"></span>
+                                        <div className="relative w-16 h-16 rounded-full bg-brand-legacy hover:bg-brand-legacy-dark text-white flex items-center justify-center shadow-2xl transition-all duration-300 transform group-hover:scale-110">
                                             <svg className="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z" />
                                             </svg>
@@ -225,10 +225,10 @@ export default function HeroSection() {
                                 {/* Píldora de información inferior */}
                                 <div className="absolute bottom-6 left-6 right-6 bg-slate-900/85 backdrop-blur-md p-4 rounded-2xl border border-white/10 flex items-center justify-between">
                                     <div>
-                                        <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-0.5">VMP EN ACCIÓN</p>
+                                        <p className="text-[9px] font-black text-brand-legacy uppercase tracking-widest mb-0.5">VMP EN ACCIÓN</p>
                                         <p className="text-xs font-bold text-white">Ver Video Institucional</p>
                                     </div>
-                                    <span className="text-[9px] bg-primary/20 text-primary border border-primary/30 rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider">Play</span>
+                                    <span className="text-[9px] bg-brand-legacy/20 text-brand-legacy border border-brand-legacy/30 rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider">Play</span>
                                 </div>
                             </motion.div>
                         </div>

@@ -58,7 +58,7 @@ export default function FAQ() {
     return (
         <section id="faq" className="py-24 bg-slate-50 relative overflow-hidden">
             {/* Background decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-legacy/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -70,7 +70,7 @@ export default function FAQ() {
                     className="text-center mb-16"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
-                        <HelpCircle className="w-3.5 h-3.5 text-primary" />
+                        <HelpCircle className="w-3.5 h-3.5 text-brand-legacy" />
                         Centro de Ayuda
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold font-heading text-[#0A192F] mb-6">
@@ -96,10 +96,10 @@ export default function FAQ() {
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                                 className="w-full px-6 py-5 flex items-center justify-between text-left group transition-colors"
                             >
-                                <span className={`text-lg font-bold transition-colors pr-4 ${openIndex === index ? 'text-primary' : 'text-[#0A192F] group-hover:text-primary'}`}>
+                                <span className={`text-lg font-bold transition-colors pr-4 ${openIndex === index ? 'text-brand-legacy' : 'text-[#0A192F] group-hover:text-brand-legacy'}`}>
                                     {faq.question}
                                 </span>
-                                <div className={`shrink-0 w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center transition-all duration-300 ${openIndex === index ? 'bg-primary text-white rotate-180 border-primary' : 'bg-slate-50 text-slate-400 group-hover:bg-slate-100'}`}>
+                                <div className={`shrink-0 w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center transition-all duration-300 ${openIndex === index ? 'bg-brand-legacy text-white rotate-180 border-brand-legacy' : 'bg-slate-50 text-slate-400 group-hover:bg-slate-100'}`}>
                                     <ChevronDown className="w-5 h-5" />
                                 </div>
                             </button>
@@ -129,12 +129,12 @@ export default function FAQ() {
                     viewport={{ once: true }}
                     className="mt-16 p-8 rounded-3xl bg-[#0A192F] text-white text-center relative overflow-hidden group border border-white/5"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-legacy/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <p className="text-slate-300 mb-4 relative z-10">¿Todavía tenés dudas?</p>
                     <h3 className="text-2xl font-bold mb-6 relative z-10">Nuestro equipo está listo para asesorarte</h3>
                     <a
                         href="/#contacto"
-                        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-[#0A192F] font-bold hover:bg-primary hover:text-white transition-all duration-300 shadow-lg relative z-10"
+                        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-[#0A192F] font-bold hover:bg-brand-legacy hover:text-white transition-all duration-300 shadow-lg relative z-10"
                     >
                         Contactar Soporte Técnico
                     </a>

@@ -331,7 +331,7 @@ export default function Quoter() {
                                 {/* CTA */}
                                 <motion.button
                                     onClick={() => setShowForm(true)}
-                                    className="btn-primary w-full flex items-center justify-center group"
+                                    className="btn-brand-legacy w-full flex items-center justify-center group"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
@@ -529,7 +529,7 @@ export default function Quoter() {
                                     <motion.button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="btn-brand-legacy w-full disabled:opacity-50 disabled:cursor-not-allowed"
                                         whileHover={!isSubmitting ? { scale: 1.02 } : {}}
                                         whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                                     >
@@ -585,7 +585,7 @@ export default function Quoter() {
                                 </p>
                                 <motion.button
                                     onClick={() => setShowSuccessModal(false)}
-                                    className="btn-primary w-full"
+                                    className="btn-brand-legacy w-full"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
@@ -632,7 +632,7 @@ export default function Quoter() {
                                 <div className="space-y-3">
                                     <motion.button
                                         onClick={() => setShowErrorModal(false)}
-                                        className="btn-primary w-full"
+                                        className="btn-brand-legacy w-full"
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                     >

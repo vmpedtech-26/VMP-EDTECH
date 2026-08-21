@@ -92,7 +92,7 @@ export default function LegalSection() {
         <section id="aviso-legal" className="py-16 md:py-20 bg-slate-900 relative overflow-hidden">
             {/* Subtle background texture */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-legacy/5 rounded-full blur-[120px]" />
                 <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-[120px]" />
             </div>
 
@@ -106,7 +106,7 @@ export default function LegalSection() {
                     className="text-center mb-16"
                 >
                     <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-5 py-2 mb-6">
-                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                        <div className="w-2 h-2 rounded-full bg-brand-legacy animate-pulse" />
                         <span className="text-sm font-semibold text-slate-300 tracking-wider uppercase">Aviso Legal</span>
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold font-heading text-white mb-4">
@@ -130,7 +130,7 @@ export default function LegalSection() {
                                 transition={{ duration: 0.4, delay: index * 0.08 }}
                                 className={`rounded-2xl border transition-all duration-300 ${
                                     isOpen
-                                        ? 'bg-white/10 border-primary/40 shadow-lg shadow-primary/5'
+                                        ? 'bg-white/10 border-brand-legacy/40 shadow-lg shadow-brand-legacy/5'
                                         : 'bg-white/5 border-white/10 hover:border-white/20'
                                 }`}
                             >
@@ -142,7 +142,7 @@ export default function LegalSection() {
                                     id={`legal-btn-${section.id}`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <span className="text-xs font-bold text-primary bg-primary/15 px-3 py-1 rounded-full border border-primary/30 whitespace-nowrap tracking-wide">
+                                        <span className="text-xs font-bold text-brand-legacy bg-brand-legacy/15 px-3 py-1 rounded-full border border-brand-legacy/30 whitespace-nowrap tracking-wide">
                                             {section.badge}
                                         </span>
                                         <span className="text-base font-semibold text-white">
@@ -150,7 +150,7 @@ export default function LegalSection() {
                                         </span>
                                     </div>
                                     <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 ml-4 transition-all duration-300 ${
-                                        isOpen ? 'bg-primary border-primary rotate-45' : 'border-white/20'
+                                        isOpen ? 'bg-brand-legacy border-brand-legacy rotate-45' : 'border-white/20'
                                     }`}>
                                         <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -172,7 +172,7 @@ export default function LegalSection() {
                                             <div className="px-6 pb-6 border-t border-white/10 pt-5 space-y-5">
                                                 {section.content.map((block, i) => (
                                                     <div key={i}>
-                                                        <h4 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">
+                                                        <h4 className="text-sm font-bold text-brand-legacy uppercase tracking-wider mb-2">
                                                             {block.subtitle}
                                                         </h4>
                                                         <p className="text-slate-300 text-sm leading-relaxed text-justify">
@@ -199,7 +199,7 @@ export default function LegalSection() {
                 >
                     <p className="text-slate-500 text-xs leading-relaxed max-w-2xl mx-auto">
                         La presente información legal fue elaborada conforme al ordenamiento jurídico vigente de la República Argentina, con referencia al <strong className="text-slate-400">Código Civil y Comercial de la Nación (Ley 26.994)</strong>, la <strong className="text-slate-400">Ley 25.326</strong> de Protección de Datos Personales, la <strong className="text-slate-400">Ley 24.240</strong> de Defensa del Consumidor y la <strong className="text-slate-400">Ley 11.723</strong> de Propiedad Intelectual. Última actualización: Abril de 2026. Para consultas jurídicas, contáctenos en{' '}
-                        <a href="mailto:administracion@vmp-edtech.com" className="text-primary hover:underline">administracion@vmp-edtech.com</a>.
+                        <a href="mailto:administracion@vmp-edtech.com" className="text-brand-legacy hover:underline">administracion@vmp-edtech.com</a>.
                     </p>
                 </motion.div>
             </div>

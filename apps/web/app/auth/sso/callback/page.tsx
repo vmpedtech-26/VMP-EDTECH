@@ -46,7 +46,7 @@ function SsoCallbackContent() {
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center">
                 <XCircle className="h-12 w-12 text-red-500" />
                 <p className="text-slate-700 font-semibold max-w-md">{error}</p>
-                <a href="/login" className="text-primary hover:underline text-sm">
+                <a href="/login" className="text-brand-legacy hover:underline text-sm">
                     Volver a iniciar sesión
                 </a>
             </div>
@@ -55,7 +55,7 @@ function SsoCallbackContent() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+            <Loader2 className="h-10 w-10 text-brand-legacy animate-spin" />
             <p className="text-slate-500 text-sm font-semibold">Completando inicio de sesión...</p>
         </div>
     );
@@ -66,7 +66,7 @@ export default function SsoCallbackPage() {
         <Suspense
             fallback={
                 <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                    <Loader2 className="h-10 w-10 text-brand-legacy animate-spin" />
                 </div>
             }
         >

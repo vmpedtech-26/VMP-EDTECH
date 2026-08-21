@@ -88,11 +88,11 @@ const safetyServices = [
 
 const getServiceIcon = (index: number) => {
   switch (index) {
-    case 0: return <ShieldCheck className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />;
-    case 1: return <HardHat className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />;
-    case 2: return <Zap className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />;
-    case 3: return <ClipboardCheck className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />;
-    default: return <ShieldCheck className="h-6 w-6 text-primary" />;
+    case 0: return <ShieldCheck className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
+    case 1: return <HardHat className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
+    case 2: return <Zap className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
+    case 3: return <ClipboardCheck className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
+    default: return <ShieldCheck className="h-6 w-6 text-brand-legacy" />;
   }
 };
 
@@ -158,7 +158,7 @@ export function ProfessionalServices() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(58,175,169,0.06)] border border-slate-100/85 hover:border-primary/20 transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
+                  className="group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(58,175,169,0.06)] border border-slate-100/85 hover:border-brand-legacy/20 transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
                 >
                   {/* Image container */}
                   <div className="aspect-[4/3] relative overflow-hidden">
@@ -175,11 +175,11 @@ export function ProfessionalServices() {
                   {/* Card Content container */}
                   <div className="p-6 flex flex-col flex-1">
                     {/* Tiny upper tag */}
-                    <span className="text-[10px] font-black text-primary tracking-widest uppercase mb-1.5 block">
+                    <span className="text-[10px] font-black text-brand-legacy tracking-widest uppercase mb-1.5 block">
                       {service.tag}
                     </span>
                     
-                    <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                    <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-legacy transition-colors duration-300">
                       {service.title}
                     </h4>
                     
@@ -190,10 +190,10 @@ export function ProfessionalServices() {
                     {/* Footer Button action block */}
                     <Link 
                       href="/#contacto" 
-                      className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center group/btn text-xs font-bold text-slate-500 hover:text-primary transition-colors duration-300"
+                      className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center group/btn text-xs font-bold text-slate-500 hover:text-brand-legacy transition-colors duration-300"
                     >
                       <span>MÁS INFORMACIÓN</span>
-                      <div className="w-8 h-8 rounded-full bg-slate-50 group-hover/btn:bg-primary text-slate-500 group-hover/btn:text-white flex items-center justify-center transition-all duration-300">
+                      <div className="w-8 h-8 rounded-full bg-slate-50 group-hover/btn:bg-brand-legacy text-slate-500 group-hover/btn:text-white flex items-center justify-center transition-all duration-300">
                         <ArrowRight className="h-4 w-4 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" />
                       </div>
                     </Link>
@@ -275,7 +275,7 @@ export function ProfessionalServices() {
                     <ul className="space-y-3 mt-auto">
                       {service.items.map((item, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 text-brand-legacy mt-0.5 flex-shrink-0" />
                           <span className="text-slate-700 text-sm font-semibold">{item}</span>
                         </li>
                       ))}

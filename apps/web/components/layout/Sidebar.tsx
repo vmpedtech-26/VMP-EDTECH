@@ -130,8 +130,7 @@ function NavItem({ item, pathname, onNavigate, level = 0 }: {
             <div>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${level === 0 ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors text-white/75 hover:bg-white/5 hover:text-white/90"
                 >
                     <div className="flex items-center space-x-3">
                         <Icon className="h-5 w-5" />
@@ -164,10 +163,10 @@ function NavItem({ item, pathname, onNavigate, level = 0 }: {
         <Link
             href={item.href!}
             onClick={onNavigate}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${level > 0 ? 'pl-8' : ''
+            className={`flex items-center space-x-3 px-4 py-3 rounded-lg border-l-2 transition-colors ${level > 0 ? 'pl-8' : ''
                 } ${isActive
-                    ? 'bg-primary text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary/15 border-primary text-primary font-semibold'
+                    : 'border-transparent text-white/75 hover:bg-white/5 hover:text-white/90'
                 }`}
         >
             <Icon className="h-5 w-5" />
@@ -194,19 +193,19 @@ export function Sidebar({ userRole }: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 lg:transform-none ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-sidebar-dark transform transition-transform duration-200 lg:transform-none ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                     }`}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo & Role Selector */}
-                    <div className="p-5 border-b border-gray-200 space-y-3">
+                    <div className="p-5 border-b border-white/10 space-y-3">
                         <Link href="/" className="flex items-center space-x-2">
                             <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center shrink-0">
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <div>
-                                <div className="text-lg font-bold text-gray-900 leading-none">VMP - EDTECH</div>
-                                <div className="text-[11px] text-gray-500 font-semibold mt-1">
+                                <div className="text-lg font-bold text-white leading-none">VMP - EDTECH</div>
+                                <div className="text-[11px] text-white/50 font-semibold mt-1">
                                     Plataforma Integral
                                 </div>
                             </div>
@@ -214,17 +213,17 @@ export function Sidebar({ userRole }: SidebarProps) {
 
                         {/* Rol de la sesión actual (informativo, no editable: lo determina el backend) */}
                         <div className="pt-1">
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                            <label className="block text-[10px] font-bold text-white/40 uppercase tracking-wider mb-1">
                                 Modo de Sistema
                             </label>
-                            <div className="w-full bg-slate-900 text-white font-medium text-xs rounded-lg px-2.5 py-2 border border-slate-800">
+                            <div className="w-full bg-white/5 text-white font-medium text-xs rounded-lg px-2.5 py-2 border border-white/10">
                                 {ROLE_LABELS[userRole] || userRole}
                             </div>
                         </div>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 p-4 space-y-2">
+                    <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                         {items.map((item) => (
                             <NavItem
                                 key={item.href || item.label}
@@ -236,10 +235,10 @@ export function Sidebar({ userRole }: SidebarProps) {
                     </nav>
 
                     {/* Logout */}
-                    <div className="p-4 border-t border-gray-200">
+                    <div className="p-4 border-t border-white/10">
                         <button
                             onClick={logout}
-                            className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                            className="flex items-center space-x-3 px-4 py-3 text-white/50 hover:bg-red-500/10 hover:text-red-400 rounded-lg w-full transition-colors"
                         >
                             <LogOut className="h-5 w-5" />
                             <span className="font-medium">Cerrar Sesión</span>
