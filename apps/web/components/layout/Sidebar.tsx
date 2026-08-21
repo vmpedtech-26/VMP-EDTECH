@@ -26,7 +26,6 @@ import {
     Building2,
     GraduationCap,
     FileSpreadsheet,
-    Cpu,
     Lock
 } from 'lucide-react';
 import { useState } from 'react';
@@ -80,7 +79,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Award, label: 'Credenciales & QR', href: '/dashboard/super/credenciales' },
         { icon: FileSpreadsheet, label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones' },
         { icon: FileText, label: 'Presupuestos HSE', href: '/dashboard/super/presupuestos' },
-        { icon: Cpu, label: 'Telemetría OBD2', href: '/dashboard/super/control' },
+        { icon: Settings, label: 'Centro de Control', href: '/dashboard/super/control' },
         { icon: BarChart3, label: 'Métricas & KPIs', href: '/dashboard/super/metrics' },
         { icon: ShieldCheck, label: 'Compliance & Ética', href: '/dashboard/super/compliance' },
         { icon: Lock, label: 'Seguridad & Logs', href: '/dashboard/super/seguridad' },

@@ -36,7 +36,7 @@ const NAV_ITEMS = [
   { icon: 'people', label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos', children: [] },
   { icon: 'workspace_premium', label: 'Credenciales & QR', href: '/dashboard/super/credenciales', children: [] },
   { icon: 'request_quote', label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones', children: [] },
-  { icon: 'directions_car', label: 'Telemetría OBD2', href: '/dashboard/super/control', children: [] },
+  { icon: 'settings', label: 'Centro de Control', href: '/dashboard/super/control', children: [] },
   { icon: 'insights', label: 'Métricas & KPIs', href: '/dashboard/super/metrics', children: [] },
   { icon: 'gavel', label: 'Compliance & Ética', href: '/dashboard/super/compliance', children: [] },
   { icon: 'security', label: 'Seguridad & Logs', href: '/dashboard/super/seguridad', children: [] },
