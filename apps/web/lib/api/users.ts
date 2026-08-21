@@ -14,6 +14,15 @@ export interface UserAdmin {
     createdAt: string;
 }
 
+export interface InscripcionAlumno {
+    id: string;
+    curso_id: string;
+    curso_nombre: string;
+    progreso: number;
+    estado: string;
+    obd2_sessions_count: number;
+}
+
 export const usersApi = {
     /**
      * Listar usuarios con filtros
@@ -27,6 +36,13 @@ export const usersApi = {
      */
     async obtenerUsuario(id: string): Promise<UserAdmin> {
         return api.get(`/users/${id}`);
+    },
+
+    /**
+     * Cursos en los que está inscripto un alumno (progreso + sesiones OBD2)
+     */
+    async listarInscripciones(id: string): Promise<InscripcionAlumno[]> {
+        return api.get(`/users/${id}/inscripciones`);
     },
 
     /**

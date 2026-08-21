@@ -2,42 +2,33 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
+import { obd2Api, Obd2Session } from '@/lib/api/obd2';
 
-export default function Obd2MetricsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const [metrics, setMetrics] = useState<any[]>([]);
+export default function Obd2MetricsPage({ params }: { params: Promise<{ id: string; inscripcionId: string }> }) {
+  const { id, inscripcionId } = use(params);
+  const [metrics, setMetrics] = useState<Obd2Session[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulando fetch a /api/v1/obd2/metrics/${id}
-    setTimeout(() => {
-      setMetrics([
-        {
-          id: "session-123",
-          fecha: new Date().toISOString(),
-          fuerzaFrenado: 0.82,
-          aceleracion: 1.15,
-          curvasScore: 92,
-          esquivoAlce: true
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
-  }, [id]);
+    obd2Api.obtenerMetricas(inscripcionId)
+      .then(setMetrics)
+      .catch(() => setMetrics([]))
+      .finally(() => setLoading(false));
+  }, [inscripcionId]);
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link href="/dashboard/instructor/alumnos" className="text-sm text-cyan-600 hover:underline mb-2 inline-block">
-            &larr; Volver a Alumnos
+          <Link href={`/dashboard/instructor/alumnos/${id}`} className="text-sm text-cyan-600 hover:underline mb-2 inline-block">
+            &larr; Volver al alumno
           </Link>
           <h1 className="text-3xl font-bold text-slate-800">Métricas de Conducción (OBD2)</h1>
           <p className="text-slate-500 mt-1">Evaluación práctica en tiempo real del desempeño del alumno.</p>
         </div>
         <div className="px-4 py-2 bg-slate-100 rounded-lg border border-slate-200">
           <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">ID Inscripción</span>
-          <span className="text-sm font-mono text-slate-700">{id}</span>
+          <span className="text-sm font-mono text-slate-700">{inscripcionId}</span>
         </div>
       </div>
 
@@ -75,11 +66,11 @@ export default function Obd2MetricsPage({ params }: { params: Promise<{ id: stri
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col items-center justify-center text-center">
                   <span className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Fuerza de Frenado</span>
                   <div className="flex items-baseline">
-                    <span className="text-3xl font-black text-indigo-600">{session.fuerzaFrenado}</span>
-                    <span className="text-sm font-medium text-indigo-400 ml-1">G</span>
+                    <span className="text-3xl font-black text-indigo-600">{session.fuerzaFrenado ?? '—'}</span>
+                    {session.fuerzaFrenado != null && <span className="text-sm font-medium text-indigo-400 ml-1">G</span>}
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 mt-4 rounded-full overflow-hidden">
-                    <div className="bg-indigo-500 h-full" style={{ width: `${Math.min(session.fuerzaFrenado * 100, 100)}%` }}></div>
+                    <div className="bg-indigo-500 h-full" style={{ width: `${Math.min((session.fuerzaFrenado || 0) * 100, 100)}%` }}></div>
                   </div>
                 </div>
 
@@ -87,11 +78,11 @@ export default function Obd2MetricsPage({ params }: { params: Promise<{ id: stri
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col items-center justify-center text-center">
                   <span className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Aceleración</span>
                   <div className="flex items-baseline">
-                    <span className="text-3xl font-black text-cyan-600">{session.aceleracion}</span>
-                    <span className="text-sm font-medium text-cyan-400 ml-1">G</span>
+                    <span className="text-3xl font-black text-cyan-600">{session.aceleracion ?? '—'}</span>
+                    {session.aceleracion != null && <span className="text-sm font-medium text-cyan-400 ml-1">G</span>}
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 mt-4 rounded-full overflow-hidden">
-                    <div className="bg-cyan-500 h-full" style={{ width: `${Math.min(session.aceleracion * 50, 100)}%` }}></div>
+                    <div className="bg-cyan-500 h-full" style={{ width: `${Math.min((session.aceleracion || 0) * 50, 100)}%` }}></div>
                   </div>
                 </div>
 
@@ -99,11 +90,11 @@ export default function Obd2MetricsPage({ params }: { params: Promise<{ id: stri
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col items-center justify-center text-center">
                   <span className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">Puntaje Curvas</span>
                   <div className="flex items-baseline">
-                    <span className="text-3xl font-black text-emerald-600">{session.curvasScore}</span>
-                    <span className="text-sm font-medium text-emerald-400 ml-1">/100</span>
+                    <span className="text-3xl font-black text-emerald-600">{session.curvasScore ?? '—'}</span>
+                    {session.curvasScore != null && <span className="text-sm font-medium text-emerald-400 ml-1">/100</span>}
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 mt-4 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full" style={{ width: `${session.curvasScore}%` }}></div>
+                    <div className="bg-emerald-500 h-full" style={{ width: `${session.curvasScore || 0}%` }}></div>
                   </div>
                 </div>
 

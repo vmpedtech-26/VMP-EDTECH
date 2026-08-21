@@ -74,8 +74,60 @@ async def listar_usuarios(
         user_dict = u.__dict__
         user_dict["empresa_nombre"] = u.empresa.nombre if u.empresa else None
         result.append(user_dict)
-        
+
     return result
+
+
+def _verificar_acceso_alumno(current_user, alumno) -> None:
+    """SUPER_ADMIN accede a cualquiera; INSTRUCTOR solo a alumnos de su empresa."""
+    if current_user.rol == "SUPER_ADMIN":
+        return
+    if current_user.rol == "INSTRUCTOR" and alumno.empresaId == current_user.empresaId:
+        return
+    raise HTTPException(status_code=403, detail="No tienes permisos sobre este usuario")
+
+
+@router.get("/{id}", response_model=UserWithEmpresaResponse)
+async def obtener_usuario(id: str, current_user=Depends(get_current_user)):
+    """Detalle de un usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
+    usuario = await prisma.user.find_unique(where={"id": id}, include={"empresa": True})
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    _verificar_acceso_alumno(current_user, usuario)
+
+    user_dict = usuario.__dict__
+    user_dict["empresa_nombre"] = usuario.empresa.nombre if usuario.empresa else None
+    return user_dict
+
+
+@router.get("/{id}/inscripciones")
+async def listar_inscripciones_alumno(id: str, current_user=Depends(get_current_user)):
+    """Cursos en los que está inscripto un alumno, con su progreso y cantidad de
+    sesiones OBD2 registradas (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)."""
+    alumno = await prisma.user.find_unique(where={"id": id})
+    if not alumno:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    _verificar_acceso_alumno(current_user, alumno)
+
+    inscripciones = await prisma.inscripcion.find_many(
+        where={"alumnoId": id},
+        include={"curso": True, "obd2Sessions": True},
+        order={"createdAt": "desc"}
+    )
+
+    return [
+        {
+            "id": i.id,
+            "curso_id": i.cursoId,
+            "curso_nombre": i.curso.nombre if i.curso else "",
+            "progreso": i.progreso,
+            "estado": i.estado,
+            "obd2_sessions_count": len(i.obd2Sessions or []),
+        }
+        for i in inscripciones
+    ]
 
 
 @router.post("", response_model=UserAdminResponse)
