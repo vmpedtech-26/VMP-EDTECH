@@ -36,7 +36,7 @@ interface ModuloEdit {
     videoUrl?: string;
     liveClassUrl?: string;
     liveClassDate?: string;
-    liveClassPlatform?: 'google_meet' | 'teams';
+    liveClassPlatform?: 'google_meet' | 'teams' | 'zoom';
     preguntas?: PreguntaEdit[];
     tareasPracticas?: TareaEdit[];
 }
@@ -457,6 +457,7 @@ export default function ModuloConfigPage() {
                             <option value="">Sin clase en vivo</option>
                             <option value="google_meet">Google Meet</option>
                             <option value="teams">Microsoft Teams</option>
+                            <option value="zoom">Zoom</option>
                         </select>
                     </div>
                     <div className="space-y-2">

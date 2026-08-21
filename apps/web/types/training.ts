@@ -66,7 +66,7 @@ export interface Modulo {
     // Live class support
     liveClassUrl?: string;
     liveClassDate?: string;
-    liveClassPlatform?: 'google_meet' | 'teams';
+    liveClassPlatform?: 'google_meet' | 'teams' | 'zoom';
     preguntas?: Pregunta[];
     tareasPracticas?: TareaPractica[];
 }
