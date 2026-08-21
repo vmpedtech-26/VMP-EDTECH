@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { Modulo } from '@/types/training';
-import { TheoriaViewer } from '@/components/training/TheoriaViewer';
+import { ModuloTeoria } from '@/components/training/ModuloTeoria';
 import { ModuloQuiz } from '@/components/training/ModuloQuiz';
 import { PracticaViewer } from '@/components/training/PracticaViewer';
 
@@ -109,11 +109,10 @@ export default function ModuloDetailPage() {
             {/* Content Area */}
             <main className="max-w-5xl mx-auto px-4 pt-12">
                 {modulo.tipo === 'TEORIA' && (
-                    <TheoriaViewer
-                        titulo={modulo.titulo}
-                        contenidoHtml={modulo.contenidoHtml}
-                        videoUrl={modulo.videoUrl}
-                        onComplete={() => handleComplete()}
+                    <ModuloTeoria
+                        modulo={modulo}
+                        cursoId={id as string}
+                        onCompletar={() => router.push(`/dashboard/cursos/${id}`)}
                     />
                 )}
 

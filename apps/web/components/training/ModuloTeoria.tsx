@@ -12,6 +12,29 @@ interface ModuloTeoriaProps {
     onCompletar: () => void;
 }
 
+/** YouTube/Vimeo necesitan un iframe embebido, no sirven como src de <video>. */
+function getEmbedUrl(url: string): string | null {
+    try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtube.com')) {
+            if (u.pathname.startsWith('/embed/')) return url;
+            const videoId = u.searchParams.get('v');
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+        }
+        if (u.hostname === 'youtu.be') {
+            const videoId = u.pathname.slice(1);
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+        }
+        if (u.hostname.includes('vimeo.com')) {
+            const videoId = u.pathname.split('/').filter(Boolean).pop();
+            return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
+        }
+    } catch {
+        return null;
+    }
+    return null;
+}
+
 export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps) {
     const [loading, setLoading] = useState(false);
 
@@ -83,12 +106,21 @@ export function ModuloTeoria({ modulo, cursoId, onCompletar }: ModuloTeoriaProps
 
             {/* Video (si existe) */}
             {modulo.videoUrl && (
-                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                    <video
-                        src={modulo.videoUrl}
-                        controls
-                        className="w-full h-full"
-                    />
+                <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                    {getEmbedUrl(modulo.videoUrl) ? (
+                        <iframe
+                            src={getEmbedUrl(modulo.videoUrl)!}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    ) : (
+                        <video
+                            src={modulo.videoUrl}
+                            controls
+                            className="w-full h-full"
+                        />
+                    )}
                 </div>
             )}
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Literal
+from datetime import datetime
 
 # ============= CURSO SCHEMAS =============
 
@@ -121,7 +122,7 @@ class ModuloDetail(BaseModel):
     videoUrl: Optional[str] = None
     # Live class support
     liveClassUrl: Optional[str] = None
-    liveClassDate: Optional[str] = None
+    liveClassDate: Optional[datetime] = None
     liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaResponse]] = None  # Solo si tipo == QUIZ
     tareasPracticas: Optional[List[TareaPracticaResponse]] = None  # Solo si tipo == PRACTICA
@@ -138,7 +139,7 @@ class ModuloDetailAdmin(BaseModel):
     contenidoHtml: Optional[str] = None
     videoUrl: Optional[str] = None
     liveClassUrl: Optional[str] = None
-    liveClassDate: Optional[str] = None
+    liveClassDate: Optional[datetime] = None
     liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaDetailAdmin]] = None
     tareasPracticas: Optional[List[TareaPracticaResponse]] = None
