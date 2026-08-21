@@ -38,6 +38,12 @@ class ItemPresupuesto(BaseModel):
     precio_unitario: float
     importe: float
 
+class IndicadorHSE(BaseModel):
+    """Fila libre de indicador HSE (ej: TRIR, LTIFR, o cualquier otro que se
+    quiera mostrar). No hay un set fijo -- el usuario arma la lista que quiera."""
+    concepto: str
+    valor: str
+
 class PresupuestoCreate(BaseModel):
     cliente_nombre: str
     cliente_cuit: str
@@ -50,6 +56,8 @@ class PresupuestoCreate(BaseModel):
     horario: str = "09:00 a 18:00 hs"
     lugar_prestacion: str
     items: List[ItemPresupuesto] = []
+    indicadores_hse: List[IndicadorHSE] = []
+    vigencia_oferta: Optional[str] = None
     alcance_tecnico: Optional[str] = None
     entregables: Optional[str] = None
     exclusiones: Optional[str] = None
@@ -69,6 +77,8 @@ class PresupuestoUpdate(BaseModel):
     horario: Optional[str] = None
     lugar_prestacion: Optional[str] = None
     items: Optional[List[ItemPresupuesto]] = None
+    indicadores_hse: Optional[List[IndicadorHSE]] = None
+    vigencia_oferta: Optional[str] = None
     alcance_tecnico: Optional[str] = None
     entregables: Optional[str] = None
     exclusiones: Optional[str] = None
@@ -100,6 +110,11 @@ def serialize_presupuesto(p) -> dict:
     except (json.JSONDecodeError, TypeError):
         items = []
 
+    try:
+        indicadores_hse = json.loads(p.indicadoresHseJson) if p.indicadoresHseJson else []
+    except (json.JSONDecodeError, TypeError):
+        indicadores_hse = []
+
     return {
         "id": p.id,
         "numero_cotizacion": p.numeroCotizacion,
@@ -118,6 +133,8 @@ def serialize_presupuesto(p) -> dict:
         "exclusiones": p.exclusionesTexto,
         "condiciones_comerciales": p.condicionesTexto,
         "items": items,
+        "indicadores_hse": indicadores_hse,
+        "vigencia_oferta": p.vigenciaOferta,
         "subtotal": p.importeNeto,
         "iva": p.iva,
         "total": p.total,
@@ -203,6 +220,8 @@ async def create_presupuesto(
                 "iva": iva,
                 "total": total,
                 "itemsJson": json.dumps([item.dict() for item in data.items]),
+                "indicadoresHseJson": json.dumps([i.dict() for i in data.indicadores_hse]) if data.indicadores_hse else None,
+                "vigenciaOferta": data.vigencia_oferta,
                 "alcanceTexto": data.alcance_tecnico,
                 "entregablesTexto": data.entregables,
                 "exclusionesTexto": data.exclusiones,
@@ -312,6 +331,9 @@ async def update_presupuesto(
             update_data["iva"] = iva
             update_data["total"] = total
 
+        if "indicadores_hse" in payload and payload["indicadores_hse"] is not None:
+            update_data["indicadoresHseJson"] = json.dumps([i.dict() for i in data.indicadores_hse])
+
         field_map = {
             "cliente_nombre": "clienteNombre",
             "cliente_cuit": "clienteCuit",
@@ -327,10 +349,11 @@ async def update_presupuesto(
             "entregables": "entregablesTexto",
             "exclusiones": "exclusionesTexto",
             "condiciones_comerciales": "condicionesTexto",
+            "vigencia_oferta": "vigenciaOferta",
             "estado": "estado",
         }
         for key, value in payload.items():
-            if key == "items":
+            if key in ("items", "indicadores_hse"):
                 continue
             prisma_key = field_map.get(key)
             if prisma_key:
@@ -389,6 +412,8 @@ async def duplicar_presupuesto(
             "iva": original.iva,
             "total": original.total,
             "itemsJson": original.itemsJson,
+            "indicadoresHseJson": original.indicadoresHseJson,
+            "vigenciaOferta": original.vigenciaOferta,
             "alcanceTexto": original.alcanceTexto,
             "entregablesTexto": original.entregablesTexto,
             "exclusionesTexto": original.exclusionesTexto,
@@ -411,6 +436,10 @@ async def generar_pdf(
         raise HTTPException(status_code=404, detail="No encontrado")
 
     items = json.loads(presupuesto.itemsJson) if presupuesto.itemsJson else []
+    try:
+        indicadores_hse = json.loads(presupuesto.indicadoresHseJson) if presupuesto.indicadoresHseJson else []
+    except (json.JSONDecodeError, TypeError):
+        indicadores_hse = []
     data = {
         "numero_cotizacion": presupuesto.numeroCotizacion,
         "cliente_nombre": presupuesto.clienteNombre,
@@ -428,6 +457,8 @@ async def generar_pdf(
         "iva": presupuesto.iva,
         "total": presupuesto.total,
         "items": items,
+        "indicadores_hse": indicadores_hse,
+        "vigencia_oferta": presupuesto.vigenciaOferta,
         "alcance_texto": presupuesto.alcanceTexto,
         "entregables_texto": presupuesto.entregablesTexto,
         "exclusiones_texto": presupuesto.exclusionesTexto,

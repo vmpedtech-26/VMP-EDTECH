@@ -742,6 +742,8 @@ model PresupuestoHSE {
   total             Float
   estado            EstadoPresupuesto  @default(BORRADOR)
   itemsJson         String             @map("items_json") @db.Text // JSON array de items tarifarios
+  indicadoresHseJson String?           @map("indicadores_hse_json") @db.Text // JSON array libre de {concepto, valor}
+  vigenciaOferta    String?            @map("vigencia_oferta")
   alcanceTexto      String?            @map("alcance_texto") @db.Text
   entregablesTexto  String?            @map("entregables_texto") @db.Text
   exclusionesTexto  String?            @map("exclusiones_texto") @db.Text

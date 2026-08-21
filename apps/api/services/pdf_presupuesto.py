@@ -225,6 +225,8 @@ def generar_pdf_presupuesto(data: dict) -> bytes:
     iva = data.get('iva', 0.0)
     total = data.get('total', 0.0)
     items = data.get('items', [])
+    indicadores_hse = data.get('indicadores_hse', []) or []
+    vigencia_oferta = data.get('vigencia_oferta') or '5 días corridos'
     alcance = data.get('alcance_texto', '') or DEFAULT_ALCANCE
     entregables = data.get('entregables_texto', '') or DEFAULT_ENTREGABLES
     exclusiones = data.get('exclusiones_texto', '') or DEFAULT_EXCLUSIONES
@@ -302,7 +304,7 @@ def generar_pdf_presupuesto(data: dict) -> bytes:
         [Paragraph("SERVICIO TÉCNICO ESPECIALIZADO EN HIGIENE Y SEGURIDAD", ParagraphStyle('CoverSubTitle2', parent=s_cover_title, fontSize=13.5, leading=17.5, textColor=C_CYAN))],
         [Paragraph("Asignación de Recurso Técnico Profesional Matriculado en Campo", s_cover_subtitle)],
         [Paragraph(f"CLIENTE DESTINATARIO: {cliente_nombre} (CUIT: {cliente_cuit})", s_cover_tag)],
-        [Paragraph(f"Presupuesto Oficial N.º: <b>{numero}</b> | Fecha de Emisión: <b>{fecha_emision}</b> | Validez: <b>5 días</b>",
+        [Paragraph(f"Presupuesto Oficial N.º: <b>{numero}</b> | Fecha de Emisión: <b>{fecha_emision}</b> | Validez: <b>{vigencia_oferta}</b>",
                    ParagraphStyle('CML', parent=body, fontSize=8, leading=11, textColor=colors.HexColor('#E2E8F0')))],
     ]
     t_title = Table(title_block, colWidths=[495])
@@ -352,7 +354,7 @@ def generar_pdf_presupuesto(data: dict) -> bytes:
         [Paragraph("<b>Prestador:</b>", table_cell_bold), Paragraph("VMP SAS — CUIT: 30-71936908-8 (VMP - EDTECH)", table_cell),
          Paragraph("<b>Fecha:</b>", table_cell_bold), Paragraph(fecha_emision, table_cell)],
         [Paragraph("<b>Contratante:</b>", table_cell_bold), Paragraph(f"{cliente_nombre} — CUIT: {cliente_cuit}", table_cell),
-         Paragraph("<b>Vigencia:</b>", table_cell_bold), Paragraph("5 días corridos", table_cell)],
+         Paragraph("<b>Vigencia:</b>", table_cell_bold), Paragraph(vigencia_oferta, table_cell)],
         [Paragraph("<b>Lugar:</b>", table_cell_bold), Paragraph(lugar, table_cell),
          Paragraph("<b>Período:</b>", table_cell_bold), Paragraph(f"{fecha_desde} al {fecha_hasta}", table_cell)],
     ]
@@ -390,6 +392,15 @@ def generar_pdf_presupuesto(data: dict) -> bytes:
         [Paragraph("<b>Curriculum Vitae (CV):</b>", table_cell_bold),
          Paragraph(f"Presentado y formalmente aprobado por {cliente_nombre} con fecha {fecha_emision}", table_cell)],
     ]
+    if indicadores_hse:
+        valor_indicadores = '<br/>'.join(
+            f"{i.get('concepto', '')}: <b>{i.get('valor', '')}</b>" for i in indicadores_hse if i.get('concepto')
+        )
+        if valor_indicadores:
+            recurso_data.append([
+                Paragraph("<b>Indicadores HSE:</b>", table_cell_bold),
+                Paragraph(valor_indicadores, table_cell),
+            ])
     t_recurso = Table(recurso_data, colWidths=[120, 391])
     t_recurso.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), C_LIGHT_TEAL),

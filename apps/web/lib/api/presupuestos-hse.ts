@@ -10,6 +10,11 @@ export interface ItemTarifario {
     importe: number;
 }
 
+export interface IndicadorHSE {
+    concepto: string;
+    valor: string;
+}
+
 export interface PresupuestoHSE {
     id: string;
     numero_cotizacion: string;
@@ -28,6 +33,8 @@ export interface PresupuestoHSE {
     exclusiones: string;
     condiciones_comerciales: string;
     items: ItemTarifario[];
+    indicadores_hse: IndicadorHSE[];
+    vigencia_oferta: string;
     subtotal: number;
     iva: number;
     total: number;

@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Save, FileText, Sparkles, ClipboardList } from 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { CuadroTarifario } from './CuadroTarifario';
+import { IndicadoresHSE } from './IndicadoresHSE';
 import { AsistenteIA } from './AsistenteIA';
 import { presupuestosHseApi, PresupuestoHSE, ItemTarifario, PlantillaPresupuesto } from '@/lib/api/presupuestos-hse';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ export function PresupuestoForm({ initialData = {} }: Props) {
     const [formData, setFormData] = useState<Partial<PresupuestoHSE>>({
         estado: 'BORRADOR',
         items: [],
+        indicadores_hse: [],
         horario: '09:00 a 18:00 hs',
         ...initialData
     });
@@ -385,6 +387,20 @@ export function PresupuestoForm({ initialData = {} }: Props) {
                                     onChange={(e) => handleChange('condiciones_comerciales', e.target.value)}
                                 />
                             </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-semibold text-gray-700">Vigencia de la oferta</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: 5 días corridos (si lo dejás vacío, se usa ese valor por defecto)"
+                                    className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] outline-none"
+                                    value={formData.vigencia_oferta || ''}
+                                    onChange={(e) => handleChange('vigencia_oferta', e.target.value)}
+                                />
+                            </div>
+                            <IndicadoresHSE
+                                indicadores={formData.indicadores_hse || []}
+                                onChange={(indicadores) => handleChange('indicadores_hse', indicadores)}
+                            />
                         </div>
                     )}
                 </Card>
