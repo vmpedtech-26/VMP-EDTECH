@@ -27,7 +27,9 @@ import {
     GraduationCap,
     FileSpreadsheet,
     Lock,
-    Presentation
+    Presentation,
+    CalendarDays,
+    FileCheck2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
@@ -78,6 +80,7 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Users, label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos' },
         { icon: Presentation, label: 'Instructores', href: '/dashboard/super/instructores' },
         { icon: GraduationCap, label: 'Gestión LMS Cursos', href: '/dashboard/super/cursos' },
+        { icon: CalendarDays, label: 'Sesiones en Vivo', href: '/dashboard/super/sesiones' },
         { icon: Award, label: 'Credenciales & QR', href: '/dashboard/super/credenciales' },
         { icon: FileSpreadsheet, label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones' },
         { icon: FileText, label: 'Presupuestos HSE', href: '/dashboard/super/presupuestos' },
@@ -108,7 +111,9 @@ const menuItems: Record<string, MenuItem[]> = {
             icon: BookOpen,
             label: 'Capacitaciones',
             submenu: [
+                { icon: CalendarDays, label: 'Sesiones', href: '/dashboard/instructor/sesiones' },
                 { icon: ClipboardCheck, label: 'Evaluaciones', href: '/dashboard/instructor/evaluaciones' },
+                { icon: FileCheck2, label: 'Revisión de Tareas', href: '/dashboard/instructor/tareas' },
                 { icon: Users, label: 'Participantes', href: '/dashboard/instructor/participantes' },
                 { icon: GraduationCap, label: 'Mis Alumnos', href: '/dashboard/instructor/alumnos' },
                 { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },

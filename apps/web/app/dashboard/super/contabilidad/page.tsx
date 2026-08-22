@@ -11,7 +11,8 @@ import {
     ArrowRight,
     CircleDollarSign,
     Calculator,
-    BookOpen
+    BookOpen,
+    Sliders
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -95,15 +96,15 @@ export default function ContabilidadDashboard() {
             {/* Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Ingresos Mensuales', value: resumen ? formatMoney(resumen.ingresosMensuales) : '—', icon: TrendingUp, color: 'emerald' },
-                    { label: 'Egresos Mensuales', value: resumen ? formatMoney(resumen.egresosMensuales) : '—', icon: TrendingDown, color: 'rose' },
-                    { label: 'Saldo en Caja', value: resumen ? formatMoney(resumen.saldoCaja) : '—', icon: Wallet, color: 'blue' },
-                    { label: 'Rentabilidad', value: resumen ? `${resumen.rentabilidad}%` : '—', icon: PieChart, color: 'amber' },
+                    { label: 'Ingresos Mensuales', value: resumen ? formatMoney(resumen.ingresosMensuales) : '—', icon: TrendingUp, blur: 'bg-emerald-500/5 group-hover:bg-emerald-500/10', chip: 'bg-emerald-50 text-emerald-600' },
+                    { label: 'Egresos Mensuales', value: resumen ? formatMoney(resumen.egresosMensuales) : '—', icon: TrendingDown, blur: 'bg-rose-500/5 group-hover:bg-rose-500/10', chip: 'bg-rose-50 text-rose-600' },
+                    { label: 'Saldo en Caja', value: resumen ? formatMoney(resumen.saldoCaja) : '—', icon: Wallet, blur: 'bg-blue-500/5 group-hover:bg-blue-500/10', chip: 'bg-blue-50 text-blue-600' },
+                    { label: 'Rentabilidad', value: resumen ? `${resumen.rentabilidad}%` : '—', icon: PieChart, blur: 'bg-amber-500/5 group-hover:bg-amber-500/10', chip: 'bg-amber-50 text-amber-600' },
                 ].map((stat, i) => (
                     <Card key={i} className="p-6 border-none shadow-sm ring-1 ring-slate-100 hover:ring-primary/20 transition-all group overflow-hidden relative">
-                        <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-${stat.color}-500/5 rounded-full blur-2xl group-hover:bg-${stat.color}-500/10 transition-all`}></div>
+                        <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full blur-2xl transition-all ${stat.blur}`}></div>
                         <div className="relative z-10">
-                            <div className={`h-10 w-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center text-${stat.color}-600 mb-4`}>
+                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-4 ${stat.chip}`}>
                                 <stat.icon className="h-5 w-5" />
                             </div>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
@@ -176,8 +177,3 @@ export default function ContabilidadDashboard() {
         </div>
     );
 }
-
-// Mock Sliders icon since it wasn't imported in this snippet
-const Sliders = ({ className }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="2" y1="14" x2="6" y2="14"></line><line x1="10" y1="8" x2="14" y2="8"></line><line x1="18" y1="16" x2="22" y2="16"></line></svg>
-);
