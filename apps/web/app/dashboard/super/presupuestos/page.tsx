@@ -30,7 +30,7 @@ export default function PresupuestosHSEPage() {
             setPresupuestos(data || []);
         } catch (error) {
             console.error('Error fetching presupuestos:', error);
-            // toast.error('Error al cargar los presupuestos');
+            toast.error('No se pudieron cargar los presupuestos. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }
