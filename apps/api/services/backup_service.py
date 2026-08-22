@@ -82,16 +82,28 @@ class BackupService:
         return backups
 
     @staticmethod
+    def _resolve_safe_path(filename: str):
+        """Resuelve filename dentro de BACKUP_DIR, rechazando cualquier intento
+        de path traversal (.., separadores de directorio, rutas absolutas)."""
+        if not filename or not filename.endswith(".sql") or "/" in filename or "\\" in filename or ".." in filename:
+            return None
+        filepath = os.path.realpath(os.path.join(BACKUP_DIR, filename))
+        backup_dir_real = os.path.realpath(BACKUP_DIR)
+        if os.path.commonpath([filepath, backup_dir_real]) != backup_dir_real:
+            return None
+        return filepath
+
+    @staticmethod
     def delete_backup(filename: str):
-        filepath = os.path.join(BACKUP_DIR, filename)
-        if os.path.exists(filepath) and filename.endswith(".sql"):
+        filepath = BackupService._resolve_safe_path(filename)
+        if filepath and os.path.exists(filepath):
             os.remove(filepath)
             return True
         return False
 
     @staticmethod
     def get_backup_path(filename: str):
-        filepath = os.path.join(BACKUP_DIR, filename)
-        if os.path.exists(filepath) and filename.endswith(".sql"):
+        filepath = BackupService._resolve_safe_path(filename)
+        if filepath and os.path.exists(filepath):
             return filepath
         return None

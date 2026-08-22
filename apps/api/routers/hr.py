@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from auth.dependencies import get_current_user
 from core.database import prisma
 
@@ -11,7 +11,12 @@ async def list_employees(
     empresaId: str = Query(None),
     current_user=Depends(get_current_user)
 ):
-    """Lista de empleados / alumnos"""
+    """Lista de empleados / alumnos (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
+    if current_user.rol == "INSTRUCTOR":
+        empresaId = current_user.empresaId
+    elif current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+
     where = {"rol": "ALUMNO", "activo": True}
     if empresaId:
         where["empresaId"] = empresaId

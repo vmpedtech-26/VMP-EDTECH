@@ -166,9 +166,14 @@ async def generar_credencial_manual(
     data: GenerarCredencialManualRequest,
     current_user=Depends(get_current_user)
 ):
-    """Generar credencial manualmente (Solo SUPER_ADMIN o INSTRUCTOR)"""
+    """Generar credencial manualmente (Solo SUPER_ADMIN o INSTRUCTOR para alumnos de su propia empresa)"""
     if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
         raise HTTPException(status_code=403, detail="No tienes permisos para generar credenciales")
+
+    if current_user.rol == "INSTRUCTOR":
+        alumno_objetivo = await prisma.user.find_unique(where={"id": data.alumnoId})
+        if not alumno_objetivo or alumno_objetivo.empresaId != current_user.empresaId:
+            raise HTTPException(status_code=403, detail="No tenés permisos para emitir credenciales a este alumno")
 
     try:
         result = await generate_credential_for_student(
