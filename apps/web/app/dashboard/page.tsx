@@ -204,36 +204,49 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-4">
-                    {cursosActivos.map((curso) => (
-                        <Card key={curso.id}>
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                        {curso.nombre}
-                                    </h3>
-                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                        <span>Progreso: {curso.progreso}%</span>
-                                        <span>•</span>
-                                        <span>Próximo: {curso.proximaActividad}</span>
+                    {cursosActivos.length > 0 ? (
+                        cursosActivos.map((curso) => (
+                            <Card key={curso.id}>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                            {curso.nombre}
+                                        </h3>
+                                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                            <span>Progreso: {curso.progreso}%</span>
+                                            <span>•</span>
+                                            <span>Próximo: {curso.proximaActividad}</span>
+                                        </div>
+
+                                        {/* Progress Bar */}
+                                        <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div
+                                                className="bg-primary h-2 rounded-full transition-all duration-500"
+                                                style={{ width: `${curso.progreso}%` }}
+                                            />
+                                        </div>
                                     </div>
 
-                                    {/* Progress Bar */}
-                                    <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-                                        <div
-                                            className="bg-primary h-2 rounded-full transition-all duration-500"
-                                            style={{ width: `${curso.progreso}%` }}
-                                        />
-                                    </div>
+                                    <Button size="sm" asChild>
+                                        <Link href={`/dashboard/cursos/${curso.id}`}>
+                                            Continuar
+                                        </Link>
+                                    </Button>
                                 </div>
-
-                                <Button size="sm" asChild>
-                                    <Link href={`/dashboard/cursos/${curso.id}`}>
-                                        Continuar
-                                    </Link>
-                                </Button>
-                            </div>
-                        </Card>
-                    ))}
+                            </Card>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-12 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                            <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <p className="text-gray-500">
+                                Todavía no tenés cursos activos.
+                                <br /> Explorá el catálogo para empezar a capacitarte.
+                            </p>
+                            <Button size="sm" className="mt-4" asChild>
+                                <Link href="/dashboard/explorar">Explorar Cursos</Link>
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
 
