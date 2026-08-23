@@ -45,16 +45,21 @@ class IndicadorHSE(BaseModel):
     valor: str
 
 class PresupuestoCreate(BaseModel):
-    cliente_nombre: str
-    cliente_cuit: str
-    recurso_nombre: str
+    # Todos opcionales con default salvo estado/items: el boton "Guardar
+    # Borrador" del formulario debe poder guardar datos parciales, no solo
+    # un presupuesto completo. La tabla en la base de datos sigue exigiendo
+    # NOT NULL en estas columnas, asi que create_presupuesto() rellena con
+    # valores por defecto (string vacio / fecha actual / 0) antes de escribir.
+    cliente_nombre: str = ""
+    cliente_cuit: str = ""
+    recurso_nombre: str = ""
     recurso_cargo: str = "Técnico en Higiene y Seguridad"
-    recurso_matricula: str
-    fecha_desde: datetime
-    fecha_hasta: datetime
-    cantidad_jornadas: int
+    recurso_matricula: str = ""
+    fecha_desde: Optional[datetime] = None
+    fecha_hasta: Optional[datetime] = None
+    cantidad_jornadas: int = 0
     horario: str = "09:00 a 18:00 hs"
-    lugar_prestacion: str
+    lugar_prestacion: str = ""
     items: List[ItemPresupuesto] = []
     indicadores_hse: List[IndicadorHSE] = []
     vigencia_oferta: Optional[str] = None
@@ -202,6 +207,7 @@ async def create_presupuesto(
     try:
         numero, _ = await _siguiente_numero(db)
         subtotal, iva, total = _calcular_totales(data.items)
+        ahora = datetime.now()
 
         presupuesto = await db.presupuestohse.create(
             data={
@@ -211,8 +217,8 @@ async def create_presupuesto(
                 "recursoNombre": data.recurso_nombre,
                 "recursoTitulo": data.recurso_cargo,
                 "recursoMatricula": data.recurso_matricula,
-                "fechaDesde": data.fecha_desde,
-                "fechaHasta": data.fecha_hasta,
+                "fechaDesde": data.fecha_desde or ahora,
+                "fechaHasta": data.fecha_hasta or ahora,
                 "jornadas": data.cantidad_jornadas,
                 "horario": data.horario,
                 "lugar": data.lugar_prestacion,
