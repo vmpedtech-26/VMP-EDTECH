@@ -8,6 +8,7 @@ import { Loader2, ArrowLeft, ShieldCheck, Key, Globe, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function EditarEmpresaPage() {
     const { id } = useParams();
@@ -40,6 +41,7 @@ export default function EditarEmpresaPage() {
             setSsoClientSecret('');
         } catch (error) {
             console.error('Error fetching empresa:', error);
+            toast.error('No se pudo cargar la empresa. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

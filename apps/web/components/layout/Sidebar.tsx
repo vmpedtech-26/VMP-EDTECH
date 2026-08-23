@@ -116,6 +116,7 @@ const menuItems: Record<string, MenuItem[]> = {
                 { icon: FileCheck2, label: 'Revisión de Tareas', href: '/dashboard/instructor/tareas' },
                 { icon: Users, label: 'Participantes', href: '/dashboard/instructor/participantes' },
                 { icon: GraduationCap, label: 'Mis Alumnos', href: '/dashboard/instructor/alumnos' },
+                { icon: Award, label: 'Credenciales', href: '/dashboard/instructor/credenciales' },
                 { icon: Sliders, label: 'Parámetros', href: '/dashboard/instructor/parametros' },
             ]
         },

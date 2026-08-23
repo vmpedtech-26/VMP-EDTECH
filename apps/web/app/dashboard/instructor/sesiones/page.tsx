@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CalendarDays, Clock, MapPin, Video, Users, CheckSquare, Square, Save, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { LiveClassHub } from '@/components/dashboard/LiveClassHub';
+import { toast } from 'sonner';
 
 interface Sesion {
   id: string;
@@ -56,6 +57,7 @@ export default function InstructorSesionesPage() {
       setSesiones(Array.isArray(todas) ? todas : []);
     } catch (e) {
       console.error(e);
+      toast.error('No se pudieron cargar las sesiones. Verificá tu conexión.');
     } finally {
       setLoadingSesiones(false);
     }
@@ -68,6 +70,7 @@ export default function InstructorSesionesPage() {
       setAsistencias(data.asistencias || []);
     } catch (e) {
       console.error(e);
+      toast.error('No se pudo cargar la asistencia de esta sesión.');
     } finally {
       setLoadingAsistencia(false);
     }
@@ -107,6 +110,7 @@ export default function InstructorSesionesPage() {
       fetchSesiones(); // Refresh stats
     } catch (e) {
       console.error(e);
+      toast.error('No se pudo guardar la asistencia. Intentá nuevamente.');
     } finally {
       setGuardando(false);
     }
@@ -121,6 +125,7 @@ export default function InstructorSesionesPage() {
       }
     } catch (e) {
       console.error(e);
+      toast.error('No se pudo cambiar el estado de la sesión.');
     }
   }
 

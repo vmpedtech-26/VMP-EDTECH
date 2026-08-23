@@ -20,6 +20,7 @@ import { api } from '@/lib/api-client';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface DenunciaListItem {
   id: string;
@@ -75,6 +76,7 @@ export default function ComplianceAdminPage() {
       setReports(data);
     } catch (error) {
       console.error('Error fetching compliance reports:', error);
+      toast.error('No se pudieron cargar las denuncias. Verificá tu conexión.');
     } finally {
       setIsLoadingList(false);
     }

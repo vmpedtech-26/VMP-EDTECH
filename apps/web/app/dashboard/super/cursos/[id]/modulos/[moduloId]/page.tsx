@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { RichTextEditor } from '@/components/ui/RichTextEditor';
 import { cursosApi } from '@/lib/api/cursos';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface PreguntaEdit {
     id?: string;
@@ -242,6 +243,7 @@ export default function ModuloConfigPage() {
                 setModulo({ ...data, preguntas, tareasPracticas });
             } catch (error) {
                 console.error('Error fetching modulo:', error);
+                toast.error('No se pudo cargar el módulo. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

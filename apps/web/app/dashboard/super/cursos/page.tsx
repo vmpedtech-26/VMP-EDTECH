@@ -20,6 +20,7 @@ import { Curso } from '@/types/training';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { toast } from 'sonner';
 
 export default function SuperCursosPage() {
     const [cursos, setCursos] = useState<Curso[]>([]);
@@ -37,6 +38,7 @@ export default function SuperCursosPage() {
             setCursos(data);
         } catch (error) {
             console.error('Error fetching cursos:', error);
+            toast.error('No se pudieron cargar los cursos. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

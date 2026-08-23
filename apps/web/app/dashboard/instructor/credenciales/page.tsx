@@ -22,6 +22,7 @@ import { credencialesApi, CredencialListItem } from '@/lib/api/credenciales';
 import { usersApi, UserAdmin } from '@/lib/api/users';
 import { cursosApi } from '@/lib/api/cursos';
 import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
 
 interface Curso {
     id: string;
@@ -42,6 +43,7 @@ export default function InstructorCredencialesPage() {
             setCredenciales(data);
         } catch (error) {
             console.error('Error fetchCredenciales:', error);
+            toast.error('No se pudieron cargar las credenciales. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }
@@ -266,6 +268,7 @@ function GenerarCredencialModal({
                 setCursos(cursosData);
             } catch (error) {
                 console.error('Error loading data:', error);
+                toast.error('No se pudieron cargar alumnos y cursos. Verificá tu conexión.');
             } finally {
                 setIsLoadingData(false);
             }

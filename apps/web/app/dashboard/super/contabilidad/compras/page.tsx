@@ -36,6 +36,7 @@ export default function ComprasPage() {
             setCompras(data);
         } catch (error) {
             console.error('Error fetching compras:', error);
+            toast.error('No se pudieron cargar las compras. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

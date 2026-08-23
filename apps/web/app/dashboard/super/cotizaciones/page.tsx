@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { getCotizaciones, updateCotizacionStatus, CotizacionResponse } from '@/lib/api';
 import { formatARS } from '@/lib/utils';
 import ConvertQuoteModal from '@/components/admin/ConvertQuoteModal';
+import { toast } from 'sonner';
 
 const STATUS_CONFIG = {
     pending: {
@@ -121,7 +122,7 @@ export default function CotizacionesPage() {
 
         try {
             setIsUpdatingStatus(true);
-            await updateCotizacionStatus(statusToUpdate.id, statusToUpdate.status as any).catch(() => null);
+            await updateCotizacionStatus(statusToUpdate.id, statusToUpdate.status as any);
 
             // Update local state optimistically
             setCotizaciones(prev =>
@@ -136,6 +137,7 @@ export default function CotizacionesPage() {
             setStatusToUpdate(null);
         } catch (err) {
             console.error('Error updating status:', err);
+            toast.error('No se pudo actualizar el estado de la cotización.');
         } finally {
             setIsUpdatingStatus(false);
         }

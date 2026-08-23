@@ -7,6 +7,7 @@ import { usersApi, UserAdmin } from '@/lib/api/users';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function EditarInstructorPage() {
     const { id } = useParams();
@@ -22,6 +23,7 @@ export default function EditarInstructorPage() {
                 setUsuario(found);
             } catch (error) {
                 console.error('Error fetching user:', error);
+                toast.error('No se pudo cargar el instructor. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

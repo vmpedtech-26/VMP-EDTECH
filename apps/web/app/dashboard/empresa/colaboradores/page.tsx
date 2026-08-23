@@ -51,6 +51,7 @@ export default function ColaboradoresPage() {
             setEmployees(res.employees);
         } catch (error) {
             console.error(error);
+            toast.error('No se pudieron cargar los colaboradores. Verificá tu conexión.');
         } finally {
             setLoading(false);
         }

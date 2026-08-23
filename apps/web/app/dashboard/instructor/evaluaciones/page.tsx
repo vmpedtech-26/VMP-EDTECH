@@ -24,6 +24,7 @@ interface Examen {
 }
 
 import { api } from '@/lib/api-client';
+import { toast } from 'sonner';
 
 export default function EvaluacionesPage() {
     const [examenes, setExamenes] = useState<Examen[]>([]);
@@ -41,6 +42,7 @@ export default function EvaluacionesPage() {
             setExamenes(data || []);
         } catch (error) {
             console.error('Error fetching examenes:', error);
+            toast.error('No se pudieron cargar las evaluaciones. Verificá tu conexión.');
         } finally {
             setLoading(false);
         }

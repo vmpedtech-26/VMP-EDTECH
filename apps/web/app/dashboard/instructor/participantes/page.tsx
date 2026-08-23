@@ -93,6 +93,7 @@ export default function ParticipantesPage() {
             }
         } catch (error) {
             console.error('Error fetching alumnos:', error);
+            alert('No se pudieron cargar los alumnos. Verificá tu conexión.');
         } finally {
             setLoading(false);
         }
@@ -149,6 +150,7 @@ export default function ParticipantesPage() {
             }
         } catch (error) {
             console.error('Error aprobando foto:', error);
+            alert('No se pudo aprobar la foto.');
         }
     };
 
@@ -175,6 +177,7 @@ export default function ParticipantesPage() {
             }
         } catch (error) {
             console.error('Error rechazando foto:', error);
+            alert('No se pudo rechazar la foto.');
         }
     };
 

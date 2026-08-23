@@ -109,6 +109,7 @@ export default function SesionesPage() {
       setAllAlumnos(Array.isArray(alRes) ? alRes : []);
     } catch (e) {
       console.error(e);
+      toast.error('No se pudieron cargar los datos de sesiones. Verificá tu conexión.');
     } finally {
       setLoading(false);
     }

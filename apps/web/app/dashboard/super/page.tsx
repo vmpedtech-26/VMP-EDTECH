@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { metricsApi, MetricsOverview, RecentActivityItem } from '@/lib/api/metrics';
+import { toast } from 'sonner';
 
 export default function SuperDashboardPage() {
     const [overview, setOverview] = useState<MetricsOverview | null>(null);
@@ -32,6 +33,7 @@ export default function SuperDashboardPage() {
                 setActivity(activityRes.items);
             } catch (error) {
                 console.error('Error fetching dashboard metrics:', error);
+                toast.error('No se pudieron cargar las métricas del panel.');
             } finally {
                 setIsLoading(false);
             }

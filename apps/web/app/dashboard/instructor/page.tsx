@@ -18,6 +18,7 @@ import { useAuth } from '@/lib/auth-context';
 import { evidenciasApi } from '@/lib/api/evidencias';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ModalAltaCampoInstructor } from '@/components/dashboard/ModalAltaCampoInstructor';
+import { toast } from 'sonner';
 
 export default function InstructorDashboard() {
     const { user } = useAuth();
@@ -40,6 +41,7 @@ export default function InstructorDashboard() {
                 });
             } catch (error) {
                 console.error('Error fetching instructor stats:', error);
+                toast.error('No se pudieron cargar tus estadísticas. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

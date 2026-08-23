@@ -25,6 +25,7 @@ export default function PlanCuentasPage() {
             setAccounts(data);
         } catch (error) {
             console.error('Error fetching accounts:', error);
+            toast.error('No se pudo cargar el plan de cuentas. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

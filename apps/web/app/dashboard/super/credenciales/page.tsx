@@ -52,6 +52,7 @@ export default function SuperCredencialesPage() {
             setCredenciales(data);
         } catch (error) {
             console.error('Error fetching credenciales:', error);
+            toast.error('No se pudieron cargar las credenciales. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }
@@ -359,6 +360,7 @@ function GenerarCredencialModal({
                 setCursos(cursosData);
             } catch (error) {
                 console.error('Error loading data:', error);
+                toast.error('No se pudieron cargar alumnos y cursos. Verificá tu conexión.');
             } finally {
                 setIsLoadingData(false);
             }

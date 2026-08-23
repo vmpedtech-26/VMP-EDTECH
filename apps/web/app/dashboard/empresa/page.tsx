@@ -5,6 +5,7 @@ import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
 import { Users, BookOpen, CheckCircle, AlertTriangle, Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface EmployeeMetric {
     id: string;
@@ -43,6 +44,7 @@ export default function EmpresaDashboard() {
                 setMetrics(res);
             } catch (error) {
                 console.error('Error fetching B2B metrics', error);
+                toast.error('No se pudieron cargar las métricas. Verificá tu conexión.');
             } finally {
                 setLoading(false);
             }

@@ -7,6 +7,7 @@ import { cursosApi } from '@/lib/api/cursos';
 import { CursoDetail, Curso } from '@/types/training';
 import { Loader2 } from 'lucide-react';
 import { GestorModulos } from '@/components/admin/GestorModulos';
+import { toast } from 'sonner';
 
 export default function EditarCursoPage() {
     const { id } = useParams();
@@ -21,6 +22,7 @@ export default function EditarCursoPage() {
             setCurso(data);
         } catch (error) {
             console.error('Error fetching curso:', error);
+            toast.error('No se pudo cargar el curso. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

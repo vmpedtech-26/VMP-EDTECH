@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ModalQrCorporativo } from '@/components/dashboard/ModalQrCorporativo';
 import { slugify } from '@/lib/slugify';
+import { toast } from 'sonner';
 
 export default function EmpresasPage() {
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -38,6 +39,7 @@ export default function EmpresasPage() {
             setEmpresas(data);
         } catch (error) {
             console.error('Error fetching empresas:', error);
+            toast.error('No se pudieron cargar las empresas. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

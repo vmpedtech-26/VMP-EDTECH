@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { evidenciasApi } from '@/lib/api/evidencias';
+import { toast } from 'sonner';
 import { Evidencia } from '@/types/training';
 import { useAuth } from '@/lib/auth-context';
 import { format } from 'date-fns';
@@ -34,6 +35,7 @@ export default function InstructorTareasPage() {
                 setEvidencias(data);
             } catch (error) {
                 console.error('Error fetching revisions:', error);
+                toast.error('No se pudieron cargar las tareas. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

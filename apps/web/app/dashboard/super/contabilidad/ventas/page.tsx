@@ -38,6 +38,7 @@ export default function VentasPage() {
             setVentas(data);
         } catch (error) {
             console.error('Error fetching ventas:', error);
+            toast.error('No se pudieron cargar las ventas. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

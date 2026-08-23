@@ -20,6 +20,7 @@ import { empresasApi, Empresa } from '@/lib/api/empresas';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { toast } from 'sonner';
 
 export default function InstructoresPage() {
     const [usuarios, setUsuarios] = useState<UserAdmin[]>([]);
@@ -35,6 +36,7 @@ export default function InstructoresPage() {
             setUsuarios(data);
         } catch (error) {
             console.error('Error fetching instructores:', error);
+            toast.error('No se pudieron cargar los instructores. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }

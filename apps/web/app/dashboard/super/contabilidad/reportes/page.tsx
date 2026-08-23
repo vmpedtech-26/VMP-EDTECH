@@ -29,6 +29,7 @@ export default function ReportesContablesPage() {
             setBalance(data);
         } catch (error) {
             console.error('Error fetching balance:', error);
+            toast.error('No se pudo cargar el balance. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }
