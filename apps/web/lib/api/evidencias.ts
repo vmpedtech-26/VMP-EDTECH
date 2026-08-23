@@ -65,4 +65,11 @@ export const evidenciasApi = {
     ): Promise<Evidencia> {
         return api.put(`/evidencias/${id}/evaluar`, data);
     },
+
+    /**
+     * Estadísticas de revisión para el dashboard del instructor
+     */
+    async obtenerStats(): Promise<{ pending: number; totalReviewed: number; activeAlumnos: number }> {
+        return api.get('/evidencias/stats');
+    },
 };

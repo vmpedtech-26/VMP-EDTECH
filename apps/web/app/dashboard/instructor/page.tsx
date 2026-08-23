@@ -33,12 +33,8 @@ export default function InstructorDashboard() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const data = await evidenciasApi.listarRevisiones();
-                setStats({
-                    pending: data.length,
-                    totalReviewed: 12, // Placeholder for total reviewed
-                    activeAlumnos: 8   // Placeholder for active students
-                });
+                const data = await evidenciasApi.obtenerStats();
+                setStats(data);
             } catch (error) {
                 console.error('Error fetching instructor stats:', error);
                 toast.error('No se pudieron cargar tus estadísticas. Verificá tu conexión.');

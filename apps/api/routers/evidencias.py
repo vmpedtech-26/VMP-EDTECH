@@ -6,7 +6,8 @@ from schemas.evidencias import (
     UploadEvidenciaResponse,
     ListEvidenciasResponse,
     EvaluarEvidenciaRequest,
-    EstadoEvidencia
+    EstadoEvidencia,
+    EvidenciasStatsResponse
 )
 from auth.dependencies import get_current_user
 from core.database import prisma
@@ -203,6 +204,38 @@ async def listar_evidencias_pendientes(current_user=Depends(get_current_user)):
     return ListEvidenciasResponse(
         evidencias=evidencias_response,
         total=len(evidencias_response)
+    )
+
+
+@router.get("/stats", response_model=EvidenciasStatsResponse)
+async def obtener_stats_evidencias(current_user=Depends(get_current_user)):
+    """Estadísticas de revisión para el dashboard del instructor.
+
+    INSTRUCTOR ve solo su propia empresa; SUPER_ADMIN ve todo."""
+
+    if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
+
+    alumno_filter = {}
+    if current_user.rol == "INSTRUCTOR" and current_user.empresaId:
+        alumno_filter["empresaId"] = current_user.empresaId
+
+    pending_where = {"estado": "PENDIENTE"}
+    if alumno_filter:
+        pending_where["alumno"] = alumno_filter
+
+    pending = await prisma.evidencia.count(where=pending_where)
+    total_reviewed = await prisma.evidencia.count(where={"evaluadorId": current_user.id})
+
+    alumnos_where = {"rol": "ALUMNO", "activo": True}
+    if alumno_filter:
+        alumnos_where.update(alumno_filter)
+    active_alumnos = await prisma.user.count(where=alumnos_where)
+
+    return EvidenciasStatsResponse(
+        pending=pending,
+        totalReviewed=total_reviewed,
+        activeAlumnos=active_alumnos
     )
 
 

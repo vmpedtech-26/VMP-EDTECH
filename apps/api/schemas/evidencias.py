@@ -40,3 +40,9 @@ class ListEvidenciasResponse(BaseModel):
     """Lista de evidencias para una tarea"""
     evidencias: List[EvidenciaResponse]
     total: int
+
+class EvidenciasStatsResponse(BaseModel):
+    """Estadísticas de revisión de evidencias para el dashboard del instructor"""
+    pending: int
+    totalReviewed: int
+    activeAlumnos: int
