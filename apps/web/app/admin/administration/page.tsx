@@ -3,11 +3,11 @@ import Link from 'next/link';
 
 const SECTIONS = [
   { icon: 'people', label: 'Usuarios', desc: 'Gestión de usuarios y accesos', href: '/admin/users' },
-  { icon: 'palette', label: 'Apariencia', desc: 'Logo, colores y branding', href: '/admin/administration/appearance' },
-  { icon: 'account_tree', label: 'Sectores', desc: 'Estructura organizacional', href: '/admin/administration/sectors' },
-  { icon: 'work', label: 'Puestos', desc: 'Roles y posiciones laborales', href: '/admin/administration/job-positions' },
-  { icon: 'location_on', label: 'Localidades', desc: 'Sedes y centros de servicio', href: '/admin/administration/service-locations' },
-  { icon: 'map', label: 'Áreas operativas', desc: 'Zonas operativas del negocio', href: '/admin/administration/operational-areas' },
+  { icon: 'palette', label: 'Apariencia', desc: 'Logo, colores y branding', href: '/dashboard/super/administracion/apariencia' },
+  { icon: 'account_tree', label: 'Sectores', desc: 'Estructura organizacional', href: '/dashboard/super/administracion/sectores' },
+  { icon: 'work', label: 'Puestos', desc: 'Roles y posiciones laborales', href: '/dashboard/super/administracion/puestos' },
+  { icon: 'location_on', label: 'Localidades', desc: 'Sedes y centros de servicio', href: '/dashboard/super/administracion/localidades' },
+  { icon: 'map', label: 'Áreas operativas', desc: 'Zonas operativas del negocio', href: '/dashboard/super/administracion/areas-operativas' },
 ];
 
 export default function AdministracionPage() {

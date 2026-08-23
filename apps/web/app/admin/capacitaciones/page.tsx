@@ -48,7 +48,7 @@ export default function CapacitacionesDashboard() {
             </div>
             <div style={{display:'flex',gap:16,flexWrap:'wrap',fontSize:13,color:'#64748B',marginTop:8}}>
               {pending.pendingEssayGrades > 0 && <span>• {pending.pendingEssayGrades} fotos pendientes de evaluación</span>}
-              {pending.clientTrainingRequests > 0 && <Link href="/admin/capacitaciones/clientes/solicitudes" style={{color:'#3AAFA9'}}>• {pending.clientTrainingRequests} solicitudes de clientes</Link>}
+              {pending.clientTrainingRequests > 0 && <Link href="/dashboard/super/solicitudes" style={{color:'#3AAFA9'}}>• {pending.clientTrainingRequests} solicitudes de clientes</Link>}
               {pending.complianceGaps > 0 && <span>• {pending.complianceGaps} capacitaciones en progreso</span>}
             </div>
           </div>
@@ -85,10 +85,10 @@ export default function CapacitacionesDashboard() {
         </div>
         <div className="atlas-card__body" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:12}}>
           {[
-            { href: '/admin/capacitaciones/catalogo', icon: 'school', label: 'Ver catálogo' },
-            { href: '/admin/capacitaciones/catalogo/sessions', icon: 'event', label: 'Ver agenda' },
-            { href: '/admin/capacitaciones/clientes/solicitudes', icon: 'inbox', label: 'Solicitudes' },
-            { href: '/admin/capacitaciones/historico', icon: 'history', label: 'Histórico' },
+            { href: '/dashboard/super/cursos', icon: 'school', label: 'Ver catálogo' },
+            { href: '/dashboard/super/sesiones', icon: 'event', label: 'Ver agenda' },
+            { href: '/dashboard/super/solicitudes', icon: 'inbox', label: 'Solicitudes' },
+            { href: '/dashboard/super/historico', icon: 'history', label: 'Histórico' },
             { href: '/admin/hr/employees', icon: 'badge', label: 'Personal' },
             { href: '/admin/users', icon: 'people', label: 'Usuarios' },
           ].map(a => (

@@ -11,11 +11,10 @@ const NAV_ITEMS = [
     href: '/admin/capacitaciones',
     children: [
       { icon: 'home', label: 'Inicio', href: '/admin/capacitaciones' },
-      { icon: 'event', label: 'Agenda & Sesiones', href: '/admin/capacitaciones/catalogo/sessions' },
-      { icon: 'inbox', label: 'Solicitudes', href: '/admin/capacitaciones/clientes/solicitudes' },
+      { icon: 'event', label: 'Agenda & Sesiones', href: '/dashboard/super/sesiones' },
+      { icon: 'inbox', label: 'Solicitudes', href: '/dashboard/super/solicitudes' },
       { icon: 'handshake', label: 'Clientes B2B', href: '/admin/capacitaciones/clientes' },
-      { icon: 'tune', label: 'Parámetros LMS', href: '/admin/parameters' },
-      { icon: 'history', label: 'Histórico', href: '/admin/capacitaciones/historico' },
+      { icon: 'history', label: 'Histórico', href: '/dashboard/super/historico' },
     ]
   },
   {
@@ -41,7 +40,6 @@ const NAV_ITEMS = [
   { icon: 'gavel', label: 'Compliance & Ética', href: '/dashboard/super/compliance', children: [] },
   { icon: 'security', label: 'Seguridad & Logs', href: '/dashboard/super/seguridad', children: [] },
   { icon: 'groups', label: 'Personal (HR)', href: '/admin/hr/employees', children: [] },
-  { icon: 'tune', label: 'Parámetros', href: '/admin/parameters', pinned: true, children: [] },
   { icon: 'shield', label: 'Administración System', href: '/admin/administration', pinned: true, children: [] },
 ];
 

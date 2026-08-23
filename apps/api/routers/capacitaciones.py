@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional
-from auth.dependencies import get_current_user
+from auth.dependencies import get_current_user, require_admin
 from core.database import prisma
 from datetime import datetime
 
@@ -51,7 +51,7 @@ async def overview(current_user=Depends(get_current_user)):
 async def history(
     limit: int = Query(50, le=200),
     skip: int = Query(0),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     """Historico de capacitaciones completadas"""
     where = {"estado": {"in": ["COMPLETADO", "APROBADO", "REPROBADO"]}}
@@ -79,7 +79,7 @@ async def history(
 @router.get("/sessions")
 async def list_sessions(
     limit: int = Query(50),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     """Sesiones programadas"""
     try:
@@ -107,7 +107,7 @@ async def list_sessions(
         return {"items": [], "error": str(e)}
 
 @router.post("/sessions")
-async def create_session(data: dict, current_user=Depends(get_current_user)):
+async def create_session(data: dict, current_user=Depends(require_admin)):
     """Crear sesión"""
     fecha_inicio = datetime.fromisoformat(data["fechaInicio"])
     sesion = await prisma.sesioncapacitacion.create(data={
@@ -124,7 +124,7 @@ async def create_session(data: dict, current_user=Depends(get_current_user)):
 async def training_requests(
     skip: int = 0,
     limit: int = 50,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     """Solicitudes de capacitación de clientes"""
     try:
@@ -165,7 +165,7 @@ async def create_training_request(data: dict, current_user=Depends(get_current_u
     return solicitud
 
 @router.patch("/training-requests/{id}")
-async def update_training_request(id: str, data: dict, current_user=Depends(get_current_user)):
+async def update_training_request(id: str, data: dict, current_user=Depends(require_admin)):
     """Actualizar estado de solicitud"""
     solicitud = await prisma.solicitudcapacitacion.update(
         where={"id": id},
@@ -241,7 +241,7 @@ async def generar_examen_desde_plantilla(plantillaId: str, current_user=Depends(
     }
 
 @router.get("/clientes/customers")
-async def clientes_customers(current_user=Depends(get_current_user)):
+async def clientes_customers(current_user=Depends(require_admin)):
     """Clientes del módulo capacitaciones"""
     empresas = await prisma.company.find_many(
         where={"activa": True},

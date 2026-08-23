@@ -29,7 +29,16 @@ import {
     Lock,
     Presentation,
     CalendarDays,
-    FileCheck2
+    FileCheck2,
+    HelpCircle,
+    ClipboardList,
+    Inbox,
+    History,
+    Settings2,
+    MapPin,
+    Briefcase,
+    Layers,
+    Palette
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
@@ -79,11 +88,32 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: Building2, label: 'Empresas B2B', href: '/dashboard/super/empresas' },
         { icon: Users, label: 'Alumnos y Nómina', href: '/dashboard/super/alumnos' },
         { icon: Presentation, label: 'Instructores', href: '/dashboard/super/instructores' },
-        { icon: GraduationCap, label: 'Gestión LMS Cursos', href: '/dashboard/super/cursos' },
+        {
+            icon: GraduationCap,
+            label: 'Gestión LMS Cursos',
+            submenu: [
+                { icon: GraduationCap, label: 'Cursos', href: '/dashboard/super/cursos' },
+                { icon: HelpCircle, label: 'Banco de Preguntas', href: '/dashboard/super/administracion/banco-preguntas' },
+                { icon: ClipboardList, label: 'Plantillas de Evaluación', href: '/dashboard/super/administracion/plantillas-evaluacion' },
+            ]
+        },
         { icon: CalendarDays, label: 'Sesiones en Vivo', href: '/dashboard/super/sesiones' },
+        { icon: History, label: 'Histórico', href: '/dashboard/super/historico' },
         { icon: Award, label: 'Credenciales & QR', href: '/dashboard/super/credenciales' },
         { icon: FileSpreadsheet, label: 'Cotizaciones B2B', href: '/dashboard/super/cotizaciones' },
+        { icon: Inbox, label: 'Solicitudes de Capacitación', href: '/dashboard/super/solicitudes' },
         { icon: FileText, label: 'Presupuestos HSE', href: '/dashboard/super/presupuestos' },
+        {
+            icon: Settings2,
+            label: 'Administración',
+            submenu: [
+                { icon: Briefcase, label: 'Sectores', href: '/dashboard/super/administracion/sectores' },
+                { icon: Briefcase, label: 'Puestos', href: '/dashboard/super/administracion/puestos' },
+                { icon: MapPin, label: 'Localidades', href: '/dashboard/super/administracion/localidades' },
+                { icon: Layers, label: 'Áreas Operativas', href: '/dashboard/super/administracion/areas-operativas' },
+                { icon: Palette, label: 'Apariencia', href: '/dashboard/super/administracion/apariencia' },
+            ]
+        },
         { icon: Settings, label: 'Centro de Control', href: '/dashboard/super/control' },
         { icon: BarChart3, label: 'Métricas & KPIs', href: '/dashboard/super/metrics' },
         { icon: ShieldCheck, label: 'Compliance & Ética', href: '/dashboard/super/compliance' },

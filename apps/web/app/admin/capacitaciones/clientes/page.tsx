@@ -21,7 +21,7 @@ export default function ClientesPage() {
       <div className="atlas-page-header">
         <div><div className="atlas-page-title">Clientes</div><div className="atlas-page-subtitle">{clientes.length} empresas registradas</div></div>
         <div style={{display:'flex',gap:8}}>
-          <Link href="/admin/capacitaciones/clientes/solicitudes" className="atlas-btn atlas-btn--ghost">
+          <Link href="/dashboard/super/solicitudes" className="atlas-btn atlas-btn--ghost">
             <span className="material-icons" style={{fontSize:16}}>inbox</span>Solicitudes
           </Link>
         </div>
