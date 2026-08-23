@@ -45,15 +45,15 @@ export default function SistemaPage() {
     // Info del sistema
     const systemInfo = [
         { label: 'Versión API', value: '0.1.0-beta', icon: Server, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Base de Datos', value: 'PostgreSQL (Railway)', icon: Database, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'Base de Datos', value: 'PostgreSQL (Neon)', icon: Database, color: 'text-purple-600', bg: 'bg-purple-50' },
         { label: 'Frontend', value: 'Next.js (Vercel)', icon: Globe, color: 'text-emerald-600', bg: 'bg-emerald-50' },
         { label: 'Estado', value: 'Operativo', icon: Activity, color: 'text-green-600', bg: 'bg-green-50' },
     ];
 
     const services = [
-        { name: 'API Backend', url: 'https://vmp-edtech-production.up.railway.app', status: 'online' },
+        { name: 'API Backend', url: 'https://vmp-edtech-6wgw.onrender.com', status: 'online' },
         { name: 'Frontend Web', url: 'https://www.vmp-edtech.com', status: 'online' },
-        { name: 'Base de Datos', url: 'Railway PostgreSQL', status: 'online' },
+        { name: 'Base de Datos', url: 'Neon PostgreSQL', status: 'online' },
     ];
 
     // Estados para Logs de Auditoría
@@ -357,7 +357,7 @@ export default function SistemaPage() {
                 <div className="space-y-4">
                     <h2 className="text-2xl font-bold text-slate-900">Enlaces Rápidos</h2>
                     <Card className="border-none shadow-sm ring-1 ring-gray-100 divide-y divide-gray-50 bg-white" hover={false}>
-                        <a href="https://vmp-edtech-production.up.railway.app/docs" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <a href="https://vmp-edtech-6wgw.onrender.com/docs" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                                     <Server className="h-5 w-5" />
@@ -381,14 +381,26 @@ export default function SistemaPage() {
                             </div>
                             <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" />
                         </a>
-                        <a href="https://railway.com" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
                                     <HardDrive className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-slate-900">Railway Dashboard</p>
-                                    <p className="text-xs text-slate-500">Hosting y base de datos</p>
+                                    <p className="font-bold text-slate-900">Render Dashboard</p>
+                                    <p className="text-xs text-slate-500">Hosting del backend (API)</p>
+                                </div>
+                            </div>
+                            <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" />
+                        </a>
+                        <a href="https://console.neon.tech" target="_blank" rel="noopener noreferrer" className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                                    <Database className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-900">Neon Dashboard</p>
+                                    <p className="text-xs text-slate-500">Base de datos PostgreSQL</p>
                                 </div>
                             </div>
                             <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" />
