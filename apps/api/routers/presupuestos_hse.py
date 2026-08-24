@@ -103,7 +103,11 @@ def check_super_admin(current_user: User = Depends(get_current_user)):
 # ─── SERIALIZACIÓN (Prisma camelCase -> contrato snake_case del frontend) ───
 
 def _calcular_totales(items: List[ItemPresupuesto]):
-    subtotal = sum(item.importe for item in items)
+    # Recalcula el importe de cada renglón (cantidad * precio unitario) en vez
+    # de confiar en el "importe" que manda el cliente, para que un bug de
+    # redondeo o una edición manual en el frontend no termine en una
+    # cotización real (PDF enviado a un cliente) con números que no cierran.
+    subtotal = sum(round(item.cantidad * item.precio_unitario, 2) for item in items)
     iva = round(subtotal * 0.21, 2)
     total = round(subtotal + iva, 2)
     return round(subtotal, 2), iva, total

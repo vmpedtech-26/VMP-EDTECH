@@ -7,7 +7,7 @@ from datetime import datetime
 router = APIRouter()
 
 @router.get("/pending-actions")
-async def pending_actions(current_user=Depends(get_current_user)):
+async def pending_actions(current_user=Depends(require_admin)):
     """Dashboard: pending items count"""
     # Count pending essay grades (fotos_credencial pendientes que el user puede evaluar)
     pending_fotos = await prisma.fotocredencial.count(where={"estado": "PENDIENTE"}) if current_user.rol in ["SUPER_ADMIN", "INSTRUCTOR"] else 0
@@ -29,7 +29,7 @@ async def pending_actions(current_user=Depends(get_current_user)):
     }
 
 @router.get("/overview")
-async def overview(current_user=Depends(get_current_user)):
+async def overview(current_user=Depends(require_admin)):
     """Dashboard: general statistics"""
     total_cursos = await prisma.curso.count(where={"activo": True})
     total_empresas = await prisma.company.count(where={"activa": True})
@@ -178,9 +178,13 @@ async def obtener_acta_curso(cursoId: str, current_user=Depends(get_current_user
     """Obtener acta de calificaciones y asistencias de una capacitación (Estilo Blister)"""
     if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
         raise HTTPException(status_code=403, detail="No autorizado")
-        
+
+    where_clause = {"cursoId": cursoId}
+    if current_user.rol == "INSTRUCTOR":
+        where_clause["alumno"] = {"is": {"empresaId": current_user.empresaId}}
+
     inscripciones = await prisma.inscripcion.find_many(
-        where={"cursoId": cursoId},
+        where=where_clause,
         include={"alumno": True, "curso": True}
     )
     

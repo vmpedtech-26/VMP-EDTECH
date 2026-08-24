@@ -3,12 +3,14 @@ Contact form API endpoint
 Handles contact form submissions from the landing page
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+import html
 import logging
 import os
 from services.email_service import email_service
+from auth.dependencies import require_super_admin
 
 logger = logging.getLogger(__name__)
 
@@ -160,12 +162,17 @@ async def submit_contact_form(data: ContactFormRequest):
         raise HTTPException(status_code=500, detail="Error al procesar la consulta")
 
 
+class TestEmailRequest(BaseModel):
+    target_email: EmailStr = "administracion@vmp-edtech.com"
+
+
 @router.post("/test-email")
-async def test_email_sending(target_email: Optional[str] = "administracion@vmp-edtech.com"):
+async def test_email_sending(data: TestEmailRequest, current_user=Depends(require_super_admin)):
     """
     Diagnostic endpoint to test email delivery to administracion@vmp-edtech.com
+    (Solo SUPER_ADMIN: envía un correo real y expone qué proveedor está configurado)
     """
-    import os
+    target_email = data.target_email
     resend_key = os.getenv("RESEND_API_KEY", "")
     smtp_host = os.getenv("SMTP_HOST", "")
     smtp_user = os.getenv("SMTP_USER", "")
@@ -177,7 +184,7 @@ async def test_email_sending(target_email: Optional[str] = "administracion@vmp-e
     test_html = f"""
     <div style="font-family: sans-serif; padding: 20px; background: #0A192F; color: white; border-radius: 10px;">
         <h2>🧪 Prueba de Diagnóstico de Email - VMP-EDTECH</h2>
-        <p>Este es un mensaje de prueba automático para verificar la entrega a <strong>{target_email}</strong>.</p>
+        <p>Este es un mensaje de prueba automático para verificar la entrega a <strong>{html.escape(target_email)}</strong>.</p>
         <p>Driver usado: <strong>{'Resend HTTPS API' if has_resend else ('SMTP' if has_smtp else 'Modo Desarrollo (No configurado)')}</strong></p>
     </div>
     """

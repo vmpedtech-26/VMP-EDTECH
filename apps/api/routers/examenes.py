@@ -10,6 +10,7 @@ from schemas.models import (
 from auth.dependencies import get_current_user
 from core.database import prisma
 from prisma import Json
+from prisma.errors import UniqueViolationError
 from core.config import settings
 from services.credencial_generator import (
     generate_credencial_number,
@@ -27,8 +28,13 @@ async def obtener_todos_examenes(current_user=Depends(get_current_user)):
     if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
         from fastapi import HTTPException
         raise HTTPException(status_code=403, detail="No autorizado")
-    
+
+    where_clause = {}
+    if current_user.rol == "INSTRUCTOR":
+        where_clause = {"alumno": {"is": {"empresaId": current_user.empresaId}}}
+
     examenes = await prisma.examen.find_many(
+        where=where_clause,
         include={
             "alumno": True,
             "curso": True
@@ -79,7 +85,10 @@ async def generate_credencial(
         raise HTTPException(status_code=404, detail="Inscripción no encontrada")
     
     # Verify user has permission
-    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+    if current_user.rol == "INSTRUCTOR":
+        if inscripcion.alumno.empresaId != current_user.empresaId:
+            raise HTTPException(status_code=403, detail="No autorizado")
+    elif current_user.rol != "SUPER_ADMIN":
         if current_user.id != inscripcion.alumnoId:
             raise HTTPException(status_code=403, detail="No autorizado")
     
@@ -112,11 +121,21 @@ async def generate_credencial(
         # Convert URL to file path
         foto_path = foto_credencial.fotoUrl.replace("/uploads/", "uploads/")
     
-    # Generate credential number
+    # Generate credential number. "numero" es @unique, así que si dos alumnos
+    # terminan el mismo curso casi al mismo tiempo pueden leer el mismo count();
+    # reintentamos con un numero fresco ante un choque de unicidad en vez de
+    # dejar que la creación explote con un 500 no manejado.
     year = datetime.now().year
-    count = await prisma.credencial.count()
-    numero_credencial = generate_credencial_number(year, count + 1)
-    
+    numero_credencial = None
+    for intento in range(5):
+        count = await prisma.credencial.count()
+        candidato = generate_credencial_number(year, count + 1 + intento)
+        if not await prisma.credencial.find_unique(where={"numero": candidato}):
+            numero_credencial = candidato
+            break
+    if not numero_credencial:
+        raise HTTPException(status_code=503, detail="No se pudo generar un número de credencial único, intente nuevamente")
+
     # Build QR URL
     qr_url = f"{settings.FRONTEND_URL}/validar/{numero_credencial}"
     
@@ -151,17 +170,25 @@ async def generate_credencial(
         fecha_vencimiento = datetime.now() + timedelta(days=30 * inscripcion.curso.vigenciaMeses)
     
     # Create credential record with all required fields
-    credencial = await prisma.credencial.create(
-        data={
-            "numero": numero_credencial,
-            "alumnoId": inscripcion.alumnoId,
-            "cursoId": inscripcion.cursoId,
-            "pdfUrl": pdf_url,
-            "qrCodeUrl": qr_storage_path_str,
-            "fechaEmision": datetime.now(),
-            "fechaVencimiento": fecha_vencimiento
-        }
-    )
+    try:
+        credencial = await prisma.credencial.create(
+            data={
+                "numero": numero_credencial,
+                "alumnoId": inscripcion.alumnoId,
+                "cursoId": inscripcion.cursoId,
+                "pdfUrl": pdf_url,
+                "qrCodeUrl": qr_storage_path_str,
+                "fechaEmision": datetime.now(),
+                "fechaVencimiento": fecha_vencimiento
+            }
+        )
+    except UniqueViolationError:
+        # Otra solicitud concurrente tomó este número entre la verificación y la
+        # creación; el PDF ya generado queda huérfano pero no se persiste nada corrupto.
+        raise HTTPException(
+            status_code=409,
+            detail="Se generó un conflicto de numeración con otra credencial emitida al mismo tiempo. Reintente la operación."
+        )
     
     return {
         "message": "Credencial generada exitosamente",
