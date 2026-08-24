@@ -6,6 +6,7 @@ import { Loader2, Award } from 'lucide-react';
 import { examenesApi } from '@/lib/api/examenes';
 import { Credencial } from '@/types/training';
 import { CardCredencial } from '@/components/dashboard/CardCredencial';
+import { toast } from 'sonner';
 
 export default function CredencialesPage() {
     const [credenciales, setCredenciales] = useState<Credencial[]>([]);
@@ -18,6 +19,7 @@ export default function CredencialesPage() {
                 setCredenciales(data);
             } catch (error) {
                 console.error('Error fetching credenciales:', error);
+                toast.error('No se pudieron cargar tus credenciales. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

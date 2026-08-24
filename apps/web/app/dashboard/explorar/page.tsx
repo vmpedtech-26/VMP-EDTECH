@@ -9,6 +9,7 @@ import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { Curso } from '@/types/training';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
+import { toast } from 'sonner';
 
 export default function ExplorarCursosPage() {
     const [cursos, setCursos] = useState<Curso[]>([]);
@@ -24,6 +25,7 @@ export default function ExplorarCursosPage() {
                 setCursos(data);
             } catch (error) {
                 console.error('Error fetching courses:', error);
+                toast.error('No se pudo cargar el catálogo de cursos. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

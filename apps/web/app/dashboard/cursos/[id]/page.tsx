@@ -18,6 +18,7 @@ import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { CursoDetail, Inscripcion } from '@/types/training';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function CursoDetailPage() {
     const { id } = useParams();
@@ -37,6 +38,7 @@ export default function CursoDetailPage() {
                 setInscripcion(inscripcionData);
             } catch (error) {
                 console.error('Error fetching course detail:', error);
+                toast.error('No se pudo cargar el curso. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

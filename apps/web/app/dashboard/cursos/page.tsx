@@ -7,6 +7,7 @@ import { BookOpen, Clock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
 import { MisCursosItem } from '@/types/training';
+import { toast } from 'sonner';
 
 export default function CursosPage() {
     const [cursos, setCursos] = useState<MisCursosItem[]>([]);
@@ -19,6 +20,7 @@ export default function CursosPage() {
                 setCursos(response.cursos);
             } catch (error) {
                 console.error('Error fetching enrolled courses:', error);
+                toast.error('No se pudieron cargar tus cursos. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

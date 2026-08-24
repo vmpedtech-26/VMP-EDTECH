@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Camera, Upload, CheckCircle2, FileText, Loader2, Info, Clock, AlertCircle } from 'lucide-react';
 import { TareaPractica, Evidencia } from '@/types/training';
 import { evidenciasApi } from '@/lib/api/evidencias';
+import { toast } from 'sonner';
 
 interface PracticaViewerProps {
     tareas: TareaPractica[];
@@ -36,6 +37,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
                 setEvidencias(newEvidencias);
             } catch (error) {
                 console.error('Error fetching initial evidences:', error);
+                toast.error('No se pudieron cargar tus evidencias. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }
@@ -86,6 +88,7 @@ export function PracticaViewer({ tareas, onComplete }: PracticaViewerProps) {
             await onComplete();
         } catch (err) {
             console.error(err);
+            toast.error('No se pudo finalizar el módulo. Intentá nuevamente.');
         } finally {
             setSubmitting(false);
         }

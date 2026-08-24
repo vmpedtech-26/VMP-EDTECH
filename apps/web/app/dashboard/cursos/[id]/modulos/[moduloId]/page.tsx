@@ -11,6 +11,7 @@ import { Modulo } from '@/types/training';
 import { ModuloTeoria } from '@/components/training/ModuloTeoria';
 import { ModuloQuiz } from '@/components/training/ModuloQuiz';
 import { PracticaViewer } from '@/components/training/PracticaViewer';
+import { toast } from 'sonner';
 
 export default function ModuloDetailPage() {
     const { id, moduloId } = useParams();
@@ -25,6 +26,7 @@ export default function ModuloDetailPage() {
                 setModulo(data);
             } catch (error) {
                 console.error('Error fetching modulo:', error);
+                toast.error('No se pudo cargar el módulo. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }

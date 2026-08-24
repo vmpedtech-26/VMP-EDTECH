@@ -13,6 +13,7 @@ import { MisCursosResponse, Credencial } from '@/types/training';
 import { CardCredencial } from '@/components/dashboard/CardCredencial';
 import { PhotoCaptureModal } from '@/components/dashboard/PhotoCaptureModal';
 import { fotosCredencialApi, FotoCredencial } from '@/lib/api/fotos-credencial';
+import { toast } from 'sonner';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -60,6 +61,7 @@ export default function DashboardPage() {
                 setFoto(fotoRes);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
+                toast.error('No se pudieron cargar tus datos. Verificá tu conexión.');
             } finally {
                 setIsLoading(false);
             }
