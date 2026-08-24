@@ -77,6 +77,7 @@ async def crear_curso(data: CreateCursoRequest, current_user=Depends(get_current
             "tipoEvaluacion": data.tipoEvaluacion,
             "usaTelemetriaObd2": data.usaTelemetriaObd2,
             "plantillaEvaluacionId": data.plantillaEvaluacionId,
+            "minimoAprobacion": data.minimoAprobacion,
             "activo": True
         }
     )
@@ -147,6 +148,7 @@ async def actualizar_curso(id: str, data: UpdateCursoRequest, current_user=Depen
     if data.tipoEvaluacion is not None: update_data["tipoEvaluacion"] = data.tipoEvaluacion
     if data.usaTelemetriaObd2 is not None: update_data["usaTelemetriaObd2"] = data.usaTelemetriaObd2
     if data.plantillaEvaluacionId is not None: update_data["plantillaEvaluacionId"] = data.plantillaEvaluacionId or None
+    if data.minimoAprobacion is not None: update_data["minimoAprobacion"] = data.minimoAprobacion
 
     curso = await prisma.curso.update(
         where={"id": id},
@@ -322,7 +324,22 @@ async def admin_obtener_modulo(
     if not modulo or modulo.cursoId != cursoId:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
 
-    return modulo
+    curso = await prisma.curso.find_unique(where={"id": cursoId})
+
+    return {
+        "id": modulo.id,
+        "titulo": modulo.titulo,
+        "orden": modulo.orden,
+        "tipo": modulo.tipo,
+        "contenidoHtml": modulo.contenidoHtml,
+        "videoUrl": modulo.videoUrl,
+        "liveClassUrl": modulo.liveClassUrl,
+        "liveClassDate": modulo.liveClassDate,
+        "liveClassPlatform": modulo.liveClassPlatform,
+        "preguntas": modulo.preguntas,
+        "tareasPracticas": modulo.tareasPracticas,
+        "minimoAprobacion": curso.minimoAprobacion if curso else 70,
+    }
 
 
 @router.put("/{cursoId}/modulos/{moduloId}", response_model=ModuloDetailAdmin)

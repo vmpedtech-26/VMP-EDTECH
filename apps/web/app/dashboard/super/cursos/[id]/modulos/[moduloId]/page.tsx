@@ -40,6 +40,7 @@ interface ModuloEdit {
     liveClassPlatform?: 'google_meet' | 'teams' | 'zoom';
     preguntas?: PreguntaEdit[];
     tareasPracticas?: TareaEdit[];
+    minimoAprobacion?: number;
 }
 
 function PreguntaEditor({
@@ -533,7 +534,7 @@ export default function ModuloConfigPage() {
                                 Editor de Cuestionario
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                                {modulo.preguntas?.length || 0} pregunta(s) · Aprobación: 70%
+                                {modulo.preguntas?.length || 0} pregunta(s) · Aprobación: {modulo.minimoAprobacion ?? 70}%
                             </p>
                         </div>
                         <Button

@@ -24,6 +24,7 @@ export interface Curso {
     tipoEvaluacion?: 'QUIZ' | 'PRACTICA' | 'NINGUNA';
     usaTelemetriaObd2?: boolean;
     plantillaEvaluacionId?: string | null;
+    minimoAprobacion?: number;
 }
 
 export interface ModuloSummary {

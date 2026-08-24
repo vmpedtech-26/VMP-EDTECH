@@ -20,6 +20,7 @@ class CursoListItem(BaseModel):
     tipoEvaluacion: str = "QUIZ"
     usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
+    minimoAprobacion: int = 70
 
     class Config:
         from_attributes = True
@@ -37,6 +38,7 @@ class CreateCursoRequest(BaseModel):
     tipoEvaluacion: str = "QUIZ"
     usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
+    minimoAprobacion: int = 70
 
 class UpdateCursoRequest(BaseModel):
     nombre: Optional[str] = None
@@ -52,6 +54,7 @@ class UpdateCursoRequest(BaseModel):
     tipoEvaluacion: Optional[str] = None
     usaTelemetriaObd2: Optional[bool] = None
     plantillaEvaluacionId: Optional[str] = None
+    minimoAprobacion: Optional[int] = None
 
 class ModuloSummary(BaseModel):
     """Resumen de módulo para detalle de curso"""
@@ -79,6 +82,7 @@ class CursoDetail(BaseModel):
     tipoEvaluacion: str = "QUIZ"
     usaTelemetriaObd2: bool = False
     plantillaEvaluacionId: Optional[str] = None
+    minimoAprobacion: int = 70
     modulos: List[ModuloSummary]
 
     class Config:
@@ -147,6 +151,7 @@ class ModuloDetailAdmin(BaseModel):
     liveClassPlatform: Optional[str] = None
     preguntas: Optional[List[PreguntaDetailAdmin]] = None
     tareasPracticas: Optional[List[TareaPracticaResponse]] = None
+    minimoAprobacion: int = 70
 
     class Config:
         from_attributes = True

@@ -29,6 +29,7 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
         duracionHoras: 0,
         vigenciaMeses: 12,
         activo: true,
+        minimoAprobacion: 70,
     });
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
     const [plantillas, setPlantillas] = useState<PlantillaOption[]>([]);
@@ -205,7 +206,7 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                                 Tipo de Evaluación
@@ -249,6 +250,21 @@ export function CursoForm({ initialData, onSubmit, isLoading, title }: CursoForm
                                     <option key={p.id} value={p.id}>{p.nombre}</option>
                                 ))}
                             </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                Nota Mínima de Aprobación (%)
+                            </label>
+                            <input
+                                type="number"
+                                name="minimoAprobacion"
+                                min={0}
+                                max={100}
+                                className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                value={formData.minimoAprobacion ?? 70}
+                                onChange={handleChange}
+                            />
                         </div>
                     </div>
 
