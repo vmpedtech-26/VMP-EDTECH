@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Eye, CheckCircle, XCircle, Search, Download, ClipboardCheck } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Search, Download, ClipboardCheck, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { examenesApi, ExamenDetalle } from '@/lib/api/examenes';
 
 interface Examen {
     id: string;
@@ -30,6 +31,21 @@ export default function EvaluacionesPage() {
     const [examenes, setExamenes] = useState<Examen[]>([]);
     const [busqueda, setBusqueda] = useState('');
     const [loading, setLoading] = useState(true);
+    const [detalle, setDetalle] = useState<ExamenDetalle | null>(null);
+    const [loadingDetalle, setLoadingDetalle] = useState(false);
+
+    const handleVerDetalle = async (examenId: string) => {
+        setLoadingDetalle(true);
+        try {
+            const data = await examenesApi.obtenerDetalle(examenId);
+            setDetalle(data);
+        } catch (error) {
+            console.error('Error fetching detalle examen:', error);
+            toast.error('No se pudo cargar el detalle del examen.');
+        } finally {
+            setLoadingDetalle(false);
+        }
+    };
 
     useEffect(() => {
         fetchExamenes();
@@ -156,9 +172,6 @@ export default function EvaluacionesPage() {
                                     Puntaje
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Estado
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Resultado
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -204,18 +217,14 @@ export default function EvaluacionesPage() {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {getAprobadoBadge(examen.aprobado)}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {getAprobadoBadge(examen.aprobado)}
-                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {new Date(examen.realizadoAt).toLocaleDateString('es-AR')}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
-                                            className="text-primary hover:text-primary-dark inline-flex items-center"
-                                            onClick={() => {
-                                                console.log('Ver examen:', examen.id);
-                                            }}
+                                            className="text-primary hover:text-primary-dark inline-flex items-center disabled:opacity-50"
+                                            onClick={() => handleVerDetalle(examen.id)}
+                                            disabled={loadingDetalle}
                                         >
                                             <Eye className="h-4 w-4 mr-1" />
                                             Ver Detalle
@@ -237,6 +246,77 @@ export default function EvaluacionesPage() {
                             </p>
                         </div>
                     )}
+                </div>
+            )}
+
+            {detalle && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    onClick={() => setDetalle(null)}
+                >
+                    <div
+                        className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    {detalle.alumno.nombre} {detalle.alumno.apellido}
+                                </h2>
+                                <p className="text-sm text-gray-500">
+                                    {detalle.curso.nombre} · {detalle.curso.codigo} · DNI {detalle.alumno.dni}
+                                </p>
+                            </div>
+                            <button onClick={() => setDetalle(null)} className="text-gray-400 hover:text-gray-600">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div className={`p-4 rounded-xl border flex items-center justify-between ${detalle.aprobado ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                <span className={`font-bold text-lg ${detalle.aprobado ? 'text-green-700' : 'text-red-700'}`}>
+                                    {detalle.calificacion?.toFixed(0) ?? '-'}%
+                                </span>
+                                <span className={`text-sm font-semibold ${detalle.aprobado ? 'text-green-700' : 'text-red-700'}`}>
+                                    {detalle.aprobado ? 'Aprobado' : 'Desaprobado'}
+                                </span>
+                            </div>
+
+                            {detalle.preguntas.length === 0 ? (
+                                <p className="text-sm text-gray-500 text-center py-6">
+                                    No hay preguntas registradas para este examen (el módulo pudo haber sido eliminado o modificado).
+                                </p>
+                            ) : (
+                                detalle.preguntas.map((p, i) => (
+                                    <div key={p.preguntaId} className={`p-4 rounded-xl border-l-4 ${p.correcta ? 'border-l-green-500 bg-green-50/50' : 'border-l-red-500 bg-red-50/50'}`}>
+                                        <div className="flex items-start justify-between gap-3">
+                                            <p className="font-semibold text-gray-900">{i + 1}. {p.pregunta}</p>
+                                            {p.correcta ? (
+                                                <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
+                                            ) : (
+                                                <XCircle className="h-5 w-5 text-red-600 shrink-0" />
+                                            )}
+                                        </div>
+                                        {!p.correcta && (
+                                            <div className="text-sm mt-2 space-y-1">
+                                                <p className="text-red-600">
+                                                    Respuesta del alumno: {p.respuestaElegida >= 0 ? p.opciones[p.respuestaElegida] : 'Sin responder'}
+                                                </p>
+                                                <p className="text-green-600">
+                                                    Respuesta correcta: {p.opciones[p.respuestaCorrecta]}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {p.explicacion && (
+                                            <p className="text-sm text-gray-600 bg-white/60 p-2 rounded mt-2">
+                                                💡 {p.explicacion}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

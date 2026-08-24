@@ -312,3 +312,56 @@ async def enviar_quiz(
         feedback=feedback_list,
         message=message
     )
+
+
+@router.get("/{examenId}")
+async def obtener_detalle_examen(examenId: str, current_user=Depends(get_current_user)):
+    """Detalle de un examen puntual con revisión pregunta por pregunta
+    (Solo INSTRUCTOR y SUPER_ADMIN)."""
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    examen = await prisma.examen.find_unique(
+        where={"id": examenId},
+        include={"alumno": True, "curso": True}
+    )
+    if not examen:
+        raise HTTPException(status_code=404, detail="Examen no encontrado")
+
+    modulo = await prisma.modulo.find_unique(
+        where={"id": examen.moduloId},
+        include={"preguntas": True}
+    )
+
+    respuestas = examen.respuestas or {}
+    detalle = []
+    if modulo:
+        for pregunta in modulo.preguntas:
+            respuesta_elegida = respuestas.get(pregunta.id)
+            detalle.append({
+                "preguntaId": pregunta.id,
+                "pregunta": pregunta.pregunta,
+                "opciones": pregunta.opciones,
+                "respuestaElegida": respuesta_elegida if respuesta_elegida is not None else -1,
+                "respuestaCorrecta": pregunta.respuestaCorrecta,
+                "correcta": respuesta_elegida == pregunta.respuestaCorrecta,
+                "explicacion": pregunta.explicacion,
+            })
+
+    return {
+        "id": examen.id,
+        "alumno": {
+            "nombre": examen.alumno.nombre,
+            "apellido": examen.alumno.apellido,
+            "dni": examen.alumno.dni,
+            "email": examen.alumno.email,
+        },
+        "curso": {
+            "nombre": examen.curso.nombre,
+            "codigo": examen.curso.codigo,
+        },
+        "calificacion": examen.calificacion,
+        "aprobado": examen.aprobado,
+        "realizadoAt": examen.realizadoAt.isoformat() if examen.realizadoAt else None,
+        "preguntas": detalle,
+    }
