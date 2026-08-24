@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import {
     Plus,
     Trash2,
-    GripVertical,
+    ChevronUp,
+    ChevronDown,
     Loader2,
     X,
     Save,
@@ -25,6 +26,7 @@ interface GestorModulosProps {
 export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [reorderingId, setReorderingId] = useState<string | null>(null);
     const [newModulo, setNewModulo] = useState({
         titulo: '',
         tipo: 'TEORIA',
@@ -63,6 +65,26 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
         } catch (error) {
             console.error('Error deleting modulo:', error);
             alert('Error al eliminar módulo');
+        }
+    };
+
+    const handleMove = async (idx: number, direction: -1 | 1) => {
+        const target = modulos[idx + direction];
+        const current = modulos[idx];
+        if (!target) return;
+
+        setReorderingId(current.id);
+        try {
+            await Promise.all([
+                cursosApi.actualizarModulo(cursoId, current.id, { orden: target.orden }),
+                cursosApi.actualizarModulo(cursoId, target.id, { orden: current.orden }),
+            ]);
+            onUpdate();
+        } catch (error) {
+            console.error('Error reordering modulo:', error);
+            alert('Error al reordenar el módulo');
+        } finally {
+            setReorderingId(null);
         }
     };
 
@@ -142,11 +164,26 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
                 {modulos.map((modulo, idx) => (
                     <Card key={modulo.id} className="p-4 border-none shadow-sm ring-1 ring-gray-100 group hover:shadow-md transition-all">
                         <div className="flex items-center gap-4">
-                            <div className="text-gray-300 group-hover:text-gray-400 cursor-grab">
-                                <GripVertical className="h-5 w-5" />
+                            <div className="flex flex-col -my-1">
+                                <button
+                                    className="text-gray-300 hover:text-primary disabled:opacity-20 disabled:hover:text-gray-300 transition-colors"
+                                    onClick={() => handleMove(idx, -1)}
+                                    disabled={idx === 0 || reorderingId !== null}
+                                    title="Mover arriba"
+                                >
+                                    <ChevronUp className="h-4 w-4" />
+                                </button>
+                                <button
+                                    className="text-gray-300 hover:text-primary disabled:opacity-20 disabled:hover:text-gray-300 transition-colors"
+                                    onClick={() => handleMove(idx, 1)}
+                                    disabled={idx === modulos.length - 1 || reorderingId !== null}
+                                    title="Mover abajo"
+                                >
+                                    <ChevronDown className="h-4 w-4" />
+                                </button>
                             </div>
                             <div className="h-8 w-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 text-xs font-bold">
-                                {idx + 1}
+                                {reorderingId === modulo.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : idx + 1}
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center gap-3">
