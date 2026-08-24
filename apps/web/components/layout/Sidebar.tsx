@@ -44,12 +44,13 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
 interface SidebarProps {
-    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'EMPRESA' | 'CONTADOR';
+    userRole: 'ALUMNO' | 'SUPER_ADMIN' | 'INSTRUCTOR' | 'EMPRESA' | 'CONTADOR' | 'SUPERVISOR';
 }
 
 const ROLE_LABELS: Record<string, string> = {
     SUPER_ADMIN: '👑 Super Admin & Contabilidad (RT54)',
     EMPRESA: '🏢 Empresa B2B (Flotas)',
+    SUPERVISOR: '🦺 Supervisor de Flota',
     INSTRUCTOR: '👨‍🏫 Panel Instructor',
     CONTADOR: '📊 Contador',
     ALUMNO: '🎓 Portal Alumno',
@@ -122,6 +123,11 @@ const menuItems: Record<string, MenuItem[]> = {
         { icon: UserCog, label: 'Mi Perfil', href: '/dashboard/perfil' },
     ],
     EMPRESA: [
+        { icon: LayoutDashboard, label: 'Panel Empresa', href: '/dashboard/empresa' },
+        { icon: Users, label: 'Colaboradores', href: '/dashboard/empresa/colaboradores' },
+        { icon: GraduationCap, label: 'Asignar Cursos', href: '/dashboard/empresa/asignar' },
+    ],
+    SUPERVISOR: [
         { icon: LayoutDashboard, label: 'Panel Empresa', href: '/dashboard/empresa' },
         { icon: Users, label: 'Colaboradores', href: '/dashboard/empresa/colaboradores' },
         { icon: GraduationCap, label: 'Asignar Cursos', href: '/dashboard/empresa/asignar' },

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { api } from '@/lib/api-client';
 
-export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
+export default function ResetPasswordPage({ params }: { params: { token: string } }) {
     const router = useRouter();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
