@@ -369,9 +369,13 @@ async def actualizar_sesion(
     if not sesion:
         raise HTTPException(status_code=404, detail="Sesión no encontrada")
 
-    # Permisos del instructor
-    if current_user.rol == "INSTRUCTOR" and sesion.instructorId != current_user.id:
-        raise HTTPException(status_code=403, detail="No eres el instructor a cargo de esta sesión")
+    # Permisos del instructor (titular de la sesion o del curso -- igual que
+    # registrar_asistencia, para no bloquear a quien SI puede tomar asistencia)
+    if current_user.rol == "INSTRUCTOR":
+        es_instructor_asignado = sesion.instructorId == current_user.id
+        es_instructor_curso = sesion.curso and sesion.curso.instructorId == current_user.id
+        if not (es_instructor_asignado or es_instructor_curso):
+            raise HTTPException(status_code=403, detail="No eres el instructor a cargo de esta sesión")
 
     update_data = {k: v for k, v in data.model_dump().items() if v is not None and k != "alumnosIds"}
     
@@ -461,12 +465,18 @@ async def cancelar_sesion(sesion_id: str, current_user=Depends(get_current_user)
     if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
         raise HTTPException(status_code=403, detail="Sin permisos para cancelar sesiones")
 
-    sesion = await prisma.sesioncapacitacion.find_unique(where={"id": sesion_id})
+    sesion = await prisma.sesioncapacitacion.find_unique(
+        where={"id": sesion_id},
+        include={"curso": True}
+    )
     if not sesion:
         raise HTTPException(status_code=404, detail="Sesión no encontrada")
 
-    if current_user.rol == "INSTRUCTOR" and sesion.instructorId != current_user.id:
-        raise HTTPException(status_code=403, detail="No eres el instructor titular")
+    if current_user.rol == "INSTRUCTOR":
+        es_instructor_asignado = sesion.instructorId == current_user.id
+        es_instructor_curso = sesion.curso and sesion.curso.instructorId == current_user.id
+        if not (es_instructor_asignado or es_instructor_curso):
+            raise HTTPException(status_code=403, detail="No eres el instructor titular")
 
     await prisma.sesioncapacitacion.update(
         where={"id": sesion_id},
