@@ -22,6 +22,7 @@ export default function ProfileSignatureUpload() {
             }
         } catch (error) {
             console.error('Error al consultar firma:', error);
+            toast.error('No se pudo verificar tu firma digitalizada. Verificá tu conexión.');
         } finally {
             setIsLoading(false);
         }
