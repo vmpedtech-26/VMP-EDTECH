@@ -76,11 +76,12 @@ async def automation_health():
     Healthcheck del canal de automatización.
     Verifica si n8n está configurado y accesible.
     """
+    # No exponemos la URL real de N8N_WEBHOOK_URL: suele llevar un token/UUID
+    # embebido que actúa como secreto, y este healthcheck es público/sin auth.
     n8n_configured = bool(settings.N8N_WEBHOOK_URL)
     return {
         "status":           "ok",
         "n8n_configured":   n8n_configured,
-        "n8n_url":          settings.N8N_WEBHOOK_URL if n8n_configured else None,
         "events_available": [e.value for e in WebhookEvent],
         "timestamp":        datetime.utcnow().isoformat(),
     }
