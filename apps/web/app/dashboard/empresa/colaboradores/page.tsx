@@ -34,6 +34,7 @@ export default function ColaboradoresPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [tempPassword, setTempPassword] = useState<string | null>(null);
     const [empresaNombre, setEmpresaNombre] = useState<string>('');
+    const [desvinculandoId, setDesvinculandoId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -71,6 +72,20 @@ export default function ColaboradoresPage() {
             toast.error(error.message || 'Error al crear empleado');
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleDesvincular = async (empleadoId: string, nombre: string) => {
+        if (!confirm(`¿Desvincular a ${nombre} de tu empresa? Su cuenta y su historial de cursos/credenciales se mantienen intactos.`)) return;
+        setDesvinculandoId(empleadoId);
+        try {
+            await api.delete(`/b2b/empleados/${empleadoId}`);
+            toast.success('Colaborador desvinculado');
+            fetchEmployees();
+        } catch (error: any) {
+            toast.error(error.message || 'No se pudo desvincular al colaborador');
+        } finally {
+            setDesvinculandoId(null);
         }
     };
 
@@ -133,7 +148,13 @@ export default function ColaboradoresPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="text-red-600 hover:text-red-800 font-medium text-xs">Desvincular</button>
+                                        <button
+                                            className="text-red-600 hover:text-red-800 font-medium text-xs disabled:opacity-50"
+                                            onClick={() => handleDesvincular(emp.id, `${emp.nombre} ${emp.apellido}`)}
+                                            disabled={desvinculandoId === emp.id}
+                                        >
+                                            {desvinculandoId === emp.id ? 'Desvinculando...' : 'Desvincular'}
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

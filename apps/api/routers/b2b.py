@@ -138,6 +138,26 @@ async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_
         "temp_password": temp_password
     }
 
+
+@router.delete("/empleados/{empleado_id}")
+async def desvincular_empleado(empleado_id: str, current_user=Depends(get_current_user)):
+    """Desvincula un chofer/empleado de la empresa (empresaId -> null).
+    No borra la cuenta ni su historial de cursos/credenciales -- solo deja
+    de pertenecer a esta empresa."""
+    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN"] and not current_user.empresaId:
+        raise HTTPException(status_code=403, detail="Sin permisos B2B")
+
+    empleado = await prisma.user.find_unique(where={"id": empleado_id})
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+
+    if current_user.rol != "SUPER_ADMIN" and empleado.empresaId != current_user.empresaId:
+        raise HTTPException(status_code=403, detail="Este empleado no pertenece a tu empresa")
+
+    await prisma.user.update(where={"id": empleado_id}, data={"empresaId": None})
+
+    return {"success": True, "message": "Empleado desvinculado de la empresa"}
+
 @router.get("/cursos")
 async def listar_cursos_b2b(current_user=Depends(get_current_user)):
     """Listar cursos disponibles para asignar"""
