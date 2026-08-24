@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Gauge } from 'lucide-react';
 import { usersApi, UserAdmin, InscripcionAlumno } from '@/lib/api/users';
+import { toast } from 'sonner';
 
 const ESTADO_LABELS: Record<string, string> = {
     NO_INICIADO: 'No iniciado',
@@ -26,7 +27,11 @@ export default function AlumnoDetallePage({ params }: { params: Promise<{ id: st
                 setAlumno(alumnoData);
                 setInscripciones(inscripcionesData);
             })
-            .catch(() => setAlumno(null))
+            .catch((error) => {
+                console.error('Error fetching alumno:', error);
+                toast.error('No se pudo cargar el alumno. Verificá tu conexión.');
+                setAlumno(null);
+            })
             .finally(() => setIsLoading(false));
     }, [id]);
 

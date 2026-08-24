@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { obd2Api, Obd2Session } from '@/lib/api/obd2';
+import { toast } from 'sonner';
 
 export default function Obd2MetricsPage({ params }: { params: Promise<{ id: string; inscripcionId: string }> }) {
   const { id, inscripcionId } = use(params);
@@ -12,7 +13,11 @@ export default function Obd2MetricsPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     obd2Api.obtenerMetricas(inscripcionId)
       .then(setMetrics)
-      .catch(() => setMetrics([]))
+      .catch((error) => {
+        console.error('Error fetching OBD2 metrics:', error);
+        toast.error('No se pudieron cargar las métricas OBD2. Verificá tu conexión.');
+        setMetrics([]);
+      })
       .finally(() => setLoading(false));
   }, [inscripcionId]);
 
@@ -99,10 +104,12 @@ export default function Obd2MetricsPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 {/* Esquivo del Alce */}
-                <div className={`p-4 rounded-lg border flex flex-col items-center justify-center text-center ${session.esquivoAlce ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
-                  <span className={`text-xs uppercase tracking-wider font-bold mb-2 ${session.esquivoAlce ? 'text-emerald-700' : 'text-red-700'}`}>Esquivo del Alce</span>
+                <div className={`p-4 rounded-lg border flex flex-col items-center justify-center text-center ${session.esquivoAlce === null ? 'bg-slate-50 border-slate-100' : session.esquivoAlce ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
+                  <span className={`text-xs uppercase tracking-wider font-bold mb-2 ${session.esquivoAlce === null ? 'text-slate-500' : session.esquivoAlce ? 'text-emerald-700' : 'text-red-700'}`}>Esquivo del Alce</span>
                   <div className="flex items-center justify-center h-full">
-                    {session.esquivoAlce ? (
+                    {session.esquivoAlce === null ? (
+                      <span className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold uppercase tracking-wide text-sm">No realizado</span>
+                    ) : session.esquivoAlce ? (
                       <span className="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full font-bold uppercase tracking-wide text-sm">Aprobado</span>
                     ) : (
                       <span className="px-4 py-2 bg-red-100 text-red-800 rounded-full font-bold uppercase tracking-wide text-sm">Fallido</span>
