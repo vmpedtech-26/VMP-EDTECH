@@ -54,13 +54,10 @@ export default function EmpresaRegisterPage() {
             ? formData.email.trim()
             : `${formData.dni.trim()}@${empresaSlug.toLowerCase()}.vmp-edtech.com`;
 
-        const passwordFinal = formData.password.trim() || formData.dni.trim();
-
         try {
             const payload = {
                 ...formData,
                 email: emailFinal,
-                password: passwordFinal,
                 empresaSlug: empresaSlug,
             };
 
@@ -232,8 +229,10 @@ export default function EmpresaRegisterPage() {
 
                                 <Input legacy
                                     type="password"
-                                    label="Contraseña (Opcional - por defecto será tu DNI)"
+                                    label="Contraseña (mínimo 6 caracteres)"
                                     placeholder="••••••••"
+                                    required
+                                    minLength={6}
                                     value={formData.password}
                                     onChange={(e) =>
                                         setFormData({ ...formData, password: e.target.value })

@@ -23,6 +23,12 @@ class UserRegister(BaseModel):
             return sanitize_data(v)
         return v
 
+    @validator('password')
+    def password_minima(cls, v):
+        if len(v) < 6:
+            raise ValueError('La contraseña debe tener al menos 6 caracteres')
+        return v
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"

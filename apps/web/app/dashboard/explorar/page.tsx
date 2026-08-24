@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
-import { BookOpen, Clock, Loader2, Search, Filter } from 'lucide-react';
+import { BookOpen, Clock, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cursosApi } from '@/lib/api/cursos';
 import { inscripcionesApi } from '@/lib/api/inscripciones';
@@ -73,21 +73,15 @@ export default function ExplorarCursosPage() {
                 </div>
             </div>
 
-            {/* Filters and Search */}
-            <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                        placeholder="Buscar por nombre, código o descripción..."
-                        className="pl-10"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filtros</span>
-                </Button>
+            {/* Search */}
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                    placeholder="Buscar por nombre, código o descripción..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
 
             {/* Courses Grid */}
