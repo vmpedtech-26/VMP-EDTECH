@@ -8,6 +8,9 @@ from auth.dependencies import get_current_user, require_admin
 from core.database import prisma
 from auth.jwt import hash_password
 from services import storage_service
+from services.file_upload import MAX_FILE_SIZE
+
+PNG_MAGIC_BYTES = b"\x89PNG\r\n\x1a\n"
 
 router = APIRouter()
 
@@ -31,6 +34,14 @@ async def subir_mi_firma(
         raise HTTPException(status_code=400, detail="La firma debe ser una imagen PNG")
 
     data = await file.read()
+    if len(data) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Archivo demasiado grande. Máximo: {MAX_FILE_SIZE / 1024 / 1024} MB"
+        )
+    if not data.startswith(PNG_MAGIC_BYTES):
+        raise HTTPException(status_code=400, detail="El archivo no es una imagen PNG válida")
+
     try:
         url = storage_service.upload_bytes(data, f"firmas/{current_user.id}.png", "image/png")
     except RuntimeError as e:
@@ -242,6 +253,8 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
         # No puede cambiar el rol ni la empresa
         if data.rol and data.rol != existing.rol:
             raise HTTPException(status_code=403, detail="No puedes cambiar el rol")
+        if data.empresaId and data.empresaId != existing.empresaId:
+            raise HTTPException(status_code=403, detail="No puedes cambiar la empresa de este usuario")
     elif current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
         

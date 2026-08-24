@@ -4,6 +4,7 @@ import json
 from auth.dependencies import get_current_user
 from pydantic import BaseModel
 from middleware.security import rate_limit_ia
+from services.file_upload import MAX_FILE_SIZE
 
 router = APIRouter()
 
@@ -31,7 +32,17 @@ async def validar_foto_con_ia(
             detail=f"Formato no permitido. Por favor use una imagen con formato: {', '.join(allowed_exts)}"
         )
 
-    # 2. Obtener API key de Gemini
+    # 2. Leer y validar tamaño del archivo (fuera del try de abajo: un archivo
+    # demasiado grande debe rechazarse, no caer en el fallback "válido" que
+    # atrapa errores de Gemini/red)
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Archivo demasiado grande. Máximo: {MAX_FILE_SIZE / 1024 / 1024} MB"
+        )
+
+    # 3. Obtener API key de Gemini
     gemini_key = os.environ.get("GEMINI_API_KEY")
     if not gemini_key:
         # Fallback si no está configurada la llave para no bloquear la app
@@ -41,9 +52,6 @@ async def validar_foto_con_ia(
         )
 
     try:
-        # Leer el contenido del archivo
-        contents = await file.read()
-        
         # Comprimir imagen en memoria para ahorrar red y tokens en Gemini Vision
         try:
             from services.file_upload import compress_image

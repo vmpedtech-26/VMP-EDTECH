@@ -23,11 +23,13 @@ async def upload_metrics(inscripcion_id: str, data: Obd2MetricInput, current_use
     """
     Sube métricas OBD2 para una inscripción específica (alumno + curso).
     """
-    inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id})
+    inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id}, include={"alumno": True})
     if not inscripcion:
         raise HTTPException(status_code=404, detail="Inscripción no encontrada")
 
     if current_user.rol == "ALUMNO" and inscripcion.alumnoId != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
+    if current_user.rol == "INSTRUCTOR" and inscripcion.alumno.empresaId != current_user.empresaId:
         raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
 
     session = await prisma.obd2session.create(
@@ -47,11 +49,13 @@ async def get_metrics(inscripcion_id: str, current_user=Depends(get_current_user
     """
     Devuelve las sesiones OBD2 registradas para la inscripción de un alumno en un curso.
     """
-    inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id})
+    inscripcion = await prisma.inscripcion.find_unique(where={"id": inscripcion_id}, include={"alumno": True})
     if not inscripcion:
         raise HTTPException(status_code=404, detail="Inscripción no encontrada")
 
     if current_user.rol == "ALUMNO" and inscripcion.alumnoId != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
+    if current_user.rol == "INSTRUCTOR" and inscripcion.alumno.empresaId != current_user.empresaId:
         raise HTTPException(status_code=403, detail="No tienes acceso a esta inscripción")
 
     sessions = await prisma.obd2session.find_many(

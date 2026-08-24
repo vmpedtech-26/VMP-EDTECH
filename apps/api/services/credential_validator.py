@@ -8,7 +8,17 @@ from core.database import prisma
 
 class CredentialValidator:
     """Validador de credenciales públicas"""
-    
+
+    @staticmethod
+    def _mask_dni(dni: str) -> str:
+        """Enmascara el DNI para la verificación pública: el número de credencial
+        es secuencial y adivinable (VMP-2026-00001, 00002...), así que este endpoint
+        no requiere autenticación. Exponer el DNI completo permitiría recolectar en
+        masa datos de identidad de todos los alumnos certificados."""
+        if not dni or len(dni) <= 4:
+            return "***"
+        return f"***{dni[-4:]}"
+
     async def validate_credential(self, numero: str) -> Dict[str, Any]:
         """
         Valida una credencial por su número único.
@@ -73,7 +83,7 @@ class CredentialValidator:
                 "alumno": {
                     "nombre": credencial.alumno.nombre,
                     "apellido": credencial.alumno.apellido,
-                    "dni": credencial.alumno.dni
+                    "dni": self._mask_dni(credencial.alumno.dni)
                 },
                 "curso": {
                     "nombre": credencial.curso.nombre,

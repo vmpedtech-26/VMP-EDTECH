@@ -3,6 +3,7 @@ import re
 import io
 import os
 import json
+import tempfile
 from typing import List, Optional
 from schemas.accounting import (
     AccountResponse, CreateAccountRequest,
@@ -568,14 +569,15 @@ def clean_amount(val_str: str) -> float:
     except ValueError:
         return 0.0
 
-@router.post("/compras/upload-pdf")
-async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(get_current_user)):
-    if current_user.rol != "SUPER_ADMIN":
-        raise HTTPException(status_code=403, detail="No tienes permisos")
-        
+async def _extract_invoice_data_with_ai(pdf_path: str) -> dict:
+    """Extrae los datos de una factura en PDF (vía Gemini AI, con fallback a
+    parsing local por regex). Usada tanto por el endpoint de carga manual
+    (/compras/upload-pdf) como por el bridge de automatización con n8n
+    (/automation/invoice-email), que reenvía facturas recibidas por email."""
+    with open(pdf_path, "rb") as f:
+        contents = f.read()
+
     try:
-        contents = await file.read()
-        
         # --- EXTRACCIÓN DE TEXTO LOCAL (Ultra rápida) ---
         pdf_file = io.BytesIO(contents)
         full_text = ""
@@ -867,6 +869,22 @@ async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(g
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar PDF de factura: {str(e)}")
+
+
+@router.post("/compras/upload-pdf")
+async def upload_compra_pdf(file: UploadFile = File(...), current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+
+    contents = await file.read()
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+
+    try:
+        return await _extract_invoice_data_with_ai(tmp_path)
+    finally:
+        os.unlink(tmp_path)
 
 @router.get("/compras", response_model=List[CompraResponse])
 async def listar_compras(current_user=Depends(get_current_user)):

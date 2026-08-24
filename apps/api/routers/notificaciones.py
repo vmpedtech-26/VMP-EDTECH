@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from auth.dependencies import get_current_user
 from core.database import prisma
 
@@ -33,6 +33,9 @@ async def unread_count(current_user=Depends(get_current_user)):
 
 @router.patch("/{id}/read")
 async def mark_read(id: str, current_user=Depends(get_current_user)):
+    notificacion = await prisma.notificacionitem.find_unique(where={"id": id})
+    if not notificacion or notificacion.userId != current_user.id:
+        raise HTTPException(status_code=404, detail="Notificación no encontrada")
     await prisma.notificacionitem.update(where={"id": id}, data={"leida": True})
     return {"ok": True}
 

@@ -249,13 +249,18 @@ async def evaluar_evidencia(
     
     if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
         raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
-    
+
     # Buscar evidencia
-    evidencia = await prisma.evidencia.find_unique(where={"id": id})
-    
+    evidencia = await prisma.evidencia.find_unique(where={"id": id}, include={"alumno": True})
+
     if not evidencia:
         raise HTTPException(status_code=404, detail="Evidencia no encontrada")
-    
+
+    # Verificar empresa si es instructor
+    if current_user.rol == "INSTRUCTOR":
+        if evidencia.alumno.empresaId != current_user.empresaId:
+            raise HTTPException(status_code=403, detail="No tienes permisos")
+
     # Actualizar estado
     updated = await prisma.evidencia.update(
         where={"id": id},
