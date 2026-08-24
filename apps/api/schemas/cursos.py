@@ -25,6 +25,19 @@ class CursoListItem(BaseModel):
     class Config:
         from_attributes = True
 
+class CursoAsignadoItem(BaseModel):
+    """Curso asignado a un instructor, con métricas de progreso de sus alumnos"""
+    id: str
+    nombre: str
+    codigo: str
+    descripcion: str
+    activo: bool
+    modalidad: Literal["ONLINE", "IN_COMPANY", "HYBRID"] = "ONLINE"
+    totalInscripciones: int
+    completadas: int
+    credencialesEmitidas: int
+    tasaCompletitud: float
+
 class CreateCursoRequest(BaseModel):
     nombre: str
     descripcion: str

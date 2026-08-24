@@ -25,7 +25,9 @@ export default function InstructorDashboard() {
     const [stats, setStats] = useState({
         pending: 0,
         totalReviewed: 0,
-        activeAlumnos: 0
+        activeAlumnos: 0,
+        cursosAsignados: 0,
+        credencialesEmitidas: 0
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isAltaCampoOpen, setIsAltaCampoOpen] = useState(false);
@@ -67,7 +69,7 @@ export default function InstructorDashboard() {
         },
         {
             title: 'Cursos Asignados',
-            value: 4,
+            value: stats.cursosAsignados,
             description: 'Programas activos',
             icon: BookOpen,
             color: 'text-secondary',
@@ -102,9 +104,11 @@ export default function InstructorDashboard() {
                         <UserPlus className="h-4 w-4" />
                         + Alta Rápida en Campo
                     </Button>
-                    <Button variant="outline" className="hidden md:flex gap-2 bg-white border-gray-200 text-gray-700">
-                        <TrendingUp className="h-4 w-4" />
-                        Ver Reportes
+                    <Button variant="outline" asChild className="hidden md:flex gap-2 bg-white border-gray-200 text-gray-700">
+                        <Link href="/dashboard/instructor/alumnos">
+                            <TrendingUp className="h-4 w-4" />
+                            Ver Reportes
+                        </Link>
                     </Button>
                 </div>
             </div>
@@ -189,18 +193,20 @@ export default function InstructorDashboard() {
                             <CheckCircle2 className="h-8 w-8 text-green-500" />
                             <div>
                                 <p className="text-sm font-medium text-gray-500">Credenciales Emitidas</p>
-                                <p className="text-xl font-bold text-gray-900">128</p>
+                                <p className="text-xl font-bold text-gray-900">{stats.credencialesEmitidas}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                             <Users className="h-8 w-8 text-blue-500" />
                             <div>
                                 <p className="text-sm font-medium text-gray-500">Total Usuarios</p>
-                                <p className="text-xl font-bold text-gray-900">15</p>
+                                <p className="text-xl font-bold text-gray-900">{stats.activeAlumnos}</p>
                             </div>
                         </div>
-                        <Button variant="ghost" className="w-full text-primary hover:text-primary hover:bg-primary/5">
+                        <Button variant="ghost" asChild className="w-full text-primary hover:text-primary hover:bg-primary/5">
+                          <Link href="/dashboard/instructor/credenciales">
                             Ver todos los datos
+                          </Link>
                         </Button>
                     </Card>
                 </div>

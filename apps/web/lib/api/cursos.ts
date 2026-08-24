@@ -1,12 +1,32 @@
 import { Curso, CursoDetail, Modulo } from '@/types/training';
 import { api } from '../api-client';
 
+export interface CursoAsignado {
+    id: string;
+    nombre: string;
+    codigo: string;
+    descripcion: string;
+    activo: boolean;
+    modalidad: 'ONLINE' | 'IN_COMPANY' | 'HYBRID';
+    totalInscripciones: number;
+    completadas: number;
+    credencialesEmitidas: number;
+    tasaCompletitud: number;
+}
+
 export const cursosApi = {
     /**
      * Listar todos los cursos activos
      */
     async listarCursos(): Promise<Curso[]> {
         return api.get('/cursos');
+    },
+
+    /**
+     * Cursos donde el usuario actual es el instructor asignado, con métricas
+     */
+    async listarCursosAsignados(): Promise<CursoAsignado[]> {
+        return api.get('/cursos/asignados');
     },
 
     /**

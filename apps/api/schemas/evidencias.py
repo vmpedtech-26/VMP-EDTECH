@@ -46,3 +46,5 @@ class EvidenciasStatsResponse(BaseModel):
     pending: int
     totalReviewed: int
     activeAlumnos: int
+    cursosAsignados: int
+    credencialesEmitidas: int

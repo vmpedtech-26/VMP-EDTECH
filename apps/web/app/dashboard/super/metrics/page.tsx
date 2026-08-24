@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 import { api } from '@/lib/api-client';
 
@@ -307,6 +308,16 @@ export default function MetricsPage() {
                             </tbody>
                         </table>
                     </div>
+                </Card>
+            )}
+
+            {courses.length === 0 && (
+                <Card className="p-6">
+                    <EmptyState
+                        icon={BarChart3}
+                        title="Todavía no hay estadísticas por curso"
+                        description="Cuando haya cursos con inscripciones registradas, vas a ver acá el detalle de completitud y credenciales por curso."
+                    />
                 </Card>
             )}
         </div>

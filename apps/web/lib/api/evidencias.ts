@@ -69,7 +69,7 @@ export const evidenciasApi = {
     /**
      * Estadísticas de revisión para el dashboard del instructor
      */
-    async obtenerStats(): Promise<{ pending: number; totalReviewed: number; activeAlumnos: number }> {
+    async obtenerStats(): Promise<{ pending: number; totalReviewed: number; activeAlumnos: number; cursosAsignados: number; credencialesEmitidas: number }> {
         return api.get('/evidencias/stats');
     },
 };

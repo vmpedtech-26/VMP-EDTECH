@@ -232,10 +232,19 @@ async def obtener_stats_evidencias(current_user=Depends(get_current_user)):
         alumnos_where.update(alumno_filter)
     active_alumnos = await prisma.user.count(where=alumnos_where)
 
+    cursos_asignados = await prisma.curso.count(where={"instructorId": current_user.id, "activo": True})
+
+    credenciales_where = {}
+    if alumno_filter:
+        credenciales_where["alumno"] = {"is": alumno_filter}
+    credenciales_emitidas = await prisma.credencial.count(where=credenciales_where)
+
     return EvidenciasStatsResponse(
         pending=pending,
         totalReviewed=total_reviewed,
-        activeAlumnos=active_alumnos
+        activeAlumnos=active_alumnos,
+        cursosAsignados=cursos_asignados,
+        credencialesEmitidas=credenciales_emitidas
     )
 
 

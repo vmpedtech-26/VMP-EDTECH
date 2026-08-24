@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from schemas.cursos import (
-    CursoListItem, 
-    CursoDetail, 
-    ModuloDetail, 
+    CursoListItem,
+    CursoDetail,
+    CursoAsignadoItem,
+    ModuloDetail,
     ModuloSummary,
     ModuloDetailAdmin,
     CreateCursoRequest,
@@ -20,25 +21,62 @@ router = APIRouter()
 @router.get("", response_model=List[CursoListItem])
 async def listar_cursos(current_user=Depends(get_current_user)):
     """
-    Listar todos los cursos activos
-    Si el usuario es ALUMNO, filtra por su empresa
-    Si el usuario es SUPER_ADMIN o INSTRUCTOR, ve todos los disponibles para su rol
+    Listar todos los cursos activos.
+    ALUMNO e INSTRUCTOR ven solo los cursos de su propia empresa.
+    SUPER_ADMIN ve todos los cursos (activos e inactivos).
     """
     
     where_clause = {}
     if current_user.rol != "SUPER_ADMIN":
         where_clause["activo"] = True
-    
-    # Si es alumno, filtrar por empresa
-    if current_user.rol == "ALUMNO" and current_user.empresaId:
+
+    # ALUMNO e INSTRUCTOR pertenecen a una empresa cliente puntual: solo ven
+    # los cursos de esa empresa, nunca el catálogo privado de otra.
+    if current_user.rol in ["ALUMNO", "INSTRUCTOR"] and current_user.empresaId:
         where_clause["empresaId"] = current_user.empresaId
     
     cursos = await prisma.curso.find_many(
         where=where_clause,
         order={"nombre": "asc"}
     )
-    
+
     return cursos
+
+
+@router.get("/asignados", response_model=List[CursoAsignadoItem])
+async def listar_cursos_asignados(current_user=Depends(get_current_user)):
+    """
+    Cursos donde el usuario actual es el instructor asignado (Curso.instructorId),
+    con métricas de inscripciones/completitud/credenciales de cada uno.
+    SUPER_ADMIN puede consultar los suyos propios de la misma forma (si tiene
+    cursos asignados como instructor); no es una vista global de todos los cursos.
+    """
+    cursos = await prisma.curso.find_many(
+        where={"instructorId": current_user.id},
+        order={"nombre": "asc"}
+    )
+
+    resultado = []
+    for curso in cursos:
+        total = await prisma.inscripcion.count(where={"cursoId": curso.id})
+        completadas = await prisma.inscripcion.count(
+            where={"cursoId": curso.id, "estado": {"in": ["COMPLETADO", "APROBADO"]}}
+        )
+        credenciales = await prisma.credencial.count(where={"cursoId": curso.id})
+        resultado.append(CursoAsignadoItem(
+            id=curso.id,
+            nombre=curso.nombre,
+            codigo=curso.codigo,
+            descripcion=curso.descripcion,
+            activo=curso.activo,
+            modalidad=curso.modalidad,
+            totalInscripciones=total,
+            completadas=completadas,
+            credencialesEmitidas=credenciales,
+            tasaCompletitud=round((completadas / total * 100) if total > 0 else 0, 1)
+        ))
+
+    return resultado
 
 
 @router.post("", response_model=CursoListItem)
