@@ -61,6 +61,25 @@ export default function EmpresaDashboard() {
         return <div className="p-8 text-center text-gray-500">No se pudieron cargar las métricas de la empresa.</div>;
     }
 
+    const exportarExcel = () => {
+        if (!metrics.employees.length) return;
+        const headers = ['Colaborador', 'DNI', 'Cursos Activos', 'Cursos Aprobados', 'Credenciales'];
+        const rows = metrics.employees.map((emp) => [
+            `"${emp.nombre} ${emp.apellido}"`,
+            `"${emp.dni}"`,
+            emp.active_courses,
+            emp.completed_courses,
+            `"${emp.credenciales.map((c: any) => c.numero).join('; ') || 'Sin credenciales'}"`,
+        ]);
+        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+        const link = document.createElement('a');
+        link.setAttribute('href', encodeURI(csvContent));
+        link.setAttribute('download', `colaboradores_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="space-y-6">
             <div>
@@ -104,7 +123,11 @@ export default function EmpresaDashboard() {
             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
                 <div className="p-6 border-b flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-gray-900">Estado por Colaborador</h2>
-                    <button className="flex items-center space-x-2 text-sm text-primary hover:text-primary-dark font-medium px-3 py-2 border rounded-md">
+                    <button
+                        onClick={exportarExcel}
+                        disabled={metrics.employees.length === 0}
+                        className="flex items-center space-x-2 text-sm text-primary hover:text-primary-dark font-medium px-3 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <Download className="w-4 h-4" />
                         <span>Exportar Excel</span>
                     </button>
