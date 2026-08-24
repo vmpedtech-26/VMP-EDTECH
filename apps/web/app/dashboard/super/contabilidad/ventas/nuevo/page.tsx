@@ -16,6 +16,7 @@ import { Card } from '@/components/ui/Card';
 import { accountingApi, VentaItem } from '@/lib/api/accounting';
 import { empresasApi, Empresa } from '@/lib/api/empresas';
 import { formatARS } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function NuevaVentaPage() {
     const router = useRouter();
@@ -35,7 +36,12 @@ export default function NuevaVentaPage() {
     ]);
 
     useEffect(() => {
-        empresasApi.listarEmpresas().then(setEmpresas);
+        empresasApi.listarEmpresas()
+            .then(setEmpresas)
+            .catch((error) => {
+                console.error('Error fetching empresas:', error);
+                toast.error('No se pudieron cargar las empresas. Verificá tu conexión.');
+            });
     }, []);
 
     const handleAddItem = () => {
