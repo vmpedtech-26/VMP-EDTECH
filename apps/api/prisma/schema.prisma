@@ -710,9 +710,38 @@ model OrgBranding {
   tema        String   @default("light") // light, dark
   colorPrimario String? @map("color_primario")
   activo      Boolean  @default(true)
+  categoriaContribuyente String @default("PEQUEÑA") @map("categoria_contribuyente") // RT 54: PEQUEÑA, MEDIANA, RESTANTE
+  actividadIvaId String? @map("actividad_iva_id") // Actividad económica declarada para consistencia F.2051
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   @@map("org_branding")
+}
+
+// ============= CONTABILIDAD - RT 54 / IMPUESTOS =============
+
+model BienDeCambio {
+  id                String   @id @default(uuid())
+  nombre            String
+  stock             Int
+  costoHistorico    Float    @map("costo_historico")
+  costoUltimaCompra Float    @map("costo_ultima_compra")
+  fechaUltimaCompra DateTime @map("fecha_ultima_compra")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("bienes_de_cambio")
+}
+
+model RetencionArca {
+  id        String   @id @default(uuid())
+  fecha     DateTime
+  cuit      String
+  tipo      String
+  nro       String
+  monto     Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("retenciones_arca")
 }
 
 // ============= PRESUPUESTOS HSE =============

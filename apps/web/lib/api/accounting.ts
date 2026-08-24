@@ -22,6 +22,24 @@ export interface Venta {
   items: VentaItem[];
 }
 
+export interface BienDeCambio {
+  id: string;
+  nombre: string;
+  stock: number;
+  costoHistorico: number;
+  costoUltimaCompra: number;
+  fechaUltimaCompra: string;
+}
+
+export interface RetencionArca {
+  id: string;
+  fecha: string;
+  cuit: string;
+  tipo: string;
+  nro: string;
+  monto: number;
+}
+
 export const accountingApi = {
   // Accounts
   getAccounts: async () => {
@@ -94,5 +112,49 @@ export const accountingApi = {
       url += `?${queryStr}`;
     }
     return await api.get(url);
+  },
+
+  // RT 54 - Configuración
+  getRt54Config: async () => {
+    return await api.get('/accounting/rt54/config');
+  },
+  updateRt54Config: async (categoriaContribuyente: string) => {
+    return await api.patch('/accounting/rt54/config', { categoriaContribuyente });
+  },
+
+  // RT 54 - Bienes de Cambio
+  getBienesDeCambio: async (): Promise<BienDeCambio[]> => {
+    return await api.get('/accounting/rt54/inventario');
+  },
+  createBienDeCambio: async (data: Omit<BienDeCambio, 'id'>) => {
+    return await api.post('/accounting/rt54/inventario', data);
+  },
+  updateBienDeCambio: async (id: string, data: Partial<Omit<BienDeCambio, 'id'>>) => {
+    return await api.patch(`/accounting/rt54/inventario/${id}`, data);
+  },
+  deleteBienDeCambio: async (id: string) => {
+    return await api.delete(`/accounting/rt54/inventario/${id}`);
+  },
+
+  // IVA - Configuración
+  getIvaConfig: async () => {
+    return await api.get('/accounting/iva/config');
+  },
+  updateIvaConfig: async (actividadIvaId: string) => {
+    return await api.patch('/accounting/iva/config', { actividadIvaId });
+  },
+  getDebitoLibro: async () => {
+    return await api.get('/accounting/iva/debito-libro');
+  },
+
+  // IVA - Retenciones ARCA
+  getRetencionesArca: async (): Promise<RetencionArca[]> => {
+    return await api.get('/accounting/iva/retenciones');
+  },
+  createRetencionArca: async (data: Omit<RetencionArca, 'id'>) => {
+    return await api.post('/accounting/iva/retenciones', data);
+  },
+  deleteRetencionArca: async (id: string) => {
+    return await api.delete(`/accounting/iva/retenciones/${id}`);
   }
 };

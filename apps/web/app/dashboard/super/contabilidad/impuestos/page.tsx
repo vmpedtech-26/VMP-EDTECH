@@ -2,28 +2,33 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-    ArrowLeft, 
-    Calendar, 
-    AlertCircle, 
-    CheckCircle2, 
-    FileText, 
-    Download, 
-    DollarSign, 
-    Info, 
-    Layers, 
-    Activity, 
-    ShieldCheck, 
+import {
+    ArrowLeft,
+    Calendar,
+    AlertCircle,
+    CheckCircle2,
+    FileText,
+    Download,
+    DollarSign,
+    Info,
+    Layers,
+    Activity,
+    ShieldCheck,
     FileSpreadsheet,
-    Play
+    Play,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { accountingApi, RetencionArca } from '@/lib/api/accounting';
+import { toast } from 'sonner';
 
 export default function ImpuestosIvaSimplePage() {
+    const [isLoading, setIsLoading] = useState(true);
+
     // 1. Estado de consistencia de IVA Ventas
     const [actividadSelected, setActividadSelected] = useState('0'); // 0: Sin clasificar, 1: Servicios de Capacitación
-    const [debitoLibro, setDebitoLibro] = useState(252000.0);
+    const [debitoLibro, setDebitoLibro] = useState(0.0);
     const [debitoDeclarado, setDebitoDeclarado] = useState(0.0);
     const [consistenciaState, setConsistenciaState] = useState<'ROJO' | 'VERDE'>('ROJO');
 
@@ -36,9 +41,7 @@ export default function ImpuestosIvaSimplePage() {
     const [isCbuValid, setIsCbuValid] = useState(false);
 
     // 3. Carga de Retenciones para exportar CSV (Formato ARCA)
-    const [csvRows, setCsvRows] = useState<any[]>([
-        { fecha: '2026-05-10', cuit: '30719369088', tipo: 'Factura de Compra', nro: '000200000914', monto: 12000 }
-    ]);
+    const [csvRows, setCsvRows] = useState<RetencionArca[]>([]);
     const [newRow, setNewRow] = useState({
         fecha: new Date().toISOString().split('T')[0],
         cuit: '',
@@ -46,6 +49,40 @@ export default function ImpuestosIvaSimplePage() {
         nro: '',
         monto: 0
     });
+    const [guardandoFila, setGuardandoFila] = useState(false);
+
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                const [config, debito, retenciones] = await Promise.all([
+                    accountingApi.getIvaConfig(),
+                    accountingApi.getDebitoLibro(),
+                    accountingApi.getRetencionesArca()
+                ]);
+                setActividadSelected(config.actividadIvaId || '0');
+                setDebitoLibro(debito.debitoLibro);
+                setCsvRows(retenciones);
+            } catch (error) {
+                console.error('Error al cargar datos de IVA:', error);
+                toast.error('No se pudieron cargar los datos de liquidación de IVA. Verificá tu conexión.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        cargarDatos();
+    }, []);
+
+    const handleSetActividad = async (nuevaActividad: string) => {
+        const anterior = actividadSelected;
+        setActividadSelected(nuevaActividad);
+        try {
+            await accountingApi.updateIvaConfig(nuevaActividad);
+        } catch (error) {
+            console.error('Error al actualizar actividad declarada:', error);
+            toast.error('No se pudo guardar la actividad económica declarada.');
+            setActividadSelected(anterior);
+        }
+    };
 
     useEffect(() => {
         // Calcular consistencia del cuadrante
@@ -73,42 +110,62 @@ export default function ImpuestosIvaSimplePage() {
     }, [cbuProveedor]);
 
     // Agregar fila de retención
-    const handleAddRow = () => {
+    const handleAddRow = async () => {
         if (!newRow.cuit || !newRow.nro || newRow.monto <= 0) {
-            alert('Por favor complete todos los datos antes de agregar.');
+            toast.error('Por favor complete todos los datos antes de agregar.');
             return;
         }
 
         // Validar longitudes oficiales de ARCA
         const nroClean = newRow.nro.trim();
         if (newRow.tipo === 'Factura de Compra' && (nroClean.length < 5 || nroClean.length > 8)) {
-            alert('Error ARCA: El número de Factura de Compra debe tener entre 5 y 8 caracteres.');
+            toast.error('Error ARCA: El número de Factura de Compra debe tener entre 5 y 8 caracteres.');
             return;
         }
         if ((newRow.tipo === 'Orden de Pago' || newRow.tipo === 'Otro Tipo de Comprobante') && nroClean.length !== 16) {
-            alert(`Error ARCA: El número de ${newRow.tipo} debe tener exactamente 16 caracteres.`);
+            toast.error(`Error ARCA: El número de ${newRow.tipo} debe tener exactamente 16 caracteres.`);
             return;
         }
 
-        setCsvRows([...csvRows, { ...newRow }]);
-        setNewRow({
-            fecha: new Date().toISOString().split('T')[0],
-            cuit: '',
-            tipo: 'Factura de Compra',
-            nro: '',
-            monto: 0
-        });
+        setGuardandoFila(true);
+        try {
+            const creada = await accountingApi.createRetencionArca({
+                ...newRow,
+                fecha: new Date(newRow.fecha).toISOString()
+            });
+            setCsvRows([...csvRows, creada]);
+            setNewRow({
+                fecha: new Date().toISOString().split('T')[0],
+                cuit: '',
+                tipo: 'Factura de Compra',
+                nro: '',
+                monto: 0
+            });
+        } catch (error: any) {
+            console.error('Error al crear retención:', error);
+            toast.error(error.message || 'No se pudo guardar la retención.');
+        } finally {
+            setGuardandoFila(false);
+        }
     };
 
     // Remover fila
-    const handleRemoveRow = (idx: number) => {
-        setCsvRows(csvRows.filter((_, i) => i !== idx));
+    const handleRemoveRow = async (id: string) => {
+        const anterior = csvRows;
+        setCsvRows(csvRows.filter((row) => row.id !== id));
+        try {
+            await accountingApi.deleteRetencionArca(id);
+        } catch (error: any) {
+            console.error('Error al eliminar retención:', error);
+            toast.error(error.message || 'No se pudo eliminar la retención.');
+            setCsvRows(anterior);
+        }
     };
 
     // Exportar CSV oficial según especificaciones ARCA
     const handleExportCSV = () => {
         if (csvRows.length === 0) {
-            alert('No hay retenciones cargadas para exportar.');
+            toast.error('No hay retenciones cargadas para exportar.');
             return;
         }
 
@@ -119,7 +176,7 @@ export default function ImpuestosIvaSimplePage() {
 
         csvRows.forEach(row => {
             // Forzar las celdas como texto entre comillas para preservar ceros a la izquierda
-            const fechaStr = `"${row.fecha}"`;
+            const fechaStr = `"${row.fecha.split('T')[0]}"`;
             const cuitStr = `"${row.cuit}"`;
             const tipoStr = `"${row.tipo}"`;
             const nroStr = `"${row.nro}"`;
@@ -135,6 +192,14 @@ export default function ImpuestosIvaSimplePage() {
         link.click();
         document.body.removeChild(link);
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 pb-20 max-w-6xl mx-auto">
@@ -188,7 +253,7 @@ export default function ImpuestosIvaSimplePage() {
                                     <select 
                                         className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20"
                                         value={actividadSelected}
-                                        onChange={(e) => setActividadSelected(e.target.value)}
+                                        onChange={(e) => handleSetActividad(e.target.value)}
                                     >
                                         <option value="0">--- SELECCIONAR ACTIVIDAD ---</option>
                                         <option value="1">854900 - Servicios de enseñanza y capacitación (VMP)</option>
@@ -296,8 +361,8 @@ export default function ImpuestosIvaSimplePage() {
                                     onChange={(e) => setNewRow({...newRow, monto: parseFloat(e.target.value) || 0})}
                                 />
                             </div>
-                            <Button type="button" onClick={handleAddRow} className="w-full rounded-xl bg-slate-900 text-white text-xs font-black">
-                                Agregar Comprobante
+                            <Button type="button" disabled={guardandoFila} onClick={handleAddRow} className="w-full rounded-xl bg-slate-900 text-white text-xs font-black">
+                                {guardandoFila ? 'Guardando...' : 'Agregar Comprobante'}
                             </Button>
                         </div>
 
@@ -315,15 +380,15 @@ export default function ImpuestosIvaSimplePage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 font-medium">
-                                    {csvRows.map((row, idx) => (
-                                        <tr key={idx} className="hover:bg-slate-50/50">
-                                            <td className="p-3">{row.fecha}</td>
+                                    {csvRows.map((row) => (
+                                        <tr key={row.id} className="hover:bg-slate-50/50">
+                                            <td className="p-3">{new Date(row.fecha).toLocaleDateString('es-AR')}</td>
                                             <td className="p-3 font-mono">{row.cuit}</td>
                                             <td className="p-3">{row.tipo}</td>
                                             <td className="p-3 font-mono">{row.nro}</td>
                                             <td className="p-3 text-right font-bold text-slate-700">${row.monto.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                                             <td className="p-3 text-center">
-                                                <button type="button" onClick={() => handleRemoveRow(idx)} className="text-rose-500 hover:text-rose-700 font-black">
+                                                <button type="button" onClick={() => handleRemoveRow(row.id)} className="text-rose-500 hover:text-rose-700 font-black">
                                                     Eliminar
                                                 </button>
                                             </td>

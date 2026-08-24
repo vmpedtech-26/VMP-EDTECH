@@ -130,3 +130,53 @@ class BalanceRow(SanitizedBaseModel):
     debit: float
     credit: float
     balance: float
+
+# --- RT 54 / Bienes de Cambio ---
+class BienDeCambioBase(SanitizedBaseModel):
+    nombre: str
+    stock: int
+    costoHistorico: float
+    costoUltimaCompra: float
+    fechaUltimaCompra: datetime
+
+class CreateBienDeCambioRequest(BienDeCambioBase):
+    pass
+
+class UpdateBienDeCambioRequest(SanitizedBaseModel):
+    nombre: Optional[str] = None
+    stock: Optional[int] = None
+    costoHistorico: Optional[float] = None
+    costoUltimaCompra: Optional[float] = None
+    fechaUltimaCompra: Optional[datetime] = None
+
+class BienDeCambioResponse(BienDeCambioBase):
+    id: str
+    createdAt: datetime
+    updatedAt: datetime
+
+class Rt54ConfigResponse(SanitizedBaseModel):
+    categoriaContribuyente: str
+
+class UpdateRt54ConfigRequest(SanitizedBaseModel):
+    categoriaContribuyente: str
+
+# --- IVA Simple / Retenciones ARCA ---
+class RetencionArcaBase(SanitizedBaseModel):
+    fecha: datetime
+    cuit: str
+    tipo: str
+    nro: str
+    monto: float
+
+class CreateRetencionArcaRequest(RetencionArcaBase):
+    pass
+
+class RetencionArcaResponse(RetencionArcaBase):
+    id: str
+    createdAt: datetime
+
+class IvaConfigResponse(SanitizedBaseModel):
+    actividadIvaId: Optional[str] = None
+
+class UpdateIvaConfigRequest(SanitizedBaseModel):
+    actividadIvaId: str

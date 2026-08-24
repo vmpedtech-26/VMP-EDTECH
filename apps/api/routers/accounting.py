@@ -5,12 +5,16 @@ import os
 import json
 from typing import List, Optional
 from schemas.accounting import (
-    AccountResponse, CreateAccountRequest, 
+    AccountResponse, CreateAccountRequest,
     JournalEntryResponse, CreateJournalEntryRequest,
     CreateManualJournalEntryRequest,
     VentaResponse, CreateVentaRequest,
     CompraResponse, CreateCompraRequest,
-    CajaMovimientoResponse, BalanceRow
+    CajaMovimientoResponse, BalanceRow,
+    BienDeCambioResponse, CreateBienDeCambioRequest, UpdateBienDeCambioRequest,
+    Rt54ConfigResponse, UpdateRt54ConfigRequest,
+    RetencionArcaResponse, CreateRetencionArcaRequest,
+    IvaConfigResponse, UpdateIvaConfigRequest
 )
 from auth.dependencies import get_current_user, RequireRole
 from core.database import prisma
@@ -942,6 +946,126 @@ async def obtener_resumen(current_user=Depends(get_current_user)):
         "movimientos": movimientos[:5],
     }
 
+
+# --- RT 54 / Bienes de Cambio ---
+
+async def _get_or_create_org_branding():
+    branding = await prisma.orgbranding.find_first(where={"activo": True})
+    if not branding:
+        branding = await prisma.orgbranding.create(data={"nombre": "VMP - EDTECH", "codigo": "vmp"})
+    return branding
+
+@router.get("/rt54/config", response_model=Rt54ConfigResponse)
+async def obtener_rt54_config(current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    branding = await _get_or_create_org_branding()
+    return Rt54ConfigResponse(categoriaContribuyente=branding.categoriaContribuyente)
+
+@router.patch("/rt54/config", response_model=Rt54ConfigResponse)
+async def actualizar_rt54_config(data: UpdateRt54ConfigRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    if data.categoriaContribuyente not in ("PEQUEÑA", "MEDIANA", "RESTANTE"):
+        raise HTTPException(status_code=400, detail="Categoría inválida. Debe ser PEQUEÑA, MEDIANA o RESTANTE.")
+    branding = await _get_or_create_org_branding()
+    updated = await prisma.orgbranding.update(
+        where={"id": branding.id},
+        data={"categoriaContribuyente": data.categoriaContribuyente}
+    )
+    return Rt54ConfigResponse(categoriaContribuyente=updated.categoriaContribuyente)
+
+@router.get("/rt54/inventario", response_model=List[BienDeCambioResponse])
+async def listar_bienes_de_cambio(current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    return await prisma.biendecambio.find_many(order={"nombre": "asc"})
+
+@router.post("/rt54/inventario", response_model=BienDeCambioResponse)
+async def crear_bien_de_cambio(data: CreateBienDeCambioRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    return await prisma.biendecambio.create(data=data.model_dump())
+
+@router.patch("/rt54/inventario/{id}", response_model=BienDeCambioResponse)
+async def actualizar_bien_de_cambio(id: str, data: UpdateBienDeCambioRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    bien = await prisma.biendecambio.find_unique(where={"id": id})
+    if not bien:
+        raise HTTPException(status_code=404, detail="Bien de cambio no encontrado")
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    return await prisma.biendecambio.update(where={"id": id}, data=update_data)
+
+@router.delete("/rt54/inventario/{id}")
+async def eliminar_bien_de_cambio(id: str, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    bien = await prisma.biendecambio.find_unique(where={"id": id})
+    if not bien:
+        raise HTTPException(status_code=404, detail="Bien de cambio no encontrado")
+    await prisma.biendecambio.delete(where={"id": id})
+    return {"message": "Bien de cambio eliminado exitosamente"}
+
+# --- IVA Simple / Liquidación Impositiva ---
+
+@router.get("/iva/config", response_model=IvaConfigResponse)
+async def obtener_iva_config(current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    branding = await _get_or_create_org_branding()
+    return IvaConfigResponse(actividadIvaId=branding.actividadIvaId)
+
+@router.patch("/iva/config", response_model=IvaConfigResponse)
+async def actualizar_iva_config(data: UpdateIvaConfigRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    branding = await _get_or_create_org_branding()
+    updated = await prisma.orgbranding.update(
+        where={"id": branding.id},
+        data={"actividadIvaId": data.actividadIvaId}
+    )
+    return IvaConfigResponse(actividadIvaId=updated.actividadIvaId)
+
+@router.get("/iva/debito-libro")
+async def obtener_debito_libro(current_user=Depends(get_current_user)):
+    """Débito fiscal real según el Libro de Ventas (suma de Venta.iva del mes en curso)."""
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    now = datetime.now()
+    inicio_mes = datetime(now.year, now.month, 1)
+    ventas_mes = await prisma.venta.find_many(where={"fecha": {"gte": inicio_mes}})
+    debito_libro = sum(v.iva for v in ventas_mes)
+    return {"debitoLibro": debito_libro, "periodo": inicio_mes.strftime("%Y-%m")}
+
+@router.get("/iva/retenciones", response_model=List[RetencionArcaResponse])
+async def listar_retenciones_arca(current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    return await prisma.retencionarca.find_many(order={"fecha": "desc"})
+
+@router.post("/iva/retenciones", response_model=RetencionArcaResponse)
+async def crear_retencion_arca(data: CreateRetencionArcaRequest, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+
+    nro_clean = data.nro.strip()
+    if data.tipo == "Factura de Compra" and not (5 <= len(nro_clean) <= 8):
+        raise HTTPException(status_code=400, detail="Error ARCA: el número de Factura de Compra debe tener entre 5 y 8 caracteres.")
+    if data.tipo in ("Orden de Pago", "Otro Tipo de Comprobante") and len(nro_clean) != 16:
+        raise HTTPException(status_code=400, detail=f"Error ARCA: el número de {data.tipo} debe tener exactamente 16 caracteres.")
+
+    return await prisma.retencionarca.create(data=data.model_dump())
+
+@router.delete("/iva/retenciones/{id}")
+async def eliminar_retencion_arca(id: str, current_user=Depends(get_current_user)):
+    if current_user.rol != "SUPER_ADMIN":
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+    retencion = await prisma.retencionarca.find_unique(where={"id": id})
+    if not retencion:
+        raise HTTPException(status_code=404, detail="Retención no encontrada")
+    await prisma.retencionarca.delete(where={"id": id})
+    return {"message": "Retención eliminada exitosamente"}
 
 # --- Inicialización ---
 
