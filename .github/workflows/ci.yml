@@ -73,6 +73,7 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/vmp_test
           JWT_SECRET: test-secret-key-for-ci
           SMTP_PASSWORD: ""
+          PYTHONPATH: .
         run: |
           pytest tests/ -v --cov=. --cov-report=xml --cov-report=term
       
