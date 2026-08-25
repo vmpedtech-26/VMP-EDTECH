@@ -71,7 +71,9 @@ class TestCredentialValidation:
         assert data["credential"]["numero"] == "VMP-2026-TEST001"
         assert data["credential"]["alumno"]["nombre"] == "Juan"
         assert data["credential"]["alumno"]["apellido"] == "Pérez"
-        assert data["credential"]["alumno"]["dni"] == "12345678"
+        # El DNI se enmascara en la validación pública (el número de credencial
+        # es secuencial y adivinable) -- solo se expone la terminación.
+        assert data["credential"]["alumno"]["dni"] == "***5678"
         assert data["credential"]["curso"]["nombre"] == "Manejo Defensivo"
         assert data["credential"]["empresa"]["nombre"] == "Test Company"
         

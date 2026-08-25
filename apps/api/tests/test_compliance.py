@@ -156,7 +156,8 @@ async def test_admin_gestion_denuncias(client, admin_user, regular_user):
     
     # 1. Intentar acceder sin token (público)
     response_anon = await client.get("/api/compliance/admin/reports")
-    assert response_anon.status_code == 401
+    # HTTPBearer devuelve 403 cuando falta el header Authorization por completo
+    assert response_anon.status_code == 403
     
     # 2. Intentar acceder con token de alumno
     user_token = create_access_token(data={"sub": regular_user.id})

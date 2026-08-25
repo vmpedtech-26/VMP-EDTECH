@@ -69,8 +69,10 @@ class TestAuth:
     async def test_get_current_user_no_token(self, client: AsyncClient):
         """Test de obtener usuario sin token"""
         response = await client.get("/api/auth/me")
-        
-        assert response.status_code == 401
+
+        # FastAPI's HTTPBearer devuelve 403 cuando falta el header
+        # Authorization por completo (401 es solo para un token inválido/vencido).
+        assert response.status_code == 403
     
     @pytest.mark.asyncio
     async def test_forgot_password(self, client: AsyncClient, test_user):

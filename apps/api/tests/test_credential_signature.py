@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 from core.database import prisma
 from services.credential_service import generate_credential_for_student
 from services.credential_validator import credential_validator
@@ -44,12 +45,14 @@ async def test_credential_signature_generation_and_validation(client, test_data)
     alumno = test_data["alumno"]
     curso = test_data["curso"]
     
-    # Generar la credencial
-    result = await generate_credential_for_student(
-        alumno_id=alumno.id,
-        curso_id=curso.id,
-        force=True
-    )
+    # Generar la credencial (se mockea la subida a S3: este test verifica la
+    # firma criptográfica, no el almacenamiento, y CI no tiene credenciales S3)
+    with patch("services.storage_service.upload_bytes", return_value="https://fake-test-bucket.example.com/test-credential.pdf"):
+        result = await generate_credential_for_student(
+            alumno_id=alumno.id,
+            curso_id=curso.id,
+            force=True
+        )
     
     cred = result["credencial"]
     assert cred.firmaCriptografica is not None

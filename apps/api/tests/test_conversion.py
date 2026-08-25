@@ -14,7 +14,7 @@ class TestCotizacionConversion:
         """Test de conversión exitosa de cotización"""
         # Crear cotización
         cotizacion_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company SA",
                 "cuit": "20-12345678-9",
@@ -104,7 +104,7 @@ class TestCotizacionConversion:
         """Test de conversión con estado inválido"""
         # Crear cotización en estado 'pending'
         cotizacion_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company",
                 "nombre": "John Doe",
@@ -160,7 +160,7 @@ class TestCotizacionConversion:
         """Test de conversión sin autenticación"""
         # Crear cotización
         cotizacion_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company",
                 "nombre": "John Doe",
@@ -209,7 +209,7 @@ class TestCotizacionConversion:
         
         # Crear cotización
         cotizacion_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "New Company",
                 "nombre": "John Doe",

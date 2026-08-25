@@ -15,7 +15,7 @@ class TestCotizaciones:
     async def test_create_cotizacion(self, client: AsyncClient):
         """Test de creación de cotización"""
         response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company",
                 "nombre": "John Doe",
@@ -38,7 +38,7 @@ class TestCotizaciones:
     async def test_get_cotizaciones(self, client: AsyncClient, admin_token):
         """Test de obtener lista de cotizaciones"""
         response = await client.get(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         
@@ -51,7 +51,7 @@ class TestCotizaciones:
         """Test de obtener cotización por ID"""
         # Primero crear una cotización
         create_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company",
                 "nombre": "John Doe",
@@ -81,7 +81,7 @@ class TestCotizaciones:
         """Test de actualización de estado de cotización"""
         # Crear cotización
         create_response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test Company",
                 "nombre": "John Doe",
@@ -111,7 +111,7 @@ class TestCotizaciones:
     async def test_create_cotizacion_invalid_data(self, client: AsyncClient):
         """Test de creación con datos inválidos"""
         response = await client.post(
-            "/api/cotizaciones/",
+            "/api/cotizaciones",
             json={
                 "empresa": "Test",
                 # Falta email

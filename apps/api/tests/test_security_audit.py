@@ -83,7 +83,9 @@ class TestSecurityAudit:
     @pytest.mark.asyncio
     async def test_get_security_metrics_no_token(self, client: AsyncClient):
         """
-        Verify that requests without any authorization headers receive a 401 error.
+        Verify that requests without any authorization headers receive a 403 error
+        (FastAPI's HTTPBearer only returns 401 for an invalid/expired token, not a
+        missing Authorization header entirely).
         """
         response = await client.get("/api/admin/security/metrics")
-        assert response.status_code == 401
+        assert response.status_code == 403
