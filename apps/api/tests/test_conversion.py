@@ -12,6 +12,19 @@ class TestCotizacionConversion:
     @pytest.mark.asyncio
     async def test_convert_cotizacion_success(self, client: AsyncClient, admin_token, db):
         """Test de conversión exitosa de cotización"""
+        # El endpoint mapea course="defensivo" -> codigo "COND-DEF" y busca ese
+        # curso en la base; sin él, la conversión responde 404 aunque todo lo
+        # demás sea correcto.
+        curso = await prisma.curso.create(
+            data={
+                "nombre": "Manejo Defensivo",
+                "codigo": "COND-DEF",
+                "descripcion": "Test",
+                "duracionHoras": 40,
+                "activo": True
+            }
+        )
+
         # Crear cotización
         cotizacion_response = await client.post(
             "/api/cotizaciones",
@@ -99,7 +112,8 @@ class TestCotizacionConversion:
             await prisma.user.delete(where={"id": alumno.id})
         await prisma.company.delete(where={"id": empresa.id})
         await prisma.cotizacion.delete(where={"id": cotizacion_id})
-    
+        await prisma.curso.delete(where={"id": curso.id})
+
     @pytest.mark.asyncio
     async def test_convert_cotizacion_invalid_status(self, client: AsyncClient, admin_token, db):
         """Test de conversión con estado inválido"""
