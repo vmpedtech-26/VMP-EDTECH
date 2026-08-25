@@ -108,16 +108,17 @@ class TestCotizaciones:
 
         cotizacion_id = create_response.json()["id"]
 
-        # Actualizar estado
+        # Actualizar estado (status va como query param, no como body -- así
+        # está tipado en el endpoint real y así lo llama el frontend)
         response = await client.patch(
             f"/api/cotizaciones/{cotizacion_id}/status",
             headers={"Authorization": f"Bearer {admin_token}"},
-            json={"status": "contacted"}
+            params={"status": "contacted"}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "contacted"
+        assert data["cotizacion"]["status"] == "contacted"
     
     @pytest.mark.asyncio
     async def test_create_cotizacion_invalid_data(self, client: AsyncClient):

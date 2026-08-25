@@ -7,6 +7,21 @@ from httpx import AsyncClient, ASGITransport
 from fastapi.testclient import TestClient
 from main import app
 from core.database import prisma
+from middleware.security import limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """
+    El Limiter de slowapi guarda su estado en memoria durante todo el proceso
+    de pytest, no por test. Sin este reset, cualquier test que llame a un
+    endpoint público rate-limiteado (ej. /api/public/validar/{numero}) cuenta
+    contra el mismo balde que el resto de la suite, y un test que corre
+    después de varios otros puede recibir un 429 real sin tener nada que ver
+    con el rate limiting en sí.
+    """
+    limiter.reset()
+    yield
 
 # No se define un fixture `event_loop` propio: pytest-asyncio >= 0.23 crea y
 # gestiona su propio loop por test en modo "auto", y un fixture de sesión

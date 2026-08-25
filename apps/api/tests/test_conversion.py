@@ -36,11 +36,12 @@ class TestCotizacionConversion:
         cotizacion_id = cotizacion_response.json()["id"]
         
         # Actualizar estado a 'contacted'
-        await client.patch(
+        status_update = await client.patch(
             f"/api/cotizaciones/{cotizacion_id}/status",
             headers={"Authorization": f"Bearer {admin_token}"},
-            json={"status": "contacted"}
+            params={"status": "contacted"}
         )
+        assert status_update.status_code == 200
         
         # Convertir a cliente
         conversion_response = await client.post(
@@ -230,11 +231,12 @@ class TestCotizacionConversion:
         cotizacion_id = cotizacion_response.json()["id"]
         
         # Actualizar estado
-        await client.patch(
+        status_update = await client.patch(
             f"/api/cotizaciones/{cotizacion_id}/status",
             headers={"Authorization": f"Bearer {admin_token}"},
-            json={"status": "contacted"}
+            params={"status": "contacted"}
         )
+        assert status_update.status_code == 200
         
         # Intentar convertir con CUIT duplicado
         response = await client.post(

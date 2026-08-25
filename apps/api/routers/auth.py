@@ -135,7 +135,7 @@ async def get_current_user_info(current_user = Depends(get_current_user)):
 # ============= PASSWORD RESET =============
 
 from pydantic import BaseModel, EmailStr
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import os
 
@@ -232,8 +232,12 @@ async def reset_password(data: ResetPasswordRequest):
                 detail="Este link de recuperación ya fue utilizado"
             )
         
-        # Verificar que no haya expirado
-        if datetime.utcnow() > token_record.expiresAt:
+        # Verificar que no haya expirado (expiresAt puede venir naive o aware
+        # según el driver; se normaliza a aware para no comparar peras con manzanas)
+        expires_at = token_record.expiresAt
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > expires_at:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Este link de recuperación ha expirado. Solicita uno nuevo."
