@@ -32,7 +32,7 @@ class TestCotizacionConversion:
             }
         )
         
-        assert cotizacion_response.status_code == 200
+        assert cotizacion_response.status_code == 201
         cotizacion_id = cotizacion_response.json()["id"]
         
         # Actualizar estado a 'contacted'
@@ -189,11 +189,12 @@ class TestCotizacionConversion:
             }
         )
         
-        assert response.status_code == 401
-        
+        # HTTPBearer devuelve 403 cuando falta el header Authorization por completo
+        assert response.status_code == 403
+
         # Cleanup
         await prisma.cotizacion.delete(where={"id": cotizacion_id})
-    
+
     @pytest.mark.asyncio
     async def test_convert_cotizacion_duplicate_cuit(self, client: AsyncClient, admin_token, db):
         """Test de conversión con CUIT duplicado"""

@@ -24,11 +24,15 @@ class TestCotizaciones:
                 "quantity": 10,
                 "course": "defensivo",
                 "modality": "online",
-                "totalPrice": 100000
+                "totalPrice": 100000,
+                "pricePerStudent": 10000,
+                "discount": 0,
+                "acceptMarketing": True,
+                "acceptTerms": True
             }
         )
-        
-        assert response.status_code == 200
+
+        assert response.status_code == 201
         data = response.json()
         assert data["empresa"] == "Test Company"
         assert data["status"] == "pending"
@@ -60,12 +64,16 @@ class TestCotizaciones:
                 "quantity": 5,
                 "course": "defensivo",
                 "modality": "online",
-                "totalPrice": 50000
+                "totalPrice": 50000,
+                "pricePerStudent": 10000,
+                "discount": 0,
+                "acceptMarketing": True,
+                "acceptTerms": True
             }
         )
-        
+
         cotizacion_id = create_response.json()["id"]
-        
+
         # Obtener por ID
         response = await client.get(
             f"/api/cotizaciones/{cotizacion_id}",
@@ -90,12 +98,16 @@ class TestCotizaciones:
                 "quantity": 5,
                 "course": "defensivo",
                 "modality": "online",
-                "totalPrice": 50000
+                "totalPrice": 50000,
+                "pricePerStudent": 10000,
+                "discount": 0,
+                "acceptMarketing": True,
+                "acceptTerms": True
             }
         )
-        
+
         cotizacion_id = create_response.json()["id"]
-        
+
         # Actualizar estado
         response = await client.patch(
             f"/api/cotizaciones/{cotizacion_id}/status",
