@@ -21,8 +21,9 @@ async def listar_empresas(current_user=Depends(get_current_user)):
     
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
-        
-    return await prisma.company.find_many(order={"nombre": "asc"})
+
+    empresas = await prisma.company.find_many(order={"nombre": "asc"})
+    return [_con_sso_secret_set(e) for e in empresas]
 
 
 @router.post("", response_model=EmpresaResponse)
@@ -54,8 +55,8 @@ async def crear_empresa(data: CreateEmpresaRequest, current_user=Depends(get_cur
             "activa": data.activa
         }
     )
-    
-    return empresa
+
+    return _con_sso_secret_set(empresa)
 
 
 @router.get("/{id}", response_model=EmpresaResponse)

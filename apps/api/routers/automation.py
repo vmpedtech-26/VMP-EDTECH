@@ -18,6 +18,7 @@ import tempfile
 import os
 from datetime import datetime
 from typing import Optional, Any
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Header, Request, status
 from pydantic import BaseModel
@@ -144,7 +145,9 @@ async def test_webhook(
     return {
         "status": "dispatched",
         "event":  WebhookEvent.SYSTEM_TEST.value,
-        "n8n_url": settings.N8N_WEBHOOK_URL,
+        # Solo el host, no la URL completa: el path suele llevar el token/UUID
+        # del webhook de n8n a modo de secreto (ver /automation/health).
+        "n8n_host": urlparse(settings.N8N_WEBHOOK_URL).netloc,
         "message": "✅ Evento enviado exitosamente a n8n",
     }
 
