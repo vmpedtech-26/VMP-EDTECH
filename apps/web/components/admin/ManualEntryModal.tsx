@@ -204,6 +204,7 @@ export default function ManualEntryModal({ isOpen, onClose, onSuccess }: ManualE
                         </div>
 
                         <div className="border border-slate-100 rounded-xl overflow-hidden">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase">
@@ -268,6 +269,7 @@ export default function ManualEntryModal({ isOpen, onClose, onSuccess }: ManualE
                                                     type="button"
                                                     onClick={() => handleRemoveRow(index)}
                                                     className="p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-100 transition-colors"
+                                                    aria-label="Eliminar línea"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
@@ -288,6 +290,7 @@ export default function ManualEntryModal({ isOpen, onClose, onSuccess }: ManualE
                                     </tr>
                                 </tfoot>
                             </table>
+                            </div>
                         </div>
                     </div>
 

@@ -167,7 +167,7 @@ export default function EmpresasPage() {
                                     >
                                         <QrCode className="h-4 w-4 text-primary" />
                                     </Button>
-                                    <Button variant="ghost" size="xs" className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-500" onClick={() => handleDelete(empresa.id)}>
+                                    <Button variant="ghost" size="xs" className="h-10 w-10 p-0 rounded-full hover:bg-red-50 hover:text-red-500" onClick={() => handleDelete(empresa.id)} aria-label={`Eliminar empresa: ${empresa.nombre}`}>
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>

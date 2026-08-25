@@ -483,6 +483,7 @@ export default function NuevaCompraPage() {
                                             type="button"
                                             className="text-slate-300 hover:text-rose-500 transition-colors flex items-center justify-center p-2"
                                             onClick={() => handleRemoveItem(index)}
+                                            aria-label="Eliminar ítem"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>

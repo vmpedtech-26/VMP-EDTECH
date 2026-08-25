@@ -190,8 +190,9 @@ export default function AlumnosPage() {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-gray-300 hover:text-red-500 h-9 w-9 p-0"
+                                    className="text-gray-300 hover:text-red-500 h-10 w-10 p-0"
                                     onClick={() => handleDelete(user.id)}
+                                    aria-label={`Eliminar alumno: ${user.nombre} ${user.apellido}`}
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>

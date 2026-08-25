@@ -183,6 +183,7 @@ export default function ComprasPage() {
                                                 className="h-8 w-8 p-0 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50" 
                                                 onClick={() => handleDelete(compra.id)}
                                                 disabled={deletingId === compra.id}
+                                                aria-label={`Eliminar compra: ${compra.proveedor}`}
                                             >
                                                 {deletingId === compra.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                             </Button>

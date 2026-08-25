@@ -354,6 +354,7 @@ export default function Rt54SimplificacionesPage() {
                                                     type="button"
                                                     onClick={() => handleEliminarItem(item.id, item.nombre)}
                                                     className="text-rose-500 hover:text-rose-700"
+                                                    aria-label={`Eliminar bien de cambio: ${item.nombre}`}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>

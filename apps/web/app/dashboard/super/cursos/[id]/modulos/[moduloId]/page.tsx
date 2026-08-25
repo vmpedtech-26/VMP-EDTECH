@@ -140,6 +140,7 @@ function PreguntaEditor({
                                 type="button"
                                 onClick={() => removeOpcion(i)}
                                 className="text-gray-400 hover:text-red-500 transition-colors"
+                                aria-label={`Eliminar opción ${String.fromCharCode(65 + i)}`}
                             >
                                 <Trash2 className="h-3.5 w-3.5" />
                             </button>

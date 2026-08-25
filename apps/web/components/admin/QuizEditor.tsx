@@ -93,8 +93,9 @@ export function QuizEditor({ preguntas, onChange }: QuizEditorProps) {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-gray-300 hover:text-red-500 h-8 w-8 p-0"
+                                    className="text-gray-300 hover:text-red-500 h-10 w-10 p-0"
                                     onClick={(e) => { e.stopPropagation(); removeQuestion(idx); }}
+                                    aria-label={`Eliminar pregunta ${idx + 1}`}
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>

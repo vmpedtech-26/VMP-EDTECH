@@ -194,6 +194,7 @@ export default function BancoPreguntasPage() {
                                     className="h-8 w-8 p-0 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-full shrink-0"
                                     onClick={() => handleDelete(item.id)}
                                     disabled={deletingId === item.id}
+                                    aria-label="Eliminar pregunta"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>

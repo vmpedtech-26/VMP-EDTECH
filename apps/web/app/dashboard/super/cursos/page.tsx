@@ -162,6 +162,7 @@ export default function SuperCursosPage() {
                                     size="sm"
                                     className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100"
                                     onClick={() => handleDelete(curso.id)}
+                                    aria-label={`Eliminar curso: ${curso.nombre}`}
                                 >
                                     <Trash2 className="h-3.5 w-3.5" />
                                 </Button>

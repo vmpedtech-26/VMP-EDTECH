@@ -54,6 +54,7 @@ export function IndicadoresHSE({ indicadores, onChange }: Props) {
                                 type="button"
                                 onClick={() => handleRemove(idx)}
                                 className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 shrink-0"
+                                aria-label="Eliminar indicador"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>

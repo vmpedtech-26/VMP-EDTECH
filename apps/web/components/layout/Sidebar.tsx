@@ -233,6 +233,7 @@ export function Sidebar({ userRole }: SidebarProps) {
             <button
                 className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

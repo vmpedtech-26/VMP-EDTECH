@@ -289,6 +289,7 @@ export default function SuperCredencialesPage() {
                                                         onClick={() => handleDelete(c.id)}
                                                         disabled={deletingId === c.id}
                                                         className="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-colors disabled:opacity-50"
+                                                        aria-label={`Eliminar credencial: ${c.numero}`}
                                                     >
                                                         {deletingId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                                                     </button>

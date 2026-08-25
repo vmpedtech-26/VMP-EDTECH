@@ -208,6 +208,7 @@ export function GestorModulos({ cursoId, modulos, onUpdate }: GestorModulosProps
                                     size="sm"
                                     className="text-gray-300 hover:text-red-500"
                                     onClick={() => handleDelete(modulo.id)}
+                                    aria-label={`Eliminar módulo: ${modulo.titulo}`}
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>

@@ -219,6 +219,7 @@ export default function NuevaVentaPage() {
                                             type="button"
                                             className="absolute -top-2 -right-2 md:static h-10 w-10 flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-all"
                                             onClick={() => handleRemoveItem(index)}
+                                            aria-label="Eliminar ítem"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>

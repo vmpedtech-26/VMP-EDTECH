@@ -123,6 +123,7 @@ export function CuadroTarifario({ items, onChange, readOnly = false }: Props) {
                                                 type="button"
                                                 onClick={() => handleRemove(idx)}
                                                 className="text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-red-50"
+                                                aria-label="Eliminar ítem"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
