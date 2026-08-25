@@ -12,8 +12,14 @@ from typing import Callable
 import time
 
 
-# Configurar rate limiter
-limiter = Limiter(key_func=get_remote_address)
+# Configurar rate limiter. key_style="endpoint": por default slowapi agrupa
+# por la URL LITERAL resuelta ("url"), así que en cualquier endpoint con un
+# parámetro de path (ej. /validar/{numero}) cada valor distinto cae en un
+# bucket separado y el límite nunca se activa -- exactamente los endpoints
+# públicos de validación de credenciales/denuncias que este rate limit
+# necesita proteger de fuerza bruta. "endpoint" agrupa por la función/ruta
+# en sí, sin importar qué valor tenga el parámetro.
+limiter = Limiter(key_func=get_remote_address, key_style="endpoint")
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

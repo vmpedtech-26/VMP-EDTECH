@@ -4,6 +4,7 @@ from auth.jwt import hash_password, verify_password, create_access_token
 from core.database import prisma
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
+from services.audit_service import log_audit_action
 
 router = APIRouter()
 
@@ -83,6 +84,20 @@ async def login(request: Request, data: UserLogin):
     user = await prisma.user.find_unique(where={"email": data.email})
     
     if not user or not verify_password(data.password, user.passwordHash):
+        try:
+            ip_address = request.client.host if request.client else "N/A"
+            await log_audit_action(
+                action="AUTH_FAILURE",
+                user_id=user.id if user else None,
+                user_email=data.email,
+                # Mismo mensaje exista o no el usuario -- igual que la respuesta
+                # HTTP unificada, no delatamos en el log cuál de los dos pasó.
+                details="Intento de inicio de sesión con contraseña incorrecta",
+                ip_address=ip_address,
+            )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria de login fallido: {audit_err}")
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

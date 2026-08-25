@@ -1,9 +1,11 @@
 """
 Servicio para validar credenciales públicamente.
 """
+import hmac
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from core.database import prisma
+from services.credential_service import calculate_credential_signature
 
 
 class CredentialValidator:
@@ -71,11 +73,37 @@ class CredentialValidator:
             now = datetime.now(timezone.utc)
             vencimiento = credencial.fechaVencimiento if credencial.fechaVencimiento.tzinfo else credencial.fechaVencimiento.replace(tzinfo=timezone.utc)
             is_expired = now > vencimiento
-        
+
+        # Verificar firma criptográfica (HMAC-SHA256): detecta si alguien
+        # modificó el registro en la base directamente (ej. cambiar el DNI o
+        # el curso de una credencial ya emitida). Las credenciales emitidas
+        # antes de que existiera este campo no tienen firma -- no se las
+        # marca como inválidas por eso, quedan como "not_signed".
+        signature_valid: Optional[bool] = None
+        signature_status = "not_signed"
+        if credencial.firmaCriptografica:
+            fecha_emision_str = credencial.fechaEmision.strftime("%Y-%m-%d")
+            expected_signature = calculate_credential_signature(
+                credencial.numero, credencial.alumnoId, credencial.cursoId, fecha_emision_str
+            )
+            signature_valid = hmac.compare_digest(expected_signature, credencial.firmaCriptografica)
+            signature_status = "verified" if signature_valid else "invalid"
+
+        is_valid = (not is_expired) and (signature_valid is not False)
+
+        if is_expired:
+            status = "expired"
+        elif signature_valid is False:
+            status = "invalid"
+        else:
+            status = "valid"
+
         # Preparar respuesta con datos públicos
         return {
-            "valid": not is_expired,
-            "status": "expired" if is_expired else "valid",
+            "valid": is_valid,
+            "status": status,
+            "signatureValid": signature_valid,
+            "signatureStatus": signature_status,
             "credential": {
                 "numero": credencial.numero,
                 "fechaEmision": credencial.fechaEmision.isoformat(),

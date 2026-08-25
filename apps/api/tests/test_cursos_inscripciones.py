@@ -137,12 +137,18 @@ class TestCursos:
 
 
 class TestInscripciones:
-    """Tests de inscripciones"""
-    
+    """Tests de inscripciones.
+
+    La API de inscripciones es de auto-servicio: el alumno se inscribe y
+    avanza con su propio token (current_user.id), no hay un endpoint donde
+    un admin cree/liste/actualice inscripciones de un alumno arbitrario ni
+    un campo "progreso" seteable a mano -- se recalcula siempre a partir de
+    qué módulos están realmente completados (Examen aprobado, Evidencia
+    aprobada, o teoría marcada como vista)."""
+
     @pytest.mark.asyncio
-    async def test_create_inscripcion(self, client: AsyncClient, admin_token, test_user, db):
-        """Test de creación de inscripción"""
-        # Crear curso
+    async def test_create_inscripcion(self, client: AsyncClient, auth_token, test_user, db):
+        """Test de auto-inscripción en un curso"""
         curso = await prisma.curso.create(
             data={
                 "nombre": "Curso para Inscripción",
@@ -152,32 +158,26 @@ class TestInscripciones:
                 "activo": True
             }
         )
-        
-        # Crear inscripción
+
         response = await client.post(
-            "/api/inscripciones/",
-            headers={"Authorization": f"Bearer {admin_token}"},
-            json={
-                "alumnoId": test_user.id,
-                "cursoId": curso.id
-            }
+            f"/api/inscripciones/{curso.id}/inscribir",
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["alumnoId"] == test_user.id
         assert data["cursoId"] == curso.id
         assert data["estado"] == "NO_INICIADO"
         assert data["progreso"] == 0
-        
+
         # Cleanup
         await prisma.inscripcion.delete(where={"id": data["id"]})
         await prisma.curso.delete(where={"id": curso.id})
-    
+
     @pytest.mark.asyncio
-    async def test_get_inscripciones_by_alumno(self, client: AsyncClient, auth_token, test_user, db):
-        """Test de obtener inscripciones de un alumno"""
-        # Crear curso e inscripción
+    async def test_get_inscripcion_by_curso(self, client: AsyncClient, auth_token, test_user, db):
+        """Test de obtener el estado de la propia inscripción en un curso"""
         curso = await prisma.curso.create(
             data={
                 "nombre": "Curso Test",
@@ -187,7 +187,7 @@ class TestInscripciones:
                 "activo": True
             }
         )
-        
+
         inscripcion = await prisma.inscripcion.create(
             data={
                 "alumnoId": test_user.id,
@@ -196,26 +196,25 @@ class TestInscripciones:
                 "progreso": 0
             }
         )
-        
-        # Obtener inscripciones
+
         response = await client.get(
-            f"/api/inscripciones/alumno/{test_user.id}",
+            f"/api/inscripciones/{curso.id}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        assert len(data) > 0
-        
+        assert data["id"] == inscripcion.id
+        assert data["cursoId"] == curso.id
+        assert data["alumnoId"] == test_user.id
+
         # Cleanup
         await prisma.inscripcion.delete(where={"id": inscripcion.id})
         await prisma.curso.delete(where={"id": curso.id})
-    
+
     @pytest.mark.asyncio
     async def test_update_progreso(self, client: AsyncClient, auth_token, test_user, db):
-        """Test de actualización de progreso"""
-        # Crear curso e inscripción
+        """Test de que completar un módulo de teoría recalcula el progreso real"""
         curso = await prisma.curso.create(
             data={
                 "nombre": "Curso Progreso",
@@ -225,35 +224,43 @@ class TestInscripciones:
                 "activo": True
             }
         )
-        
+        # Dos módulos de teoría: completar uno debe dar 50%, no 100%
+        modulo_1 = await prisma.modulo.create(
+            data={"cursoId": curso.id, "titulo": "Módulo 1", "orden": 1, "tipo": "TEORIA"}
+        )
+        await prisma.modulo.create(
+            data={"cursoId": curso.id, "titulo": "Módulo 2", "orden": 2, "tipo": "TEORIA"}
+        )
+
         inscripcion = await prisma.inscripcion.create(
             data={
                 "alumnoId": test_user.id,
                 "cursoId": curso.id,
-                "estado": "EN_PROGRESO",
+                "estado": "NO_INICIADO",
                 "progreso": 0
             }
         )
-        
-        # Actualizar progreso
-        response = await client.patch(
-            f"/api/inscripciones/{inscripcion.id}/progreso",
+
+        response = await client.post(
+            f"/api/inscripciones/{curso.id}/modulos/{modulo_1.id}/completar",
             headers={"Authorization": f"Bearer {auth_token}"},
-            json={"progreso": 50}
+            json={"moduloId": modulo_1.id}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
-        assert data["progreso"] == 50
-        
+        assert data["success"] is True
+        assert data["nuevoProgreso"] == 50
+        assert data["cursoCompletado"] is False
+
         # Cleanup
         await prisma.inscripcion.delete(where={"id": inscripcion.id})
+        await prisma.modulo.delete_many(where={"cursoId": curso.id})
         await prisma.curso.delete(where={"id": curso.id})
-    
+
     @pytest.mark.asyncio
     async def test_complete_inscripcion(self, client: AsyncClient, auth_token, test_user, db):
-        """Test de completar inscripción"""
-        # Crear curso e inscripción
+        """Test de que completar el único módulo de un curso lo marca COMPLETADO"""
         curso = await prisma.curso.create(
             data={
                 "nombre": "Curso Completar",
@@ -263,28 +270,36 @@ class TestInscripciones:
                 "activo": True
             }
         )
-        
+        modulo = await prisma.modulo.create(
+            data={"cursoId": curso.id, "titulo": "Único módulo", "orden": 1, "tipo": "TEORIA"}
+        )
+
         inscripcion = await prisma.inscripcion.create(
             data={
                 "alumnoId": test_user.id,
                 "cursoId": curso.id,
-                "estado": "EN_PROGRESO",
-                "progreso": 90
+                "estado": "NO_INICIADO",
+                "progreso": 0
             }
         )
-        
-        # Completar inscripción
-        response = await client.patch(
-            f"/api/inscripciones/{inscripcion.id}/progreso",
+
+        response = await client.post(
+            f"/api/inscripciones/{curso.id}/modulos/{modulo.id}/completar",
             headers={"Authorization": f"Bearer {auth_token}"},
-            json={"progreso": 100}
+            json={"moduloId": modulo.id}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
-        assert data["progreso"] == 100
-        assert data["estado"] == "COMPLETADO"
-        
-        # Cleanup
+        assert data["nuevoProgreso"] == 100
+        assert data["cursoCompletado"] is True
+
+        inscripcion_actualizada = await prisma.inscripcion.find_unique(where={"id": inscripcion.id})
+        assert inscripcion_actualizada.estado == "COMPLETADO"
+
+        # Cleanup (borrar primero cualquier credencial que se haya autogenerado
+        # al completar el curso, antes de borrar al alumno/curso por FK)
+        await prisma.credencial.delete_many(where={"alumnoId": test_user.id, "cursoId": curso.id})
         await prisma.inscripcion.delete(where={"id": inscripcion.id})
+        await prisma.modulo.delete_many(where={"cursoId": curso.id})
         await prisma.curso.delete(where={"id": curso.id})
