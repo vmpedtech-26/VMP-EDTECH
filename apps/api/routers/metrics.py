@@ -198,16 +198,19 @@ async def get_course_metrics(current_user: UserResponse = Depends(get_current_us
             }
         )
         
+        curso_ids = [c.id for c in courses]
+        completadas_por_curso: dict[str, int] = {}
+        if curso_ids:
+            completadas = await prisma.inscripcion.find_many(
+                where={"cursoId": {"in": curso_ids}, "estado": "COMPLETADO"}
+            )
+            for insc in completadas:
+                completadas_por_curso[insc.cursoId] = completadas_por_curso.get(insc.cursoId, 0) + 1
+
         course_stats = []
         for course in courses:
-            # Contar inscripciones completadas
-            completed = await prisma.inscripcion.count(
-                where={
-                    "cursoId": course.id,
-                    "estado": "COMPLETADO"
-                }
-            )
-            
+            completed = completadas_por_curso.get(course.id, 0)
+
             course_stats.append({
                 "id": course.id,
                 "nombre": course.nombre,

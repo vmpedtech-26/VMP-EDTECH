@@ -55,14 +55,26 @@ async def listar_cursos_asignados(current_user=Depends(get_current_user)):
         where={"instructorId": current_user.id},
         order={"nombre": "asc"}
     )
+    if not cursos:
+        return []
+
+    curso_ids = [c.id for c in cursos]
+
+    inscripciones = await prisma.inscripcion.find_many(where={"cursoId": {"in": curso_ids}})
+    credenciales = await prisma.credencial.find_many(where={"cursoId": {"in": curso_ids}})
+
+    inscripciones_por_curso: dict[str, list] = {}
+    for i in inscripciones:
+        inscripciones_por_curso.setdefault(i.cursoId, []).append(i)
+    credenciales_por_curso: dict[str, int] = {}
+    for c in credenciales:
+        credenciales_por_curso[c.cursoId] = credenciales_por_curso.get(c.cursoId, 0) + 1
 
     resultado = []
     for curso in cursos:
-        total = await prisma.inscripcion.count(where={"cursoId": curso.id})
-        completadas = await prisma.inscripcion.count(
-            where={"cursoId": curso.id, "estado": {"in": ["COMPLETADO", "APROBADO"]}}
-        )
-        credenciales = await prisma.credencial.count(where={"cursoId": curso.id})
+        curso_inscripciones = inscripciones_por_curso.get(curso.id, [])
+        total = len(curso_inscripciones)
+        completadas = sum(1 for i in curso_inscripciones if i.estado in ("COMPLETADO", "APROBADO"))
         resultado.append(CursoAsignadoItem(
             id=curso.id,
             nombre=curso.nombre,
@@ -72,7 +84,7 @@ async def listar_cursos_asignados(current_user=Depends(get_current_user)):
             modalidad=curso.modalidad,
             totalInscripciones=total,
             completadas=completadas,
-            credencialesEmitidas=credenciales,
+            credencialesEmitidas=credenciales_por_curso.get(curso.id, 0),
             tasaCompletitud=round((completadas / total * 100) if total > 0 else 0, 1)
         ))
 

@@ -16,7 +16,8 @@ from services.progreso_calculator import (
     calcular_progreso_curso,
     calcular_modulos_completados,
     marcar_teoria_vista,
-    obtener_proxima_actividad
+    obtener_proxima_actividad,
+    calcular_progreso_y_proxima_actividad
 )
 
 router = APIRouter()
@@ -56,13 +57,9 @@ async def obtener_mis_cursos(current_user=Depends(get_current_user)):
     
     for inscripcion in inscripciones:
         curso = inscripcion.curso
-        
-        # Calcular progreso actual
-        progreso = await calcular_progreso_curso(current_user.id, curso.id)
-        
-        # Obtener próxima actividad
-        proxima_actividad = await obtener_proxima_actividad(current_user.id, curso.id)
-        
+
+        progreso, proxima_actividad = await calcular_progreso_y_proxima_actividad(current_user.id, curso.id)
+
         # Actualizar inscripción si el progreso cambió
         if inscripcion.progreso != progreso:
             await prisma.inscripcion.update(

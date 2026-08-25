@@ -16,7 +16,7 @@ async def _teoria_completados_guardados(alumno_id: str, curso_id: str) -> set[st
         return set()
 
 
-async def calcular_modulos_completados(alumno_id: str, curso_id: str) -> list[str]:
+async def calcular_modulos_completados(alumno_id: str, curso_id: str, modulos=None) -> list[str]:
     """
     Determina, a partir de las fuentes reales de cada tipo de módulo, cuáles
     completó de verdad el alumno:
@@ -26,11 +26,16 @@ async def calcular_modulos_completados(alumno_id: str, curso_id: str) -> list[st
 
     No confía en nada que mande el cliente al completar un módulo -- para
     QUIZ/PRACTICA siempre se vuelve a verificar contra la base.
+
+    `modulos`: lista ya cargada (mismo orden por `orden`), opcional -- para
+    que un caller que ya la tiene (p.ej. calcular_progreso_y_proxima_actividad)
+    no dispare la misma query dos veces.
     """
-    modulos = await prisma.modulo.find_many(
-        where={"cursoId": curso_id},
-        order={"orden": "asc"}
-    )
+    if modulos is None:
+        modulos = await prisma.modulo.find_many(
+            where={"cursoId": curso_id},
+            order={"orden": "asc"}
+        )
 
     teoria_vistos = await _teoria_completados_guardados(alumno_id, curso_id)
 
@@ -112,6 +117,44 @@ async def calcular_progreso_curso(alumno_id: str, curso_id: str) -> int:
 
     completados = await calcular_modulos_completados(alumno_id, curso_id)
     return int((len(completados) / total_modulos) * 100)
+
+
+async def calcular_progreso_y_proxima_actividad(alumno_id: str, curso_id: str) -> tuple[int, Optional[str]]:
+    """
+    Progreso (0-100) y próxima actividad pendiente en un solo cálculo.
+
+    calcular_modulos_completados() ya hace varias queries por módulo (examen/
+    evidencia según el tipo); calcular_progreso_curso() y
+    obtener_proxima_actividad() lo llamaban cada uno por separado, duplicando
+    esa ronda completa de queries. Esta función la corre una sola vez y
+    deriva ambos valores del mismo resultado -- pensada para listados como
+    "Mis Cursos" que antes hacían esto por cada curso inscripto.
+    """
+    modulos = await prisma.modulo.find_many(
+        where={"cursoId": curso_id},
+        order={"orden": "asc"}
+    )
+    if not modulos:
+        return 0, None
+
+    completados_ids = await calcular_modulos_completados(alumno_id, curso_id, modulos=modulos)
+    completados = set(completados_ids)
+
+    progreso = int((len(completados) / len(modulos)) * 100)
+
+    proxima_actividad = None
+    for modulo in modulos:
+        if modulo.id in completados:
+            continue
+        if modulo.tipo == "TEORIA":
+            proxima_actividad = f"Módulo Teórico: {modulo.titulo}"
+        elif modulo.tipo == "QUIZ":
+            proxima_actividad = f"Quiz: {modulo.titulo}"
+        elif modulo.tipo == "PRACTICA":
+            proxima_actividad = f"Práctica (Pendiente Aprobación): {modulo.titulo}"
+        break
+
+    return progreso, proxima_actividad
 
 
 async def verificar_curso_completado(alumno_id: str, curso_id: str) -> bool:

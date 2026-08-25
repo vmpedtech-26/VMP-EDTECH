@@ -187,17 +187,32 @@ async def obtener_acta_curso(cursoId: str, current_user=Depends(get_current_user
         where=where_clause,
         include={"alumno": True, "curso": True}
     )
-    
-    acta = []
-    for inc in inscripciones:
-        examen = await prisma.examen.find_first(
-            where={"alumnoId": inc.alumnoId, "cursoId": cursoId},
+
+    alumno_ids = [inc.alumnoId for inc in inscripciones]
+
+    ultimo_examen_por_alumno = {}
+    if alumno_ids:
+        examenes = await prisma.examen.find_many(
+            where={"alumnoId": {"in": alumno_ids}, "cursoId": cursoId},
             order={"realizadoAt": "desc"}
         )
-        credencial = await prisma.credencial.find_first(
-            where={"alumnoId": inc.alumnoId, "cursoId": cursoId}
+        for ex in examenes:
+            # order desc: el primero que aparece por alumno es el más reciente
+            ultimo_examen_por_alumno.setdefault(ex.alumnoId, ex)
+
+    credencial_por_alumno = {}
+    if alumno_ids:
+        credenciales = await prisma.credencial.find_many(
+            where={"alumnoId": {"in": alumno_ids}, "cursoId": cursoId}
         )
-        
+        for cred in credenciales:
+            credencial_por_alumno.setdefault(cred.alumnoId, cred)
+
+    acta = []
+    for inc in inscripciones:
+        examen = ultimo_examen_por_alumno.get(inc.alumnoId)
+        credencial = credencial_por_alumno.get(inc.alumnoId)
+
         acta.append({
             "inscripcionId": inc.id,
             "alumno": f"{inc.alumno.nombre} {inc.alumno.apellido}",
