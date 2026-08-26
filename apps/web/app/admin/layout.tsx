@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { API_URL } from '@/lib/api-client';
 import './admin.css';
 
 const NAV_ITEMS = [
@@ -72,7 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     // Load notifications
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://vmp-edtech-6wgw.onrender.com'}/api/notifications?limit=12`, {
+    fetch(`${API_URL}/api/notifications?limit=12`, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(r => r.json()).then(d => setNotifications(d)).catch(() => {});
     

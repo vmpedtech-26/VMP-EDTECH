@@ -1,6 +1,12 @@
 // API configuration and utilities
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+// Reutiliza el mismo API_URL que api-client.ts -- ese archivo corrige una
+// variable de entorno de Vercel que quedó apuntando a un backend viejo de
+// Railway (migrado hace tiempo a Render). Redefinirlo acá sin esa
+// protección hacía que todo este archivo (cotizaciones: listar, cambiar
+// estado, convertir a cliente) le pegara al Railway muerto y fallara por
+// CORS en producción.
+import { API_URL } from './api-client';
 
 export interface CotizacionData {
     empresa: string;

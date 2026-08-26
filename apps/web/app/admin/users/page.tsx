@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-const API = process.env.NEXT_PUBLIC_API_URL || 'https://vmp-edtech-6wgw.onrender.com';
+import { API_URL as API } from '@/lib/api-client';
 function getToken() { return typeof window !== 'undefined' ? localStorage.getItem('vmp_token') : null; }
 const ROL_COLORS: Record<string,string> = { SUPER_ADMIN:'danger', INSTRUCTOR:'info', ALUMNO:'primary' };
 
