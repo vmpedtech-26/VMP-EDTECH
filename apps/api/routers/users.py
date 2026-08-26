@@ -93,7 +93,11 @@ def _verificar_acceso_alumno(current_user, alumno) -> None:
     """SUPER_ADMIN accede a cualquiera; INSTRUCTOR solo a alumnos de su empresa."""
     if current_user.rol == "SUPER_ADMIN":
         return
-    if current_user.rol == "INSTRUCTOR" and alumno.empresaId == current_user.empresaId:
+    if (
+        current_user.rol == "INSTRUCTOR"
+        and alumno.rol == "ALUMNO"
+        and alumno.empresaId == current_user.empresaId
+    ):
         return
     raise HTTPException(status_code=403, detail="No tienes permisos sobre este usuario")
 
@@ -248,7 +252,7 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
         
     # Restricciones de rol
     if current_user.rol == "INSTRUCTOR":
-        if existing.empresaId != current_user.empresaId:
+        if existing.empresaId != current_user.empresaId or existing.rol != "ALUMNO":
             raise HTTPException(status_code=403, detail="No tienes permisos sobre este usuario")
         # No puede cambiar el rol ni la empresa
         if data.rol and data.rol != existing.rol:
@@ -257,9 +261,17 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
             raise HTTPException(status_code=403, detail="No puedes cambiar la empresa de este usuario")
     elif current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
-        
+
+    if data.email and data.email != existing.email:
+        if await prisma.user.find_unique(where={"email": data.email}):
+            raise HTTPException(status_code=400, detail="El email ya está registrado")
+
+    if data.dni and data.dni != existing.dni:
+        if await prisma.user.find_unique(where={"dni": data.dni}):
+            raise HTTPException(status_code=400, detail="El DNI ya está registrado")
+
     update_data = {k: v for k, v in data.dict().items() if v is not None}
-    
+
     if "password" in update_data:
         update_data["passwordHash"] = hash_password(update_data.pop("password"))
         
@@ -281,11 +293,11 @@ async def eliminar_usuario(id: str, current_user=Depends(get_current_user)):
         
     # Restricciones de rol
     if current_user.rol == "INSTRUCTOR":
-        if existing.empresaId != current_user.empresaId:
+        if existing.empresaId != current_user.empresaId or existing.rol != "ALUMNO":
             raise HTTPException(status_code=403, detail="No tienes permisos")
     elif current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
-        
+
     # Verificar si tiene datos que impedirían un borrado limpio (FK sin
     # onDelete definido -> un delete directo tira un error de constraint).
     # Alumnos: inscripciones. Instructores: cursos o sesiones a su cargo.
