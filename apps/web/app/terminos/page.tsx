@@ -13,7 +13,7 @@ export default function TerminosPage() {
             {/* Header section */}
             <div className="pt-24 pb-12 bg-[#0A192F] text-white">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-4">Términos y Condiciones del Servicio</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white">Términos y Condiciones del Servicio</h1>
                     <p className="text-gray-300 text-lg">
                         Condiciones generales de contratación y uso de la plataforma VMP - EDTECH
                     </p>

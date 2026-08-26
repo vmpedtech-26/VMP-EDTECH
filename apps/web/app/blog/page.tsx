@@ -24,7 +24,7 @@ export default function BlogPage() {
                         <span className="inline-block px-3 py-1 bg-[#FFD700] text-[#0A192F] rounded-full text-xs font-bold mb-4 uppercase tracking-wider">
                             Conocimiento que Salva Vidas
                         </span>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6">Blog de Seguridad Vial y Logística</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Blog de Seguridad Vial y Logística</h1>
                         <p className="text-xl text-gray-300">
                             Noticias, normativas y guías técnicas para el transporte profesional en Argentina y Latinoamérica.
                         </p>

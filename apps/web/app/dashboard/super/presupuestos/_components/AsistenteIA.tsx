@@ -54,7 +54,7 @@ export function AsistenteIA({ onClose, onCompletar, onRedactarAlcance, onSugerir
             <div className="flex items-center justify-between p-4 bg-[#060D1A] text-white">
                 <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-[#0D9488]" />
-                    <h2 className="font-bold">Asistente IA</h2>
+                    <h2 className="font-bold text-white">Asistente IA</h2>
                 </div>
                 <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
                     <X className="h-5 w-5" />

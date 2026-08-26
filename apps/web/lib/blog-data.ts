@@ -37,7 +37,7 @@ export const blogPosts: BlogPost[] = [
         date: '15 de Enero, 2026',
         author: 'Ing. Carlos Rodriguez',
         category: 'Normativa',
-        image: 'https://images.unsplash.com/photo-1586864387917-f53bc2644343?auto=format&fit=crop&q=80&w=800',
+        image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800',
         readTime: '6 min',
         tags: ['ANSV', 'Argentina', 'Ley de Tránsito', 'Capacitación']
     },
