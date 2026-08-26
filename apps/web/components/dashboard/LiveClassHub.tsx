@@ -30,7 +30,7 @@ export function LiveClassHub({ platform, url, date, isLive = true, courseName = 
         if (isTeams) return 'Microsoft Teams';
         if (isZoom) return 'Zoom Meeting';
         if (isJitsi) return 'Jitsi Meet (Embebido)';
-        return 'Aula Virtual';
+        return 'Virtual';
     };
 
     return (
