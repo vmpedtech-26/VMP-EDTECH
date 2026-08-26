@@ -244,6 +244,15 @@ async def crear_sesion(
     if curso.estado != "PUBLICADO" and current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=400, detail="No se pueden crear sesiones para cursos en Borrador o Pendientes")
 
+    # Un INSTRUCTOR solo puede crear sesiones para su propio curso, y no puede
+    # asignarle la sesión a otro instructor (evita invitaciones a alumnos de
+    # cursos ajenos atribuidas a un instructor arbitrario).
+    if current_user.rol == "INSTRUCTOR":
+        if curso.instructorId != current_user.id:
+            raise HTTPException(status_code=403, detail="No sos el instructor asignado a este curso")
+        if data.instructorId and data.instructorId != current_user.id:
+            raise HTTPException(status_code=403, detail="No podés asignar la sesión a otro instructor")
+
     # Definir instructor titular
     inst_id = data.instructorId or (current_user.id if current_user.rol == "INSTRUCTOR" else curso.instructorId)
 
