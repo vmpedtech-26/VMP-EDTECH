@@ -1,19 +1,5 @@
-import { Inter, Roboto_Condensed } from 'next/font/google';
 import CookieConsentBanner from '@/components/common/CookieConsentBanner';
 import './landing.css';
-
-const inter = Inter({
-    subsets: ['latin'],
-    variable: '--font-inter',
-    display: 'swap',
-});
-
-const robotoCondensed = Roboto_Condensed({
-    subsets: ['latin'],
-    weight: ['400', '700'],
-    variable: '--font-roboto-condensed',
-    display: 'swap',
-});
 
 export default function LandingLayout({
     children,
@@ -21,7 +7,7 @@ export default function LandingLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className={`${inter.variable} ${robotoCondensed.variable} font-sans`}>
+        <div className="font-sans">
             {children}
             <CookieConsentBanner />
         </div>

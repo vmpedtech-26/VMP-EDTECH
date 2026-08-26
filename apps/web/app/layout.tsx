@@ -1,5 +1,26 @@
 import type { Metadata } from 'next';
+import { Inter, Roboto_Condensed, Outfit } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+    subsets: ['latin'],
+    variable: '--font-inter',
+    display: 'swap',
+});
+
+const robotoCondensed = Roboto_Condensed({
+    subsets: ['latin'],
+    weight: ['400', '700'],
+    variable: '--font-roboto-condensed',
+    display: 'swap',
+});
+
+const outfit = Outfit({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-outfit',
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://vmp-edtech.com'),
@@ -32,7 +53,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="es">
+        <html lang="es" className={`${inter.variable} ${robotoCondensed.variable} ${outfit.variable}`}>
             <body>
                 <AuthProvider>
                     {children}
