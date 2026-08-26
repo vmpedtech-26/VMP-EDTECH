@@ -28,9 +28,11 @@ interface CredentialData {
 
 interface ValidationResult {
     valid: boolean;
-    status: 'valid' | 'expired' | 'not_found';
+    status: 'valid' | 'expired' | 'invalid' | 'not_found';
     message?: string;
     credential?: CredentialData;
+    signatureValid?: boolean | null;
+    signatureStatus?: 'verified' | 'invalid' | 'not_signed';
 }
 
 export default function ValidarCredencialPage({ params }: { params: { codigo: string } }) {
@@ -109,7 +111,8 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     {/* Header con estado */}
                     <div className={`p-6 ${result.status === 'valid' ? 'bg-green-50 border-b-4 border-green-500' :
                         result.status === 'expired' ? 'bg-yellow-50 border-b-4 border-yellow-500' :
-                            'bg-red-50 border-b-4 border-red-500'
+                            result.status === 'invalid' ? 'bg-red-50 border-b-4 border-red-500' :
+                                'bg-red-50 border-b-4 border-red-500'
                         }`}>
                         <div className="flex items-center justify-center gap-3">
                             {result.status === 'valid' && (
@@ -127,6 +130,18 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                                     <div>
                                         <h2 className="text-2xl font-bold text-yellow-900">Credencial Expirada</h2>
                                         <p className="text-sm text-yellow-700">Esta credencial ha vencido</p>
+                                    </div>
+                                </>
+                            )}
+                            {result.status === 'invalid' && (
+                                <>
+                                    <XCircle className="w-8 h-8 text-red-600" />
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-red-900">Credencial Inválida</h2>
+                                        <p className="text-sm text-red-700">
+                                            La firma de esta credencial no coincide con los datos registrados. No la
+                                            consideres válida.
+                                        </p>
                                     </div>
                                 </>
                             )}
@@ -255,6 +270,12 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                                 <p className="text-xs opacity-90">
                                     Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
                                 </p>
+                                {result.signatureStatus === 'verified' && (
+                                    <p className="text-xs opacity-90 mt-2">🔒 Firma criptográfica verificada</p>
+                                )}
+                                {result.signatureStatus === 'invalid' && (
+                                    <p className="text-xs font-semibold mt-2">⚠️ Firma criptográfica no coincide</p>
+                                )}
                             </div>
                         </div>
                     )}

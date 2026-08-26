@@ -18,7 +18,10 @@ jobs:
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "Timestamp: $TIMESTAMP"
           
-          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://vmp-edtech-6wgw.onrender.com/")
+          # El "|| echo 000" evita que un timeout de curl (exit 28) aborte el
+          # script acá mismo por el "set -e" implícito de GitHub Actions,
+          # dejando siempre que el bloque de reintento de abajo se ejecute.
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://vmp-edtech-6wgw.onrender.com/" || echo "000")
           echo "HTTP Response Code: $RESPONSE_CODE"
           
           if [ "$RESPONSE_CODE" -eq 200 ] || [ "$RESPONSE_CODE" -eq 403 ] || [ "$RESPONSE_CODE" -eq 401 ]; then
@@ -26,6 +29,13 @@ jobs:
           else
             echo "WARNING: Render API returned code $RESPONSE_CODE. Sending retry ping..."
             sleep 3
-            RETRY_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://vmp-edtech-6wgw.onrender.com/")
+            RETRY_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://vmp-edtech-6wgw.onrender.com/" || echo "000")
             echo "Retry HTTP Response Code: $RETRY_CODE"
+
+            if [ "$RETRY_CODE" -eq 200 ] || [ "$RETRY_CODE" -eq 403 ] || [ "$RETRY_CODE" -eq 401 ]; then
+              echo "SUCCESS: Render backend is awake and responding after retry (Code: $RETRY_CODE)."
+            else
+              echo "ERROR: Render backend did not respond after retry (Code: $RETRY_CODE)."
+              exit 1
+            fi
           fi
