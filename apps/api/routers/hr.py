@@ -12,21 +12,24 @@ async def list_employees(
     current_user=Depends(get_current_user)
 ):
     """Lista de empleados / alumnos (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
-    if current_user.rol == "INSTRUCTOR":
-        empresaId = current_user.empresaId
-    elif current_user.rol != "SUPER_ADMIN":
-        raise HTTPException(status_code=403, detail="No tienes permisos")
-
     where = {"rol": "ALUMNO", "activo": True}
-    if empresaId:
-        where["empresaId"] = empresaId
+
+    if current_user.rol == "INSTRUCTOR":
+        # Siempre se filtra por la empresa del instructor -- si no tiene una
+        # asignada, debe ver una lista vacía, nunca la de toda la plataforma.
+        where["empresaId"] = current_user.empresaId
+    elif current_user.rol == "SUPER_ADMIN":
+        if empresaId:
+            where["empresaId"] = empresaId
+    else:
+        raise HTTPException(status_code=403, detail="No tienes permisos")
     total = await prisma.user.count(where=where)
     users = await prisma.user.find_many(
         where=where,
         include={"empresa": True, "inscripciones": {"include": {"curso": True}}},
         take=limit,
         skip=skip,
-        order_by={"nombre": "asc"}
+        order={"nombre": "asc"}
     )
     items = []
     for u in users:
@@ -50,7 +53,7 @@ async def list_courses(current_user=Depends(get_current_user)):
     cursos = await prisma.curso.find_many(
         where={"activo": True},
         include={"_count": True},
-        order_by={"nombre": "asc"}
+        order={"nombre": "asc"}
     )
     return {"items": [
         {

@@ -12,7 +12,7 @@ class SectorCreate(BaseModel):
 
 @router.get("/sectors")
 async def list_sectors(current_user=Depends(get_current_user)):
-    items = await prisma.sector.find_many(where={"activo": True}, order_by={"nombre": "asc"})
+    items = await prisma.sector.find_many(where={"activo": True}, order={"nombre": "asc"})
     return {"items": [{"id": i.id, "nombre": i.nombre} for i in items]}
 
 @router.post("/sectors")
@@ -32,7 +32,7 @@ class PuestoCreate(BaseModel):
 
 @router.get("/job-positions")
 async def list_puestos(current_user=Depends(get_current_user)):
-    items = await prisma.puesto.find_many(where={"activo": True}, include={"sector": True}, order_by={"nombre": "asc"})
+    items = await prisma.puesto.find_many(where={"activo": True}, include={"sector": True}, order={"nombre": "asc"})
     return {"items": [{"id": i.id, "nombre": i.nombre, "sector": {"nombre": i.sector.nombre} if i.sector else None} for i in items]}
 
 @router.post("/job-positions")
@@ -52,7 +52,7 @@ class LocalidadCreate(BaseModel):
 
 @router.get("/service-locations")
 async def list_localidades(current_user=Depends(get_current_user)):
-    items = await prisma.localidad.find_many(where={"activo": True}, order_by={"nombre": "asc"})
+    items = await prisma.localidad.find_many(where={"activo": True}, order={"nombre": "asc"})
     return {"items": [{"id": i.id, "nombre": i.nombre, "provincia": i.provincia} for i in items]}
 
 @router.post("/service-locations")
@@ -71,7 +71,7 @@ class AreaCreate(BaseModel):
 
 @router.get("/operational-areas")
 async def list_areas(current_user=Depends(get_current_user)):
-    items = await prisma.areaoperativa.find_many(where={"activo": True}, order_by={"nombre": "asc"})
+    items = await prisma.areaoperativa.find_many(where={"activo": True}, order={"nombre": "asc"})
     return {"items": [{"id": i.id, "nombre": i.nombre} for i in items]}
 
 @router.post("/operational-areas")
@@ -87,13 +87,13 @@ async def delete_area(id: str, current_user=Depends(require_super_admin)):
 # ========== COURSES ADMIN ==========
 @router.get("/courses")
 async def list_courses_admin(current_user=Depends(get_current_user)):
-    cursos = await prisma.curso.find_many(order_by={"nombre": "asc"})
+    cursos = await prisma.curso.find_many(order={"nombre": "asc"})
     return {"items": [{"id": c.id, "nombre": c.nombre, "codigo": c.codigo, "activo": c.activo, "duracionHoras": c.duracionHoras} for c in cursos]}
 
 # ========== USERS ADMIN ==========
 @router.get("/users")
 async def list_users_admin(current_user=Depends(require_super_admin)):
-    users = await prisma.user.find_many(include={"empresa": True}, order_by={"nombre": "asc"})
+    users = await prisma.user.find_many(include={"empresa": True}, order={"nombre": "asc"})
     return {"items": [{"id": u.id, "nombre": f"{u.nombre} {u.apellido}", "email": u.email, "rol": u.rol, "activo": u.activo, "empresa": u.empresa.nombre if u.empresa else None} for u in users]}
 
 # ========== APPEARANCE ==========

@@ -8,6 +8,28 @@ from services.asistencia_service import sincronizar_asistencia_alumno
 
 router = APIRouter()
 
+# Roles reales del panel B2B (ver Sidebar.tsx: EMPRESA y SUPERVISOR son los
+# únicos que navegan a /dashboard/empresa/*). SUPER_ADMIN se deja habilitado
+# pero, al no soportar aún elegir una empresa objetivo, solo puede operar si
+# su propio usuario tiene empresaId asignado -- igual que el resto.
+ROLES_B2B = ["EMPRESA", "SUPERVISOR", "SUPER_ADMIN"]
+
+
+def _empresa_id_b2b(current_user) -> str:
+    """Valida acceso B2B y devuelve el empresaId sobre el que puede operar.
+
+    Antes, el chequeo `rol not in [...] and not empresaId` dejaba pasar a
+    cualquier usuario con empresaId (incluido un ALUMNO), y a un SUPERVISOR
+    sin empresaId lo dejaba pasar igual -- terminando en consultas con
+    `empresaId: None` que devolvían cuentas huérfanas de toda la plataforma.
+    """
+    if current_user.rol not in ROLES_B2B:
+        raise HTTPException(status_code=403, detail="No tenés permisos B2B")
+    if not current_user.empresaId:
+        raise HTTPException(status_code=400, detail="Tu usuario no está vinculado a ninguna empresa B2B.")
+    return current_user.empresaId
+
+
 class EmployeeMetrics(BaseModel):
     totalEmployees: int
     activeCourses: int
@@ -17,14 +39,8 @@ class EmployeeMetrics(BaseModel):
 
 @router.get("/dashboard", response_model=EmployeeMetrics)
 async def get_b2b_dashboard(current_user=Depends(get_current_user)):
-    """Obtener métricas de la empresa del usuario actual. Solo para SUPERVISOR o roles con empresaId."""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
-        raise HTTPException(status_code=403, detail="No perteneces a una empresa registrada como B2B o no tienes permisos.")
-    
-    empresa_id = current_user.empresaId
-    if not empresa_id and current_user.rol in ["SUPER_ADMIN", "INSTRUCTOR"]:
-        # Si es admin, por ahora devolvemos error. En el futuro podría pasar un empresaId por param.
-        raise HTTPException(status_code=400, detail="Los admins deben especificar una empresa para ver el dashboard B2B.")
+    """Obtener métricas de la empresa del usuario actual (EMPRESA/SUPERVISOR)."""
+    empresa_id = _empresa_id_b2b(current_user)
 
     # Buscar empleados de la empresa
     empleados = await prisma.user.find_many(
@@ -99,10 +115,9 @@ class EmpleadoCreate(BaseModel):
 
 @router.post("/empleados")
 async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_user)):
-    """Alta de un chofer/empleado en la flota (SUPERVISOR/SUPER_ADMIN/INSTRUCTOR, o cualquier usuario de una empresa B2B)"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
-        raise HTTPException(status_code=403, detail="Sin permisos B2B")
-    
+    """Alta de un chofer/empleado en la flota (EMPRESA/SUPERVISOR)"""
+    empresa_id = _empresa_id_b2b(current_user)
+
     from auth.jwt import hash_password
     import secrets
     import string
@@ -127,7 +142,7 @@ async def crear_empleado(data: EmpleadoCreate, current_user=Depends(get_current_
             "apellido": data.apellido,
             "dni": data.dni,
             "rol": "ALUMNO",
-            "empresaId": current_user.empresaId,
+            "empresaId": empresa_id,
             "activo": True
         }
     )
@@ -144,8 +159,7 @@ async def desvincular_empleado(empleado_id: str, current_user=Depends(get_curren
     """Desvincula un chofer/empleado de la empresa (empresaId -> null).
     No borra la cuenta ni su historial de cursos/credenciales -- solo deja
     de pertenecer a esta empresa."""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN"] and not current_user.empresaId:
-        raise HTTPException(status_code=403, detail="Sin permisos B2B")
+    _empresa_id_b2b(current_user)
 
     empleado = await prisma.user.find_unique(where={"id": empleado_id})
     if not empleado:
@@ -161,9 +175,8 @@ async def desvincular_empleado(empleado_id: str, current_user=Depends(get_curren
 @router.get("/cursos")
 async def listar_cursos_b2b(current_user=Depends(get_current_user)):
     """Listar cursos disponibles para asignar"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
-        raise HTTPException(status_code=403, detail="Sin permisos")
-        
+    _empresa_id_b2b(current_user)
+
     cursos = await prisma.curso.find_many(where={"activo": True})
     return [{"id": c.id, "nombre": c.nombre, "codigo": c.codigo} for c in cursos]
 
@@ -174,18 +187,17 @@ class AsignacionMasiva(BaseModel):
 @router.post("/asignar-curso")
 async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_current_user)):
     """Asigna un curso a múltiples choferes de la flota"""
-    if current_user.rol not in ["SUPERVISOR", "SUPER_ADMIN", "INSTRUCTOR"] and not current_user.empresaId:
-        raise HTTPException(status_code=403, detail="Sin permisos B2B")
-    
+    empresa_id = _empresa_id_b2b(current_user)
+
     curso = await prisma.curso.find_unique(where={"id": data.cursoId})
     if not curso:
         raise HTTPException(status_code=404, detail="Curso no encontrado")
-        
+
     # Verificar que los alumnos pertenezcan a la empresa
     alumnos = await prisma.user.find_many(
         where={
             "id": {"in": data.alumnoIds},
-            "empresaId": current_user.empresaId
+            "empresaId": empresa_id
         }
     )
     

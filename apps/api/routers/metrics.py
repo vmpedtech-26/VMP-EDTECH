@@ -142,7 +142,7 @@ async def get_conversion_metrics(
                     "gte": start_date
                 }
             },
-            order_by={"createdAt": "asc"}
+            order={"createdAt": "asc"}
         )
         
         # Agrupar por día

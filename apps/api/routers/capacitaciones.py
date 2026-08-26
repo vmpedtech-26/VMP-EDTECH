@@ -1,10 +1,20 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional
+from pydantic import BaseModel
 from auth.dependencies import get_current_user, require_admin
 from core.database import prisma
 from datetime import datetime
 
 router = APIRouter()
+
+
+class CreateTrainingRequestData(BaseModel):
+    empresaId: str
+    cursoId: str
+    solicitanteNombre: str
+    solicitanteEmail: str
+    cantidadPersonas: int = 1
+    observaciones: Optional[str] = None
 
 @router.get("/pending-actions")
 async def pending_actions(current_user=Depends(require_admin)):
@@ -59,7 +69,7 @@ async def history(
     inscripciones = await prisma.inscripcion.find_many(
         where=where,
         include={"alumno": True, "curso": True},
-        order_by={"updatedAt": "desc"},
+        order={"updatedAt": "desc"},
         take=limit,
         skip=skip
     )
@@ -130,7 +140,7 @@ async def training_requests(
     try:
         solicitudes = await prisma.solicitudcapacitacion.find_many(
             include={"empresa": True, "curso": True},
-            order_by={"createdAt": "desc"},
+            order={"createdAt": "desc"},
             take=limit,
             skip=skip
         )
@@ -152,15 +162,23 @@ async def training_requests(
         return {"items": [], "total": 0, "error": str(e)}
 
 @router.post("/training-requests")
-async def create_training_request(data: dict, current_user=Depends(get_current_user)):
+async def create_training_request(data: CreateTrainingRequestData, current_user=Depends(get_current_user)):
     """Crear solicitud de capacitación"""
+    empresa = await prisma.company.find_unique(where={"id": data.empresaId})
+    if not empresa:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+
+    curso = await prisma.curso.find_unique(where={"id": data.cursoId})
+    if not curso:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+
     solicitud = await prisma.solicitudcapacitacion.create(data={
-        "empresaId": data["empresaId"],
-        "cursoId": data["cursoId"],
-        "solicitanteNombre": data["solicitanteNombre"],
-        "solicitanteEmail": data["solicitanteEmail"],
-        "cantidadPersonas": data.get("cantidadPersonas", 1),
-        "observaciones": data.get("observaciones"),
+        "empresaId": data.empresaId,
+        "cursoId": data.cursoId,
+        "solicitanteNombre": data.solicitanteNombre,
+        "solicitanteEmail": data.solicitanteEmail,
+        "cantidadPersonas": data.cantidadPersonas,
+        "observaciones": data.observaciones,
     })
     return solicitud
 
@@ -265,7 +283,7 @@ async def clientes_customers(current_user=Depends(require_admin)):
     empresas = await prisma.company.find_many(
         where={"activa": True},
         include={"usuarios": True, "solicitudes": True},
-        order_by={"nombre": "asc"}
+        order={"nombre": "asc"}
     )
     items = []
     for e in empresas:

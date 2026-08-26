@@ -12,7 +12,7 @@ async def list_notificaciones(
     try:
         items = await prisma.notificacionitem.find_many(
             where={"userId": current_user.id},
-            order_by={"createdAt": "desc"},
+            order={"createdAt": "desc"},
             take=limit
         )
         unread = await prisma.notificacionitem.count(where={"userId": current_user.id, "leida": False})

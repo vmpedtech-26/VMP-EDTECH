@@ -18,7 +18,7 @@ class PreguntaCreate(BaseModel):
 async def list_preguntas(current_user=Depends(require_admin)):
     """Solo INSTRUCTOR/SUPER_ADMIN: incluye respuestaCorrecta, no debe ser
     visible para alumnos (filtraría las respuestas de examen)."""
-    items = await prisma.bancopregunta.find_many(where={"activo": True}, order_by={"createdAt": "desc"})
+    items = await prisma.bancopregunta.find_many(where={"activo": True}, order={"createdAt": "desc"})
     return {"items": [{"id": i.id, "pregunta": i.pregunta, "opciones": i.opciones, "respuestaCorrecta": i.respuestaCorrecta, "area": i.area, "dificultad": i.dificultad} for i in items]}
 
 @router.post("")

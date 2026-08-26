@@ -175,9 +175,12 @@ async def listar_evidencias_pendientes(current_user=Depends(get_current_user)):
     if current_user.rol not in ["INSTRUCTOR", "SUPER_ADMIN"]:
         raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
     
-    # Filtro opcional: Solo mostrar alumnos de la misma empresa que el instructor
+    # Solo mostrar alumnos de la misma empresa que el instructor. A
+    # diferencia de un chequeo condicionado a "si tiene empresaId", esto se
+    # aplica siempre para INSTRUCTOR -- si no tiene empresa asignada, no debe
+    # ver evidencias de ninguna (y mucho menos de toda la plataforma).
     where_clause = {"estado": "PENDIENTE"}
-    if current_user.rol == "INSTRUCTOR" and current_user.empresaId:
+    if current_user.rol == "INSTRUCTOR":
         where_clause["alumno"] = {"empresaId": current_user.empresaId}
         
     evidencias = await prisma.evidencia.find_many(
@@ -217,7 +220,7 @@ async def obtener_stats_evidencias(current_user=Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="No tienes permisos de instructor")
 
     alumno_filter = {}
-    if current_user.rol == "INSTRUCTOR" and current_user.empresaId:
+    if current_user.rol == "INSTRUCTOR":
         alumno_filter["empresaId"] = current_user.empresaId
 
     pending_where = {"estado": "PENDIENTE"}
