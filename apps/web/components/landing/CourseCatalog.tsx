@@ -201,7 +201,7 @@ export default function CourseCatalog() {
 
             {/* Main slider */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-20">
-                <div className="relative min-h-[490px] flex items-center">
+                <div className="relative lg:min-h-[490px] flex items-center">
                     <AnimatePresence mode="wait" custom={direction}>
                         <motion.div
                             key={active}
@@ -211,7 +211,7 @@ export default function CourseCatalog() {
                             initial="enter"
                             animate="center"
                             exit="exit"
-                            className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center"
+                            className="relative lg:absolute lg:inset-0 w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center"
                         >
                             {/* Left: Content */}
                             <div className="flex flex-col justify-center space-y-5 py-8">
