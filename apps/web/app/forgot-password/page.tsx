@@ -31,24 +31,24 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background-light flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Logo */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🚗 VMP - EDTECH
-                    </h1>
-                    <p className="text-gray-600">Capacitación Profesional</p>
-                </div>
+                <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
+                    <div className="w-12 h-12 bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-2xl">V</span>
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">VMP - EDTECH</span>
+                </Link>
 
                 {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-lg shadow-md p-8">
                     {!isSuccess ? (
                         <>
                             {/* Header */}
                             <div className="text-center mb-6">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4">
-                                    <Mail className="w-8 h-8 text-orange-500" />
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-legacy/10 rounded-full mb-4">
+                                    <Mail className="w-8 h-8 text-brand-legacy" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                                     ¿Olvidaste tu contraseña?
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="tu@email.com"
-                                            className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                            className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-legacy focus:border-transparent transition-all"
                                             disabled={isLoading}
                                         />
                                     </div>
@@ -88,7 +88,7 @@ export default function ForgotPasswordPage() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-brand-legacy text-white py-3 rounded-lg font-semibold hover:bg-brand-legacy-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
                             <div className="mt-6 text-center">
                                 <Link
                                     href="/login"
-                                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition-colors"
+                                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-brand-legacy transition-colors"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
                                     Volver al inicio de sesión
@@ -148,7 +148,7 @@ export default function ForgotPasswordPage() {
 
                                     <Link
                                         href="/login"
-                                        className="block w-full text-center py-3 text-orange-500 hover:text-orange-600 font-semibold transition-colors"
+                                        className="block w-full text-center py-3 text-brand-legacy hover:text-brand-legacy-dark font-semibold transition-colors"
                                     >
                                         Volver al inicio de sesión
                                     </Link>
@@ -161,7 +161,7 @@ export default function ForgotPasswordPage() {
                 {/* Footer */}
                 <p className="text-center text-sm text-gray-500 mt-6">
                     ¿Necesitas ayuda? Contacta a{' '}
-                    <a href="mailto:administracion@vmp-edtech.com" className="text-orange-500 hover:underline">
+                    <a href="mailto:administracion@vmp-edtech.com" className="text-brand-legacy hover:underline">
                         administracion@vmp-edtech.com
                     </a>
                 </p>

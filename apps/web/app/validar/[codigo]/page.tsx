@@ -64,9 +64,9 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-background-light flex items-center justify-center p-4">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
+                    <Loader2 className="w-12 h-12 text-brand-legacy animate-spin mx-auto mb-4" />
                     <p className="text-gray-600">Validando credencial...</p>
                 </div>
             </div>
@@ -75,7 +75,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-background-light flex items-center justify-center p-4">
                 <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
                         <XCircle className="w-8 h-8 text-red-500" />
@@ -84,7 +84,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     <p className="text-gray-600 mb-6">{error}</p>
                     <button
                         onClick={validateCredential}
-                        className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                        className="w-full bg-brand-legacy text-white py-3 rounded-lg font-semibold hover:bg-brand-legacy-dark transition-colors"
                     >
                         Reintentar
                     </button>
@@ -96,14 +96,17 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
     if (!result) return null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background-light flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-orange-500 mb-2">
-                        🚗 VMP - EDTECH
-                    </h1>
-                    <p className="text-gray-600">Validación de Credencial</p>
+                    <Link href="/" className="inline-flex items-center justify-center space-x-2">
+                        <div className="w-12 h-12 bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold text-2xl">V</span>
+                        </div>
+                        <span className="text-2xl font-bold text-gray-900">VMP - EDTECH</span>
+                    </Link>
+                    <p className="text-gray-600 mt-2">Validación de Credencial</p>
                 </div>
 
                 {/* Card */}
@@ -163,13 +166,13 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             {/* Número de Credencial */}
                             <div className="text-center pb-6 border-b border-gray-200">
                                 <p className="text-sm text-gray-500 uppercase font-semibold mb-2">Número de Credencial</p>
-                                <p className="text-3xl font-bold text-orange-500">{result.credential.numero}</p>
+                                <p className="text-3xl font-bold text-brand-legacy">{result.credential.numero}</p>
                             </div>
 
                             {/* Información del Alumno */}
                             <div className="bg-gray-50 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <User className="w-5 h-5 text-orange-500" />
+                                    <User className="w-5 h-5 text-brand-legacy" />
                                     <h3 className="font-bold text-gray-900">Información del Titular</h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,9 +190,9 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             </div>
 
                             {/* Información del Curso */}
-                            <div className="bg-orange-50 rounded-lg p-6">
+                            <div className="bg-brand-legacy/5 rounded-lg p-6">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Award className="w-5 h-5 text-orange-500" />
+                                    <Award className="w-5 h-5 text-brand-legacy" />
                                     <h3 className="font-bold text-gray-900">Curso Completado</h3>
                                 </div>
                                 <div className="space-y-3">
@@ -265,7 +268,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                             </div>
 
                             {/* Footer de verificación */}
-                            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white text-center">
+                            <div className="bg-gradient-to-r from-brand-legacy to-brand-legacy-light rounded-lg p-6 text-white text-center">
                                 <p className="text-sm font-semibold mb-2">✓ Credencial Verificada por VMP - EDTECH</p>
                                 <p className="text-xs opacity-90">
                                     Esta validación fue realizada el {new Date().toLocaleDateString('es-AR')} a las {new Date().toLocaleTimeString('es-AR')}
@@ -288,7 +291,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     </p>
                     <Link
                         href="/"
-                        className="inline-block bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-md"
+                        className="inline-block bg-white text-brand-legacy px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-md"
                     >
                         Volver al Inicio
                     </Link>
@@ -299,7 +302,7 @@ export default function ValidarCredencialPage({ params }: { params: { codigo: st
                     <p>VMP - EDTECH - Capacitación Profesional</p>
                     <p className="mt-1">
                         Contacto:{' '}
-                        <a href="mailto:administracion@vmp-edtech.com" className="text-orange-500 hover:underline">
+                        <a href="mailto:administracion@vmp-edtech.com" className="text-brand-legacy hover:underline">
                             administracion@vmp-edtech.com
                         </a>
                     </p>
