@@ -39,8 +39,13 @@ async def get_overview_metrics(current_user: UserResponse = Depends(get_current_
         quotes_converted = await prisma.cotizacion.count(where={"status": "converted"})
         quotes_rejected = await prisma.cotizacion.count(where={"status": "rejected"})
         
-        # Inscripciones por estado
-        enrollments_active = await prisma.inscripcion.count(where={"estado": "ACTIVO"})
+        # Inscripciones por estado. "ACTIVO" no es un valor válido de
+        # EstadoInscripcion (NO_INICIADO/EN_PROGRESO/COMPLETADO/APROBADO/
+        # REPROBADO) -- filtrar por él rompía la query en Prisma y tiraba
+        # un 500 real en /overview siempre, dejando el panel en cero.
+        enrollments_active = await prisma.inscripcion.count(
+            where={"estado": {"in": ["NO_INICIADO", "EN_PROGRESO"]}}
+        )
         enrollments_completed = await prisma.inscripcion.count(where={"estado": "COMPLETADO"})
         
         # Calcular tasa de conversión
