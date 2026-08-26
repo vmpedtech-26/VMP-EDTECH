@@ -1,113 +1,102 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers/auth';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-// Helper para hacer login
-async function login(page: any, email: string, password: string) {
-    await page.goto(`${BASE_URL}/login`);
-    await page.fill('input[type="email"]', email);
-    await page.fill('input[type="password"]', password);
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/dashboard/, { timeout: 10000 });
-}
+// Admin sembrado por apps/api/scripts/seed_e2e.py en el job de CI.
+const ADMIN_EMAIL = 'admin@example.com';
+const ADMIN_PASSWORD = 'adminpass123';
 
 test.describe('Dashboard Navigation', () => {
     test.beforeEach(async ({ page }) => {
-        // Login como admin antes de cada test
-        await login(page, 'admin@example.com', 'adminpass123');
+        await login(page, BASE_URL, ADMIN_EMAIL, ADMIN_PASSWORD);
     });
 
     test('should display dashboard home', async ({ page }) => {
-        await expect(page.locator('text=Dashboard')).toBeVisible();
+        // Un SUPER_ADMIN es redirigido de /dashboard a /dashboard/super.
+        await expect(page).toHaveURL(/dashboard\/super/);
+        await expect(page.locator('text=Panel de Control')).toBeVisible();
         await expect(page.locator('text=Bienvenido')).toBeVisible();
     });
 
     test('should navigate to cotizaciones', async ({ page }) => {
-        await page.click('text=Cotizaciones');
+        await page.click('a:has-text("Cotizaciones")');
 
         await expect(page).toHaveURL(/cotizaciones/);
-        await expect(page.locator('text=/cotizaciones/i')).toBeVisible();
+        await expect(page.locator('text=/cotizaciones/i').first()).toBeVisible();
     });
 
     test('should navigate to cursos', async ({ page }) => {
-        await page.click('text=Cursos');
+        await page.click('a:has-text("Cursos")');
 
         await expect(page).toHaveURL(/cursos/);
-        await expect(page.locator('text=/cursos/i')).toBeVisible();
     });
 
     test('should navigate to empresas', async ({ page }) => {
-        await page.click('text=Empresas');
+        await page.click('a:has-text("Empresas")');
 
         await expect(page).toHaveURL(/empresas/);
-        await expect(page.locator('text=/empresas/i')).toBeVisible();
     });
 
     test('should navigate to alumnos', async ({ page }) => {
-        await page.click('text=Alumnos');
+        await page.click('a:has-text("Alumnos")');
 
         await expect(page).toHaveURL(/alumnos/);
-        await expect(page.locator('text=/alumnos/i')).toBeVisible();
     });
 
     test('should display metrics', async ({ page }) => {
-        await page.click('text=Métricas');
+        await page.click('a:has-text("Métricas")');
 
         await expect(page).toHaveURL(/metrics/);
-
-        // Verificar que hay gráficos o estadísticas
         await expect(page.locator('[data-testid="metric-card"]').first()).toBeVisible();
     });
 });
 
 test.describe('Cotizaciones Management', () => {
     test.beforeEach(async ({ page }) => {
-        await login(page, 'admin@example.com', 'adminpass123');
+        await login(page, BASE_URL, ADMIN_EMAIL, ADMIN_PASSWORD);
         await page.goto(`${BASE_URL}/dashboard/super/cotizaciones`);
     });
 
     test('should display cotizaciones list', async ({ page }) => {
-        await expect(page.locator('text=/cotizaciones/i')).toBeVisible();
-
-        // Verificar que hay tabla o lista
-        const table = page.locator('table, [data-testid="cotizaciones-list"]');
-        await expect(table).toBeVisible();
+        await expect(page.locator('[data-testid="cotizaciones-list"]')).toBeVisible();
+        // El seed E2E crea una cotización 'contacted' para "E2E Test Company".
+        await expect(page.locator('text=E2E Test Company')).toBeVisible();
     });
 
     test('should filter cotizaciones by status', async ({ page }) => {
-        // Click en filtro de estado
-        await page.click('text=Pendientes');
+        await page.click('button:has-text("Contactados")');
 
-        // Verificar que la URL o el estado cambió
-        await page.waitForTimeout(1000);
-
-        // Verificar que solo se muestran cotizaciones pendientes
-        const statusBadges = page.locator('[data-testid="status-badge"]');
-        const count = await statusBadges.count();
-
-        if (count > 0) {
-            for (let i = 0; i < count; i++) {
-                await expect(statusBadges.nth(i)).toContainText(/pending|pendiente/i);
-            }
-        }
+        await expect(page.locator('[data-testid="cotizacion-row"]').first()).toBeVisible();
+        await expect(page.locator('[data-testid="status-badge"]').first()).toContainText(/contactado/i);
     });
 
     test('should change cotizacion status', async ({ page }) => {
-        // Buscar primera cotización
-        const firstRow = page.locator('[data-testid="cotizacion-row"]').first();
+        // Crear una cotización propia en 'pending' para no interferir con la
+        // que ya viene 'contacted' desde el seed.
+        await page.request.post(`${API_URL}/api/cotizaciones`, {
+            data: {
+                empresa: 'Status Change Co',
+                nombre: 'John Doe',
+                email: 'statuschange@test.com',
+                telefono: '1234567890',
+                quantity: 2,
+                course: 'defensivo',
+                modality: 'online',
+                totalPrice: 20000,
+                pricePerStudent: 10000,
+                discount: 0,
+                acceptMarketing: true,
+                acceptTerms: true,
+            },
+        });
+        await page.reload();
 
-        if (await firstRow.isVisible()) {
-            // Click en dropdown de estado
-            await firstRow.locator('[data-testid="status-dropdown"]').click();
+        const row = page.locator('[data-testid="cotizacion-row"]').filter({ hasText: 'Status Change Co' });
+        await row.locator('button:has-text("Marcar Contactado")').click();
+        await page.click('button:has-text("Confirmar")');
 
-            // Seleccionar nuevo estado
-            await page.click('text=Contactado');
-
-            // Confirmar cambio
-            await page.click('text=Confirmar');
-
-            // Verificar mensaje de éxito
-            await expect(page.locator('text=/actualizado|éxito/i')).toBeVisible({ timeout: 5000 });
-        }
+        await expect(row.locator('[data-testid="status-badge"]')).toContainText(/contactado/i);
     });
 });

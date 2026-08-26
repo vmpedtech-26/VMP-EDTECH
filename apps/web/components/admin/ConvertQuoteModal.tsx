@@ -34,6 +34,12 @@ export default function ConvertQuoteModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        if (!formData.empresaCuit?.trim()) {
+            setError('El CUIT es requerido.');
+            return;
+        }
+
         setStep('loading');
 
         try {
@@ -126,6 +132,7 @@ export default function ConvertQuoteModal({
                                     </label>
                                     <input
                                         type="text"
+                                        name="empresaNombre"
                                         required
                                         value={formData.empresaNombre}
                                         onChange={(e) => setFormData({ ...formData, empresaNombre: e.target.value })}
@@ -140,6 +147,7 @@ export default function ConvertQuoteModal({
                                         </label>
                                         <input
                                             type="text"
+                                            name="empresaCuit"
                                             required
                                             placeholder="XX-XXXXXXXX-X"
                                             value={formData.empresaCuit}
@@ -154,6 +162,7 @@ export default function ConvertQuoteModal({
                                         </label>
                                         <input
                                             type="text"
+                                            name="empresaTelefono"
                                             value={formData.empresaTelefono}
                                             onChange={(e) => setFormData({ ...formData, empresaTelefono: e.target.value })}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -167,6 +176,7 @@ export default function ConvertQuoteModal({
                                     </label>
                                     <input
                                         type="text"
+                                        name="empresaDireccion"
                                         value={formData.empresaDireccion}
                                         onChange={(e) => setFormData({ ...formData, empresaDireccion: e.target.value })}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -180,6 +190,7 @@ export default function ConvertQuoteModal({
                                     </label>
                                     <input
                                         type="number"
+                                        name="cantidadAlumnos"
                                         required
                                         min="1"
                                         max="500"
@@ -284,7 +295,7 @@ export default function ConvertQuoteModal({
 
                                 <div className="space-y-3 max-h-96 overflow-y-auto">
                                     {result.credenciales.alumnos.map((cred, index) => (
-                                        <div key={index} className="bg-white rounded-lg p-4 border border-orange-200">
+                                        <div key={index} data-testid="credential-item" className="bg-white rounded-lg p-4 border border-orange-200">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="font-medium text-gray-900">
                                                     Alumno {index + 1}

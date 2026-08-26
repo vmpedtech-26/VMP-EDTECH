@@ -295,7 +295,7 @@ export default function CotizacionesPage() {
             </div>
 
             {/* Cotizaciones List */}
-            <div className="space-y-4">
+            <div data-testid="cotizaciones-list" className="space-y-4">
                 {filteredCotizaciones.length === 0 ? (
                     <Card className="p-12 text-center border-dashed">
                         <Calculator className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -314,7 +314,7 @@ export default function CotizacionesPage() {
                         const StatusIcon = statusConfig.icon;
 
                         return (
-                            <Card key={cot.id} className="p-6 hover:shadow-md transition-shadow">
+                            <Card key={cot.id} data-testid="cotizacion-row" className="p-6 hover:shadow-md transition-shadow">
                                 <div className="flex flex-col lg:flex-row gap-6">
                                     {/* Main Info */}
                                     <div className="flex-1 space-y-4">
@@ -340,7 +340,7 @@ export default function CotizacionesPage() {
                                                 </div>
                                             </div>
 
-                                            <div className={`px-3 py-1 rounded-full border ${statusConfig.bg} ${statusConfig.border} flex items-center gap-2`}>
+                                            <div data-testid="status-badge" className={`px-3 py-1 rounded-full border ${statusConfig.bg} ${statusConfig.border} flex items-center gap-2`}>
                                                 <StatusIcon className={`h-4 w-4 ${statusConfig.color}`} />
                                                 <span className={`text-xs font-semibold ${statusConfig.color}`}>
                                                     {statusConfig.label}

@@ -168,11 +168,18 @@ jobs:
       - name: Install Frontend Dependencies
         working-directory: apps/web
         run: npm ci
-      
+
       - name: Install Playwright
         working-directory: apps/web
         run: npx playwright install --with-deps chromium
-      
+
+      - name: Seed E2E test data
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/vmp_test
+          JWT_SECRET: test-secret-key
+        run: python scripts/seed_e2e.py
+
       - name: Start Backend
         working-directory: apps/api
         env:

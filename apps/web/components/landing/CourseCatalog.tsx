@@ -205,6 +205,7 @@ export default function CourseCatalog() {
                     <AnimatePresence mode="wait" custom={direction}>
                         <motion.div
                             key={active}
+                            data-testid="course-card"
                             custom={direction}
                             variants={variants}
                             initial="enter"

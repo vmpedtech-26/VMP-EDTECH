@@ -131,7 +131,7 @@ export default function MetricsPage() {
 
             {/* KPIs Principales */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card className="p-6 border-none shadow-sm ring-1 ring-blue-100 bg-blue-50/30">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-blue-100 bg-blue-50/30">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-blue-700 uppercase">Usuarios</p>
@@ -141,7 +141,7 @@ export default function MetricsPage() {
                     </div>
                 </Card>
 
-                <Card className="p-6 border-none shadow-sm ring-1 ring-purple-100 bg-purple-50/30">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-purple-100 bg-purple-50/30">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-purple-700 uppercase">Empresas</p>
@@ -151,7 +151,7 @@ export default function MetricsPage() {
                     </div>
                 </Card>
 
-                <Card className="p-6 border-none shadow-sm ring-1 ring-green-100 bg-green-50/30">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-green-100 bg-green-50/30">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-green-700 uppercase">Cursos</p>
@@ -161,7 +161,7 @@ export default function MetricsPage() {
                     </div>
                 </Card>
 
-                <Card className="p-6 border-none shadow-sm ring-1 ring-orange-100 bg-orange-50/30">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-orange-100 bg-orange-50/30">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-orange-700 uppercase">Inscripciones</p>
@@ -171,7 +171,7 @@ export default function MetricsPage() {
                     </div>
                 </Card>
 
-                <Card className="p-6 border-none shadow-sm ring-1 ring-yellow-100 bg-yellow-50/30">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-yellow-100 bg-yellow-50/30">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-yellow-700 uppercase">Credenciales</p>
@@ -181,7 +181,7 @@ export default function MetricsPage() {
                     </div>
                 </Card>
 
-                <Card className="p-6 border-none shadow-sm ring-1 ring-gray-100">
+                <Card data-testid="metric-card" className="p-6 border-none shadow-sm ring-1 ring-gray-100">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold text-gray-700 uppercase">Cotizaciones</p>
