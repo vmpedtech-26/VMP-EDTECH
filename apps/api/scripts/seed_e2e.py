@@ -105,8 +105,10 @@ async def seed():
 
 
 async def main():
-    await prisma.connect()
+    connected = False
     try:
+        await prisma.connect()
+        connected = True
         await seed()
     except Exception:
         import traceback
@@ -118,7 +120,8 @@ async def main():
                 f.write("## seed_e2e.py falló\n\n```\n" + tb + "\n```\n")
         raise
     finally:
-        await prisma.disconnect()
+        if connected:
+            await prisma.disconnect()
 
 
 if __name__ == "__main__":
