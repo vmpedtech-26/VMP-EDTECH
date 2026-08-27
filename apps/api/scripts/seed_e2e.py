@@ -108,6 +108,15 @@ async def main():
     await prisma.connect()
     try:
         await seed()
+    except Exception:
+        import traceback
+        tb = traceback.format_exc()
+        print(tb)
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            with open(summary_path, "a") as f:
+                f.write("## seed_e2e.py falló\n\n```\n" + tb + "\n```\n")
+        raise
     finally:
         await prisma.disconnect()
 
