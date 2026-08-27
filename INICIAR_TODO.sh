@@ -67,8 +67,8 @@ if [[ $REPLY =~ ^[Ss]$ ]]; then
         echo -e "${YELLOW}⚠️  Error al generar cliente${NC}"
     fi
     
-    echo "🗄️  Aplicando cambios a la base de datos..."
-    if prisma db push; then
+    echo "🗄️  Aplicando migraciones a la base de datos..."
+    if prisma migrate deploy; then
         echo -e "${GREEN}✅ Migración completada${NC}"
     else
         echo -e "${YELLOW}⚠️  Error al aplicar migración${NC}"
