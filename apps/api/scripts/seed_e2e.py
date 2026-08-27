@@ -41,13 +41,41 @@ async def seed():
         }
     )
 
-    await prisma.curso.create(
+    curso = await prisma.curso.create(
         data={
             "nombre": "Manejo Defensivo",
             "codigo": "COND-DEF",
             "descripcion": "Curso de manejo defensivo",
             "duracionHoras": 40,
             "activo": True,
+        }
+    )
+
+    modulo = await prisma.modulo.create(
+        data={
+            "cursoId": curso.id,
+            "titulo": "Evaluación Final",
+            "orden": 1,
+            "tipo": "QUIZ",
+        }
+    )
+
+    await prisma.pregunta.create(
+        data={
+            "moduloId": modulo.id,
+            "pregunta": "¿Cuál es la velocidad máxima recomendada en zona urbana?",
+            "opciones": ["40 km/h", "60 km/h", "100 km/h"],
+            "respuestaCorrecta": 0,
+            "explicacion": "En zona urbana el límite general es 40 km/h.",
+        }
+    )
+
+    await prisma.company.create(
+        data={
+            "nombre": "E2E Seed Company",
+            "cuit": "30-99999999-9",
+            "email": "contacto@e2eseedcompany.com",
+            "activa": True,
         }
     )
 
@@ -70,7 +98,10 @@ async def seed():
         }
     )
 
-    print("Seed E2E completo: admin@example.com, test@example.com, curso COND-DEF, cotización 'contacted'.")
+    print(
+        "Seed E2E completo: admin@example.com, test@example.com, curso COND-DEF "
+        "(con módulo QUIZ y 1 pregunta), empresa 'E2E Seed Company', cotización 'contacted'."
+    )
 
 
 async def main():
