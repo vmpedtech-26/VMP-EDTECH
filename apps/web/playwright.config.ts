@@ -6,6 +6,10 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
     testDir: './tests/e2e',
 
+    /* CI corre backend + frontend + Chromium en el mismo runner compartido,
+     * así que el default de 30s por test es demasiado ajustado ahí. */
+    timeout: process.env.CI ? 60 * 1000 : 30 * 1000,
+
     /* Run tests in files in parallel */
     fullyParallel: true,
 

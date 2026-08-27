@@ -14,5 +14,5 @@ export async function login(page: Page, baseUrl: string, email: string, password
     await page.fill('input[type="password"]', password);
     await page.click('button[type="submit"]');
 
-    await page.waitForURL(/dashboard/, { timeout: 10000 });
+    await page.waitForURL(/dashboard/, { timeout: 20000 });
 }
