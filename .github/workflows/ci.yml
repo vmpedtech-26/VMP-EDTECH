@@ -11,7 +11,10 @@ jobs:
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      issues: write
+
     services:
       postgres:
         image: postgres:15
@@ -75,8 +78,24 @@ jobs:
           SMTP_PASSWORD: ""
           PYTHONPATH: .
         run: |
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=term
-      
+          set -o pipefail
+          pytest tests/ -v --cov=. --cov-report=xml --cov-report=term 2>&1 | tee /tmp/pytest_output.log
+
+      - name: Reportar salida de pytest en un Issue (temporal, solo diagnóstico)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '/tmp/pytest_output.log';
+            const output = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '(no se encontró /tmp/pytest_output.log)';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[ci-debug] Backend Tests falló en run ${context.runId}`,
+              body: '```\n' + output.slice(-60000) + '\n```'
+            });
+
       - name: Upload Coverage
         uses: codecov/codecov-action@v3
         with:
