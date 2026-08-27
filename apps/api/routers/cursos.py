@@ -15,6 +15,7 @@ from schemas.cursos import (
 from auth.dependencies import get_current_user
 from core.database import prisma
 from core.security_utils import sanitize_rich_html
+from prisma import Json
 
 router = APIRouter()
 
@@ -327,7 +328,7 @@ async def crear_modulo(
                 data={
                     "moduloId": modulo.id,
                     "pregunta": p.pregunta,
-                    "opciones": p.opciones,
+                    "opciones": Json(p.opciones),
                     "respuestaCorrecta": p.respuestaCorrecta,
                     "explicacion": p.explicacion
                 }
@@ -429,7 +430,7 @@ async def actualizar_modulo(
                 data={
                     "moduloId": moduloId,
                     "pregunta": p.pregunta,
-                    "opciones": p.opciones,
+                    "opciones": Json(p.opciones),
                     "respuestaCorrecta": p.respuestaCorrecta,
                     "explicacion": p.explicacion
                 }

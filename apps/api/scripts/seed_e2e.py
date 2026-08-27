@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.database import prisma
 from auth.jwt import hash_password
+from prisma import Json
 
 
 async def seed():
@@ -64,7 +65,7 @@ async def seed():
         data={
             "moduloId": modulo.id,
             "pregunta": "¿Cuál es la velocidad máxima recomendada en zona urbana?",
-            "opciones": ["40 km/h", "60 km/h", "100 km/h"],
+            "opciones": Json(["40 km/h", "60 km/h", "100 km/h"]),
             "respuestaCorrecta": 0,
             "explicacion": "En zona urbana el límite general es 40 km/h.",
         }

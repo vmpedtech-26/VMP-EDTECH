@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from auth.dependencies import require_admin
 from core.database import prisma
+from prisma import Json
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ async def list_preguntas(current_user=Depends(require_admin)):
 
 @router.post("")
 async def create_pregunta(data: PreguntaCreate, current_user=Depends(require_admin)):
-    item = await prisma.bancopregunta.create(data={"pregunta": data.pregunta, "opciones": data.opciones, "respuestaCorrecta": data.respuestaCorrecta, "explicacion": data.explicacion, "area": data.area, "dificultad": data.dificultad})
+    item = await prisma.bancopregunta.create(data={"pregunta": data.pregunta, "opciones": Json(data.opciones), "respuestaCorrecta": data.respuestaCorrecta, "explicacion": data.explicacion, "area": data.area, "dificultad": data.dificultad})
     return item
 
 @router.delete("/{id}")

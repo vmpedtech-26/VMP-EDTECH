@@ -303,3 +303,50 @@ class TestInscripciones:
         await prisma.inscripcion.delete(where={"id": inscripcion.id})
         await prisma.modulo.delete_many(where={"cursoId": curso.id})
         await prisma.curso.delete(where={"id": curso.id})
+
+
+class TestModulosConPreguntas:
+    """Regresión: crear un módulo QUIZ con preguntas rompía con
+    MissingRequiredValueError porque `opciones` (campo Json) se pasaba como
+    lista de Python cruda en vez de envolverla con prisma.Json()."""
+
+    @pytest.mark.asyncio
+    async def test_crear_modulo_quiz_con_preguntas(self, client: AsyncClient, admin_token):
+        curso = await prisma.curso.create(
+            data={
+                "nombre": "Curso Quiz",
+                "codigo": "CQ-001",
+                "descripcion": "Test",
+                "duracionHoras": 10,
+                "activo": True
+            }
+        )
+
+        response = await client.post(
+            f"/api/cursos/{curso.id}/modulos",
+            headers={"Authorization": f"Bearer {admin_token}"},
+            json={
+                "titulo": "Evaluación",
+                "orden": 1,
+                "tipo": "QUIZ",
+                "preguntas": [
+                    {
+                        "pregunta": "¿2 + 2?",
+                        "opciones": ["3", "4", "5"],
+                        "respuestaCorrecta": 1,
+                        "explicacion": "2 + 2 = 4"
+                    }
+                ]
+            }
+        )
+
+        assert response.status_code == 200
+        modulo_id = response.json()["id"]
+
+        preguntas = await prisma.pregunta.find_many(where={"moduloId": modulo_id})
+        assert len(preguntas) == 1
+        assert preguntas[0].opciones == ["3", "4", "5"]
+
+        # Cleanup
+        await prisma.modulo.delete_many(where={"cursoId": curso.id})
+        await prisma.curso.delete(where={"id": curso.id})
