@@ -181,7 +181,7 @@ export default function CourseCatalog() {
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="text-teal-400 text-sm font-bold uppercase tracking-[0.2em] mb-2">Catálogo de Formación</p>
-                        <h2 className="text-3xl md:text-4xl font-bold font-heading text-white">
+                        <h2 className="text-3xl md:text-4xl 2xl:text-5xl font-bold font-heading text-white">
                             Programas de Capacitación
                         </h2>
                     </div>
@@ -201,7 +201,7 @@ export default function CourseCatalog() {
 
             {/* Main slider */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-20">
-                <div className="relative lg:min-h-[490px] flex items-center">
+                <div className="relative lg:min-h-[490px] 2xl:min-h-[560px] flex items-center">
                     <AnimatePresence mode="wait" custom={direction}>
                         <motion.div
                             key={active}
@@ -226,12 +226,12 @@ export default function CourseCatalog() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white leading-tight">
+                                <h3 className="text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl font-bold font-heading text-white leading-tight">
                                     {course.title}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl">
+                                <p className="text-slate-300 text-sm md:text-base 2xl:text-lg leading-relaxed max-w-xl 2xl:max-w-2xl">
                                     {course.description}
                                 </p>
 
@@ -243,10 +243,10 @@ export default function CourseCatalog() {
                                         { icon: CalendarCheck, label: 'Vigencia', value: course.validity },
                                         { icon: CheckCircle, label: 'Acreditación', value: course.minScore },
                                     ].map(({ icon: StatIcon, label, value }) => (
-                                        <div key={label} className="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
-                                            <StatIcon className="w-4 h-4 text-teal-400 mb-1.5" />
-                                            <p className="text-slate-400 text-xs mb-0.5">{label}</p>
-                                            <p className="text-white text-sm font-semibold">{value}</p>
+                                        <div key={label} className="bg-white/5 border border-white/10 rounded-xl p-3 2xl:p-4 backdrop-blur-sm">
+                                            <StatIcon className="w-4 h-4 2xl:w-5 2xl:h-5 text-teal-400 mb-1.5" />
+                                            <p className="text-slate-400 text-xs 2xl:text-sm mb-0.5">{label}</p>
+                                            <p className="text-white text-sm 2xl:text-base font-semibold">{value}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -258,14 +258,14 @@ export default function CourseCatalog() {
                                             setSelectedCourse(course);
                                             setActiveTab('resumen');
                                         }}
-                                        className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${course.accentColor} text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
+                                        className={`inline-flex items-center gap-2 px-6 py-3 2xl:px-7 2xl:py-3.5 rounded-xl bg-gradient-to-r ${course.accentColor} text-white font-semibold text-sm 2xl:text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
                                     >
                                         Ver Ficha Técnica
                                         <ArrowRight className="w-4 h-4" />
                                     </button>
                                     <Link
                                         href={`/cursos/${course.slug}`}
-                                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white font-semibold text-sm hover:bg-white/10 transition-all duration-300"
+                                        className="inline-flex items-center gap-2 px-6 py-3 2xl:px-7 2xl:py-3.5 rounded-xl border border-white/20 text-white font-semibold text-sm 2xl:text-base hover:bg-white/10 transition-all duration-300"
                                     >
                                         Ver Detalle Completo
                                     </Link>
