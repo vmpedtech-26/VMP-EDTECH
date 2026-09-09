@@ -7,51 +7,19 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courseData, type CourseDetail } from '@/lib/course-data';
 
-const courseStyles: Record<string, { accentColor: string; glowColor: string; icon: any }> = {
-    'conduccion-preventiva': {
-        accentColor: 'from-teal-500 to-cyan-400',
-        glowColor: 'rgba(20, 184, 166, 0.25)',
-        icon: Shield,
-    },
-    'conduccion-renovacion': {
-        accentColor: 'from-violet-500 to-indigo-400',
-        glowColor: 'rgba(139, 92, 246, 0.25)',
-        icon: RefreshCw,
-    },
-    'conduccion-invernal': {
-        accentColor: 'from-sky-400 to-blue-300',
-        glowColor: 'rgba(56, 189, 248, 0.25)',
-        icon: Snowflake,
-    },
-    'conduccion-segura': {
-        accentColor: 'from-amber-500 to-yellow-400',
-        glowColor: 'rgba(245, 158, 11, 0.25)',
-        icon: Shield,
-    },
-    'flota-liviana-pesada': {
-        accentColor: 'from-blue-500 to-indigo-400',
-        glowColor: 'rgba(99, 102, 241, 0.25)',
-        icon: Truck,
-    },
-    'doble-traccion': {
-        accentColor: 'from-orange-500 to-amber-400',
-        glowColor: 'rgba(249, 115, 22, 0.25)',
-        icon: Mountain,
-    },
-    'trabajo-en-altura': {
-        accentColor: 'from-red-500 to-rose-400',
-        glowColor: 'rgba(239, 68, 68, 0.25)',
-        icon: Mountain,
-    },
+const courseStyles: Record<string, { icon: any }> = {
+    'conduccion-preventiva': { icon: Shield },
+    'conduccion-renovacion': { icon: RefreshCw },
+    'conduccion-invernal': { icon: Snowflake },
+    'conduccion-segura': { icon: Shield },
+    'flota-liviana-pesada': { icon: Truck },
+    'doble-traccion': { icon: Mountain },
+    'trabajo-en-altura': { icon: Mountain },
 };
 
 const courses = Object.keys(courseData).map((key) => {
     const data = courseData[key];
-    const style = courseStyles[key] || {
-        accentColor: 'from-teal-500 to-cyan-400',
-        glowColor: 'rgba(20, 184, 166, 0.25)',
-        icon: Shield,
-    };
+    const style = courseStyles[key] || { icon: Shield };
     return {
         ...data,
         id: key,
@@ -148,34 +116,6 @@ export default function CourseCatalog() {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            {/* Background Image & Grid Overlay */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                <div className="absolute inset-0 bg-[#0a1628]" />
-                <Image
-                    src="/images/vmp_hero_winter.png"
-                    alt="Background Winter Road"
-                    fill
-                    className="object-cover opacity-[0.35]"
-                    priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628]/70 via-[#0a1628]/50 to-[#0a1628]/90" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.06)_1px,transparent_1px)] bg-[size:50px_50px]" />
-            </div>
-
-            {/* Ambient glow that changes with course */}
-            <motion.div
-                key={`glow-${active}`}
-                className="absolute inset-0 pointer-events-none z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-            >
-                <div
-                    className="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px]"
-                    style={{ background: course.glowColor }}
-                />
-            </motion.div>
-
             {/* Section header */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-6 relative z-20">
                 <div className="flex items-center justify-between">
@@ -217,10 +157,10 @@ export default function CourseCatalog() {
                             <div className="flex flex-col justify-center space-y-5 py-8">
                                 {/* Category badge */}
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${course.accentColor} flex items-center justify-center`}>
+                                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center`}>
                                         <Icon className="w-4 h-4 text-white" />
                                     </div>
-                                    <span className={`text-xs font-bold tracking-[0.2em] bg-gradient-to-r ${course.accentColor} bg-clip-text text-transparent`}>
+                                    <span className={`text-xs font-bold tracking-[0.2em] bg-gradient-to-r from-teal-500 to-cyan-400 bg-clip-text text-transparent`}>
                                         {course.category}
                                     </span>
                                 </div>
@@ -258,7 +198,7 @@ export default function CourseCatalog() {
                                             setSelectedCourse(course);
                                             setActiveTab('resumen');
                                         }}
-                                        className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${course.accentColor} text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
+                                        className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
                                     >
                                         Ver Ficha Técnica
                                         <ArrowRight className="w-4 h-4" />
@@ -283,11 +223,6 @@ export default function CourseCatalog() {
                                     exit="exit"
                                     className="relative hidden lg:block"
                                 >
-                                    {/* Glow behind image */}
-                                    <div
-                                        className="absolute inset-0 rounded-2xl blur-2xl scale-95 translate-y-4"
-                                        style={{ background: course.glowColor, opacity: 0.6 }}
-                                    />
                                     <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-[16/10]">
                                         <Image
                                             src={course.image}
@@ -301,7 +236,7 @@ export default function CourseCatalog() {
                                         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/30 via-transparent to-transparent" />
                                         {/* VMP badge */}
                                         <div className="absolute top-4 left-4">
-                                            <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r ${course.accentColor} text-white shadow`}>
+                                            <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r from-teal-500 to-cyan-400 text-white shadow`}>
                                                 Certificación Oficial VMP
                                             </span>
                                         </div>
@@ -333,7 +268,7 @@ export default function CourseCatalog() {
                             </span>
                             <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden">
                                 <motion.div
-                                    className={`h-full bg-gradient-to-r ${course.accentColor} rounded-full`}
+                                    className={`h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full`}
                                     initial={{ width: 0 }}
                                     animate={{ width: `${((active + 1) / courses.length) * 100}%` }}
                                     transition={{ duration: 0.4 }}
@@ -383,7 +318,7 @@ export default function CourseCatalog() {
                             {/* Drawer Header */}
                             <div className="p-6 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
                                 <div>
-                                    <span className={`text-[10px] font-bold tracking-[0.2em] px-2 py-0.5 rounded bg-gradient-to-r ${selectedCourse.accentColor} text-white`}>
+                                    <span className={`text-[10px] font-bold tracking-[0.2em] px-2 py-0.5 rounded bg-gradient-to-r from-teal-500 to-cyan-400 text-white`}>
                                         {selectedCourse.category}
                                     </span>
                                     <h3 className="text-xl sm:text-2xl font-bold text-white mt-2 font-heading">
@@ -557,7 +492,7 @@ export default function CourseCatalog() {
                                 <Link
                                     href="/#contacto"
                                     onClick={() => setSelectedCourse(null)}
-                                    className={`flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r ${selectedCourse.accentColor} text-white font-bold text-sm shadow hover:scale-[1.02] transition-transform`}
+                                    className={`flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 text-white font-bold text-sm shadow hover:scale-[1.02] transition-transform`}
                                 >
                                     Consultar por este Curso
                                     <ArrowRight className="w-4 h-4" />
