@@ -86,6 +86,27 @@ const safetyServices = [
   }
 ];
 
+const LEY_19587_URL = 'https://www.argentina.gob.ar/normativa/nacional/norma-17612/texto';
+
+const renderDescription = (text: string) => {
+  const [before, after] = text.split('Ley 19587');
+  if (after === undefined) return text;
+  return (
+    <>
+      {before}
+      <a
+        href={LEY_19587_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline decoration-slate-300 hover:decoration-brand-legacy hover:text-brand-legacy transition-colors"
+      >
+        Ley 19587
+      </a>
+      {after}
+    </>
+  );
+};
+
 const getServiceIcon = (index: number) => {
   switch (index) {
     case 0: return <ShieldCheck className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
@@ -184,7 +205,7 @@ export function ProfessionalServices() {
                     </h4>
                     
                     <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
-                      {service.description}
+                      {renderDescription(service.description)}
                     </p>
 
                     {/* Footer Button action block */}
