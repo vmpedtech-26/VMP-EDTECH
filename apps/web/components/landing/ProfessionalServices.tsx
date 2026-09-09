@@ -2,10 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { 
-  ShieldCheck, HardHat, ClipboardCheck, Users, 
-  Zap, ArrowRight, CheckCircle2
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 const SERVICES = [
@@ -98,23 +95,13 @@ const renderDescription = (text: string) => {
         href={LEY_19587_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="underline decoration-slate-300 hover:decoration-brand-legacy hover:text-brand-legacy transition-colors"
+        className="underline decoration-slate-300 hover:decoration-primary hover:text-primary transition-colors"
       >
         Ley 19587
       </a>
       {after}
     </>
   );
-};
-
-const getServiceIcon = (index: number) => {
-  switch (index) {
-    case 0: return <ShieldCheck className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
-    case 1: return <HardHat className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
-    case 2: return <Zap className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
-    case 3: return <ClipboardCheck className="h-6 w-6 text-brand-legacy group-hover:scale-110 transition-transform duration-300" />;
-    default: return <ShieldCheck className="h-6 w-6 text-brand-legacy" />;
-  }
 };
 
 export function ProfessionalServices() {
@@ -154,18 +141,18 @@ export function ProfessionalServices() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4.5 py-1.5 mb-4 shadow-md backdrop-blur-md"
+              className="inline-flex items-center gap-2 bg-teal-500/20 border border-teal-400/30 rounded-full px-4.5 py-1.5 mb-4 shadow-md backdrop-blur-md"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-extrabold text-emerald-300 uppercase tracking-wider">Servicios Técnicos Oficiales</span>
+              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+              <span className="text-xs font-extrabold text-teal-300 uppercase tracking-wider">Servicios Técnicos Oficiales</span>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-6 tracking-tight">
+            <h2 className="text-4xl md:text-5xl 2xl:text-6xl font-heading font-black text-white mb-6 tracking-tight">
               Consultoría en <span className="text-teal-400 italic relative inline-block">
                 Seguridad e Higiene
                 <span className="absolute bottom-1 left-0 w-full h-2.5 bg-teal-500/25 -z-10 rounded-sm" />
               </span>
             </h2>
-            <p className="max-w-3xl mx-auto text-lg text-slate-200 leading-relaxed font-medium">
+            <p className="max-w-3xl mx-auto text-lg 2xl:text-xl text-slate-200 leading-relaxed font-medium">
               Consultoría técnica especializada para elevar los estándares de seguridad en su organización y garantizar el cumplimiento normativo.
             </p>
           </div>
@@ -179,7 +166,7 @@ export function ProfessionalServices() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(58,175,169,0.06)] border border-slate-100/85 hover:border-brand-legacy/20 transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
+                  className="group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(58,175,169,0.06)] border border-slate-100/85 hover:border-primary/20 transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
                 >
                   {/* Image container */}
                   <div className="aspect-[4/3] relative overflow-hidden">
@@ -194,27 +181,27 @@ export function ProfessionalServices() {
                   </div>
 
                   {/* Card Content container */}
-                  <div className="p-6 flex flex-col flex-1">
+                  <div className="p-6 2xl:p-7 flex flex-col flex-1">
                     {/* Tiny upper tag */}
-                    <span className="text-[10px] font-black text-brand-legacy tracking-widest uppercase mb-1.5 block">
+                    <span className="text-[10px] 2xl:text-xs font-black text-primary tracking-widest uppercase mb-1.5 block">
                       {service.tag}
                     </span>
-                    
-                    <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-legacy transition-colors duration-300">
+
+                    <h4 className="text-lg 2xl:text-xl font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors duration-300">
                       {service.title}
                     </h4>
-                    
-                    <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
+
+                    <p className="text-sm 2xl:text-base text-slate-500 leading-relaxed mb-6 font-medium">
                       {renderDescription(service.description)}
                     </p>
 
                     {/* Footer Button action block */}
-                    <Link 
-                      href="/#contacto" 
-                      className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center group/btn text-xs font-bold text-slate-500 hover:text-brand-legacy transition-colors duration-300"
+                    <Link
+                      href="/#contacto"
+                      className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center group/btn text-xs 2xl:text-sm font-bold text-slate-500 hover:text-primary transition-colors duration-300"
                     >
                       <span>MÁS INFORMACIÓN</span>
-                      <div className="w-8 h-8 rounded-full bg-slate-50 group-hover/btn:bg-brand-legacy text-slate-500 group-hover/btn:text-white flex items-center justify-center transition-all duration-300">
+                      <div className="w-8 h-8 rounded-full bg-slate-50 group-hover/btn:bg-primary text-slate-500 group-hover/btn:text-white flex items-center justify-center transition-all duration-300">
                         <ArrowRight className="h-4 w-4 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" />
                       </div>
                     </Link>
@@ -250,13 +237,13 @@ export function ProfessionalServices() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-emerald-400 font-extrabold tracking-wider uppercase text-sm mb-3">
+              <h2 className="text-teal-400 font-extrabold tracking-wider uppercase text-sm 2xl:text-base mb-3">
                 Soluciones Corporativas
               </h2>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-white mb-6">
+              <h3 className="text-3xl sm:text-4xl 2xl:text-5xl font-extrabold text-white mb-6">
                 Servicios de Consultoría y Gestión Integral
               </h3>
-              <p className="text-lg text-slate-200 leading-relaxed">
+              <p className="text-lg 2xl:text-xl text-slate-200 leading-relaxed">
                 Brindamos soporte técnico y normativo de nivel experto para proteger el activo más valioso de su organización: su gente.
               </p>
             </motion.div>
@@ -282,22 +269,22 @@ export function ProfessionalServices() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6">
-                      <h4 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                      <h4 className="text-xl sm:text-2xl 2xl:text-3xl font-bold text-white leading-tight">
                         {service.title}
                       </h4>
                     </div>
                   </div>
 
-                  <div className="p-8 flex flex-col flex-1">
-                    <p className="text-slate-600 mb-8 leading-relaxed font-medium">
+                  <div className="p-8 2xl:p-9 flex flex-col flex-1">
+                    <p className="text-slate-600 mb-8 leading-relaxed font-medium 2xl:text-lg">
                       {service.description}
                     </p>
 
                     <ul className="space-y-3 mt-auto">
                       {service.items.map((item, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <CheckCircle2 className="h-5 w-5 text-brand-legacy mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700 text-sm font-semibold">{item}</span>
+                          <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-slate-700 text-sm 2xl:text-base font-semibold">{item}</span>
                         </li>
                       ))}
                     </ul>
