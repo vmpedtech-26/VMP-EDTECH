@@ -1,113 +1,40 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export function Hero() {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-background-light to-white py-20 lg:py-32">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Content */}
-                    <div className="space-y-8">
-                        <div className="inline-block">
-                            <span className="bg-brand-legacy/10 text-brand-legacy px-4 py-2 rounded-full text-sm font-semibold">
-                                Plataforma de Capacitación Profesional
-                            </span>
-                        </div>
+        <section id="inicio" className="relative bg-[#0a1628] pt-20 pb-24 md:pt-28 md:pb-32 overflow-hidden border-b border-slate-800">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+                <div className="w-12 h-[3px] bg-amber-400 mb-8" />
 
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                            Capacitación Profesional{' '}
-                            <span className="text-brand-legacy">Certificada</span>
-                        </h1>
+                <p className="text-teal-400 text-sm font-bold uppercase tracking-[0.2em] mb-5">
+                    Capacitación Vial Profesional
+                </p>
 
-                        <p className="text-xl text-gray-600 leading-relaxed font-medium">
-                            Formación teórico-práctica con certificaciones oficiales de validez industrial.
-                            Digitaliza la capacitación de tu personal con nuestra plataforma inteligente.
-                        </p>
+                <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl leading-[1.03] tracking-tight text-white mb-7">
+                    Certificaciones con
+                    <br />
+                    validez <span className="text-teal-400">real</span>.
+                </h1>
 
-                        {/* Features */}
-                        <div className="space-y-3">
-                            <div className="flex items-center space-x-3">
-                                <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                                <span className="text-gray-700">
-                                    Certificaciones verificables por QR
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                                <span className="text-gray-700">
-                                    Cursos teóricos + prácticos interactivos
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                                <span className="text-gray-700">
-                                    Seguimiento por instructores capacitados
-                                </span>
-                            </div>
-                        </div>
+                <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl mb-10">
+                    Formación teórico-práctica para operadores y flotas, con credenciales
+                    verificables y conformidad normativa vigente — sin atajos.
+                </p>
 
-                        {/* CTAs */}
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Button size="lg" asChild>
-                                <Link href="#contacto">
-                                    Solicitar Demo
-                                    <ArrowRight className="ml-2 h-5 w-5" />
-                                </Link>
-                            </Button>
-                            <Button size="lg" variant="outline" asChild>
-                                <Link href="#servicios">Ver Cursos</Link>
-                            </Button>
-                        </div>
-                    </div>
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <Button size="lg" asChild>
+                        <Link href="#contacto">Solicitar Capacitación</Link>
+                    </Button>
+                    <Button size="lg" variant="outline" asChild>
+                        <Link href="#cursos">Ver Programas</Link>
+                    </Button>
+                </div>
 
-                    {/* Image/Visual */}
-                    <div className="relative lg:h-[600px]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-legacy/20 to-brand-legacy-light/20 rounded-2xl blur-3xl"></div>
-                        <div className="relative bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-                            {/* Placeholder for hero image */}
-                            <div className="aspect-[4/3] bg-gradient-to-br from-brand-legacy/10 to-brand-legacy-light/10 rounded-lg flex items-center justify-center">
-                                <div className="text-center space-y-4">
-                                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-brand-legacy to-brand-legacy-light rounded-2xl flex items-center justify-center shadow-lg">
-                                        <svg
-                                            className="w-12 h-12 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <p className="text-gray-600 font-semibold">
-                                        Sistema de Capacitación
-                                        <br />
-                                        VMP - EDTECH
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Stats */}
-                            <div className="grid grid-cols-3 gap-4 mt-6">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-brand-legacy">500+</div>
-                                    <div className="text-sm text-gray-600">Alumnos</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-brand-legacy">98%</div>
-                                    <div className="text-sm text-gray-600">Aprobación</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-brand-legacy">50+</div>
-                                    <div className="text-sm text-gray-600">Empresas</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <ShieldCheck className="h-4 w-4 text-teal-400 flex-shrink-0" />
+                    Credenciales verificables por QR · Conforme Ley 19587
                 </div>
             </div>
         </section>

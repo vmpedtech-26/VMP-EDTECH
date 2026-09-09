@@ -10,7 +10,7 @@ const inter = Inter({
 
 const robotoCondensed = Roboto_Condensed({
     subsets: ['latin'],
-    weight: ['400', '700'],
+    weight: ['400', '700', '900'],
     variable: '--font-roboto-condensed',
     display: 'swap',
 });

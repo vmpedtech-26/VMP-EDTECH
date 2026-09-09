@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
 import Header from '@/components/landing/Header';
+import { Hero } from '@/components/landing/Hero';
 import CourseCatalog from '@/components/landing/CourseCatalog';
 import Footer from '@/components/landing/Footer';
 import JsonLd from '@/components/seo/JsonLd';
@@ -19,6 +20,7 @@ export default function LandingPage() {
         <main className="min-h-screen">
             <JsonLd type="Organization" />
             <Header />
+            <Hero />
             <CourseCatalog />
             <ProfessionalServices />
             <ValueProposition />
