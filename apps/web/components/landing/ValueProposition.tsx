@@ -7,19 +7,19 @@ import { Award, Laptop, Users } from 'lucide-react';
 export default function ValueProposition() {
     const values = [
         {
-            icon: <Award className="h-6 w-6 text-brand-legacy" />,
+            icon: <Award className="h-6 w-6 text-primary" />,
             title: "Certificación Profesional Oficial",
             description: "Cumplimos con las normativas vigentes, garantizando que tu certificación tenga validez y reconocimiento empresarial en todo el territorio argentino.",
             details: "Validez Nacional"
         },
         {
-            icon: <Laptop className="h-6 w-6 text-brand-legacy" />,
+            icon: <Laptop className="h-6 w-6 text-primary" />,
             title: "Plataforma Digital Moderna",
             description: "Tecnología educativa de última generación con modalidad 100% online, presencial o mixta. Validación QR instantánea de certificados.",
             details: "Online/Offline + QR"
         },
         {
-            icon: <Users className="h-6 w-6 text-brand-legacy" />,
+            icon: <Users className="h-6 w-6 text-primary" />,
             title: "Instructores Certificados",
             description: "Equipo de profesionales con más de 15 años de experiencia en capacitación vial y certificación profesional vigente.",
             details: "+15 años experiencia"
@@ -62,7 +62,7 @@ export default function ValueProposition() {
                         className="lg:col-span-6 relative"
                     >
                         {/* Glow Behind Image */}
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3.5rem] blur-3xl opacity-80 pointer-events-none" />
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-teal-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3.5rem] blur-3xl opacity-80 pointer-events-none" />
                         
                         <div className="relative aspect-[4/3] sm:aspect-video lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-slate-700/80 bg-slate-900 group">
                             <Image 
@@ -78,14 +78,14 @@ export default function ValueProposition() {
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
                             
                             {/* Floating glass badge Top Left */}
-                            <div className="absolute top-6 left-6 backdrop-blur-md bg-slate-900/90 border border-emerald-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
-                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                                <span className="text-[10px] font-black text-emerald-300 tracking-wider uppercase">100% Homologado en Argentina</span>
+                            <div className="absolute top-6 left-6 backdrop-blur-md bg-slate-900/90 border border-teal-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
+                                <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
+                                <span className="text-[10px] font-black text-teal-300 tracking-wider uppercase">100% Homologado en Argentina</span>
                             </div>
 
                             {/* Floating glass badge Bottom Right */}
                             <div className="absolute bottom-6 right-6 max-w-[280px] backdrop-blur-md bg-slate-900/95 border border-slate-700/80 p-4.5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105 text-white">
-                                <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase mb-1 block">ENTRENAMIENTO EN CAMPO REAL</span>
+                                <span className="text-[9px] font-black text-teal-400 tracking-widest uppercase mb-1 block">ENTRENAMIENTO EN CAMPO REAL</span>
                                 <p className="text-[11px] font-medium text-slate-200 leading-relaxed">
                                     Simulaciones prácticas en rutas nacionales para garantizar la respuesta idónea de operarios de flota.
                                 </p>
@@ -102,9 +102,9 @@ export default function ValueProposition() {
                             transition={fadeIn.transition}
                             className="mb-8"
                         >
-                            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4 py-1.5 mb-4 shadow-sm backdrop-blur-md">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">¿Por qué elegir VMP?</span>
+                            <div className="inline-flex items-center gap-2 bg-teal-500/20 border border-teal-400/30 rounded-full px-4 py-1.5 mb-4 shadow-sm backdrop-blur-md">
+                                <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                                <span className="text-xs font-black text-teal-300 uppercase tracking-wider">¿Por qué elegir VMP?</span>
                             </div>
                             <h2 className="font-heading font-black text-4xl md:text-5xl text-white mb-4 tracking-tight leading-tight">
                                 La Plataforma Líder en <span className="text-teal-400 italic relative inline-block">
@@ -127,20 +127,20 @@ export default function ValueProposition() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        className="flex gap-5 p-5 rounded-2xl border border-slate-700/60 bg-slate-900/70 backdrop-blur-md hover:border-emerald-400/40 hover:bg-slate-900/90 transition-all duration-300 group shadow-md"
+                                        className="flex gap-5 p-5 rounded-2xl border border-slate-700/60 bg-slate-900/70 backdrop-blur-md hover:border-teal-400/40 hover:bg-slate-900/90 transition-all duration-300 group shadow-md"
                                     >
                                         {/* Icon Container */}
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center shadow-sm group-hover:bg-emerald-500/20 group-hover:border-emerald-400/30 transition-all duration-300">
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-400/20 flex items-center justify-center shadow-sm group-hover:bg-teal-500/20 group-hover:border-teal-400/30 transition-all duration-300">
                                             {value.icon}
                                         </div>
 
                                         {/* Texts */}
                                         <div className="flex-1">
                                             <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-                                                <h3 className="font-bold text-lg text-white group-hover:text-emerald-300 transition-colors">
+                                                <h3 className="font-bold text-lg text-white group-hover:text-teal-300 transition-colors">
                                                     {value.title}
                                                 </h3>
-                                                <span className="text-[10px] font-black tracking-wider text-emerald-300 bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 rounded-md uppercase italic">
+                                                <span className="text-[10px] font-black tracking-wider text-teal-300 bg-teal-500/20 border border-teal-400/30 px-2 py-0.5 rounded-md uppercase italic">
                                                     {value.details}
                                                 </span>
                                             </div>

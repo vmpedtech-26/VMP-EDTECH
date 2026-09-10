@@ -38,12 +38,12 @@ export default function AboutUs() {
                         whileInView={fadeIn.whileInView}
                         viewport={fadeIn.viewport}
                         transition={fadeIn.transition}
-                        className="inline-flex items-center space-x-2 bg-white border border-brand-legacy/20 rounded-full px-4 py-1.5 mb-6 shadow-sm"
+                        className="inline-flex items-center space-x-2 bg-white border border-primary/20 rounded-full px-4 py-1.5 mb-6 shadow-sm"
                     >
                         <div className="w-6 h-6 rounded-full overflow-hidden relative">
                             <Image src="/images/icons/consulting.png" fill className="object-cover" alt="Empresa" />
                         </div>
-                        <span className="text-sm font-semibold bg-gradient-to-r from-brand-legacy to-secondary bg-clip-text text-transparent">Sobre la Empresa</span>
+                        <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Sobre la Empresa</span>
                     </motion.div>
                     
                     <motion.h2 
@@ -130,8 +130,8 @@ export default function AboutUs() {
                                     "Información técnica para la toma de decisiones operativas"
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-2.5">
-                                        <div className="w-5.5 h-5.5 rounded-full bg-brand-legacy/10 flex items-center justify-center shrink-0 mt-0.5">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-brand-legacy" />
+                                        <div className="w-5.5 h-5.5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                                         </div>
                                         <span className="text-slate-700 text-sm font-medium">{item}</span>
                                     </li>
@@ -143,7 +143,7 @@ export default function AboutUs() {
 
                 {/* Banner Panorámico Separador de Operaciones en Vaca Muerta */}
                 <div className="relative group">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
+                    <div className="absolute -inset-4 bg-gradient-to-r from-teal-500/20 via-teal-500/15 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
                     
                     <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-slate-700/80 shadow-[0_25px_60px_rgba(0,0,0,0.5)] bg-slate-950">
                         <Image
@@ -159,15 +159,15 @@ export default function AboutUs() {
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
                         {/* Floating glass badge Top Left */}
-                        <div className="absolute top-6 left-6 md:top-8 md:left-8 backdrop-blur-md bg-slate-900/90 border border-emerald-400/40 px-4.5 py-2 rounded-2xl shadow-2xl flex items-center gap-2.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <div className="absolute top-6 left-6 md:top-8 md:left-8 backdrop-blur-md bg-slate-900/90 border border-teal-400/40 px-4.5 py-2 rounded-2xl shadow-2xl flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
                             <span className="text-xs font-black text-white tracking-wider uppercase">Operaciones Vaca Muerta & Patagonia</span>
                         </div>
 
                         {/* Floating glass badge Bottom Right */}
                         <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 backdrop-blur-md bg-slate-900/90 border border-slate-700/80 px-5 py-3 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4">
                             <div>
-                                <p className="text-[10px] font-black text-emerald-400 tracking-widest uppercase">PRESENCIA EN CAMPO REAL</p>
+                                <p className="text-[10px] font-black text-teal-400 tracking-widest uppercase">PRESENCIA EN CAMPO REAL</p>
                                 <p className="text-sm font-bold text-white leading-none mt-0.5">Neuquén • CABA • Santa Cruz</p>
                             </div>
                         </div>
@@ -209,7 +209,7 @@ export default function AboutUs() {
                     {/* 10. Sectores (1 col width on lg) */}
                     <motion.div 
                         initial={fadeIn.initial} whileInView={fadeIn.whileInView} viewport={fadeIn.viewport} transition={{ ...fadeIn.transition, delay: 0.3 }}
-                        className="bg-brand-legacy/5 rounded-3xl p-6 md:p-8 border border-brand-legacy/10 flex flex-col"
+                        className="bg-primary/5 rounded-3xl p-6 md:p-8 border border-primary/10 flex flex-col"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative">
@@ -227,7 +227,7 @@ export default function AboutUs() {
                                 "Servicios industriales",
                                 "Pymes en crecimiento"
                             ].map((sector, i) => (
-                                <span key={i} className="inline-block bg-white border border-brand-legacy/20 text-slate-700 text-xs px-3 py-1.5 rounded-xl shadow-sm font-medium hover:border-brand-legacy/50 transition-colors">
+                                <span key={i} className="inline-block bg-white border border-primary/20 text-slate-700 text-xs px-3 py-1.5 rounded-xl shadow-sm font-medium hover:border-primary/50 transition-colors">
                                     {sector}
                                 </span>
                             ))}
