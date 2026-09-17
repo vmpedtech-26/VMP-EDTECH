@@ -250,18 +250,23 @@ async def registrar_venta(request: Request, data: CreateVentaRequest, current_us
     # 1. Validar que las cuentas contables existan ANTES de empezar la transacción
     account_ventas = await prisma.account.find_unique(where={"code": "4.1.01"}) # Ventas de Servicios
     account_iva_df = await prisma.account.find_unique(where={"code": "2.1.05"}) # IVA Débito Fiscal
-    
+
     # Cuenta de contrapartida (Caja o Banco)
     pago_code = "1.1.01" if data.metodoPago == "EFECTIVO" else "1.1.02"
     account_pago = await prisma.account.find_unique(where={"code": pago_code})
-    
-    if not all([account_ventas, account_iva_df, account_pago]):
+
+    account_percepciones = None
+    if data.percepciones > 0:
+        account_percepciones = await prisma.account.find_unique(where={"code": "2.1.10"}) # Percepciones IIBB a Pagar
+
+    if not all([account_ventas, account_iva_df, account_pago]) or (data.percepciones > 0 and not account_percepciones):
         missing = []
         if not account_ventas: missing.append("4.1.01")
         if not account_iva_df: missing.append("2.1.05")
         if not account_pago: missing.append(pago_code)
+        if data.percepciones > 0 and not account_percepciones: missing.append("2.1.10")
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail=f"Faltan cuentas contables configuradas: {', '.join(missing)}. Por favor, ejecute el seed de contabilidad."
         )
 
@@ -299,10 +304,9 @@ async def registrar_venta(request: Request, data: CreateVentaRequest, current_us
                 {"accountId": account_iva_df.id, "debit": 0, "credit": data.iva, "description": f"IVA DF Venta {data.numero}"}
             ]
             
-            # Agregar percepciones si existen
+            # Agregar percepciones si existen (cuenta propia -- no es IVA Débito Fiscal)
             if data.percepciones > 0:
-                # Usamos una cuenta genérica de pasivo por ahora o ajustamos contra Ventas
-                entries.append({"accountId": account_iva_df.id, "debit": 0, "credit": data.percepciones, "description": f"Percepciones Venta {data.numero}"})
+                entries.append({"accountId": account_percepciones.id, "debit": 0, "credit": data.percepciones, "description": f"Percepciones IIBB Venta {data.numero}"})
 
             await transaction.journalentry.create(
                 data={
@@ -431,9 +435,17 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
         pago_code = "1.1.02"  # Banco obligatorio para CBU
         
     account_pago = await prisma.account.find_unique(where={"code": pago_code})
-    
-    if not all([account_gasto, account_pago]):
-        raise HTTPException(status_code=400, detail="Faltan cuentas contables de egresos o caja/banco configuradas.")
+
+    account_percepciones = None
+    if data.percepciones > 0:
+        account_percepciones = await prisma.account.find_unique(where={"code": "1.1.06"}) # Percepciones IIBB a Cuenta
+
+    if not all([account_gasto, account_pago]) or (data.percepciones > 0 and not account_percepciones):
+        missing = []
+        if not account_gasto: missing.append(gasto_code)
+        if not account_pago: missing.append(pago_code)
+        if data.percepciones > 0 and not account_percepciones: missing.append("1.1.06")
+        raise HTTPException(status_code=400, detail=f"Faltan cuentas contables configuradas: {', '.join(missing)}. Por favor, ejecute el seed de contabilidad.")
 
     # Si es Factura A con Retención, garantizar existencia de cuentas de retenciones (2.1.08 y 2.1.09)
     account_ret_iva = None
@@ -503,7 +515,12 @@ async def registrar_compra(request: Request, data: CreateCompraRequest, current_
             
             if data.iva > 0 and account_iva_cf:
                 entries.append({"accountId": account_iva_cf.id, "debit": data.iva, "credit": 0, "description": f"IVA CF Compra {data.numero}"})
-                
+
+            # Percepciones sufridas: van al activo (créditos a cuenta de IIBB futuro), no se pierden.
+            # Sin esto el asiento queda desbalanceado (Debe != Haber) apenas total > subtotal + iva.
+            if data.percepciones > 0 and account_percepciones:
+                entries.append({"accountId": account_percepciones.id, "debit": data.percepciones, "credit": 0, "description": f"Percepciones IIBB Compra {data.numero}"})
+
             await transaction.journalentry.create(
                 data={
                     "concept": f"Compra {data.numero} - {data.proveedor}",
@@ -1099,6 +1116,7 @@ async def seed_accounting(current_user=Depends(get_current_user)):
         {"code": "1.1.01", "name": "Caja", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.02", "name": "Banco", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.05", "name": "IVA Crédito Fiscal", "type": "ASSET", "parentCode": "1.1"},
+        {"code": "1.1.06", "name": "Percepciones IIBB a Cuenta", "type": "ASSET", "parentCode": "1.1"},
         {"code": "1.1.09", "name": "Retenciones a Conciliar", "type": "ASSET", "parentCode": "1.1"},
         {"code": "2", "name": "PASIVO", "type": "LIABILITY", "isSelectable": False},
         {"code": "2.1", "name": "PASIVO CORRIENTE", "type": "LIABILITY", "parentCode": "2", "isSelectable": False},
@@ -1106,6 +1124,7 @@ async def seed_accounting(current_user=Depends(get_current_user)):
         {"code": "2.1.05", "name": "IVA Débito Fiscal", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "2.1.08", "name": "Retenciones IVA a Pagar", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "2.1.09", "name": "Retenciones Ganancias a Pagar", "type": "LIABILITY", "parentCode": "2.1"},
+        {"code": "2.1.10", "name": "Percepciones IIBB a Pagar", "type": "LIABILITY", "parentCode": "2.1"},
         {"code": "3", "name": "PATRIMONIO NETO", "type": "EQUITY", "isSelectable": False},
         {"code": "3.1.01", "name": "Capital Social", "type": "EQUITY", "parentCode": "3"},
         {"code": "4", "name": "INGRESOS", "type": "REVENUE", "isSelectable": False},
