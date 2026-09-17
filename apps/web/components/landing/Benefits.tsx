@@ -140,12 +140,6 @@ export function Benefits() {
                             {/* Accent Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
 
-                            {/* Floating glass badge top-right */}
-                            <div className="absolute top-6 right-6 backdrop-blur-md bg-slate-900/90 border border-teal-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
-                                <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-                                <span className="text-[10px] font-black text-teal-300 tracking-wider uppercase">Operaciones Patagónicas</span>
-                            </div>
-
                             {/* Floating glass card bottom-left */}
                             <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-slate-900/90 border border-slate-700/80 p-5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105">
                                 <div className="flex items-center justify-between mb-1">

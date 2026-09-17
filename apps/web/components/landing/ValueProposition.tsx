@@ -77,12 +77,6 @@ export default function ValueProposition() {
                             {/* Ambient overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
                             
-                            {/* Floating glass badge Top Left */}
-                            <div className="absolute top-6 left-6 backdrop-blur-md bg-slate-900/90 border border-teal-400/40 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 transform transition-all duration-500 hover:scale-105">
-                                <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-                                <span className="text-[10px] font-black text-teal-300 tracking-wider uppercase">100% Homologado en Argentina</span>
-                            </div>
-
                             {/* Floating glass badge Bottom Right */}
                             <div className="absolute bottom-6 right-6 max-w-[280px] backdrop-blur-md bg-slate-900/95 border border-slate-700/80 p-4.5 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105 text-white">
                                 <span className="text-[9px] font-black text-teal-400 tracking-widest uppercase mb-1 block">ENTRENAMIENTO EN CAMPO REAL</span>

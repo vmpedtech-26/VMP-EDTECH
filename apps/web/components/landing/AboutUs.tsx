@@ -158,12 +158,6 @@ export default function AboutUs() {
                         {/* Gradient Overlay for Crisp Depth */}
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
-                        {/* Floating glass badge Top Left */}
-                        <div className="absolute top-6 left-6 md:top-8 md:left-8 backdrop-blur-md bg-slate-900/90 border border-teal-400/40 px-4.5 py-2 rounded-2xl shadow-2xl flex items-center gap-2.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-                            <span className="text-xs font-black text-white tracking-wider uppercase">Operaciones Vaca Muerta & Patagonia</span>
-                        </div>
-
                         {/* Floating glass badge Bottom Right */}
                         <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 backdrop-blur-md bg-slate-900/90 border border-slate-700/80 px-5 py-3 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4">
                             <div>
