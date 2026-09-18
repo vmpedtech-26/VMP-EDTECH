@@ -71,7 +71,7 @@ export function Testimonials() {
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/confian_bg.jpg"
-                    alt="Ejecutivos y Directores que Confían en VMP - EDTECH"
+                    alt="Reunión corporativa y directores en sede VMP - EDTECH, Neuquén"
                     fill
                     sizes="100vw"
                     quality={95}
@@ -79,7 +79,7 @@ export function Testimonials() {
                     priority
                 />
                 {/* Organic Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/92 via-slate-900/88 to-slate-950/95" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-900/60 to-slate-950/80" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
