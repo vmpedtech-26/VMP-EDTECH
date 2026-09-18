@@ -159,9 +159,16 @@ async def _siguiente_numero(db: Prisma) -> tuple[str, object]:
     contador_obj = await db.contadorcotizacion.find_unique(where={"anio": anio})
     if not contador_obj:
         contador_obj = await db.contadorcotizacion.create(data={"anio": anio, "contador": 144})
-    nuevo_contador = contador_obj.contador + 1
-    await db.contadorcotizacion.update(where={"id": contador_obj.id}, data={"contador": nuevo_contador})
-    return f"VMP-{anio}-{nuevo_contador}", contador_obj
+
+    # Incremento atómico en la DB en vez de leer el contador y sumarle 1 en
+    # Python: dos requests concurrentes leyendo el mismo valor terminarían
+    # escribiendo el mismo número, emitiendo dos cotizaciones con el mismo
+    # numeroCotizacion (VMP-<año>-N duplicado).
+    actualizado = await db.contadorcotizacion.update(
+        where={"id": contador_obj.id},
+        data={"contador": {"increment": 1}}
+    )
+    return f"VMP-{anio}-{actualizado.contador}", actualizado
 
 
 # ─── RUTAS ESTÁTICAS (deben ir ANTES de /{id}) ───
