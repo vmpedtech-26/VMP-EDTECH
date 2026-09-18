@@ -31,10 +31,17 @@ async def listar_cursos(current_user=Depends(get_current_user)):
     if current_user.rol != "SUPER_ADMIN":
         where_clause["activo"] = True
 
-    # ALUMNO e INSTRUCTOR pertenecen a una empresa cliente puntual: solo ven
-    # los cursos de esa empresa, nunca el catálogo privado de otra.
+    # ALUMNO e INSTRUCTOR ven los cursos globales (empresaId nulo, el
+    # catálogo estándar) más los de su propia empresa, nunca el catálogo
+    # privado de otra. Antes esto filtraba por empresaId == la suya a
+    # secas, lo que de hecho excluía los cursos globales (WHERE empresaId
+    # = 'x' no matchea NULL) -- el catálogo estándar quedaba invisible
+    # para cualquier alumno/instructor con empresa asignada.
     if current_user.rol in ["ALUMNO", "INSTRUCTOR"] and current_user.empresaId:
-        where_clause["empresaId"] = current_user.empresaId
+        where_clause["OR"] = [
+            {"empresaId": current_user.empresaId},
+            {"empresaId": None},
+        ]
     
     cursos = await prisma.curso.find_many(
         where=where_clause,
@@ -309,7 +316,9 @@ async def crear_modulo(
     if current_user.rol != "SUPER_ADMIN":
         raise HTTPException(status_code=403, detail="No tienes permisos")
     
-    # 1. Crear el módulo base
+    # Todo en una transacción -- si una pregunta/tarea a mitad de la lista
+    # falla (dato malformado), antes quedaba un módulo huérfano ya creado
+    # con solo parte de sus preguntas/tareas, silenciosamente roto.
     modulo_data = {
         "titulo": data.titulo,
         "orden": data.orden,
@@ -318,32 +327,34 @@ async def crear_modulo(
         "contenidoHtml": sanitize_rich_html(data.contenidoHtml) if data.contenidoHtml else None,
         "videoUrl": data.videoUrl
     }
-    
-    modulo = await prisma.modulo.create(data=modulo_data)
-    
-    # 2. Si tiene preguntas (Quiz)
-    if data.tipo == "QUIZ" and data.preguntas:
-        for p in data.preguntas:
-            await prisma.pregunta.create(
-                data={
-                    "moduloId": modulo.id,
-                    "pregunta": p.pregunta,
-                    "opciones": Json(p.opciones),
-                    "respuestaCorrecta": p.respuestaCorrecta,
-                    "explicacion": p.explicacion
-                }
-            )
 
-    # 3. Si tiene tareas prácticas (Practica)
-    if data.tipo == "PRACTICA" and data.tareasPracticas:
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": modulo.id,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
+    async with prisma.tx() as transaction:
+        # 1. Crear el módulo base
+        modulo = await transaction.modulo.create(data=modulo_data)
+
+        # 2. Si tiene preguntas (Quiz)
+        if data.tipo == "QUIZ" and data.preguntas:
+            for p in data.preguntas:
+                await transaction.pregunta.create(
+                    data={
+                        "moduloId": modulo.id,
+                        "pregunta": p.pregunta,
+                        "opciones": Json(p.opciones),
+                        "respuestaCorrecta": p.respuestaCorrecta,
+                        "explicacion": p.explicacion
+                    }
+                )
+
+        # 3. Si tiene tareas prácticas (Practica)
+        if data.tipo == "PRACTICA" and data.tareasPracticas:
+            for t in data.tareasPracticas:
+                await transaction.tareapractica.create(
+                    data={
+                        "moduloId": modulo.id,
+                        "descripcion": t.descripcion,
+                        "requiereFoto": t.requiereFoto
+                    }
+                )
 
     # Re-obtener con relaciones
     return await prisma.modulo.find_unique(
@@ -410,45 +421,51 @@ async def actualizar_modulo(
     if not existing or existing.cursoId != cursoId:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
         
-    # 1. Actualizar campos base
-    update_data = {}
-    if data.titulo is not None: update_data["titulo"] = data.titulo
-    if data.orden is not None: update_data["orden"] = data.orden
-    if data.contenidoHtml is not None: update_data["contenidoHtml"] = sanitize_rich_html(data.contenidoHtml)
-    if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
-    if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
-    
-    await prisma.modulo.update(where={"id": moduloId}, data=update_data)
-    
-    # 2. Si se envían preguntas (Sincronización completa para este módulo)
-    if data.preguntas is not None:
-        # Borrar anteriores
-        await prisma.pregunta.delete_many(where={"moduloId": moduloId})
-        # Crear nuevas
-        for p in data.preguntas:
-            await prisma.pregunta.create(
-                data={
-                    "moduloId": moduloId,
-                    "pregunta": p.pregunta,
-                    "opciones": Json(p.opciones),
-                    "respuestaCorrecta": p.respuestaCorrecta,
-                    "explicacion": p.explicacion
-                }
-            )
+    # Todo en una transacción -- la sincronización de preguntas/tareas borra
+    # todo lo anterior y recrea desde cero; sin transacción, una fila
+    # inválida a mitad de la lista dejaba el módulo con las preguntas/tareas
+    # viejas ya borradas y solo una parte de las nuevas creadas (peor que el
+    # estado inicial, y sin forma de recuperarlo salvo reintentando a mano).
+    async with prisma.tx() as transaction:
+        # 1. Actualizar campos base
+        update_data = {}
+        if data.titulo is not None: update_data["titulo"] = data.titulo
+        if data.orden is not None: update_data["orden"] = data.orden
+        if data.contenidoHtml is not None: update_data["contenidoHtml"] = sanitize_rich_html(data.contenidoHtml)
+        if data.videoUrl is not None: update_data["videoUrl"] = data.videoUrl
+        if data.liveClassUrl is not None: update_data["liveClassUrl"] = data.liveClassUrl
 
-    # 3. Si se envían tareas prácticas (Sincronización completa para este módulo)
-    if data.tareasPracticas is not None:
-        # Borrar anteriores (las evidencias ya subidas se borran en cascada)
-        await prisma.tareapractica.delete_many(where={"moduloId": moduloId})
-        # Crear nuevas
-        for t in data.tareasPracticas:
-            await prisma.tareapractica.create(
-                data={
-                    "moduloId": moduloId,
-                    "descripcion": t.descripcion,
-                    "requiereFoto": t.requiereFoto
-                }
-            )
+        await transaction.modulo.update(where={"id": moduloId}, data=update_data)
+
+        # 2. Si se envían preguntas (Sincronización completa para este módulo)
+        if data.preguntas is not None:
+            # Borrar anteriores
+            await transaction.pregunta.delete_many(where={"moduloId": moduloId})
+            # Crear nuevas
+            for p in data.preguntas:
+                await transaction.pregunta.create(
+                    data={
+                        "moduloId": moduloId,
+                        "pregunta": p.pregunta,
+                        "opciones": Json(p.opciones),
+                        "respuestaCorrecta": p.respuestaCorrecta,
+                        "explicacion": p.explicacion
+                    }
+                )
+
+        # 3. Si se envían tareas prácticas (Sincronización completa para este módulo)
+        if data.tareasPracticas is not None:
+            # Borrar anteriores (las evidencias ya subidas se borran en cascada)
+            await transaction.tareapractica.delete_many(where={"moduloId": moduloId})
+            # Crear nuevas
+            for t in data.tareasPracticas:
+                await transaction.tareapractica.create(
+                    data={
+                        "moduloId": moduloId,
+                        "descripcion": t.descripcion,
+                        "requiereFoto": t.requiereFoto
+                    }
+                )
 
     return await prisma.modulo.find_unique(
         where={"id": moduloId},

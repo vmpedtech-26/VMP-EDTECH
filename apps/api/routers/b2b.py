@@ -174,10 +174,16 @@ async def desvincular_empleado(empleado_id: str, current_user=Depends(get_curren
 
 @router.get("/cursos")
 async def listar_cursos_b2b(current_user=Depends(get_current_user)):
-    """Listar cursos disponibles para asignar"""
-    _empresa_id_b2b(current_user)
+    """Listar cursos disponibles para asignar (catálogo global + los propios
+    de la empresa -- nunca el catálogo privado de otra empresa cliente)."""
+    empresa_id = _empresa_id_b2b(current_user)
 
-    cursos = await prisma.curso.find_many(where={"activo": True})
+    cursos = await prisma.curso.find_many(
+        where={
+            "activo": True,
+            "OR": [{"empresaId": empresa_id}, {"empresaId": None}],
+        }
+    )
     return [{"id": c.id, "nombre": c.nombre, "codigo": c.codigo} for c in cursos]
 
 class AsignacionMasiva(BaseModel):
@@ -192,6 +198,13 @@ async def asignar_curso_masivo(data: AsignacionMasiva, current_user=Depends(get_
     curso = await prisma.curso.find_unique(where={"id": data.cursoId})
     if not curso:
         raise HTTPException(status_code=404, detail="Curso no encontrado")
+
+    # El curso tiene que ser global o de esta empresa -- sin este chequeo,
+    # una EMPRESA/SUPERVISOR podía asignarles a sus propios empleados un
+    # curso privado de OTRA empresa cliente (alcanzaba con conocer/adivinar
+    # el cursoId).
+    if curso.empresaId and curso.empresaId != empresa_id:
+        raise HTTPException(status_code=403, detail="Este curso no está disponible para tu empresa")
 
     # Verificar que los alumnos pertenezcan a la empresa
     alumnos = await prisma.user.find_many(
