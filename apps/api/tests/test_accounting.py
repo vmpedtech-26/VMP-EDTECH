@@ -44,7 +44,7 @@ class TestPercepciones:
         assert journal is not None
         assert sum(e.debit for e in journal.entries) == pytest.approx(sum(e.credit for e in journal.entries))
 
-        percepcion_entries = [e for e in journal.entries if e.accountId == account_percepciones.id]
+        percepcion_entries = [e for e in journal.entries if e.accountId == account_percepciones["id"]]
         assert len(percepcion_entries) == 1
         assert percepcion_entries[0].credit == pytest.approx(50.0)
 
@@ -79,7 +79,7 @@ class TestPercepciones:
         assert journal is not None
         assert sum(e.debit for e in journal.entries) == pytest.approx(sum(e.credit for e in journal.entries))
 
-        percepcion_entries = [e for e in journal.entries if e.accountId == account_percepciones.id]
+        percepcion_entries = [e for e in journal.entries if e.accountId == account_percepciones["id"]]
         assert len(percepcion_entries) == 1
         assert percepcion_entries[0].debit == pytest.approx(30.0)
 
