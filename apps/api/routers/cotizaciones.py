@@ -358,27 +358,13 @@ async def convert_cotizacion_to_client(
         empresa_existente = await db.company.find_unique(
             where={"cuit": empresa_cuit}
         )
-        
+
         if empresa_existente:
             raise HTTPException(
                 status_code=400,
                 detail=f"Ya existe una empresa con CUIT {empresa_cuit}"
             )
-        
-        # 3. Crear empresa
-        empresa = await db.company.create(
-            data={
-                "nombre": empresa_nombre,
-                "cuit": empresa_cuit,
-                "direccion": empresa_direccion,
-                "telefono": empresa_telefono,
-                "email": cotizacion.email,
-                "activa": True
-            }
-        )
-        
-        logger.info(f"Empresa creada: {empresa.id} - {empresa.nombre}")
-        
+
         # 4. Mapear curso de cotización a curso en BD
         course_mapping = {
             "defensivo": "COND-DEF",
@@ -386,101 +372,123 @@ async def convert_cotizacion_to_client(
             "4x4": "COND-4X4",
             "completo": "COND-COMP"
         }
-        
+
         curso_codigo = course_mapping.get(cotizacion.course)
         if not curso_codigo:
             raise HTTPException(
                 status_code=400,
                 detail=f"Curso '{cotizacion.course}' no reconocido"
             )
-        
+
         # Buscar curso en BD
         curso = await db.curso.find_first(
             where={"codigo": curso_codigo}
         )
-        
+
         if not curso:
             raise HTTPException(
                 status_code=404,
                 detail=f"Curso con código '{curso_codigo}' no encontrado en la base de datos"
             )
-        
+
         # 5. Generar contraseña temporal para alumnos
         def generate_password(length=12):
             """Genera una contraseña segura aleatoria"""
             alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
             return ''.join(secrets.choice(alphabet) for _ in range(length))
-        
-        # 6. Crear alumnos
+
+        # 3, 6 y 7: crear empresa + N alumnos + N inscripciones + marcar la
+        # cotización como convertida, todo en una sola transacción -- si algo
+        # falla a mitad de la carga (p.ej. DNI/email duplicado en el alumno
+        # #47 de 200), sin esto quedaba una empresa a medio crear, la
+        # cotización seguía en 'contacted' y un reintento chocaba con
+        # "Ya existe una empresa con ese CUIT", sin forma de reintentar ni
+        # limpiar sin tocar la base a mano.
         alumnos_creados = []
         inscripciones_creadas = []
         credenciales_alumnos = []
-        
-        for i in range(1, cantidad_alumnos + 1):
-            # Generar datos del alumno
-            alumno_nombre = f"Alumno {i}"
-            alumno_apellido = empresa_nombre
-            alumno_dni = f"TEMP-{empresa.id[:8]}-{i:03d}"
-            alumno_email = f"alumno{i}@{empresa_cuit.lower()}.vmp.temp"
-            password_temporal = generate_password()
-            
-            # Crear alumno
-            alumno = await db.user.create(
+
+        async with db.tx() as transaction:
+            # 3. Crear empresa
+            empresa = await transaction.company.create(
                 data={
-                    "email": alumno_email,
-                    "passwordHash": hash_password(password_temporal),
-                    "nombre": alumno_nombre,
-                    "apellido": alumno_apellido,
-                    "dni": alumno_dni,
+                    "nombre": empresa_nombre,
+                    "cuit": empresa_cuit,
+                    "direccion": empresa_direccion,
                     "telefono": empresa_telefono,
-                    "rol": "ALUMNO",
-                    "empresaId": empresa.id,
-                    "activo": True
+                    "email": cotizacion.email,
+                    "activa": True
                 }
             )
-            
-            logger.info(f"Alumno creado: {alumno.id} - {alumno.nombre} {alumno.apellido}")
-            
-            # Crear inscripción al curso
-            inscripcion = await db.inscripcion.create(
-                data={
+
+            logger.info(f"Empresa creada: {empresa.id} - {empresa.nombre}")
+
+            # 6. Crear alumnos
+            for i in range(1, cantidad_alumnos + 1):
+                # Generar datos del alumno
+                alumno_nombre = f"Alumno {i}"
+                alumno_apellido = empresa_nombre
+                alumno_dni = f"TEMP-{empresa.id[:8]}-{i:03d}"
+                alumno_email = f"alumno{i}@{empresa_cuit.lower()}.vmp.temp"
+                password_temporal = generate_password()
+
+                # Crear alumno
+                alumno = await transaction.user.create(
+                    data={
+                        "email": alumno_email,
+                        "passwordHash": hash_password(password_temporal),
+                        "nombre": alumno_nombre,
+                        "apellido": alumno_apellido,
+                        "dni": alumno_dni,
+                        "telefono": empresa_telefono,
+                        "rol": "ALUMNO",
+                        "empresaId": empresa.id,
+                        "activo": True
+                    }
+                )
+
+                logger.info(f"Alumno creado: {alumno.id} - {alumno.nombre} {alumno.apellido}")
+
+                # Crear inscripción al curso
+                inscripcion = await transaction.inscripcion.create(
+                    data={
+                        "alumnoId": alumno.id,
+                        "cursoId": curso.id,
+                        "progreso": 0,
+                        "estado": "NO_INICIADO"
+                    }
+                )
+
+                logger.info(f"Inscripción creada: {inscripcion.id} - Alumno {alumno.id} en curso {curso.id}")
+
+                # Guardar datos para respuesta
+                alumnos_creados.append({
+                    "id": alumno.id,
+                    "nombre": alumno.nombre,
+                    "apellido": alumno.apellido,
+                    "email": alumno.email,
+                    "dni": alumno.dni,
+                    "password_temporal": password_temporal  # Solo para mostrar una vez
+                })
+
+                inscripciones_creadas.append({
+                    "id": inscripcion.id,
                     "alumnoId": alumno.id,
                     "cursoId": curso.id,
-                    "progreso": 0,
-                    "estado": "NO_INICIADO"
-                }
+                    "curso": curso.nombre
+                })
+
+                credenciales_alumnos.append({
+                    "email": alumno.email,
+                    "password": password_temporal
+                })
+
+            # 7. Actualizar cotización a 'converted'
+            await transaction.cotizacion.update(
+                where={"id": cotizacion_id},
+                data={"status": "converted"}
             )
-            
-            logger.info(f"Inscripción creada: {inscripcion.id} - Alumno {alumno.id} en curso {curso.id}")
-            
-            # Guardar datos para respuesta
-            alumnos_creados.append({
-                "id": alumno.id,
-                "nombre": alumno.nombre,
-                "apellido": alumno.apellido,
-                "email": alumno.email,
-                "dni": alumno.dni,
-                "password_temporal": password_temporal  # Solo para mostrar una vez
-            })
-            
-            inscripciones_creadas.append({
-                "id": inscripcion.id,
-                "alumnoId": alumno.id,
-                "cursoId": curso.id,
-                "curso": curso.nombre
-            })
-            
-            credenciales_alumnos.append({
-                "email": alumno.email,
-                "password": password_temporal
-            })
-        
-        # 7. Actualizar cotización a 'converted'
-        await db.cotizacion.update(
-            where={"id": cotizacion_id},
-            data={"status": "converted"}
-        )
-        
+
         logger.info(f"Cotización {cotizacion_id} marcada como convertida")
         
         # 8. Enviar email de bienvenida
