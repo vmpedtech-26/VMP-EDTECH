@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from middleware.security import (
@@ -8,6 +8,8 @@ from middleware.security import (
     _rate_limit_exceeded_handler
 )
 from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+from services.security_service import security_service
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from core.logging import setup_logging
@@ -43,7 +45,21 @@ async def shutdown():
 # Rate limiter state
 app.state.limiter = limiter
 
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# SecurityService.log_rate_limit_exceeded existía pero nunca se llamaba desde
+# ningún lado -- el panel de Métricas de Seguridad mostraba rate_limit_exceeded
+# siempre en 0 sin importar cuánta gente chocara contra los límites reales.
+async def _logged_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    try:
+        await security_service.log_rate_limit_exceeded(
+            ip_address=get_remote_address(request),
+            endpoint=request.url.path,
+            request_id=getattr(request.state, "request_id", None),
+        )
+    except Exception:
+        pass
+    return _rate_limit_exceeded_handler(request, exc)
+
+app.add_exception_handler(RateLimitExceeded, _logged_rate_limit_exceeded_handler)
 
 # Security Middleware
 app.add_middleware(SecurityHeadersMiddleware)

@@ -1,9 +1,12 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List
 from schemas.empresas import EmpresaResponse, CreateEmpresaRequest, UpdateEmpresaRequest
 from auth.dependencies import get_current_user
 from core.database import prisma
 from services.sso_crypto import encrypt_secret
+from services.security_service import security_service
+
+SSO_FIELDS = {"ssoActive", "ssoDomain", "ssoProvider", "ssoClientId", "ssoTenantId", "ssoClientSecret"}
 
 
 def _con_sso_secret_set(empresa) -> dict:
@@ -75,7 +78,7 @@ async def obtener_empresa(id: str, current_user=Depends(get_current_user)):
 
 
 @router.put("/{id}", response_model=EmpresaResponse)
-async def actualizar_empresa(id: str, data: UpdateEmpresaRequest, current_user=Depends(get_current_user)):
+async def actualizar_empresa(id: str, data: UpdateEmpresaRequest, request: Request, current_user=Depends(get_current_user)):
     """Actualizar datos de una empresa (Solo SUPER_ADMIN)"""
 
     if current_user.rol != "SUPER_ADMIN":
@@ -87,6 +90,7 @@ async def actualizar_empresa(id: str, data: UpdateEmpresaRequest, current_user=D
         raise HTTPException(status_code=404, detail="Empresa no encontrada")
 
     update_data = {k: v for k, v in data.dict().items() if v is not None}
+    sso_fields_touched = sorted(SSO_FIELDS & update_data.keys())
 
     # El secret llega en texto plano desde el formulario -- se cifra antes de
     # guardar. Un string vacío se interpreta como "no tocar" (no se pisa el
@@ -111,6 +115,21 @@ async def actualizar_empresa(id: str, data: UpdateEmpresaRequest, current_user=D
                 detail="Ese dominio ya está en uso por otra empresa con SSO activo",
             )
         raise
+
+    # SecurityService.log_sso_config_change existía pero nunca se llamaba --
+    # el panel de Métricas de Seguridad mostraba sso_config_change siempre en 0.
+    if sso_fields_touched:
+        try:
+            await security_service.log_sso_config_change(
+                email=current_user.email,
+                company_id=id,
+                details=f"Campos modificados: {', '.join(sso_fields_touched)}",
+                user_id=current_user.id,
+                ip_address=request.client.host if request.client else "N/A",
+                request_id=getattr(request.state, "request_id", None),
+            )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria de cambio SSO: {audit_err}")
 
     return _con_sso_secret_set(empresa)
 

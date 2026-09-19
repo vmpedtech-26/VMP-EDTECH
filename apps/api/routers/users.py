@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, Request, status, UploadFile, File
 from typing import List, Optional
 from schemas.users import (
     UserAdminResponse, CreateUserRequest, UpdateUserRequest, UserWithEmpresaResponse,
@@ -9,6 +9,7 @@ from core.database import prisma
 from auth.jwt import hash_password
 from services import storage_service
 from services.file_upload import MAX_FILE_SIZE
+from services.security_service import security_service
 
 PNG_MAGIC_BYTES = b"\x89PNG\r\n\x1a\n"
 
@@ -243,7 +244,7 @@ async def crear_usuarios_masivo(data: CargaMasivaRequest, current_user=Depends(g
 
 
 @router.put("/{id}", response_model=UserAdminResponse)
-async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depends(get_current_user)):
+async def actualizar_usuario(id: str, data: UpdateUserRequest, request: Request, current_user=Depends(get_current_user)):
     """Actualizar datos de un usuario (Solo SUPER_ADMIN o INSTRUCTOR para su empresa)"""
     
     existing = await prisma.user.find_unique(where={"id": id})
@@ -274,12 +275,31 @@ async def actualizar_usuario(id: str, data: UpdateUserRequest, current_user=Depe
 
     if "password" in update_data:
         update_data["passwordHash"] = hash_password(update_data.pop("password"))
-        
+
+    rol_cambiado = "rol" in update_data and update_data["rol"] != existing.rol
+    old_rol = existing.rol
+
     user = await prisma.user.update(
         where={"id": id},
         data=update_data
     )
-    
+
+    # SecurityService.log_user_role_change existía pero nunca se llamaba --
+    # el panel de Métricas de Seguridad mostraba user_role_change siempre en 0.
+    if rol_cambiado:
+        try:
+            await security_service.log_user_role_change(
+                email=current_user.email,
+                target_user_email=user.email,
+                old_role=old_rol,
+                new_role=user.rol,
+                user_id=current_user.id,
+                ip_address=request.client.host if request.client else "N/A",
+                request_id=getattr(request.state, "request_id", None),
+            )
+        except Exception as audit_err:
+            print(f"⚠️ Error al registrar log de auditoria de cambio de rol: {audit_err}")
+
     return user
 
 

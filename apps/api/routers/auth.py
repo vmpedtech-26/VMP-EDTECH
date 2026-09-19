@@ -5,6 +5,7 @@ from core.database import prisma
 from auth.dependencies import get_current_user
 from middleware.security import rate_limit_login, rate_limit_forgot_password
 from services.audit_service import log_audit_action
+from services.security_service import security_service
 
 router = APIRouter()
 
@@ -108,10 +109,22 @@ async def login(request: Request, data: UserLogin):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive",
         )
-    
+
+    # SecurityService.log_auth_success existía pero nunca se llamaba --
+    # el panel de Métricas de Seguridad mostraba auth_success siempre en 0.
+    try:
+        await security_service.log_auth_success(
+            email=user.email,
+            user_id=user.id,
+            ip_address=request.client.host if request.client else "N/A",
+            request_id=getattr(request.state, "request_id", None),
+        )
+    except Exception as audit_err:
+        print(f"⚠️ Error al registrar log de auditoria de login exitoso: {audit_err}")
+
     # Crear token
     access_token = create_access_token(data={"sub": user.id})
-    
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
