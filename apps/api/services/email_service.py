@@ -10,7 +10,7 @@ from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import aiosmtplib
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +23,16 @@ class EmailService:
         self.email_from = os.getenv("EMAIL_FROM", "noreply@vmp-edtech.com")
         self.email_ventas = os.getenv("EMAIL_VENTAS", "administracion@vmp-edtech.com")
         
-        # Setup Jinja2 for templates
+        # Setup Jinja2 for templates. Jinja2's Environment tiene autoescape
+        # en False por defecto -- sin esto, cualquier dato de usuario
+        # interpolado en las plantillas (nombre/empresa/comentarios de
+        # cotizaciones, título/descripción de denuncias de compliance, etc.)
+        # se renderiza sin escapar en el HTML del email.
         template_dir = Path(__file__).parent.parent / "templates"
-        self.jinja_env = Environment(loader=FileSystemLoader(str(template_dir)))
+        self.jinja_env = Environment(
+            loader=FileSystemLoader(str(template_dir)),
+            autoescape=select_autoescape(["html", "htm", "xml"]),
+        )
         
     async def send_email(
         self,

@@ -31,15 +31,21 @@ class CredentialValidator:
         Returns:
             Dict con información pública de la credencial
         """
-        # Normalizar término de búsqueda
+        # Normalizar término de búsqueda. El año va siempre por el actual
+        # (igual que generate_credencial_number en credencial_generator.py) --
+        # antes estaba hardcodeado a "VMP-2026-", así que a partir de 2027
+        # esta reconstrucción para códigos parciales/sin prefijo dejaba de
+        # matchear cualquier credencial nueva. No afecta el escaneo de QR
+        # (que siempre manda el número completo, ya cubierto por clean_num).
+        anio_actual = datetime.now(timezone.utc).year
         clean_num = numero.strip().upper()
-        raw_code = clean_num.replace('BLT-RT/', '').replace('BLT-RT-', '').replace('VMP-2026-', '').replace('BLT-RT', '')
-        
+        raw_code = clean_num.replace('BLT-RT/', '').replace('BLT-RT-', '').replace(f'VMP-{anio_actual}-', '').replace('BLT-RT', '')
+
         possible_numbers = [
             clean_num,
             f"BLT-RT/{raw_code}",
             f"BLT-RT-{raw_code}",
-            f"VMP-2026-{raw_code}",
+            f"VMP-{anio_actual}-{raw_code}",
             raw_code
         ]
         
