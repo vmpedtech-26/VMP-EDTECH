@@ -248,8 +248,13 @@ async def obtener_acta_curso(cursoId: str, current_user=Depends(get_current_user
 
 
 @router.post("/generar-examen-plantilla")
-async def generar_examen_desde_plantilla(plantillaId: str, current_user=Depends(get_current_user)):
-    """Generar set de examen aleatorio a partir de una plantilla del Banco de Preguntas (Estilo Blister)"""
+async def generar_examen_desde_plantilla(plantillaId: str, current_user=Depends(require_admin)):
+    """Generar set de examen aleatorio a partir de una plantilla del Banco de Preguntas (Estilo Blister).
+
+    Solo admin/instructor -- a diferencia del resto de los endpoints de este
+    router, este no tenía ningún chequeo de rol: cualquier usuario
+    autenticado (incluido un ALUMNO) podía generar/previsualizar el set de
+    preguntas de una plantilla con solo conocer su id."""
     plantilla = await prisma.plantillaevaluacion.find_unique(where={"id": plantillaId})
     if not plantilla:
         raise HTTPException(status_code=404, detail="Plantilla de evaluación no encontrada")
