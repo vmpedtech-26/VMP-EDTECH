@@ -36,8 +36,12 @@ async def listar_cursos(current_user=Depends(get_current_user)):
     # privado de otra. Antes esto filtraba por empresaId == la suya a
     # secas, lo que de hecho excluía los cursos globales (WHERE empresaId
     # = 'x' no matchea NULL) -- el catálogo estándar quedaba invisible
-    # para cualquier alumno/instructor con empresa asignada.
-    if current_user.rol in ["ALUMNO", "INSTRUCTOR"] and current_user.empresaId:
+    # para cualquier alumno/instructor con empresa asignada. El guard
+    # además solo aplicaba el OR si current_user.empresaId era verdadero:
+    # un INSTRUCTOR sin empresa asignada se quedaba SIN ningún filtro y
+    # veía el catálogo privado de todas las empresas. Ahora, sin empresa,
+    # solo ve el catálogo global.
+    if current_user.rol in ["ALUMNO", "INSTRUCTOR"]:
         where_clause["OR"] = [
             {"empresaId": current_user.empresaId},
             {"empresaId": None},

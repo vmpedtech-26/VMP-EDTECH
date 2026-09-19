@@ -49,9 +49,19 @@ async def list_employees(
 
 @router.get("/courses")
 async def list_courses(current_user=Depends(get_current_user)):
-    """Catálogo de cursos (HR view)"""
+    """Catálogo de cursos (HR view) -- Solo SUPER_ADMIN o INSTRUCTOR para su
+    empresa (+ catálogo global). Antes no tenía chequeo de rol ni de empresa:
+    cualquier usuario autenticado veía el catálogo privado de cualquier
+    empresa cliente, no solo el propio."""
+    if current_user.rol not in ["SUPER_ADMIN", "INSTRUCTOR"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos")
+
+    where = {"activo": True}
+    if current_user.rol == "INSTRUCTOR":
+        where["OR"] = [{"empresaId": current_user.empresaId}, {"empresaId": None}]
+
     cursos = await prisma.curso.find_many(
-        where={"activo": True},
+        where=where,
         include={"_count": True},
         order={"nombre": "asc"}
     )

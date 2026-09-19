@@ -52,6 +52,17 @@ async def submit_contact_form(data: ContactFormRequest):
         from core.database import prisma
         curso_label = COURSE_LABELS.get(data.curso_interes, data.curso_interes or "No especificado")
 
+        # Todo lo que viene del form público se escapa antes de insertarlo en
+        # el HTML del email -- sin esto, un nombre/mensaje con markup
+        # (p.ej. <img src=x onerror=...>) se inyectaba tal cual en el correo
+        # que recibe administracion@vmp-edtech.com.
+        safe_nombre = html.escape(data.nombre)
+        safe_empresa = html.escape(data.empresa)
+        safe_email = html.escape(data.email)
+        safe_telefono = html.escape(data.telefono) if data.telefono else "No proporcionado"
+        safe_curso_label = html.escape(curso_label)
+        safe_mensaje = html.escape(data.mensaje)
+
         html_content = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #0A192F, #1a365d); color: white; padding: 24px; border-radius: 12px 12px 0 0;">
@@ -61,28 +72,28 @@ async def submit_contact_form(data: ContactFormRequest):
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #475569; width: 140px;">Nombre</td>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{data.nombre}</td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{safe_nombre}</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #475569;">Empresa</td>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{data.empresa}</td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{safe_empresa}</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #475569;">Email</td>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;"><a href="mailto:{data.email}" style="color: #0A192F;">{data.email}</a></td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;"><a href="mailto:{safe_email}" style="color: #0A192F;">{safe_email}</a></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #475569;">Teléfono</td>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{data.telefono or 'No proporcionado'}</td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{safe_telefono}</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #475569;">Curso de interés</td>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{curso_label}</td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #1e293b;">{safe_curso_label}</td>
                     </tr>
                 </table>
                 <div style="margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 8px;">
                     <p style="margin: 0 0 8px 0; font-weight: bold; color: #475569;">Mensaje:</p>
-                    <p style="margin: 0; color: #1e293b; line-height: 1.6;">{data.mensaje}</p>
+                    <p style="margin: 0; color: #1e293b; line-height: 1.6;">{safe_mensaje}</p>
                 </div>
             </div>
         </div>
@@ -125,10 +136,10 @@ async def submit_contact_form(data: ContactFormRequest):
                 <h1 style="margin: 0; font-size: 22px;">Recibimos tu consulta ✓</h1>
             </div>
             <div style="background: white; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-                <p style="color: #1e293b; font-size: 16px;">Hola <strong>{data.nombre}</strong>,</p>
+                <p style="color: #1e293b; font-size: 16px;">Hola <strong>{safe_nombre}</strong>,</p>
                 <p style="color: #475569; line-height: 1.6;">
                     Gracias por contactarte con <strong>VMP - EDTECH</strong>. Recibimos tu consulta sobre
-                    capacitación vial para <strong>{data.empresa}</strong>.
+                    capacitación vial para <strong>{safe_empresa}</strong>.
                 </p>
                 <p style="color: #475569; line-height: 1.6;">
                     Nuestro equipo se pondrá en contacto con vos dentro de las próximas

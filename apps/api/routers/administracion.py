@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from auth.dependencies import get_current_user, require_super_admin
+from auth.dependencies import get_current_user, require_admin, require_super_admin
 from core.database import prisma
 
 router = APIRouter()
@@ -86,7 +86,11 @@ async def delete_area(id: str, current_user=Depends(require_super_admin)):
 
 # ========== COURSES ADMIN ==========
 @router.get("/courses")
-async def list_courses_admin(current_user=Depends(get_current_user)):
+async def list_courses_admin(current_user=Depends(require_admin)):
+    """Solo INSTRUCTOR/SUPER_ADMIN -- a diferencia de cursos.py::listar_cursos,
+    este devuelve TODOS los cursos sin filtrar por empresa (incluidos
+    inactivos y privados de cualquier empresa cliente), así que no puede
+    quedar abierto a cualquier usuario autenticado como estaba antes."""
     cursos = await prisma.curso.find_many(order={"nombre": "asc"})
     return {"items": [{"id": c.id, "nombre": c.nombre, "codigo": c.codigo, "activo": c.activo, "duracionHoras": c.duracionHoras} for c in cursos]}
 
